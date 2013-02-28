@@ -1,0 +1,5 @@
+@prefix dm2e: <http://onto.dm2e.eu/> .
+
+<http://141.20.126.155/api/file/512f89fbb25b55706e000000/data>
+    dm2e:xslStyleSheet <http://141.20.126.155/api/file/5087f01056dd6408690000a9/data> ;
+     dm2e:xmlSource <http://141.20.126.155/api/file/5087efca56dd640869000036/data> .

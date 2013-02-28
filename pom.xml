@@ -57,6 +57,11 @@
             <artifactId>jersey-client</artifactId>
             <version>${jersey-version}</version>
         </dependency>
+        <dependency>
+        	<groupId>net.sf.saxon</groupId>
+        	<artifactId>Saxon-B</artifactId>
+        	<version>9.0</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
