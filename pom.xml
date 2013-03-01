@@ -109,5 +109,9 @@
             <url>http://download.java.net/maven/2</url>
             <layout>default</layout>
         </repository>
+        <repository>
+			<id>lski</id>
+			<url>https://breda.informatik.uni-mannheim.de/nexus/content/groups/public/</url>
+		</repository>
     </repositories>
 </project>
