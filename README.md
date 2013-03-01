@@ -12,3 +12,8 @@ Instructions:
 - Install Git, JDK, and Maven.
 - git clone git@github.com:DM2E/dm2e-ws.git
 - Run  mvn -e compile exec:java -Dexec.mainClass="eu.dm2e.ws.Main"
+
+Test:
+
+- Call http://localhost:9998/data in your browser
+- Quad: <http://localhost/data> <http://purl.org/dc/terms/creator> <http://localhost/kai> should be shown
