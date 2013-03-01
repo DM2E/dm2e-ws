@@ -15,5 +15,5 @@ Instructions:
 
 Test:
 
-- Call http://localhost:9998/data in your browser
-- Quad: <http://localhost/data> <http://purl.org/dc/terms/creator> <http://localhost/kai> should be shown
+- Open http://localhost:9998/data in your browser
+- Triple: <http://localhost/data> <http://purl.org/dc/terms/creator> <http://localhost/kai> should be shown
