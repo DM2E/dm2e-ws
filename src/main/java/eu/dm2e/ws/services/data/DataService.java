@@ -19,6 +19,20 @@ import javax.ws.rs.core.UriInfo;
 public class DataService extends AbstractRDFService {
 
     @GET
+    @Produces({PLAIN, XML, TTL_A, TTL_T, N3})
+    public Response get() {
+        Model m = ModelFactory.createDefaultModel();
+        m.setNsPrefix("dct","http://purl.org/dc/terms/");
+        Resource s = m.createResource("http://localhost/data");
+        Property p = m.createProperty(m.expandPrefix("http://purl.org/dc/terms/creator"));
+        Resource o = m.createResource("http://localhost/kai");
+        m.add(m.createStatement(s, p, o));
+
+        return handleRDF(m);
+    }
+
+
+    @GET
     @Path("/bla/{aha}")
     @Produces({PLAIN, XML, TTL_A, TTL_T, N3})
     public Response getURI1(@Context UriInfo uriInfo) {
