@@ -6,6 +6,7 @@ import eu.dm2e.ws.grafeo.Grafeo;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -24,10 +25,11 @@ public class DataService extends AbstractRDFService {
 
 
     @GET
-    @Path("/bla/{aha}")
-    public Response getURI1(@Context UriInfo uriInfo) {
+    @Path("/{resourceID}")
+    public Response getResource(@Context UriInfo uriInfo, @PathParam("resourceID") String resourceID) {
         Grafeo g = new Grafeo();
         g.addTriple(uriInfo.getRequestUri().toString(), "http://purl.org/dc/terms/creator", "http://localhost/kai");
+        g.addTriple(uriInfo.getRequestUri().toString(), "dct:identifier", g.literal(resourceID));
         return getResponse(g);
     }
 

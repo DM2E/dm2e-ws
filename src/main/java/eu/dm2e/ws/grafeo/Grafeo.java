@@ -32,29 +32,55 @@ public class Grafeo {
     }
 
     public GResource get(String uri) {
-        return new GResource();
+        return new GResource(this, uri);
     }
 
     public String expand(String uri) {
         return model.expandPrefix(uri);
     }
 
-    public Statement addTriple(String subject, String predicate, String object) {
-        subject = expand(subject);
-        predicate = expand(predicate);
+
+    public GStatement addTriple(String subject, String predicate, String object) {
+        GResource s = new GResource(this, subject);
+        GResource p = new GResource(this, predicate);
+
+        GStatement statement;
         String objectExp = expand(object);
-        Resource s = model.createResource(subject);
-        Property p = model.createProperty(predicate);
-        Statement statement;
         try {
             URI testUri = new URI(objectExp);
-            Resource or = model.createResource(object);
-            statement = model.createStatement(s,p,or);
+            GResource or = new GResource(this, object);
+            statement = new GStatement(this, s, p, or);
         } catch (URISyntaxException e) {
-            statement = model.createStatement(s,p,object);
+            statement = new GStatement(this, s, p, object);
         }
-        model.add(statement);
+        model.add(statement.getStatement());
         return statement;
+    }
+    public GStatement addTriple(String subject, String predicate, GLiteral object) {
+        GResource s = new GResource(this, subject);
+        GResource p = new GResource(this, predicate);
+        GStatement statement = new GStatement(this, s, p, object);
+        model.add(statement.getStatement());
+        return statement;
+    }
+
+    public GLiteral literal(String literal) {
+        return new GLiteral(this, literal);
+    }
+
+    public boolean isEscaped(String input) {
+        return input.startsWith("\"") && input.endsWith("\"") && input.length() > 1;
+    }
+
+    public String unescape(String literal) {
+        if (isEscaped(literal)) {
+            return literal.substring(1, literal.length() - 1);
+        }
+        return literal;
+    }
+
+    public String escape(String literal) {
+        return new StringBuilder("\"").append(literal).append("\"").toString();
     }
 
     protected void applyNamespaces(Model model) {
