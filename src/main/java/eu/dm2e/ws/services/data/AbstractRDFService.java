@@ -3,6 +3,7 @@ package eu.dm2e.ws.services.data;
 
 import com.hp.hpl.jena.rdf.model.Model;
 
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 
+@Produces({MediaType.TEXT_PLAIN, "application/rdf+xml", "application/x-turtle", "text/turtle", "text/rdf+n3"})
 public abstract class AbstractRDFService {
 
     public static final String PLAIN = MediaType.TEXT_PLAIN;
@@ -43,7 +45,7 @@ public abstract class AbstractRDFService {
         mediaType2Language.put(MediaType.valueOf(N3), "N3");
     }
 
-    protected Response handleRDF(Model model) {
+    protected Response getResponse(Model model) {
         Variant selectedVariant = request.selectVariant(supportedVariants);
         assert selectedVariant != null;
 
@@ -63,7 +65,7 @@ public abstract class AbstractRDFService {
 
         @Override
         public void write(OutputStream output) throws IOException, WebApplicationException {
-            log.info("Mediatype: " + this.mediaType);
+            log.fine("Mediatype: " + this.mediaType);
             model.setNsPrefix("dct", "http://purl.org/dc/terms/");
             model.write(output, mediaType2Language.get(this.mediaType));
         }

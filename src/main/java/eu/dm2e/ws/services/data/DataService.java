@@ -9,7 +9,6 @@ import com.hp.hpl.jena.rdf.model.Resource;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -19,7 +18,6 @@ import javax.ws.rs.core.UriInfo;
 public class DataService extends AbstractRDFService {
 
     @GET
-    @Produces({PLAIN, XML, TTL_A, TTL_T, N3})
     public Response get() {
         Model m = ModelFactory.createDefaultModel();
         m.setNsPrefix("dct","http://purl.org/dc/terms/");
@@ -28,13 +26,12 @@ public class DataService extends AbstractRDFService {
         Resource o = m.createResource("http://localhost/kai");
         m.add(m.createStatement(s, p, o));
 
-        return handleRDF(m);
+        return getResponse(m);
     }
 
 
     @GET
     @Path("/bla/{aha}")
-    @Produces({PLAIN, XML, TTL_A, TTL_T, N3})
     public Response getURI1(@Context UriInfo uriInfo) {
         Model m = ModelFactory.createDefaultModel();
         m.setNsPrefix("dct","http://purl.org/dc/terms/");
@@ -43,7 +40,7 @@ public class DataService extends AbstractRDFService {
         Resource o = m.createResource("http://localhost/kai");
         m.add(m.createStatement(s, p, o));
 
-        return handleRDF(m);
+        return getResponse(m);
     }
 
 
