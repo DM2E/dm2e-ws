@@ -2,6 +2,7 @@ package eu.dm2e.ws.services.data;
 
 
 import com.hp.hpl.jena.rdf.model.Model;
+import eu.dm2e.ws.grafeo.Grafeo;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -50,6 +51,11 @@ public abstract class AbstractRDFService {
         assert selectedVariant != null;
 
         return Response.ok(new RDFOutput(model, selectedVariant.getMediaType()), selectedVariant.getMediaType()).build();
+
+    }
+
+    protected Response getResponse(Grafeo grafeo) {
+        return getResponse(grafeo.getModel());
 
     }
 
