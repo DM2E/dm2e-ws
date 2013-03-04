@@ -1,17 +1,27 @@
 package eu.dm2e.ws.grafeo;
 
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.update.UpdateExecutionFactory;
+import com.hp.hpl.jena.update.UpdateFactory;
+import com.hp.hpl.jena.update.UpdateProcessor;
+import com.hp.hpl.jena.update.UpdateRequest;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,7 +31,7 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 public class Grafeo {
-
+    private Logger log = Logger.getLogger(getClass().getName());
     protected Model model;
     protected Map<String, String> namespaces = new HashMap<String, String>();
 
@@ -118,19 +128,96 @@ public class Grafeo {
         return new GLiteral(this, literal);
     }
 
-    public boolean isEscaped(String input) {
-        return input.startsWith("\"") && input.endsWith("\"") && input.length() > 1;
+    public GResource resource(String uri) {
+        uri = expand(uri);
+        return new GResource(this, uri);
     }
 
-    public String unescape(String literal) {
+    public boolean isEscaped(String input) {
+        return input.startsWith("\"") && input.endsWith("\"") && input.length() > 1
+                ||
+                input.startsWith("<") && input.endsWith(">") && input.length() > 1;
+    }
+
+    public String unescapeLiteral(String literal) {
         if (isEscaped(literal)) {
             return literal.substring(1, literal.length() - 1);
         }
         return literal;
     }
 
-    public String escape(String literal) {
+    public String escapeLiteral(String literal) {
         return new StringBuilder("\"").append(literal).append("\"").toString();
+    }
+
+    public String unescapeResource(String uri) {
+        if (isEscaped(uri)) {
+            return uri.substring(1, uri.length() - 1);
+        }
+        return uri;
+    }
+
+    public String escapeResource(String uri) {
+        if (isEscaped(uri)) return uri;
+        return new StringBuilder("<").append(uri).append(">").toString();
+    }
+
+    public void readFromEndpoint(String endpoint, String graph) {
+        StringBuilder sb = new StringBuilder("CONSTRUCT {?s ?p ?o}  WHERE { GRAPH <");
+        sb.append(graph);
+        sb.append("> {");
+        sb.append("?s ?p ?o");
+        sb.append("} . }");
+        Query query = QueryFactory.create(sb.toString());
+        log.info("Query: " + sb.toString());
+        QueryExecution exec = QueryExecutionFactory.createServiceRequest(endpoint, query);
+        exec.execConstruct(model);
+    }
+
+    public void readTriplesFromEndpoint(String endpoint, String subject, String predicate, GValue object) {
+
+        if (subject!=null) subject = escapeResource(expand(subject));
+        if (predicate!=null) predicate = escapeResource(expand(predicate));
+
+        StringBuilder sb = new StringBuilder("CONSTRUCT {");
+        sb.append(subject!=null?subject:"?s").append(" ");
+        sb.append(predicate!=null?predicate:"?p").append(" ");
+        sb.append(object!=null?object.toString():"?p").append(" ");
+        sb.append("}  WHERE { ");
+        sb.append(subject!=null?subject:"?s").append(" ");
+        sb.append(predicate!=null?predicate:"?p").append(" ");
+        sb.append(object!=null?object.toString():"?p").append(" ");
+        sb.append(" }");
+        Query query = QueryFactory.create(sb.toString());
+        log.info("Query: " + sb.toString());
+        QueryExecution exec = QueryExecutionFactory.createServiceRequest(endpoint, query);
+        exec.execConstruct(model);
+    }
+
+
+    public void writeToEndpoint(String endpoint, String graph) {
+        StringBuilder sb = new StringBuilder("CREATE SILENT GRAPH <");
+        sb.append(graph);
+        sb.append(">");
+        log.info("Query 1: " + sb.toString());
+        UpdateRequest update = UpdateFactory.create(sb.toString());
+        sb = new StringBuilder("INSERT DATA { GRAPH <");
+        sb.append(graph);
+        sb.append("> {");
+        sb.append(getNTriples());
+        sb.append("}}");
+        log.info("Query 2: " + sb.toString());
+        update.add(sb.toString());
+        UpdateProcessor exec = UpdateExecutionFactory.createRemoteForm(update, endpoint);
+        exec.execute();
+
+    }
+
+
+    public String getNTriples() {
+        StringWriter sw = new StringWriter();
+        model.write(sw, "N-TRIPLE");
+        return sw.toString();
     }
 
     protected void applyNamespaces(Model model) {

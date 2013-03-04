@@ -12,8 +12,7 @@ import com.hp.hpl.jena.util.ResourceUtils;
  * Time: 2:45 PM
  * To change this template use File | Settings | File Templates.
  */
-public class GResource {
-    private Grafeo grafeo;
+public class GResource extends GValue {
     private String uri;
     private Resource resource;
 
@@ -21,16 +20,19 @@ public class GResource {
         this.grafeo = grafeo;
         this.uri = grafeo.expand(uri);
         this.resource = grafeo.model.createResource(this.uri);
-
+        this.value = this.resource;
     }
 
     public GResource(Grafeo grafeo, Resource resource) {
         this.grafeo = grafeo;
         this.resource = resource;
+        this.value = resource;
+
     }
 
     public void rename(String uri) {
         this.resource = ResourceUtils.renameResource(resource, uri);
+        this.value = this.resource;
     }
 
     public Resource getResource() {

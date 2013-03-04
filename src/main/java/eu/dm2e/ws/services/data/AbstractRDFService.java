@@ -61,6 +61,18 @@ public abstract class AbstractRDFService {
 
     }
 
+    protected StreamingOutput getResponseEntity(Model model) {
+        Variant selectedVariant = request.selectVariant(supportedVariants);
+        assert selectedVariant != null;
+        return new RDFOutput(model, selectedVariant.getMediaType());
+
+    }
+
+    protected StreamingOutput getResponseEntity(Grafeo grafeo) {
+        return getResponseEntity(grafeo.getModel());
+
+    }
+
     protected class RDFOutput implements StreamingOutput {
         Logger log = Logger.getLogger(getClass().getName());
         Model model;

@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.util.Date;
 import java.util.logging.Logger;
@@ -54,6 +55,23 @@ public class DataService extends AbstractRDFService {
         return getResponse(g);
     }
 
+    @GET
+    @Path("configurations/{id}")
+    public Response getConfig(@Context UriInfo uriInfo, @PathParam("id") String id) {
+        Grafeo g = new Grafeo();
+        g.readFromEndpoint("http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest", uriInfo.getRequestUri().toString());
+        return getResponse(g);
+    }
+
+    @GET
+    @Path("configurations")
+    public Response getConfig(@Context UriInfo uriInfo) {
+        Grafeo g = new Grafeo();
+        g.readTriplesFromEndpoint("http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest", null, "rdf:type", g.resource("http://example.org/classes/Configuration"));
+        return getResponse(g);
+    }
+
+
     @POST
     @Path("configurations")
     @Consumes(MediaType.WILDCARD)
@@ -62,8 +80,11 @@ public class DataService extends AbstractRDFService {
         // TODO use Exception to return proper HTTP response if input can not be parsed as RDF
         Grafeo g = new Grafeo(input);
         GResource blank = g.findTopBlank();
-        if (blank!=null) blank.rename(uriInfo.getRequestUri() + "/" + new Date().getTime());
-        return getResponse(g);
+        String uri = uriInfo.getRequestUri() + "/" + new Date().getTime();
+        if (blank!=null) blank.rename(uri);
+        g.addTriple(uri,"rdf:type","http://example.org/classes/Configuration");
+        g.writeToEndpoint("http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest/statements", uri);
+        return Response.created(URI.create(uri)).entity(getResponseEntity(g)).build();
     }
 
 }

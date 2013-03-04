@@ -10,8 +10,11 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
  * To change this template use File | Settings | File Templates.
  */
 public class GValue {
-    private RDFNode value;
-    private Grafeo grafeo;
+    protected RDFNode value;
+    protected Grafeo grafeo;
+
+    protected GValue() {
+    }
 
     public GValue(Grafeo grafeo, RDFNode value) {
         this.value = value;
@@ -21,7 +24,8 @@ public class GValue {
 
     @Override
     public String toString() {
-        return value.toString();
+        if (value.isLiteral()) return grafeo.escapeLiteral(value.toString());
+        return grafeo.escapeResource(value.toString());
     }
 
     public GValue get(String uri) {
