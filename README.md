@@ -17,3 +17,9 @@ Test:
 
 - Open http://localhost:9998/data in your browser
 - Triple: <http://localhost/data> <http://purl.org/dc/terms/creator> <http://localhost/kai> should be shown
+
+Post Test:
+
+curl --data "[] <http://purl.org/dc/terms/creator> <http://localhost/kai> ." http://localhost:9998/data/configurations
+
+This should return your RDF data and replace the blank node with a new URI.

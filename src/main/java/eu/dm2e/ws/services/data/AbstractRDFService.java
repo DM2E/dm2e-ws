@@ -4,6 +4,7 @@ package eu.dm2e.ws.services.data;
 import com.hp.hpl.jena.rdf.model.Model;
 import eu.dm2e.ws.grafeo.Grafeo;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
@@ -16,6 +17,7 @@ import java.util.logging.Logger;
 
 
 @Produces({MediaType.TEXT_PLAIN, "application/rdf+xml", "application/x-turtle", "text/turtle", "text/rdf+n3"})
+@Consumes({MediaType.TEXT_PLAIN, "application/rdf+xml", "application/x-turtle", "text/turtle", "text/rdf+n3"})
 public abstract class AbstractRDFService {
 
     public static final String PLAIN = MediaType.TEXT_PLAIN;
