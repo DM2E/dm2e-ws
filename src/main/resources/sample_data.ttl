@@ -1,3 +1,5 @@
-@prefix dc: <http://purl.org/dc/elements/1.1/> .
-@prefix : <http://example.com> .
-:foo :bar "baz" .
+@prefix dm2e: <http://onto.dm2e.eu/> .
+
+[]
+    dm2e:xslStyleSheet <http://141.20.126.155/api/file/5087f01056dd6408690000a9/data> ;
+     dm2e:xmlSource <http://141.20.126.155/api/file/5087efca56dd640869000036/data> .

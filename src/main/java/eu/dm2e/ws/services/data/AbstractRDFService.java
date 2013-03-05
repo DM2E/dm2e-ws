@@ -2,47 +2,79 @@ package eu.dm2e.ws.services.data;
 
 
 import com.hp.hpl.jena.rdf.model.Model;
+import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
-import javax.ws.rs.GET;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
+
+@Produces({MediaType.TEXT_PLAIN, "application/rdf+xml", "application/x-turtle", "text/turtle", "text/rdf+n3"})
+@Consumes({MediaType.TEXT_PLAIN, "application/rdf+xml", "application/x-turtle", "text/turtle", "text/rdf+n3"})
 public abstract class AbstractRDFService {
 
+    public static final String PLAIN = MediaType.TEXT_PLAIN;
+    public static final String XML = "application/rdf+xml";
+    public static final String TTL_A = "application/x-turtle";
+    public static final String TTL_T = "text/turtle";
+    public static final String N3 = "text/rdf+n3";
+
+
     List<Variant> supportedVariants;
+    Map<MediaType, String> mediaType2Language = new HashMap<MediaType, String>();
     @Context
     Request request;
 
+
     protected AbstractRDFService() {
         this.supportedVariants = Variant.mediaTypes(
-                MediaType.valueOf("text/plain"),
-                MediaType.valueOf("application/rdf+xml"),
-                MediaType.valueOf("application/x-turtle"),
-                MediaType.valueOf("text/turtle"),
-                MediaType.valueOf("text/rdf+n3")
+                MediaType.valueOf(PLAIN),
+                MediaType.valueOf(XML),
+                MediaType.valueOf(TTL_A),
+                MediaType.valueOf(TTL_T),
+                MediaType.valueOf(N3)
         ).add().build();
+        mediaType2Language.put(MediaType.valueOf(PLAIN), "N-TRIPLE");
+        mediaType2Language.put(MediaType.valueOf(XML), "RDF/XML");
+        mediaType2Language.put(MediaType.valueOf(TTL_A), "TURTLE");
+        mediaType2Language.put(MediaType.valueOf(TTL_T), "TURTLE");
+        mediaType2Language.put(MediaType.valueOf(N3), "N3");
     }
 
-    abstract protected Model getRDF();
-
-
-    @GET
-    public Response get() {
+    protected Response getResponse(Model model) {
         Variant selectedVariant = request.selectVariant(supportedVariants);
+        assert selectedVariant != null;
 
-        if (selectedVariant != null) {
-            return Response.ok(new RDFOutput(getRDF(), selectedVariant.getMediaType()), selectedVariant.getMediaType()).build();
-        } else {
-            return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build();
-        }
+        return Response.ok(new RDFOutput(model, selectedVariant.getMediaType()), selectedVariant.getMediaType()).build();
 
     }
 
-    class RDFOutput implements StreamingOutput {
+    protected Response getResponse(Grafeo grafeo) {
+        return getResponse(((GrafeoImpl)grafeo).getModel());
+
+    }
+
+    protected StreamingOutput getResponseEntity(Model model) {
+        Variant selectedVariant = request.selectVariant(supportedVariants);
+        assert selectedVariant != null;
+        return new RDFOutput(model, selectedVariant.getMediaType());
+
+    }
+
+    protected StreamingOutput getResponseEntity(Grafeo grafeo) {
+        return getResponseEntity(((GrafeoImpl) grafeo).getModel());
+
+    }
+
+    protected class RDFOutput implements StreamingOutput {
         Logger log = Logger.getLogger(getClass().getName());
         Model model;
         MediaType mediaType;
@@ -54,20 +86,8 @@ public abstract class AbstractRDFService {
 
         @Override
         public void write(OutputStream output) throws IOException, WebApplicationException {
-            String lang = null;
-            String mt = this.mediaType.getType() + "/" + mediaType.getSubtype();
-            log.info("Mediatype: " + mt);
-            if (mt.equals("application/rdf+xml")) {
-                lang = "RDF/XML";
-            } else if (mt.contains("turtle")) {
-                lang = "TURTLE";
-            } else if (mt.contains("n3")) {
-                lang = "N3";
-            } else {
-                lang = "N-TRIPLE";
-            }
-            model.setNsPrefix("dct","http://purl.org/dc/terms/");
-            model.write(output, lang);
+            log.fine("Mediatype: " + this.mediaType);
+            model.write(output, mediaType2Language.get(this.mediaType));
         }
     }
 
