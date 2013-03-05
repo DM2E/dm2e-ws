@@ -42,4 +42,8 @@ public interface Grafeo {
     void writeToEndpoint(String endpoint, String graph);
 
     String getNTriples();
+
+    GLiteral now();
+
+    GLiteral date(Long timestamp);
 }

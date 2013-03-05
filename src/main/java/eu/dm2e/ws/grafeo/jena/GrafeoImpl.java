@@ -4,10 +4,7 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.ResIterator;
-import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.update.UpdateExecutionFactory;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateProcessor;
@@ -22,8 +19,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -246,6 +242,19 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 
     }
 
+    @Override
+    public GLiteral now() {
+        return date(new Date().getTime());
+    }
+
+
+    @Override
+    public GLiteral date(Long timestamp) {
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.setTimeInMillis(timestamp);
+        Literal value = model.createTypedLiteral(cal);
+        return new GLiteralImpl(this,value);
+    }
 
     @Override
     public String getNTriples() {
@@ -283,5 +292,10 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         namespaces.put("geo", "http://www.w3.org/2003/01/geo/wgs84_pos#");
         namespaces.put("sioc", "http://rdfs.org/sioc/ns#");
         namespaces.put("oo", "http://purl.org/openorg/");
+        namespaces.put("void", "http://rdfs.org/ns/void#");
+        namespaces.put("edm", "http://www.europeana.eu/schemas/edm/");
+        namespaces.put("ore", "http://www.openarchives.org/ore/terms/");
+
+
     }
 }

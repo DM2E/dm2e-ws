@@ -84,7 +84,7 @@ public class GStatementImpl extends JenaImpl implements GStatement {
             return getGrafeoImpl(grafeo).getModel().createStatement(
                     getGResourceImpl(subject).getResource(),
                     getGrafeoImpl(grafeo).getModel().createProperty(predicate.getUri()),
-                    literalValue.getValue()
+                    getGLiteralImpl(literalValue).getLiteral()
             );
         } else {
             return getGrafeoImpl(grafeo).getModel().createStatement(

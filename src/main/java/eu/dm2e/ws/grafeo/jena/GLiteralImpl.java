@@ -30,10 +30,12 @@ public class GLiteralImpl extends GValueImpl implements GLiteral {
 
     @Override
     public String getValue() {
-        return literal.getString();
+        return literal.getLexicalForm();
     }
 
-
+    public Literal getLiteral() {
+        return literal;
+    }
 
     @Override
     public Grafeo getGrafeo() {
