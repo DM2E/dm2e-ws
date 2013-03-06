@@ -2,3 +2,6 @@ target
 bin
 dm2e-ws.iml
 .idea
+.project
+.settings
+.classpath
