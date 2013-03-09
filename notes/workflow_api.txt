@@ -1,0 +1,147 @@
+# Notation
+# ========
+#
+# The examples and definitions are written in the Turtle notation.
+#
+# The following prefixes are used in the examples
+
+@prefix dm2e: <http://onto.dm2e.eu/onto#> .
+@prefix dm2e_types: <http://onto.dm2e.eu/types#> .
+@prefix omnom: <http://omnom.dm2e.eu/> .
+@prefix xslt_service: <http://omnom.dm2e.eu/service/xslt#> .
+
+# To make things more readable, they are used as QNames where the entity
+# contains slashs which is invalid Turtle but easier to write, i.e.
+
+<http://omnom.dm2e.eu/workflow/1> ==> omnom:workflow/1
+
+# UUID[n] means that the client can set this to an arbitrary string such as a UUID
+
+
+# Resources
+# =========
+
+# File
+# ----
+# A file is a resource that contains metadata and file data
+#
+# GETting a file with an Accept header of any of the dm2e-type:RDF related
+# content types gives the metadata
+#
+# To get the file data, a request MUST NOT contain an Accept header
+#
+# It is valid for a file to contain metadata but not file data. (==> 404 on the file data)
+#
+# It is valid for a file to contain metadata but not file data yet: In this
+# case a web service has registered a file to be uploaded at some point but
+# hasn't done so yet (==> 409)
+
+# WebService
+# ----------
+# A Web Service
+
+# Workflow
+# --------
+#
+# A workflow is a collection of slots containing a link to a web resource and a config
+#
+# A workflow can have dm2e:WebServiceParameters which can be used in slots
+
+# Job
+# ---
+
+
+# The XSLT web service
+# --------------------
+# http://omnom.dm2e.eu/service/xslt
+
+# GET http://omnom.dm2e.eu/service/xslt
+# ==> 200 OK
+	<http://omnom.dm2e.eu/service/xslt>
+		a dm2e:WebService ;
+		dm2e:hasParam xslt_service:xmlSource ;
+		dm2e:hasParam xslt_service:xsltSource ;
+        dm2e:hasParam xslt_service:xmlTarget .
+	xslt_service:xmlSource
+		a dm2e:InputParam ;
+        dm2e:paramName "xmlSource" ;
+		owl:minCardinality 1 ;
+        rdfs:range rdfs:Class;
+        dm2e:ofType dm2e:types:XML .
+	xslt_service:xsltSource
+		a dm2e:InputParam ;
+        dm2e:paramName "xsltSource" ;
+		owl:minCardinality 1 ;
+        rdfs:range rdfs:Class ;
+        dm2e:ofType dm2e:types:XSLT .
+	xslt_service:xmlTarget
+		a dm2e:OutputParam ;
+        dm2e:paramName "xmlTarget" ;
+		owl:minCardinality 1 ;
+        rdfs:range rdfs:Class ;
+        dm2e:ofType dm2e:types:XML .
+
+# Creating a workflow
+# ===================
+
+# Create the workflow
+# $ cat myworkflow.ttl
+	[]	a dm2e:Workflow ;
+		rdfs:label "Basic XML transformation workflow" ;
+        dm2e:hasParam [
+            dm2e:paramName "xmlSource" ;
+            rdfs:range rdfs:Class ;
+            dm2e:ofType dm2e_types:XML .
+        ] .
+# POST /workflow
+#   200 OK
+	omnom:workflow/1	a dm2e:Workflow ;
+        ...
+
+# Get/Set workflow parameters
+# GET /workflow/1/param/xmlSource
+#   ==> 204
+# PUT "http://foo.bar" /workflow/1/param/xmlSource
+#   ==> 200
+# GET /workflow/1/param/xmlSource
+#   ==> 200
+    http://foo.bar
+
+
+
+# IGNORE # Create a configuration for the XSLT Web Service
+# IGNORE # $ cat xslt_config1.ttl
+# IGNORE     [] a dm2e:WebServiceConfig ;
+# IGNORE     rdfs:label "XML->XSLT->XML Transformation Step" ;
+# IGNORE     dm2e:hasWebService omnom:service/xslt ;
+# IGNORE     xslt_service:xmlSource omnom:workflow/1/param/xmlSource ;
+# IGNORE     xslt_service:xsltSource <http://example.org/example.xsl> .
+# IGNORE 
+# IGNORE # POST xslt_config1.ttl /publish
+# IGNORE # ==> 200 OK
+# IGNORE     omnom:config/1  a dm2e:WebServiceConfig ;
+# IGNORE     ...
+
+# Create a slot for the service at position 0
+# $ cat myworkflow_slot_xslt.ttl
+	[]	a dm2e:WorkflowSlot ;
+	    a dm2e:WebServiceConfig ;
+	    rdfs:label "XML is transformed ..."
+	    dm2e:slotPosition 0 ;
+        dm2e:hasWebService omnom:service/xslt ;     # this is used to map to parameter names
+        xslt_service:xmlSource omnom:workflow/1/param/xmlSource ;
+        xslt_service:xsltSource <http://example.org/example.xsl> .
+# Insert it into the workflow
+# POST myworkflow_slot_xslt.ttl /workflow/1/slot
+	omnom:workflow/1/slot/0 a dm2e:WorkflowSlot ;
+        ...
+
+# Get the parameter values
+# GET /workflow/1/slot/0/param/xsltSource
+    http://example.org/example.xsl
+# Change a parameter value
+# PUT "FOO" /workflow/1/slot/0/param/xsltSource
+    FOO
+# Change it using PATCH on the slot
+# PATCH '[] xslt_service:xsltSource "BAR" .' /workflow/1/slot/0
+    BAR

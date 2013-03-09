@@ -32,6 +32,17 @@ public abstract class AbstractRDFService {
 	Map<MediaType, String> mediaType2Language = new HashMap<MediaType, String>();
 	@Context
 	Request request;
+	@Context
+	protected UriInfo uriInfo;
+	@Context 
+	protected HttpHeaders headers;
+
+	protected String getRequestUriString() {
+		String str =  uriInfo.getRequestUri().toString();
+		// remove query string
+		str = str.replaceFirst("\\?.*$", "");
+		return str;
+	}
 
 	protected AbstractRDFService() {
 		this.supportedVariants = Variant
@@ -89,5 +100,4 @@ public abstract class AbstractRDFService {
 			model.write(output, mediaType2Language.get(this.mediaType));
 		}
 	}
-
 }
