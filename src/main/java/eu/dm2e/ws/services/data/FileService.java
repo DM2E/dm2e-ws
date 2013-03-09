@@ -39,6 +39,7 @@ public class FileService extends AbstractRDFService {
 
 	private static final String STORAGE_ENDPOINT = "http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest/statements";
 	private static final String WS_ENDPOINT = "http://localhost:9998/file";
+	private static final String NS_DM2E = "http://onto.dm2e.eu/onto#";
 
 	/**
 	 * A file can be uploaded and/or meta-data for the/a file can be saved to
@@ -86,14 +87,10 @@ public class FileService extends AbstractRDFService {
 				IOUtils.copy(filePart.getValueAs(InputStream.class),
 						new FileOutputStream(f));
 				// TODO add right predicates here
-				g.addTriple(uri, "dct:format", filePart.getMediaType()
-						.toString());
-				g.addTriple(uri, "http://dm2e.eu/terms/original_name", filePart
-						.getContentDisposition().getFileName());
-				g.addTriple(uri, "http://dm2e.eu/terms/file_retrival_uri",
-						WS_ENDPOINT + "/get?uri=" + uri);
-				g.addTriple(uri, "http://dm2e.eu/terms/file_location",
-						f.getAbsolutePath());
+				g.addTriple(uri, "dct:format", filePart.getMediaType().toString());
+				g.addTriple(uri, "dm2e:original_name", filePart.getContentDisposition().getFileName());
+				g.addTriple(uri, "dm2e:file_retrival_uri", WS_ENDPOINT + "/get?uri=" + uri);
+				g.addTriple(uri, "dm2e:file_location", f.getAbsolutePath());
 			} catch (Exception e) {
 				// TODO return something senseful
 				throw new RuntimeException("Could not save file.");
