@@ -81,7 +81,7 @@ public class FileService extends AbstractRDFService {
 		final FormDataBodyPart filePart = formDataMultiPart.getField("file");
 		if (filePart != null && !filePart.isSimple()) {
 			// TODO think about where to store
-			File f = new File(String.valueOf(new Date().getTime()));
+			File f = new File("files/upload_" + String.valueOf(new Date().getTime()));
 			try {
 				IOUtils.copy(filePart.getValueAs(InputStream.class),
 						new FileOutputStream(f));
