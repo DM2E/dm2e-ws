@@ -295,6 +295,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         namespaces.put("void", "http://rdfs.org/ns/void#");
         namespaces.put("edm", "http://www.europeana.eu/schemas/edm/");
         namespaces.put("ore", "http://www.openarchives.org/ore/terms/");
+        namespaces.put("dm2e", "http://onto.dm2e.eu/onto#");
 
 
     }
