@@ -1,13 +1,18 @@
 package eu.dm2e.ws.services.data;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.Date;
+import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -16,12 +21,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.apache.commons.io.IOUtils;
 
+import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
+import com.sun.jersey.multipart.FormDataParam;
 
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
@@ -37,9 +43,14 @@ import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 @Path("/file")
 public class FileService extends AbstractRDFService {
 
-	private static final String STORAGE_ENDPOINT = "http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest/statements";
+	private static final String STORAGE_ENDPOINT = "http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest";
+	private static final String STORAGE_ENDPOINT_STATEMENTS = "http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest/statements";
 	private static final String WS_ENDPOINT = "http://localhost:9998/file";
 	private static final String NS_DM2E = "http://onto.dm2e.eu/onto#";
+	private static final String PROP_DM2E_FILE_RETRIEVAL_URI = NS_DM2E + "file_retrieval_uri";
+	private static final String PROP_DM2E_FILE_LOCATION = NS_DM2E + "file_location";
+
+	Logger log = Logger.getLogger(getClass().getName());
 
 	/**
 	 * A file can be uploaded and/or meta-data for the/a file can be saved to
@@ -56,51 +67,81 @@ public class FileService extends AbstractRDFService {
 	 *         service are returned.
 	 */
 	@POST
-	@Path("upload")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public Response uploadFile(final FormDataMultiPart formDataMultiPart) {
+	public Response uploadFile(@FormDataParam("meta") FormDataBodyPart metaPart,
+			@FormDataParam("meta") FormDataContentDisposition metaDisposition,
+			@FormDataParam("file") FormDataBodyPart filePart,
+			@FormDataParam("file") FormDataContentDisposition fileDisposition) {
 
-		if (formDataMultiPart == null) {
-			// TODO throw exception
+		// Sanity check
+		if (filePart == null && metaPart == null) {
+			return throwServiceError("Can't add a file witout 'meta' and/or 'file' field.");
 		}
-		Grafeo g = null;
 
-		final FormDataBodyPart metaPart = formDataMultiPart.getField("meta");
-		if (metaPart != null && metaPart.isSimple()) {
-			g = new GrafeoImpl(metaPart.getValue(), null);
+		// parse meta data
+		GrafeoImpl g = null;
+		if (metaPart != null) {
+			File metaRaw = metaPart.getValueAs(File.class);
+			try {
+				g = new GrafeoImpl(metaRaw);
+			} catch (Exception e) {
+				return throwServiceError(e);
+			}
 		}
 		if (g == null) {
 			g = new GrafeoImpl();
 		}
-		String uri = "";
-		if (g.findTopBlank() == null) {
-			uri = "http://data.dm2e.eu/file/fromWS/" + new Date().getTime();
-		} else {
-			uri = g.findTopBlank().getUri();
+
+		String uri = "http://data.dm2e.eu/file/fromWS/" + new Date().getTime();
+		// rename top blank node to the uri
+		if (g.findTopBlank() != null) {
+			g.findTopBlank().rename(uri);
+		}
+		// create retrieval URI (make sure this matches the paths for the @GET
+		// method below
+		URI fileRetrievalUri;
+		try {
+			fileRetrievalUri = new URI(WS_ENDPOINT + "/get?uri=" + uri);
+		} catch (URISyntaxException e) {
+			return throwServiceError(e);
 		}
 
-		final FormDataBodyPart filePart = formDataMultiPart.getField("file");
-		if (filePart != null && !filePart.isSimple()) {
-			// TODO think about where to store
-			File f = new File("files/upload_" + String.valueOf(new Date().getTime()));
-			try {
-				IOUtils.copy(filePart.getValueAs(InputStream.class),
-						new FileOutputStream(f));
-				// TODO add right predicates here
-				g.addTriple(uri, "dct:format", filePart.getMediaType().toString());
-				g.addTriple(uri, "dm2e:original_name", filePart.getContentDisposition().getFileName());
-				g.addTriple(uri, "dm2e:file_retrival_uri", WS_ENDPOINT + "/get?uri=" + uri);
-				g.addTriple(uri, "dm2e:file_location", f.getAbsolutePath());
-			} catch (Exception e) {
-				// TODO return something senseful
-				throw new RuntimeException("Could not save file.");
+		if (filePart == null) {
+			// if the file part is null, make sure that a
+			// dm2e:file_retrieval_uri is provided in meta
+			if (!g.containsStatementPattern(uri, PROP_DM2E_FILE_RETRIEVAL_URI, "?o")) {
+				return throwServiceError("If no 'file' is set, <" + PROP_DM2E_FILE_RETRIEVAL_URI
+						+ "> is REQUIRED in 'meta'.");
 			}
 		} else {
-			// we need to check if the path for the file is set
+			// store the file
+			// TODO think about where to store
+			InputStream fileInStream = filePart.getValueAs(InputStream.class);
+			File f = new File("files/upload_" + String.valueOf(new Date().getTime()));
+			try {
+				IOUtils.copy(fileInStream, new FileOutputStream(f));
+			} catch (IOException e) {
+				return throwServiceError(e);
+			}
+
+			// store file-based/implicit metadata
+			// TODO add right predicates here
+			if (!filePart.isSimple()) {
+				// these are only available if this is a file field not just a
+				// form field
+				g.addTriple(uri, "dm2e:original_name", g.literal(fileDisposition.getFileName()));
+				g.addTriple(uri, "dm2e:file_size", "" + g.literal(""+fileDisposition.getSize()));
+				g.addTriple(uri, "dm2e:file_retrival_uri", fileRetrievalUri.toString());
+			}
+			g.addTriple(uri, "dct:format", g.literal(filePart.getMediaType().toString()));
+			g.addTriple(uri, "dm2e:file_location", g.literal(f.getAbsolutePath()));
 		}
-		g.writeToEndpoint(STORAGE_ENDPOINT, uri);
-		return getResponse(g);
+
+		g.writeToEndpoint(STORAGE_ENDPOINT_STATEMENTS, uri);
+		return Response.created(fileRetrievalUri).entity(getResponseEntity(g)).build();
 	}
+
+
 
 	/**
 	 * Returns the metadata of a file identified by the given uri as RDF.
@@ -110,7 +151,11 @@ public class FileService extends AbstractRDFService {
 	 * @return all stored meta-data about the file
 	 */
 	@GET
-	@Path("get/meta")
+	@Path("meta")
+//	@Consumes({ "text/n3+rdf", "text/turtle", "application/x-turtle", "application/rdf+xml",
+//			"application/rdf-triples" })
+//	@Produces({ "text/n3+rdf", "text/turtle", "application/x-turtle", "application/rdf+xml",
+//			"application/rdf-triples" })
 	public Response getFileDataByUri(@QueryParam(value = "uri") String uri) {
 		try {
 			uri = URLDecoder.decode(uri, "utf8");
@@ -128,38 +173,56 @@ public class FileService extends AbstractRDFService {
 	 * Returns the file. If the file is not stored by the file storage the
 	 * request is redirected. Otherwise the internal file is returned directly.
 	 * 
-	 * @param uri the identifier of the file.
+	 * @param uri
+	 *            the identifier of the file.
 	 * @return the file or redirected to the location of the file.
 	 */
 	@GET
 	@Path("get")
-	public Response getFile(@QueryParam(value = "uri") String uri) {
+	public Response getFile(@QueryParam("uri") String uri) {
 
 		try {
 			uri = URLDecoder.decode(uri, "utf8");
 		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException("An exception occurred: " + e, e);
+			return throwServiceError(e);
+			// throw new RuntimeException("An exception occurred: " + e, e);
 		}
-		Grafeo g = new GrafeoImpl();
-		g.readTriplesFromEndpoint(STORAGE_ENDPOINT, uri,
-				"http://dm2e.eu/terms/file_location", null);
-		// TODO get the path out of the
-		String path = "";
+		
+		// create model from graph at uri
+		GrafeoImpl g = new GrafeoImpl();
+		g.readFromEndpoint(STORAGE_ENDPOINT, uri);
+		
+		String path = g.firstMatchingObject(uri, PROP_DM2E_FILE_LOCATION).toString();
+		String contentType = g.firstMatchingObject(uri, "dct:format").toString();
+		String originalName = g.firstMatchingObject(uri, "dm2e:original_name").toString();
+		log.info(path);
 
-		ResponseBuilder response = null;
 		if (path.startsWith("http")) {
 			// redirect
+			URI pathUri;
 			try {
-				response = Response.temporaryRedirect(new URI(path));
+				pathUri = new URI(path);
 			} catch (URISyntaxException e) {
-				throw new RuntimeException("An exception occurred: " + e, e);
+				return throwServiceError(e);
 			}
-		} else {
-			File f = new File(path);
-			response = Response.ok((Object) f);
-			response.header("Content-Disposition", "attachment");
+			return Response.temporaryRedirect(pathUri).build();
 		}
-		return response.build();
+		else if (path.startsWith("file")) {
+			path = path.replaceAll("^file:[/]+?/","");
+		}
+		log.info(path);
+		FileInputStream fis;
+		try {
+			fis = new FileInputStream(path);
+		} catch (FileNotFoundException e) {
+			log.info(e.toString());
+			return Response.status(404).entity("File '" + path + "' not found on the server. " + e.toString()).build();
+		}
+		return Response
+				.ok(fis)
+				.header("Content-Type", contentType)
+				.header("Content-Disposition", "attachment; filename=" + originalName)
+				.build();
 	}
 
 }
