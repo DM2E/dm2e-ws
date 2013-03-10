@@ -36,7 +36,18 @@ public abstract class AbstractRDFService {
 	protected UriInfo uriInfo;
 	@Context 
 	protected HttpHeaders headers;
+	
+	public Response throwServiceError(String msg, int status) {
+		return Response.status(status).entity(msg).build();
+	}
+	public Response throwServiceError(String msg) {
+		return throwServiceError(msg, 400);
+	}
+	public Response throwServiceError(Exception e) {
+		return throwServiceError(e.toString(), 400);
+	}
 
+	// TODO check if there is a function in uriInfo to do the same
 	protected String getRequestUriString() {
 		String str =  uriInfo.getRequestUri().toString();
 		// remove query string
