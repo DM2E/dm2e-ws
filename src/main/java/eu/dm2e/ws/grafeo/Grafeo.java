@@ -1,5 +1,10 @@
 package eu.dm2e.ws.grafeo;
 
+import com.hp.hpl.jena.query.ResultSet;
+
+import eu.dm2e.ws.grafeo.jena.GLiteralImpl;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+
 
 /**
  * Created with IntelliJ IDEA.
@@ -46,4 +51,14 @@ public interface Grafeo {
     GLiteral now();
 
     GLiteral date(Long timestamp);
+    
+	boolean executeSparqlAsk(String queryString);
+
+	boolean containsStatementPattern(String s, String p, String o);
+	
+	boolean containsStatementPattern(String s, String p, GLiteral o);
+	
+	ResultSet executeSparqlSelect(String queryString);
+
+	Grafeo executeSparqlConstruct(String queryString);
 }

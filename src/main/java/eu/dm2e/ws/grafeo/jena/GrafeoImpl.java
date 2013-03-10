@@ -4,6 +4,7 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.update.UpdateExecutionFactory;
 import com.hp.hpl.jena.update.UpdateFactory;
@@ -30,6 +31,8 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 	private Logger log = Logger.getLogger(getClass().getName());
 	protected Model model;
 	protected Map<String, String> namespaces = new HashMap<String, String>();
+	
+	public static String SPARQL_CONSTRUCT_EVERYTHING = "CONSTRUCT { ?s ?p ?o } WHERE { { GRAPH ?g { ?s ?p ?o } } UNION { ?s ?p ?o } }";
 
 	public GrafeoImpl() {
 		this(ModelFactory.createDefaultModel());
@@ -253,11 +256,11 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		StringBuilder sb = new StringBuilder("CONSTRUCT {");
 		sb.append(subject != null ? subject : "?s").append(" ");
 		sb.append(predicate != null ? predicate : "?p").append(" ");
-		sb.append(object != null ? object.toString() : "?p").append(" ");
+		sb.append(object != null ? object.toString() : "?o").append(" ");
 		sb.append("}  WHERE { ");
 		sb.append(subject != null ? subject : "?s").append(" ");
 		sb.append(predicate != null ? predicate : "?p").append(" ");
-		sb.append(object != null ? object.toString() : "?p").append(" ");
+		sb.append(object != null ? object.toString() : "?o").append(" ");
 		sb.append(" }");
 		Query query = QueryFactory.create(sb.toString());
 		log.info("Query: " + sb.toString());
@@ -315,6 +318,50 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 	public Model getModel() {
 		return model;
 
+	}
+	
+	public boolean executeSparqlAsk(String queryString) {
+	    Query query = QueryFactory.create(queryString);
+	    QueryExecution qe = QueryExecutionFactory.create(query, model);
+	    return  qe.execAsk();
+	}
+
+	public boolean containsStatementPattern(String s, String p, String o) {
+		s = s.startsWith("?") ? s : "<" + expand(s) + ">";
+		p = p.startsWith("?") ? p : "<" + expand(p) + ">";
+		o = o.startsWith("?") ? o : "<" + expand(o) + ">";
+		String queryString = String.format("ASK { %s %s %s }", s, p, o);
+		log.info(queryString);
+		return executeSparqlAsk(queryString);
+	}
+	
+	public boolean containsStatementPattern(String s, String p, GLiteral o) {
+		s = s.startsWith("?") ? s : "<" + expand(s) + ">";
+		p = p.startsWith("?") ? p : "<" + expand(p) + ">";
+		String queryString = String.format("ASK { %s %s %s }", s, p, o.getValue());
+		return executeSparqlAsk(queryString);
+	}
+	
+	public ResultSet executeSparqlSelect(String queryString) {
+	    log.info("SELECT query: " + queryString);
+	    Query query = QueryFactory.create(queryString);
+	    QueryExecution qe = QueryExecutionFactory.create(query, model);
+	    return qe.execSelect();
+	}
+	
+	public GrafeoImpl executeSparqlConstruct(String queryString) {
+	    Query query = QueryFactory.create(queryString);
+	    QueryExecution qe = QueryExecutionFactory.create(query, model);
+	    return new GrafeoImpl(qe.execConstruct());
+	}
+	
+	public RDFNode firstMatchingObject(String s, String p) {
+		s = s.startsWith("?") ? s : "<" + expand(s) + ">";
+		p = p.startsWith("?") ? p : "<" + expand(p) + ">";
+		ResultSet iter = this.executeSparqlSelect(String.format("SELECT ?o { %s %s ?o } LIMIT 1", s, p));
+		if (! iter.hasNext())
+			return null; 
+		return iter.next().get("?o");
 	}
 
 	protected void initDefaultNamespaces() {
