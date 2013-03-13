@@ -308,6 +308,12 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		model.write(sw, "N-TRIPLE");
 		return sw.toString();
 	}
+	
+	@Override
+	public long size() {
+		return model.size();
+	}
+
 
 	protected void applyNamespaces(Model model) {
 		for (String prefix : namespaces.keySet()) {
@@ -320,12 +326,14 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 
 	}
 	
+	@Override
 	public boolean executeSparqlAsk(String queryString) {
 	    Query query = QueryFactory.create(queryString);
 	    QueryExecution qe = QueryExecutionFactory.create(query, model);
 	    return  qe.execAsk();
 	}
 
+	@Override
 	public boolean containsStatementPattern(String s, String p, String o) {
 		s = s.startsWith("?") ? s : "<" + expand(s) + ">";
 		p = p.startsWith("?") ? p : "<" + expand(p) + ">";
@@ -335,6 +343,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		return executeSparqlAsk(queryString);
 	}
 	
+	@Override
 	public boolean containsStatementPattern(String s, String p, GLiteral o) {
 		s = s.startsWith("?") ? s : "<" + expand(s) + ">";
 		p = p.startsWith("?") ? p : "<" + expand(p) + ">";
@@ -342,6 +351,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		return executeSparqlAsk(queryString);
 	}
 	
+	@Override
 	public ResultSet executeSparqlSelect(String queryString) {
 	    log.info("SELECT query: " + queryString);
 	    Query query = QueryFactory.create(queryString);
@@ -349,10 +359,19 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 	    return qe.execSelect();
 	}
 	
+	@Override
 	public GrafeoImpl executeSparqlConstruct(String queryString) {
 	    Query query = QueryFactory.create(queryString);
 	    QueryExecution qe = QueryExecutionFactory.create(query, model);
 	    return new GrafeoImpl(qe.execConstruct());
+	}
+	
+	@Override
+	public boolean containsResource(String g) {
+		String gUri = expand(g);
+		if (model.containsResource(model.getResource(gUri)))
+			return true;
+		return false;
 	}
 	
 	public RDFNode firstMatchingObject(String s, String p) {
@@ -363,7 +382,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 			return null; 
 		return iter.next().get("?o");
 	}
-
+	
 	protected void initDefaultNamespaces() {
 		// TODO: Put this in a config file (kai)
 		namespaces.put("foaf", "http://xmlns.com/foaf/0.1/");

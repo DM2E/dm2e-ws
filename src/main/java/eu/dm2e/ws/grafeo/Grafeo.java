@@ -47,6 +47,8 @@ public interface Grafeo {
     void writeToEndpoint(String endpoint, String graph);
 
     String getNTriples();
+    
+    long size();
 
     GLiteral now();
 
@@ -57,6 +59,8 @@ public interface Grafeo {
 	boolean containsStatementPattern(String s, String p, String o);
 	
 	boolean containsStatementPattern(String s, String p, GLiteral o);
+	
+	boolean containsResource(String g);
 	
 	ResultSet executeSparqlSelect(String queryString);
 
