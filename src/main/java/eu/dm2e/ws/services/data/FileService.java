@@ -13,6 +13,7 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.Date;
 import java.util.logging.Logger;
+import java.util.UUID;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -29,6 +30,7 @@ import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
 import com.sun.jersey.multipart.FormDataParam;
 
+import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
@@ -92,7 +94,7 @@ public class FileService extends AbstractRDFService {
 			g = new GrafeoImpl();
 		}
 
-		String uri = "http://data.dm2e.eu/file/fromWS/" + new Date().getTime();
+		String uri = "http://data.dm2e.eu/file/fromWS/" + new Date().getTime() + "" + UUID.randomUUID().toString();
 		// rename top blank node to the uri
 		if (g.findTopBlank() != null) {
 			g.findTopBlank().rename(uri);
@@ -140,6 +142,27 @@ public class FileService extends AbstractRDFService {
 		g.writeToEndpoint(STORAGE_ENDPOINT_STATEMENTS, uri);
 		return Response.created(fileRetrievalUri).entity(getResponseEntity(g)).build();
 	}
+	
+	/**
+	 * Decides whether to fire the get method for file data or metadata.
+	 * 
+	 * @param uri
+	 * @return
+	 */
+	@GET
+	public Response getFileByUri(@QueryParam("uri") String uri) {
+		
+		// uri is required
+		if (null == uri)
+			return Response.status(400).entity("Must provide 'uri' query parameter").build();
+		
+		// if the accept header is a RDF type, send metadata, otherwise data
+		if (DM2E_MediaType.isRdfRequest(headers)) {
+			return getFileMetaDataByUri(uri);
+		} else {
+			return getFileByUri(uri);
+		}
+	}
 
 
 
@@ -152,18 +175,21 @@ public class FileService extends AbstractRDFService {
 	 */
 	@GET
 	@Path("meta")
-//	@Consumes({ "text/n3+rdf", "text/turtle", "application/x-turtle", "application/rdf+xml",
-//			"application/rdf-triples" })
-//	@Produces({ "text/n3+rdf", "text/turtle", "application/x-turtle", "application/rdf+xml",
-//			"application/rdf-triples" })
-	public Response getFileDataByUri(@QueryParam(value = "uri") String uri) {
+	public Response getFileMetaDataByUri(@QueryParam(value = "uri") String uri) {
 		try {
 			uri = URLDecoder.decode(uri, "utf8");
 		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException("An exception occurred: " + e, e);
+			return throwServiceError(e);
 		}
 		Grafeo g = new GrafeoImpl();
-		g.readFromEndpoint(STORAGE_ENDPOINT, uri);
+		try {
+			g.readFromEndpoint(STORAGE_ENDPOINT, uri);
+		} catch (Exception e) {
+			return throwServiceError(e);
+		}
+		if (! g.containsResource(uri)) {
+			return Response.status(404).entity("No such file in the triplestore.").build();
+		}
 		// TODO we need a link to the "get" ws where the file can be retrieved
 		// from because the internal information is not really useful
 		return getResponse(g);

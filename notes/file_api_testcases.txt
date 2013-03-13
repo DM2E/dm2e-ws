@@ -1,0 +1,119 @@
+The following use cases of the file API need testing:
+* Uploading a file
+
+	> POST /file
+	> Content-Type: multipart/form-data
+	>
+	> meta-part
+	>	<http://skolemized.blank.node> a dm2e:File ;
+	>		dm2e:resourceType dm2e_types:XMLSyntax ;
+	> file-part
+	>	<tei>....</tei>
+	
+	meta-part can be a simple form value (String) or a file upload
+	file-part can be a simple form value (String) or a file upload
+	
+	- if only meta-part and meta-part is invalid RDF
+		==> 400 (bad RDF)
+	- if only meta-part and dm2e:file_retrieval_uri is invalid or missing
+		==> 400 (missing or invalid dm2e:file_retrieval_uri
+	- if only meta-part and dm2e:file_retrieval_uri is a blank node, 
+	  then a provisionary file_retrieval_uri will be set to be uploaded 
+	  when the data is ready
+		==> 201
+		< Location: http://skolemized.top.blank.node
+		<
+		<	<http://skolemized.top.blank.node> a dm2e:File ;
+		<		dm2e:lastModified "2013-03-03T08:08:08Z" ;
+		<		dm2e:file_retrieval_uri <http://localhost/file/12321321321321321>
+		<		dm2e:fileStatus "WAITING" ;
+	- if only file-part	
+		==> 201
+		< Location: http://skolemized.top.blank.node
+		<
+		<	<http://skolemized.top.blank.node> a dm2e:File ;
+		<		dm2e:lastModified "2013-03-03T08:08:08Z" ;
+		<		dm2e:file_retrieval_uri <http://localhost/file/12321321321321321>
+		<		dm2e:fileStatus "AVAILABLE" ;
+	- if both file-part and meta-part
+		- if dm2e:file_retrieval_uri is set to something other than a blank node
+		  ALTERNATIVE: Remove possibly conflicting statements from the input model (status, lastModified, retrieval_uri etc.)
+			==> 400 (file_retrieval_uri in meta-part conflicts with file upload)
+		- else:
+			==> 201
+			< Location: http://skolemized.top.blank.node
+			<
+			<	<http://skolemized.top.blank.node> a dm2e:File ;
+			<		dm2e:lastModified "2013-03-03T08:08:08Z" ;
+			<		dm2e:file_retrieval_uri <http://localhost/file/12321321321321321>
+			<		dm2e:fileStatus "AVAILABLE" ;
+		
+* Registering file metadata
+
+* Retrieving a file
+	> GET /file?uri=http://foo
+	> Accept: */* [anything that is not a RDF media type]
+	
+	- if the URI is invalid
+		==> 400 (Invalid URI)
+	- if the file exists
+		==> 200
+		< Content-Type: application/xml
+		<
+		< <tei>...</tei>
+	- if the file was deleted (according to metadata)
+		==> 410
+	- if the file is not found
+		==> 404
+
+* Retrieving a file's metadata
+	> GET /file?uri=http:foo
+	> Accept: text/turtle [anything that is a RDF media type]
+	
+	- if the URI is invalid
+		==> 400
+		< "Invalid URI"	
+	- if there is no such file (i.e. no such graph in the 3plestore
+		==> 404
+	- if it is found
+		==> 200
+		< Content-Type: text/turtle
+		<
+		< <http://foo> a dm2e:File
+
+* Deleting a file
+	> DELETE /file?uri=http://foo
+	> If-Unmodified-Since: Sat, 04 Mar 2013 01:01:01 GMT
+	
+	- if the URI is invalid
+		==> 400
+		< "Invalid URI"	
+	- if the file exists:
+		==> 204
+		[ update metadata to reflect that this file was explicitly deleted ]
+		[ afterwards a GET on the file without RDF content type should return 410 Gone ]
+	- if the file is not known:
+		==> 404
+	- if the file is not available yet
+		==> 409
+
+* Replacing a file
+	> PUT /file?uri=http://foo.bar
+	> Accept: */* [anything that is not a RDF media type]
+	> If-Unmodified-Since: Sat, 04 Mar 2013 01:01:01 GMT
+	>
+	> <xml> ... </xml>
+	
+* Replacing file metadata
+	> PUT /file?uri=http://foo.bar
+	> Accept: text/turtle [anything that is a RDF media type]
+	> 
+	> [] 	a dm2e:File ...
+	==> 204
+	
+* Replacing part of the file metadata
+
+
+* Registering a placeholder file (to be uploaded later)
+* Replacing the placeholder file with a real file
+*  
