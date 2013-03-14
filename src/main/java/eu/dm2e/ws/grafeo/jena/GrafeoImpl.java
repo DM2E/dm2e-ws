@@ -187,6 +187,16 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 	public GLiteralImpl literal(String literal) {
 		return new GLiteralImpl(this, literal);
 	}
+	
+	@Override
+	public GLiteralImpl literal(long number) {
+		return new GLiteralImpl(this, number);
+	}
+	
+	@Override
+	public GLiteralImpl literal(boolean truefalse) {
+		return new GLiteralImpl(this, truefalse);
+	}
 
 	@Override
 	public GResourceImpl resource(String uri) {

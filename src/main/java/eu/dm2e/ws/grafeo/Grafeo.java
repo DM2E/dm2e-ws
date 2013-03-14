@@ -28,6 +28,10 @@ public interface Grafeo {
 
     GLiteral literal(String literal);
 
+	GLiteral literal(long literal);
+
+	GLiteral literal(boolean truefalse);
+
     GResource resource(String uri);
 
     boolean isEscaped(String input);
