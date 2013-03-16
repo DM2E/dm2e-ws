@@ -7,7 +7,6 @@ import java.util.Set;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Request;
 
 public class DM2E_MediaType {
 	/**

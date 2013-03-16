@@ -6,9 +6,6 @@ import java.net.URI;
 
 import com.hp.hpl.jena.query.ResultSet;
 
-import eu.dm2e.ws.grafeo.jena.GLiteralImpl;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
-
 
 /**
  * Created with IntelliJ IDEA.
