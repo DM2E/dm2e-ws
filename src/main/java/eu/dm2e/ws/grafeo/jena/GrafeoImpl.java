@@ -16,6 +16,7 @@ import eu.dm2e.ws.grafeo.Grafeo;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URI;
@@ -47,21 +48,15 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		this(ModelFactory.createDefaultModel());
 		this.model.read(input, null, lang);
 	}
-
-	public GrafeoImpl(File input) {
+	
+	public GrafeoImpl(InputStream input) {
 		this(ModelFactory.createDefaultModel());
-		try {
-			this.model.read(new FileInputStream(input), null, "N3");
-		} catch (Throwable t) {
-			try {
-				this.model.read(new FileInputStream(input), null, "RDF/XML");
-			} catch (Throwable t2) {
-				// TODO Throw proper exception that is converted to a proper
-				// HTTP response in DataService
-				throw new RuntimeException("Could not parse input: " + input,
-						t2);
-			}
-		}
+		this.readHeuristically(input);
+	}
+	
+	public GrafeoImpl(File file) {
+		this(ModelFactory.createDefaultModel());
+		this.readHeuristically(file);
 	}
 
 	/**
@@ -74,30 +69,19 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 	 *            the format of the content. If null it will be guessed.
 	 */
 	public GrafeoImpl(String content, String contentFormat) {
-		if (contentFormat != null) {
+		this(ModelFactory.createDefaultModel());
+		if (null == contentFormat)  {
+			this.readHeuristically(content);
+		} else {
 			try {
 				this.model.read(content, null, contentFormat);
 			} catch (Throwable t0) {
 				throw new RuntimeException("Could not parse input: " + content
 						+ " for given content format " + contentFormat, t0);
 			}
-		} else {
-			// now we guess the content type
-			try {
-				this.model.read(content, null, "N3");
-			} catch (Throwable t1) {
-				try {
-					this.model.read(content, null, "RDF/XML");
-				} catch (Throwable t2) {
-					// TODO Throw proper exception that is converted to a proper
-					// HTTP response in DataService
-					throw new RuntimeException("Could not parse input: "
-							+ content, t2);
-				}
-			}
 		}
-
 	}
+
 
 	@Override
 	public GResourceImpl findTopBlank() {
@@ -120,6 +104,48 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		initDefaultNamespaces();
 		applyNamespaces(model);
 	}
+	
+	@Override
+	public void readHeuristically(String content) {
+		try {
+			this.model.read(content, null, "N3");
+		} catch (Throwable t1) {
+			try {
+				this.model.read(content, null, "RDF/XML");
+			} catch (Throwable t2) {
+				// TODO Throw proper exception that is converted to a proper
+				// HTTP response in DataService
+				throw new RuntimeException("Could not parse input: "
+						+ content, t2);
+			}
+		}
+	}
+	
+	@Override
+	public void readHeuristically(InputStream input) {
+		try {
+			this.model.read(input, null, "N3");
+		} catch (Throwable t) {
+			try {
+				this.model.read(input, null, "RDF/XML");
+			} catch (Throwable t2) {
+				// TODO Throw proper exception that is converted to a proper
+				// HTTP response in DataService
+				throw new RuntimeException("Could not parse input: " + input, t2);
+			}
+		}
+	}
+	
+	@Override
+	public void readHeuristically(File file) {
+		FileInputStream fis;
+		try {
+			fis = new FileInputStream(file);
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException("File not found:  " + file.getAbsolutePath(), e);
+		}
+		readHeuristically(fis);
+	}
 
 	@Override
 	public void load(String uri) {
@@ -141,6 +167,11 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 			}
 		}
 
+	}
+	
+	@Override
+	public void empty() {
+		model.removeAll();
 	}
 
 	@Override
@@ -255,6 +286,11 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		log.info("Reading from endpoint finished.");
 	}
 
+	@Override
+	public void readFromEndpoint(String endpoint, URI graphURI) {
+		readFromEndpoint(endpoint, graphURI.toString());
+	}
+
 	public void readTriplesFromEndpoint(String endpoint, String subject,
 			String predicate, GValue object) {
 
@@ -297,6 +333,11 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 				endpoint);
 		exec.execute();
 
+	}
+	
+	@Override
+	public void writeToEndpoint(String endpoint, URI graphURI) {
+		writeToEndpoint(endpoint, graphURI.toString());
 	}
 
 	@Override
@@ -382,6 +423,10 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		if (model.containsResource(model.getResource(gUri)))
 			return true;
 		return false;
+	}
+	
+	public boolean containsResource(URI graphURI) {
+		return containsResource(graphURI.toString());
 	}
 	
 	public RDFNode firstMatchingObject(String s, String p) {

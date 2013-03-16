@@ -1,5 +1,9 @@
 package eu.dm2e.ws.grafeo;
 
+import java.io.File;
+import java.io.InputStream;
+import java.net.URI;
+
 import com.hp.hpl.jena.query.ResultSet;
 
 import eu.dm2e.ws.grafeo.jena.GLiteralImpl;
@@ -17,6 +21,8 @@ public interface Grafeo {
     GResource findTopBlank();
 
     void load(String uri);
+    
+    void empty();
 
     GResource get(String uri);
 
@@ -45,10 +51,14 @@ public interface Grafeo {
     String escapeResource(String uri);
 
     void readFromEndpoint(String endpoint, String graph);
+    
+    void readFromEndpoint(String endpoint, URI graphURI);
 
     void readTriplesFromEndpoint(String endpoint, String subject, String predicate, GValue object);
 
     void writeToEndpoint(String endpoint, String graph);
+    
+    void writeToEndpoint(String endpoint, URI graphURI);
 
     String getNTriples();
     
@@ -64,9 +74,17 @@ public interface Grafeo {
 	
 	boolean containsStatementPattern(String s, String p, GLiteral o);
 	
-	boolean containsResource(String g);
+	boolean containsResource(String graph);
+	
+	boolean containsResource(URI graphURI);
 	
 	ResultSet executeSparqlSelect(String queryString);
 
 	Grafeo executeSparqlConstruct(String queryString);
+	
+	void readHeuristically(String content);	
+	
+	void readHeuristically(InputStream input);	
+	
+	void readHeuristically(File file);	
 }
