@@ -100,11 +100,11 @@ public abstract class AbstractRDFService {
 		InputStream in = null;
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
 		con.setRequestMethod("GET");
-		con.setRequestProperty("Accept", "application/rdf+xml");
+		con.setRequestProperty("Accept", "text/turtle");
 		con.connect();
 		in = con.getInputStream();
 		GrafeoImpl tempG = new GrafeoImpl();
-		tempG.getModel().read(in, null, "RDF/XML");
+		tempG.getModel().read(in, null, "TURTLE");
 		if (tempG.getModel().isEmpty()) {
 			return null;
 		}

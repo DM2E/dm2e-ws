@@ -1,0 +1,3 @@
+@prefix dm2e: <http://onto.dm2e.eu/onto#> .
+
+[]  dm2e:fileStatus "AVAILABLE ;)" .

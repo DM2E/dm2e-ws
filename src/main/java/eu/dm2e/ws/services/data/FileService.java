@@ -28,6 +28,8 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.io.IOUtils;
 
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
@@ -37,6 +39,7 @@ import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.jena.SparqlUpdate;
+import eu.dm2e.ws.httpmethod.PATCH;
 
 /**
  * The service includes all necessary methods to upload a new file (no matter
@@ -73,15 +76,12 @@ public class FileService extends AbstractRDFService {
 	 * Saves the sent file to disk and stores derived metadata in the graph
 	 * {@code uri} of Grafeo {@code g}
 	 * 
-	 * @param filePart
-	 *            the file BodyPart
-	 * @param fileDisposition
-	 *            the file's content disposition
-	 * @param g
+	 * @para FileInputStream 
+	 *            The file as an InputStream
+	 * @param oldG
 	 *            The graph this file should be stored in
-	 * @param uriStr
+	 * @param uri
 	 *            The URI that represents this file
-	 * @return the file as a {@link File}
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 * @throws NoSuchAlgorithmException
@@ -89,13 +89,17 @@ public class FileService extends AbstractRDFService {
 	 */
 	private void storeAndDescribeFile(
 			InputStream fileInStream,
-			GrafeoImpl g,
-			URI uri)
-			throws FileNotFoundException, IOException, NoSuchAlgorithmException {
+			Grafeo oldG,
+			URI uri) throws FileNotFoundException, IOException {
 		// store the file
 		// TODO think about where to store
-		MessageDigest md;
-		md = MessageDigest.getInstance("MD5");
+		MessageDigest md = null;
+		try {
+			md = MessageDigest.getInstance("MD5");
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		DigestInputStream fileDigestInStream = new DigestInputStream(fileInStream, md);
 		// @formatter:off
@@ -120,10 +124,10 @@ public class FileService extends AbstractRDFService {
 
 		// TODO add right predicates here
 		// store file-based/implicit metadata
-		g.addTriple(uriStr, "dm2e:md5", g.literal(mdStr));
-		g.addTriple(uriStr, "dm2e:file_location", g.literal(f.getAbsolutePath()));
-		g.addTriple(uriStr, "dm2e:file_retrival_uri", uriStr);
-		g.addTriple(uriStr, "dm2e:file_size", g.literal(f.length()));
+		oldG.addTriple(uriStr, "dm2e:md5", oldG.literal(mdStr));
+		oldG.addTriple(uriStr, "dm2e:file_location", oldG.literal(f.getAbsolutePath()));
+		oldG.addTriple(uriStr, "dm2e:file_retrival_uri", uriStr);
+		oldG.addTriple(uriStr, "dm2e:file_size", oldG.literal(f.length()));
 
 		// these are only available if this is an upload field and not just a
 		// form field
@@ -135,9 +139,9 @@ public class FileService extends AbstractRDFService {
 	}
 	
 	/**
+	 * Posts an empty file
 	 * TODO This is meant to be used for placeholders, so that a service can
 	 * register a file and put it at the location later.
-	 * 
 	 * @return
 	 */
 	@POST
@@ -153,17 +157,18 @@ public class FileService extends AbstractRDFService {
 		URI uri;
 		try {
 			uri = new URI(uriStr);
+			uriStr = uri.toString();
 		} catch (URISyntaxException e) {
 			return throwServiceError(e);
 		}
 		try {
 			storeAndDescribeFile(fakeInStream, g, uri);
-		} catch (IOException | NoSuchAlgorithmException e) {
+		} catch (IOException e) {
 			return throwServiceError(e);
 		}
 		
 		// set the status of the file to waiting
-		g.addTriple(uri.toString(), "dm2e:fileStatus", g.literal(FileStatus.WAITING.toString()));
+		g.addTriple(uriStr, "dm2e:fileStatus", g.literal(FileStatus.WAITING.toString()));
 		
 		// save it
 		g.writeToEndpoint(STORAGE_ENDPOINT_STATEMENTS, uriStr);
@@ -187,8 +192,7 @@ public class FileService extends AbstractRDFService {
 			@FormDataParam("meta") FormDataContentDisposition metaDisposition,
 			@FormDataParam("file") FormDataBodyPart filePart,
 			@FormDataParam("file") FormDataContentDisposition fileDisposition,
-			@QueryParam("uri") String uriStr
-			) {
+			@QueryParam("uri") String uriStr) {
 		URI uri;
 		try {
 			uri = getUriForString(uriStr);
@@ -200,21 +204,59 @@ public class FileService extends AbstractRDFService {
 		//		Grafeo g = new GrafeoImpl(uri.toString());
 		// Unfortunately, Jena doesn't seem to be doing content-negotiation in a way that 
 		// is compatible with ours. Must investigate deeper and fix this in GrafeoImpl
-		Grafeo g;
+		Grafeo oldG;
 		try {
-			g = getGrafeoForUriWithContentNegotiation(uri);
+			oldG = getGrafeoForUriWithContentNegotiation(uri);
 		} catch (Exception e) {
 			return throwServiceError("Could not read from URI: " + e);
 		}
-		
 		// check if the uri is known
-		if (null == g)
+		if (null == oldG)
 			return throwServiceError("Could not find metadata about URI");
 		
-		// TODO if metadata: delete graph, create new one
-		// TODO if file data: store file at location
+		if (null != metaPart) {
+			// build a model from the input
+			GrafeoImpl newG = new GrafeoImpl(metaPart.getValueAs(InputStream.class));
+			if (newG.getModel().isEmpty()) {
+				return throwServiceError("Couldn't parse input model.");
+			}
+	
+			// if metadata: delete graph, create new one
+			
+			// rename the top blank node to uri
+			if (newG.findTopBlank() != null) {
+				newG.findTopBlank().rename(uriStr);
+			}			
+			
+			// create SPARQL update query
+			SparqlUpdate sparul = new SparqlUpdate.Builder()
+				.graph(uriStr)
+				.delete(oldG.getNTriples())
+				.insert(newG.getNTriples())
+				.endpoint(STORAGE_ENDPOINT_STATEMENTS)
+				.build();
+			
+			log.info("About to replace: " + sparul.toString());
+			
+			// save the data
+			sparul.execute();
+			
+			oldG = newG;
+			
+		} // end of metadata replacement
 		
-		return Response.ok(getResponseEntity(g)).build();
+		// TODO if file data: store file at location
+		if (null != filePart) {
+			InputStream fileInStream = filePart.getValueAs(InputStream.class);
+			try {
+				storeAndDescribeFile(fileInStream, oldG, uri);
+			} catch (IOException e) {
+				return throwServiceError("Couldn't write out file "+e);
+			}
+			
+		}
+		
+		return Response.ok(getResponseEntity(oldG)).build();
 	}
 	
 	
@@ -302,7 +344,7 @@ public class FileService extends AbstractRDFService {
 				storeAndDescribeFile(fileInStream, g, uri);
 				// it's stored, set to AVAILABLE
 				g.addTriple(uriStr, "dm2e:fileStatus", g.literal(FileStatus.AVAILABLE.toString()));
-			} catch (IOException | NoSuchAlgorithmException e) {
+			} catch (IOException e) {
 				return throwServiceError(e);
 			}
 		}
@@ -333,7 +375,7 @@ public class FileService extends AbstractRDFService {
 	private Response getFile(URI uri) {
 
 		// if the accept header is a RDF type, send metadata, otherwise data
-		if (DM2E_MediaType.isRdfRequest(headers)) {
+		if (DM2E_MediaType.expectsRdfResponse(headers)) {
 			return getFileMetaDataByUri(uri);
 		} else {
 			return getFileDataByUri(uri);
@@ -494,4 +536,84 @@ public class FileService extends AbstractRDFService {
 		return deleteFileByUri(uri.toString());
 	}
 
+	/**
+	 * Replace statements about a file with new statements.
+	 * @param uriStr
+	 * @param bodyInputStream
+	 * @return
+	 */
+	@PATCH
+	public Response updateStatementByUri(
+			@QueryParam("uri") String uriStr,
+			InputStream bodyInputStream) {
+		
+		// Check if the data is of a RDF content type
+		if (!DM2E_MediaType.isRdfRequest(headers)) {
+			return throwServiceError("The request must be of a RDF type", 406);
+		}
+		
+		URI uri;
+		String deleteClause = "", insertClause = "";
+		
+		// validate URI
+		try {
+			uri = getUriForString(uriStr);
+			if (uri==null) {
+				throw new NullPointerException();
+			}
+		} catch (URISyntaxException | NullPointerException e) {
+			return throwServiceError("The URI is not valid", 400);
+		}
+		
+		// find the original metadata
+		try {
+			Grafeo g = getGrafeoForUriWithContentNegotiation(uriStr);
+			if (g==null) {
+				throw new NullPointerException();
+			}
+		} catch (IOException | NullPointerException | URISyntaxException e) {
+			return throwServiceError("Couldn't find graph for URI.");
+		}
+		
+		// build a model from the input
+		GrafeoImpl patchModel = new GrafeoImpl(bodyInputStream);
+		if (patchModel.getModel().isEmpty()) {
+			return throwServiceError("Couldn't parse input model.");
+		}
+
+		// rename the top blank node to uri
+		if (patchModel.findTopBlank() != null) {
+			patchModel.findTopBlank().rename(uriStr);
+		}			
+		
+		// create SPARQL DELETE clause
+		StmtIterator iter = patchModel.getModel().listStatements();
+		int i = 0;
+		while (iter.hasNext()) {
+			Statement stmt = iter.next();
+			deleteClause += String.format("<%s> <%s> ?var%d .\n", 
+					stmt.getSubject().toString(),
+					stmt.getPredicate().toString(),
+					i);
+		}
+		
+		// create SPARQL INSERT clause
+		insertClause = patchModel.getNTriples();
+		
+		// create SPARQL update query
+		SparqlUpdate sparul = new SparqlUpdate.Builder()
+			.graph(uriStr)
+			.delete(deleteClause)
+			.insert(insertClause)
+			.endpoint(STORAGE_ENDPOINT_STATEMENTS)
+			.build();
+		
+		log.info(sparul.toString());
+		
+		// save the data
+		sparul.execute();
+		
+		// return the updated version to the client
+		return getFileMetaDataByUri(uri);
+	}
 }
