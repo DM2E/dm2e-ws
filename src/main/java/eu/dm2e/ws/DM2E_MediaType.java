@@ -37,12 +37,23 @@ public class DM2E_MediaType {
 			.unmodifiableSet(new HashSet<String>(Arrays.asList(rdfMediaTypes)));
 	
 	public static boolean isRdfRequest(HttpHeaders headers) {
+		boolean rdfTrueFalse = false;
+		if (null != headers.getMediaType()
+				&& SET_OF_RDF_TYPES.contains(headers.getMediaType().toString())) {
+			rdfTrueFalse = true;
+		}
+		return rdfTrueFalse;
+	}
+	
+	public static boolean expectsRdfResponse(HttpHeaders headers) {
+		boolean doesExpectRdf = false;
 		for (MediaType thisType : headers.getAcceptableMediaTypes()) {
 			if (SET_OF_RDF_TYPES.contains(thisType.toString())) {
-				return true;
+				doesExpectRdf = true;
+				break;
 			}
 		}
-		return false;
+		return doesExpectRdf;
 	}
 
 }
