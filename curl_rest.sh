@@ -6,13 +6,6 @@
 # instead of
 # $> curl -v -X POST -H "Content-Type: multipart/form-data" -H "Accept: Turtle" -F file=@payload.xml -F meta=@metadata.ttl $URL
 
-alias POST="curl -v -X POST"
-alias GET="curl -v -X GET"
-alias PUT="curl -v -X PUT"
-alias DELETE="curl -v -X DELETE"
-alias PATCH="curl -v -X PATCH"
-alias HEAD="curl -v -X HEAD"
-
 CT_TEXT='Content-Type: text/plain'
 AC_TEXT='Accept: text/plain'
 
@@ -31,3 +24,11 @@ AC_RDFXML='Accept: application/rdf+xml'
 CT_MULTI='Content-Type: multipart/form-data'
 AC_MULTI='Accept: multipart/form-data'
 
+
+alias POST="curl -v -X POST"
+alias GET="curl -v -X GET"
+alias GET_TURTLE="GET -H '$AC_TURTLE'"
+alias PUT="curl -v -X PUT"
+alias DELETE="curl -v -X DELETE"
+alias PATCH="curl -v -X PATCH"
+alias HEAD="curl -v -X HEAD"
