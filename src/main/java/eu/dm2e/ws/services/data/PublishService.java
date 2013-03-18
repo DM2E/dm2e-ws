@@ -1,5 +1,6 @@
 package eu.dm2e.ws.services.data;
 
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
@@ -33,14 +34,14 @@ public class PublishService extends AbstractRDFService {
         }
         log.info("URI: " + uri);
         Grafeo g = new GrafeoImpl();
-        g.readFromEndpoint("http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest", uri);
+        g.readFromEndpoint(NS.ENDPOINT, uri);
         return getResponse(g);
     }
 
     @GET
     public Response getList(@Context UriInfo uriInfo) {
         Grafeo g = new GrafeoImpl();
-        g.readTriplesFromEndpoint("http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest", null, "rdf:type", g.resource("void:Dataset"));
+        g.readTriplesFromEndpoint(NS.ENDPOINT, null, "rdf:type", g.resource("void:Dataset"));
         return getResponse(g);
     }
     @POST
@@ -51,7 +52,7 @@ public class PublishService extends AbstractRDFService {
         g.addTriple(graphUri, "rdf:type", "void:Dataset");
         g.addTriple(graphUri, "dct:created", g.now());
 
-        g.writeToEndpoint("http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest/statements", graphUri);
+        g.writeToEndpoint(NS.ENDPOINT_STATEMENTS, graphUri);
         return getResponse(g);
     }
 }

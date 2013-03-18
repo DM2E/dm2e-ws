@@ -2,6 +2,7 @@
 package eu.dm2e.ws.services.data;
 
 
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
@@ -22,7 +23,7 @@ import java.util.logging.Logger;
 @Path("/data")
 public class DataService extends AbstractRDFService {
     Logger log = Logger.getLogger(getClass().getName());
-
+    
     @GET
     public Response get() {
         Grafeo g = new GrafeoImpl();
@@ -61,7 +62,8 @@ public class DataService extends AbstractRDFService {
     public Response getConfig(@Context UriInfo uriInfo, @PathParam("id") String id) {
         log.info("Configuration requested: " + uriInfo.getRequestUri());
         Grafeo g = new GrafeoImpl();
-        g.readFromEndpoint("http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest", uriInfo.getRequestUri().toString());
+        // @TODO should proabably use getRequestUriWithoutQuery().toString() here
+        g.readFromEndpoint(NS.ENDPOINT, uriInfo.getRequestUri().toString());
         return getResponse(g);
     }
 
@@ -69,7 +71,7 @@ public class DataService extends AbstractRDFService {
     @Path("configurations")
     public Response getConfig(@Context UriInfo uriInfo) {
         Grafeo g = new GrafeoImpl();
-        g.readTriplesFromEndpoint("http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest", null, "rdf:type", g.resource("http://example.org/classes/Configuration"));
+        g.readTriplesFromEndpoint(NS.ENDPOINT, null, "rdf:type", g.resource("http://example.org/classes/Configuration"));
         return getResponse(g);
     }
 
@@ -85,7 +87,7 @@ public class DataService extends AbstractRDFService {
         String uri = uriInfo.getRequestUri() + "/" + new Date().getTime();
         if (blank!=null) blank.rename(uri);
         g.addTriple(uri,"rdf:type","http://example.org/classes/Configuration");
-        g.writeToEndpoint("http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest/statements", uri);
+        g.writeToEndpoint(NS.ENDPOINT_STATEMENTS , uri);
         return Response.created(URI.create(uri)).entity(getResponseEntity(g)).build();
     }
 
