@@ -54,6 +54,7 @@ import eu.dm2e.ws.httpmethod.PATCH;
 public class FileService extends AbstractRDFService {
 
 	// private static Configuration config = Config.getConfig();
+	private static final String SERVICE_URI = Config.getString("dm2e.service.file.base_uri");
 	private static final String STORAGE_ENDPOINT = Config.getString("dm2e.ws.sparql_endpoint");
 	private static final String STORAGE_ENDPOINT_STATEMENTS = Config
 		.getString("dm2e.ws.sparql_endpoint_statements");
@@ -153,7 +154,7 @@ public class FileService extends AbstractRDFService {
 		// Identifier for this resource (used in URI generation and for filename)
 		String uniqueStr = createUniqueStr();
 		// name of the new resource
-		String uriStr = Config.getString("dm2e.service.file.store_prefix") + uniqueStr;
+		String uriStr = SERVICE_URI + uniqueStr;
 		URI uri;
 		try {
 			uri = new URI(uriStr);
@@ -295,7 +296,7 @@ public class FileService extends AbstractRDFService {
 		// Identifier for this resource (used in URI generation and for filename)
 		String uniqueStr = createUniqueStr();
 		// name of the new resource
-		String uriStr = Config.getString("dm2e.service.file.store_prefix") + uniqueStr;
+		String uriStr = SERVICE_URI + uniqueStr;
 		URI uri;
 		try {
 			uri = new URI(uriStr);
@@ -319,8 +320,9 @@ public class FileService extends AbstractRDFService {
 			
 			// try to read the metadata
 			try {
-				if (metaStr.length() != 0)
+				if (metaStr.length() != 0) {
 					g.readHeuristically(metaStr);
+				}
 			} catch (RuntimeException e) {
 				return throwServiceError(e);
 			}
@@ -443,7 +445,7 @@ public class FileService extends AbstractRDFService {
 
 		// Unless the URI is prefixed with the URI prefix the @POST methods uses
 		// i.e. if the URI is external, do a redirect
-		if ( ! uri.startsWith(Config.getString("dm2e.service.file.store_prefix"))) {
+		if ( ! uri.startsWith(SERVICE_URI)) {
 			// redirect
 			try {
 				return Response.temporaryRedirect(new URI(uri)).build();
