@@ -72,7 +72,7 @@ public abstract class AbstractRDFService {
 	
 	protected URI getUriForString(String uriStr) throws URISyntaxException {
 		if (null == uriStr)
-			throw new URISyntaxException(uriStr, "Must provide 'uri' query parameterk.");
+			throw new URISyntaxException("", "Must provide 'uri' query parameterk.");
 		
 		// this might throw a URISyntaxException as well
 		URI uri = new URI(uriStr);
