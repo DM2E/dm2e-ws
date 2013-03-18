@@ -1,5 +1,6 @@
 package eu.dm2e.ws.grafeo.jena;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -116,19 +117,9 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 	}
 	
 	@Override
-	public void readHeuristically(String content) {
-		try {
-			this.model.read(content, null, "N3");
-		} catch (Throwable t1) {
-			try {
-				this.model.read(content, null, "RDF/XML");
-			} catch (Throwable t2) {
-				// TODO Throw proper exception that is converted to a proper
-				// HTTP response in DataService
-				throw new RuntimeException("Could not parse input: "
-						+ content, t2);
-			}
-		}
+	public void readHeuristically(String contentStr) {
+		InputStream content = new ByteArrayInputStream(contentStr.getBytes());
+		readHeuristically(content);
 	}
 	
 	@Override
