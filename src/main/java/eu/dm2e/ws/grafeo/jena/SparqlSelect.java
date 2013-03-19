@@ -6,37 +6,42 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.ResultSet;
 
-public class SparqlConstruct {
+public class SparqlSelect {
 	
 	Logger log = Logger.getLogger(getClass().getName());
 	
-	private String graph, endpoint, constructClause, whereClause;
+	private String graph, endpoint, selectClause, orderBy, limit, whereClause;
 
 	public static class Builder {
-		private String graph, endpoint, constructClause, whereClause;
+		private String graph, endpoint, selectClause, orderBy, limit, whereClause;
 		
 		public Builder graph(String s)  	{ this.graph = s; return this; }
 		public Builder endpoint(String s) 	{ this.endpoint = s; return this; }
-		public Builder construct(String s) 	{ this.constructClause = s; return this; }
+		public Builder orderBy(String s) 	{ this.orderBy = s; return this; }
+		public Builder limit(String s) 		{ this.limit = s; return this; }
+		public Builder select(String s) 	{ this.selectClause = s; return this; }
 		public Builder where(String s) 		{ this.whereClause = s; return this; }
 		
-		public SparqlConstruct build() { return new SparqlConstruct(this); } 
+		public SparqlSelect build() { return new SparqlSelect(this); } 
 	}
 
-	public SparqlConstruct(Builder builder) {
-		if (null == builder.constructClause || null == builder.whereClause) 
+	public SparqlSelect(Builder builder) {
+		if (null == builder.selectClause || null == builder.whereClause) 
 			throw new IllegalArgumentException("Must set constructClause and whereClause in Query Builder.");
 		this.graph = builder.graph;
 		this.endpoint = builder.endpoint;
+		this.orderBy = builder.orderBy;
+		this.limit = builder.limit;
 		this.whereClause = builder.whereClause;
-		this.constructClause = builder.constructClause;
+		this.selectClause = builder.selectClause;
 	}
 	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(String.format("CONSTRUCT { %s }", constructClause));
+		sb.append(String.format("SELECT %s", selectClause));
 		sb.append(" WHERE { ");
 
 		/**
@@ -53,16 +58,18 @@ public class SparqlConstruct {
 			sb.append(whereClause);
 		}
 		sb.append(" } ");
+		if (null != orderBy)	    sb.append(String.format(" ORDER BY %s ", orderBy));
+		if (null != limit) 			sb.append(String.format(" LIMIT %s", limit));
 		return sb.toString();
 	}
 	
-	public void execute(GrafeoImpl g) {
+	public ResultSet execute() {
 		if (null == endpoint)
 			throw new IllegalArgumentException("Must set endpoint to perform query.");
-        log.info("CONSTRUCT query: " + toString());
-        Query query = QueryFactory.create(toString());
-        log.info("Query: " + toString());
+		String queryStr = toString();
+        log.info("SELECT query: " + queryStr);
+        Query query = QueryFactory.create(queryStr);
         QueryExecution exec = QueryExecutionFactory.createServiceRequest(endpoint, query);
-        exec.execConstruct(g.getModel());
+        return exec.execSelect();
 	}
 }

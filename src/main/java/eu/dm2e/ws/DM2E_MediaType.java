@@ -18,6 +18,15 @@ public class DM2E_MediaType {
 	 * 
 	 * @see <http://www.w3.org/2011/rdf-wg/wiki/N-Triples-Format#Media_type>
 	 */
+	/**
+	 * This is for copy/pasting (since Annotations don't support arrays, sigh
+	@Consumes({
+		DM2E_MediaType.TEXT_TURTLE,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML,
+	})
+	 */
 	public static final String
 			// TURTLE
 			TEXT_TURTLE = "text/turtle",
