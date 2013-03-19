@@ -8,6 +8,7 @@ package eu.dm2e.ws.services.data;
  * 		Body contains URL of a transformation specification which must be dereferenceable
  */
 
+import eu.dm2e.ws.Config;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
@@ -29,6 +30,14 @@ import java.util.logging.Logger;
 
 @Path("/xslt")
 public class XslTransformerService extends AbstractRDFService {
+	
+	private static final String SERVICE_DESCRIPTION_RESOURCE = Config.getString("dm2e.service.xsl_transformer.description_resource");
+
+	@Override
+	protected String getServiceDescriptionResource() {
+		// TODO Auto-generated method stub
+		return SERVICE_DESCRIPTION_RESOURCE;
+	}
 
     @PUT
     @Consumes(MediaType.WILDCARD)
