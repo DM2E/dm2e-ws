@@ -463,4 +463,9 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         namespaces.put("dm2e", "http://onto.dm2e.eu/onto#");
 
 	}
+
+	@Override
+	public boolean isEmpty() {
+		return model.isEmpty();
+	}
 }
