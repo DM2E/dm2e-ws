@@ -1,5 +1,6 @@
 package eu.dm2e.ws.services.data;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -9,12 +10,17 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -28,9 +34,23 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 
 import org.apache.commons.validator.routines.UrlValidator;
+import org.apache.jena.atlas.logging.Log;
 
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.rdf.model.InfModel;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.reasoner.Reasoner;
+import com.hp.hpl.jena.reasoner.ReasonerRegistry;
+import com.hp.hpl.jena.reasoner.ValidityReport;
+import com.hp.hpl.jena.reasoner.ValidityReport.Report;
 
+import eu.dm2e.ws.NS;
+import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
@@ -89,6 +109,32 @@ public abstract class AbstractRDFService {
 		UriBuilder ub =  uriInfo.getRequestUriBuilder();
 		ub.replaceQuery("");
 		return ub.build();
+	}
+	
+	protected abstract String getServiceDescriptionResourceName();
+	
+	protected GrafeoImpl getServiceDescriptionGrafeo() throws FileNotFoundException  {
+        InputStream descriptionStream  = Thread.currentThread().getContextClassLoader().getResourceAsStream("xslt-service-description.ttl");
+		if (null == descriptionStream) {
+			throw new FileNotFoundException();
+		}
+        GrafeoImpl g = new GrafeoImpl(descriptionStream, "TURTLE");
+        // rename top blank node if any
+        GResource blank = g.findTopBlank();
+        String uri = getRequestUriWithoutQuery().toString();
+        if (blank!=null) blank.rename(uri);
+		return g;
+	}
+	
+	@PUT
+	@Path("validate")
+	public Response validateConfigRequest(String configUriStr) {
+		try {
+			validateServiceInput(configUriStr);
+		} catch (Exception e) {
+			return throwServiceError(e);
+		}
+		return Response.noContent().build();
 	}
 	
 	protected Grafeo getGrafeoForUriWithContentNegotiation(String uriStr) throws IOException, URISyntaxException {
@@ -157,6 +203,57 @@ public abstract class AbstractRDFService {
 	protected String createUniqueStr() {
 		String uniqueStr = new Date().getTime() + "_" + UUID.randomUUID().toString();
 		return uniqueStr;
+	}
+	
+
+	protected void validateServiceInput(String configUriStr) throws Exception {
+		GrafeoImpl inputGrafeo = new GrafeoImpl();
+		inputGrafeo.load(configUriStr);
+		if (inputGrafeo.isEmpty()) {
+			throw new Exception("config model is empty.");
+		}
+		GrafeoImpl schemaGrafeo = this.getServiceDescriptionGrafeo();
+		// TODO this is the right way to to do it but Jena won't
+		// croak on cardinality restrictions being broken
+//		Model mergedModel = schemaGrafeo.getModel().union(inputGrafeo.getModel());
+//		
+////		inputGrafeo.getModel().union()
+//		kkk
+//		OntModelSpec mySpec = OntModelSpec.OWL_DL_MEM_RULE_INF;
+//		Reasoner reasoner = ReasonerRegistry.getOWLReasoner();
+//		mySpec.setReasoner(reasoner);
+//		reasoner.bindSchema(schemaGrafeo.getModel());
+////		InfModel reasoningModel = ModelFactory.createInfModel(reasoner, inputGrafeo.getModel());
+//		OntModel ontModel = ModelFactory.createOntologyModel(mySpec, mergedModel);
+//		
+//		ValidityReport validity = ontModel.validate();
+//		
+//		Logger log = Logger.getLogger(getClass().getName());
+//		if (validity.isValid()) {
+//			log.warning("w00t it's valid!!!");
+//		}
+//		else {
+//	        for (Iterator<Report> i = validity.getReports(); i.hasNext(); ) {
+//	            Report report = i.next();
+//	            log.severe(" - " + report);
+//	        }
+//		}
+		
+		Model schemaModel = schemaGrafeo.getModel();
+		
+		// Validate requiredParam
+		Property requiredProp = schemaModel.createProperty(NS.DM2E + "requiredParam");
+		NodeIterator iter = schemaModel.listObjectsOfProperty(requiredProp); 
+		while (iter.hasNext()) {
+			// this must be easier than stringifying all the time...
+			RDFNode thisNode = iter.next();
+			Property thisProp = schemaModel.createProperty(thisNode.toString());
+			if (! inputGrafeo.getModel().contains(null, thisProp)) {
+				throw new Exception("Missing required param " + thisProp.toString());
+			}
+		}
+		
+		// todo do range checks so that services accept certain types
 	}
 
 	protected class RDFOutput implements StreamingOutput {

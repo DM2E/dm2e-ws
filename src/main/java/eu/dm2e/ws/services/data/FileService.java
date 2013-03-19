@@ -54,14 +54,15 @@ import eu.dm2e.ws.httpmethod.PATCH;
 public class FileService extends AbstractRDFService {
 
 	// private static Configuration config = Config.getConfig();
-	private static final String SERVICE_URI = Config.getString("dm2e.service.file.base_uri");
-	private static final String STORAGE_ENDPOINT = Config.getString("dm2e.ws.sparql_endpoint");
-	private static final String STORAGE_ENDPOINT_STATEMENTS = Config
-		.getString("dm2e.ws.sparql_endpoint_statements");
-
-	private static final String NS_DM2E = Config.getString("dm2e.ns.dm2e");
-	private static final String PROP_DM2E_FILE_RETRIEVAL_URI = NS_DM2E + "file_retrieval_uri";
-	private static final String PROP_DM2E_FILE_LOCATION = NS_DM2E + "file_location";
+	private static final String 
+			SERVICE_DESCRIPTION_RESOURCE = Config.getString("dm2e.service.config.description_resource"),
+			SERVICE_URI = Config.getString("dm2e.service.file.base_uri"),
+			STORAGE_ENDPOINT = Config.getString("dm2e.ws.sparql_endpoint"),
+			STORAGE_ENDPOINT_STATEMENTS = Config.getString("dm2e.ws.sparql_endpoint_statements"),
+			
+			NS_DM2E = Config.getString("dm2e.ns.dm2e"),
+			PROP_DM2E_FILE_RETRIEVAL_URI = NS_DM2E + "file_retrieval_uri",
+			PROP_DM2E_FILE_LOCATION = NS_DM2E + "file_location";
 
 	// this defines the states a file can be in, in addition to the
 	// HTTP response when retrieving the file data.
@@ -72,6 +73,11 @@ public class FileService extends AbstractRDFService {
 	}
 
 	Logger log = Logger.getLogger(getClass().getName());
+	
+	@Override
+	public String getServiceDescriptionResourceName() {
+		return SERVICE_DESCRIPTION_RESOURCE;
+	}	
 
 	/**
 	 * Saves the sent file to disk and stores derived metadata in the graph
