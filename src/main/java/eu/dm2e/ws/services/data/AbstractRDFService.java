@@ -10,11 +10,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -33,21 +30,13 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.validator.routines.UrlValidator;
-import org.apache.jena.atlas.logging.Log;
 
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.rdf.model.InfModel;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.reasoner.Reasoner;
-import com.hp.hpl.jena.reasoner.ReasonerRegistry;
-import com.hp.hpl.jena.reasoner.ValidityReport;
-import com.hp.hpl.jena.reasoner.ValidityReport.Report;
 
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.GResource;
@@ -87,7 +76,7 @@ public abstract class AbstractRDFService {
 		return throwServiceError(msg, 400);
 	}
 	public Response throwServiceError(Exception e) {
-		return throwServiceError(e.toString(), 400);
+		return throwServiceError(e.toString() + "\n" + ExceptionUtils.getStackTrace(e), 400);
 	}
 	
 	protected URI getUriForString(String uriStr) throws URISyntaxException {
