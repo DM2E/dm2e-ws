@@ -1,0 +1,4 @@
+@prefix dm2e: <http://onto.dm2e.eu/onto#> .
+@prefix dm2e_types: <http://onto.dm2e.eu/types#> .
+
+[]  a dm2e_types:RDF_XML .

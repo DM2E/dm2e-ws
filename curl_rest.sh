@@ -36,3 +36,6 @@ alias PUT="curl -v -X PUT"
 alias DELETE="curl -v -X DELETE"
 alias PATCH="curl -v -X PATCH"
 alias HEAD="curl -v -X HEAD"
+
+SRV_MAIN="http://localhost:9998"
+SRV_TASK="http://localhost:9110"
