@@ -153,7 +153,10 @@ public class FileService extends AbstractRDFService {
 	 */
 	@POST
 	@Path("empty")
-	public Response postEmptyFile() {
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public Response postEmptyFile(
+			@FormDataParam("meta") FormDataBodyPart metaPart
+			) {
 		ByteArrayInputStream fakeInStream = new ByteArrayInputStream("".getBytes());
 		// The model for this resource
 		GrafeoImpl g = new GrafeoImpl();
@@ -172,6 +175,25 @@ public class FileService extends AbstractRDFService {
 			storeAndDescribeFile(fakeInStream, g, uri);
 		} catch (IOException e) {
 			return throwServiceError(e);
+		}
+		
+		if (metaPart != null) {
+			
+			String metaStr = metaPart.getValueAs(String.class);
+			
+			// try to read the metadata
+			try {
+				if (metaStr.length() != 0) {
+					g.readHeuristically(metaStr);
+				}
+			} catch (RuntimeException e) {
+				return throwServiceError(e);
+			}
+			// rename top blank node to the newly minted URI if it exists
+			if (g.findTopBlank() != null) {
+				g.findTopBlank().rename(uri.toString());
+			}			
+			
 		}
 		
 		// set the status of the file to waiting
