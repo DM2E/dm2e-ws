@@ -132,7 +132,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 			} catch (Throwable t2) {
 				// TODO Throw proper exception that is converted to a proper
 				// HTTP response in DataService
-				throw new RuntimeException("Could not parse input: " + input, t2);
+				throw new RuntimeException("Could not parse input: " + input, t);
 			}
 		}
 	}
@@ -195,6 +195,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		GStatementImpl statement;
 		String objectExp = expand(object);
 		try {
+			@SuppressWarnings("unused")
 			URI testUri = new URI(objectExp);
 			GResourceImpl or = new GResourceImpl(this, object);
 			statement = new GStatementImpl(this, s, p, or);
