@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet exclude-result-prefixes="tei xml" version="1.0"
+<xsl:stylesheet exclude-result-prefixes="tei xml" version="2.0"
     xmlns:dc="http://purl.org/dc/elements/1.1/"
     xmlns:dcterms="http://purl.org/dc/terms/"
     xmlns:edm="http://www.europeana.eu/schemas/edm/"

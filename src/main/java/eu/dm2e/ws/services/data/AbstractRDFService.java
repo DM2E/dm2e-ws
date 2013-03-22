@@ -32,6 +32,7 @@ import javax.ws.rs.core.Variant;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.validator.routines.UrlValidator;
+import org.apache.jena.atlas.logging.Log;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
@@ -102,8 +103,11 @@ public abstract class AbstractRDFService {
 	
 	protected abstract String getServiceDescriptionResourceName();
 	
-	protected GrafeoImpl getServiceDescriptionGrafeo() throws FileNotFoundException  {
-        InputStream descriptionStream  = Thread.currentThread().getContextClassLoader().getResourceAsStream("xslt-service-description.ttl");
+	protected GrafeoImpl getServiceDescriptionGrafeo() throws IOException  {
+//        InputStream descriptionStream  = Thread.currentThread().getContextClassLoader().getResourceAsStream("xslt-service-description.ttl");
+//		System.out.println(getServiceDescriptionResourceName());
+//		InputStream descriptionStream = ClassLoader.getSystemResource(getServiceDescriptionResourceName()).openStream();
+        InputStream descriptionStream  = this.getClass().getResourceAsStream("service-description.ttl");
 		if (null == descriptionStream) {
 			throw new FileNotFoundException();
 		}

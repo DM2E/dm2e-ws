@@ -21,7 +21,8 @@
 @prefix fn:      <http://www.w3.org/2005/xpath-functions#> .
 @prefix cc:      <http://creativecommons.org/ns#> .
 @prefix dm2e:        <http://onto.dm2e.eu/> .
-@prefix xslt_service: <http://omnom.dm2e.eu/service/xslt/> .
+@prefix dm2e_types: <http://onto.dm2e.eu/types#> .
+@prefix xslt_service: <http://omnom.dm2e.eu/service/xslt#> .
 
 []  a   <http://localhost:9110/service/xslt> ;
     xslt_service:xmlSource "foo" ;
