@@ -58,9 +58,14 @@
             <version>${jersey-version}</version>
         </dependency>
         <dependency>
-        	<groupId>net.sf.saxon</groupId>
-        	<artifactId>Saxon-B</artifactId>
-        	<version>9.0</version>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>Saxon-B</artifactId>
+            <version>9.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.clarkparsia</groupId>
+            <artifactId>Empire-core</artifactId>
+            <version>0.7.2</version>
         </dependency>
     </dependencies>
     <build>
