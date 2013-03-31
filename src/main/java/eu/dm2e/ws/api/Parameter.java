@@ -8,32 +8,37 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 /**
  * Created with IntelliJ IDEA.
  * User: kai
- * Date: 3/30/13
- * Time: 1:40 PM
+ * Date: 3/31/13
+ * Time: 5:08 PM
  * To change this template use File | Settings | File Templates.
  */
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/"})
-@RDFClass("omnom:Webservice")
-public class Webservice {
-
-    @RDFId(prefix="http://data.dm2e.eu/data/services/")
+@RDFClass("omnom:Parameter")
+public class Parameter {
+    @RDFId(prefix="http://data.dm2e.eu/data/parameters/")
     private long id;
 
     @RDFProperty("omnom:helloWorld")
     private String hello;
 
+    @RDFProperty("omnom:webservice")
+    private Webservice webservice;
 
-    @RDFProperty("omnom:parameter")
-    private Parameter parameter;
-
-    public Parameter getParameter() {
-        return parameter;
+    public Webservice getWebservice() {
+        return webservice;
     }
 
-    public void setParameter(Parameter parameter) {
-        this.parameter = parameter;
+    public void setWebservice(Webservice webservice) {
+        this.webservice = webservice;
     }
 
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public String getHello() {
         return hello;
@@ -43,13 +48,5 @@ public class Webservice {
         this.hello = hello;
     }
 
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 
 }

@@ -27,15 +27,13 @@ public interface Grafeo {
 
 	GStatement addTriple(String subject, String predicate, String object);
 
-	GStatement addTriple(String subject, String predicate, GLiteral object);
+	GStatement addTriple(String subject, String predicate, GValue object);
 
     void addObject(Object object);
 
 	GLiteral literal(String literal);
 
-	GLiteral literal(long literal);
-
-	GLiteral literal(boolean truefalse);
+	GLiteral literal(Object value);
 
 	GResource resource(String uri);
 
@@ -86,4 +84,6 @@ public interface Grafeo {
 	void readHeuristically(InputStream input);
 
 	void readHeuristically(File file);
+
+    <T> T getObject(Class T, String uri);
 }

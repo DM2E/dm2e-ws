@@ -14,4 +14,10 @@ public interface GValue {
     Grafeo getGrafeo();
 
     GResource resource();
+
+    String toEscapedString();
+
+    <T> T getTypedValue(Class T);
+
+    boolean isLiteral();
 }

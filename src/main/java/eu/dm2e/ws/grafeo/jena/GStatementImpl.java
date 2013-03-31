@@ -1,10 +1,7 @@
 package eu.dm2e.ws.grafeo.jena;
 
 import com.hp.hpl.jena.rdf.model.Statement;
-import eu.dm2e.ws.grafeo.GLiteral;
-import eu.dm2e.ws.grafeo.GResource;
-import eu.dm2e.ws.grafeo.GStatement;
-import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.grafeo.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,18 +19,16 @@ public class GStatementImpl extends JenaImpl implements GStatement {
     private Grafeo grafeo;
     private Statement statement;
 
-    public GStatementImpl(Grafeo grafeo, GResource subject, GResource predicate, GResource resourceValue) {
-        this.grafeo = grafeo;
-        this.subject = subject;
-        this.predicate = predicate;
-        this.resourceValue = resourceValue;
-        this.statement = createStatement();
-    }
 
-    public GStatementImpl(Grafeo grafeo, GResource subject, GResourceImpl predicate, GLiteral literalValue) {
+
+    public GStatementImpl(Grafeo grafeo, GResource subject, GResourceImpl predicate, GValue value) {
         this.grafeo = grafeo;
-        this.literalValue = literalValue;
-        this.literal = true;
+        if (value instanceof GLiteral){
+            this.literalValue = (GLiteral) value;
+            this.literal = true;
+        } else {
+            this.resourceValue = (GResource) value;
+        }
         this.predicate = predicate;
         this.subject = subject;
         this.statement = createStatement();
