@@ -28,7 +28,7 @@ public class MainTest extends TestCase {
 
         // create the client
         Client c = Client.create();
-        r = c.resource(Main.BASE_URI);
+        r = c.resource(Main.getBaseURI());
     }
 
     @Override

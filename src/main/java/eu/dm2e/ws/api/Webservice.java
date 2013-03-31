@@ -1,8 +1,9 @@
 package eu.dm2e.ws.api;
 
-import com.clarkparsia.empire.annotation.Namespaces;
-import com.clarkparsia.empire.annotation.RdfProperty;
-import com.clarkparsia.empire.annotation.RdfsClass;
+import eu.dm2e.ws.grafeo.annotations.Namespaces;
+import eu.dm2e.ws.grafeo.annotations.RDFClass;
+import eu.dm2e.ws.grafeo.annotations.RDFId;
+import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,9 +13,31 @@ import com.clarkparsia.empire.annotation.RdfsClass;
  * To change this template use File | Settings | File Templates.
  */
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/"})
-@RdfsClass("omnom:Webservice")
+@RDFClass("omnom:Webservice")
 public class Webservice {
 
-    @RdfProperty("omnom:helloWorld")
+    @RDFId(prefix="http://data.dm2e.eu/data/services/")
+    private long id;
+
+    @RDFProperty("omnom:helloWorld")
     private String hello;
+
+
+    public String getHello() {
+        return hello;
+    }
+
+    public void setHello(String hello) {
+        this.hello = hello;
+    }
+
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
 }

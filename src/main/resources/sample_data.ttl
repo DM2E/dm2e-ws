@@ -1,3 +1,7 @@
-@prefix dc: <http://purl.org/dc/elements/1.1/> .
-@prefix : <http://example.com> .
-:foo :bar "baz" .
+@prefix dm2e:        <http://onto.dm2e.eu/onto#> .
+@prefix dm2e_types: <http://onto.dm2e.eu/types/> .
+@prefix xslt_service: <http://omnom.dm2e.eu/service/xslt#> .
+
+[]
+    xslt_service:xsltSource <http://141.20.126.155/api/file/5087f01056dd6408690000a9/data> ;
+    xslt_service:xmlSource <http://141.20.126.155/api/file/5087efca56dd640869000036/data> .
