@@ -21,7 +21,7 @@ public class GStatementImpl extends JenaImpl implements GStatement {
 
 
 
-    public GStatementImpl(Grafeo grafeo, GResource subject, GResourceImpl predicate, GValue value) {
+    public GStatementImpl(Grafeo grafeo, GResource subject, GResource predicate, GValue value) {
         this.grafeo = grafeo;
         if (value instanceof GLiteral){
             this.literalValue = (GLiteral) value;

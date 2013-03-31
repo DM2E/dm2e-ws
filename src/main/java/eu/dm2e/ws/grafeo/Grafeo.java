@@ -1,6 +1,7 @@
 package eu.dm2e.ws.grafeo;
 
 import com.hp.hpl.jena.query.ResultSet;
+import eu.dm2e.ws.grafeo.jena.GStatementImpl;
 
 import java.io.File;
 import java.io.InputStream;
@@ -85,5 +86,8 @@ public interface Grafeo {
 
 	void readHeuristically(File file);
 
-    <T> T getObject(Class T, String uri);
+    <T> T getObject(Class T, GResource res);
+
+    GStatementImpl addTriple(GResource subject, GResource predicate,
+                             GValue object);
 }

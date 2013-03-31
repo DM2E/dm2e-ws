@@ -10,4 +10,10 @@ package eu.dm2e.ws.grafeo;
 public interface GResource extends GValue {
     void rename(String uri);
     String getUri();
+
+    void set(String uri, GValue value);
+
+    boolean isAnon();
+
+    String getAnonId();
 }

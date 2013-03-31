@@ -45,7 +45,7 @@ public class DataService extends AbstractRDFService {
         test.setId(42);
 
         Parameter param = new Parameter();
-        param.setId(23);
+        // param.setId(23);
         param.setHello("Hi, I am a Parameter!");
         param.setWebservice(test);
         test.setParameter(param);
@@ -60,7 +60,7 @@ public class DataService extends AbstractRDFService {
     public Response getMapTest(@Context UriInfo uriInfo) {
         String source = uriInfo.getRequestUri().toString().replace("/mapTest","");
         Grafeo g = new GrafeoImpl(source);
-        Webservice test = g.getObject(Webservice.class, "http://data.dm2e.eu/data/services/42");
+        Webservice test = g.getObject(Webservice.class, g.resource("http://data.dm2e.eu/data/services/42"));
 
         log.info("Result ID: " + test.getId());
         log.info("Result Hello: " + test.getHello());
