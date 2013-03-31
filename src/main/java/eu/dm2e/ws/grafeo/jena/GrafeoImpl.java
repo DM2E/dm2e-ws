@@ -167,45 +167,34 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 
     private Set<Object> alreadyAdded = new HashSet<>();
     @Override
-    public void addObject(Object object) {
-        if (alreadyAdded.contains(object)) return;
+    public GResource addObject(Object object) {
+        if (alreadyAdded.contains(object)) return getGResource(object);
         alreadyAdded.add(object);
         setAnnotatedNamespaces(object);
-        String subject = getAnnotatedId(object);
-        GResource sr;
-        if (subject==null) {
-            sr = new GResourceImpl(this, model.createResource(AnonId.create(object.toString())));
-        } else {
-            subject = expand(subject);
-            sr = new GResourceImpl(this, model.createResource(subject));
-        }
+        GResource result = getGResource(object);
 
-        log.info("Subject: " + subject);
+        log.info("Subject: " + result);
         String type = object.getClass().getAnnotation(RDFClass.class).value();
         log.info("Type: " + type);
-        sr.set("rdf:type", resource(type));
+        result.set("rdf:type", resource(type));
         for (Field field : object.getClass().getDeclaredFields()) {
             if (field.isAnnotationPresent(RDFProperty.class)) {
+                log.info("Field: " + field.getName());
                 try {
                     try {
                         Object value = PropertyUtils.getProperty(object, field.getName());
                         GValue gv = null;
                         if (isAnnotatedObject(value)) {
                             addObject(value);
-                            String gvUri = getAnnotatedId(value);
+                            gv = getGResource(value);
 
-                            if (gvUri==null) {
-                                gv = new GResourceImpl(this, model.createResource(AnonId.create(value.toString())));
-                            } else {
-                                gvUri = expand(gvUri);
-                                gv = new GResourceImpl(this, model.createResource(gvUri));
-                            }
+
                         } else {
                             gv = literal(value);
                         }
                         String property = field.getAnnotation(RDFProperty.class).value();
                         log.info("Value for " + property + ": " + gv);
-                        sr.set(property, gv);
+                        result.set(property, gv);
                     } catch (InvocationTargetException e) {
                         throw new RuntimeException("An exception occurred: " + e, e);
                     } catch (NoSuchMethodException e) {
@@ -217,6 +206,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
                 }
             }
         }
+        return result;
     }
 
     private Map<String,Object> objectCache = new HashMap<String, Object>();
@@ -279,6 +269,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 
 
         }
+
         return result;
     }
 
@@ -288,16 +279,16 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 
 
 
-    protected String getAnnotatedId(Object object) {
-        String result = null;
+    protected GResource getGResource(Object object) {
+        String uri = null;
 
         for (Field field : object.getClass().getDeclaredFields()) {
             log.info("Field: " + field.getName());
             if (field.isAnnotationPresent(RDFId.class)) {
                 try {
                     String id = PropertyUtils.getProperty(object, field.getName()).toString();
-                    if ("0".equals(id)) return null;
-                    result = field.getAnnotation(RDFId.class).prefix() + id;
+                    if ("0".equals(id) || null == id) return new GResourceImpl(this, model.createResource(AnonId.create(object.toString())));
+                    uri = field.getAnnotation(RDFId.class).prefix() + id;
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException("An exception occurred: " + e, e);
                 } catch (NoSuchMethodException e) {
@@ -307,7 +298,13 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
                 }
             }
         }
-        return result;
+        if (uri==null) {
+            return new GResourceImpl(this, model.createResource(AnonId.create(object.toString())));
+        } else {
+            uri = expand(uri);
+            return new GResourceImpl(this, model.createResource(uri));
+        }
+
     }
 
     protected void setAnnotatedNamespaces(Object object) {

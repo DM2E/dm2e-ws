@@ -30,7 +30,7 @@ public interface Grafeo {
 
 	GStatement addTriple(String subject, String predicate, GValue object);
 
-    void addObject(Object object);
+    GResource addObject(Object object);
 
 	GLiteral literal(String literal);
 
