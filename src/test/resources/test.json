@@ -1,0 +1,6 @@
+{
+    "jobQueue": "eu.dm2e.task.worker.XsltWorker",
+    "jobConfig": {
+        "foo": "baz"
+    }
+}

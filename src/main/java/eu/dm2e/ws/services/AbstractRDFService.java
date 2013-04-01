@@ -1,4 +1,4 @@
-package eu.dm2e.ws.services.data;
+package eu.dm2e.ws.services;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -16,6 +16,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -115,6 +116,25 @@ public abstract class AbstractRDFService {
         if (blank!=null) blank.rename(uri);
 		return g;
 	}
+	
+	/**
+	 * Describes this service.
+	 */
+	@GET
+	@Path("/describe")
+	public Response getDescription(@Context UriInfo uriInfo)  {
+        Grafeo g;
+        
+        Logger log = Logger.getLogger(getClass().getName());
+		try {
+			g = getServiceDescriptionGrafeo();
+		} catch (Exception e) {
+			log.severe(e.toString());
+			return throwServiceError(e);
+		}
+        return getResponse(g);
+	}
+	
 	
 	@PUT
 	@Path("validate")

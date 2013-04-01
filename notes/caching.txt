@@ -1,0 +1,41 @@
+Caching results
+---------------
+
+Based on the fact that we our input resources are stable (different resource
+iff different URI), results are fully reproducible, therefore caching can
+be implemented by querying the knowledge base for any jobs that ran this service
+and produced output successfully.
+
+SPARQL (sans the GRAPH clauses, which will be required):
+--------------------------------------------------------
+
+A) Using the same configuration uri http://dm2e/config/1234
+
+SELECT ?result
+WHERE {
+    ?job a dm2e:Job .
+    ?job dm2e:webServiceConfig <http://dm2e/config/1234> .
+    ?job dm2e:jobStatus "SUCCESS" .
+    ?job dm2e:resultFile ?result .
+}
+
+If ?result is set, use this, the service need to be run.
+If dm2e:jobStatus were "FAILED" we needn't run the service either because it must
+fail as well if the behaviour is consistent.
+
+B) Using a new configuration that is identical to an existing one
+    ==> Requires us to define when two configurations are "the same"
+
+GET "text/turtle" http://dm2e/config/dwkjnjkdw
+    <http://dm2e/config/dwkjnjkdw> <http://foo/one> "Value1".
+    <http://dm2e/config/dwkjnjkdw> <http://foo/one> "Value2".
+
+SELECT ?result
+WHERE {
+    ?job a dm2e:Job .
+    ?job dm2e:jobStatus "SUCCESS" .
+    ?job dm2e:resultFile ?result .
+    ?job dm2e:webServiceConfig ?config .
+    ?config <http://foo/one> "Value1" .
+    ?config <http://foo/two> "Value2" .
+}

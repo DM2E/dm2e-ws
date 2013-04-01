@@ -1,4 +1,4 @@
-package eu.dm2e.ws.services.data;
+package eu.dm2e.ws.services.file;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -40,6 +40,7 @@ import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.jena.SparqlUpdate;
 import eu.dm2e.ws.httpmethod.PATCH;
+import eu.dm2e.ws.services.AbstractRDFService;
 
 /**
  * The service includes all necessary methods to upload a new file (no matter

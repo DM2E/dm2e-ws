@@ -17,6 +17,7 @@ import javax.ws.rs.core.UriInfo;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.services.AbstractRDFService;
 
 /**
  * Created with IntelliJ IDEA.

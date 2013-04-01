@@ -24,6 +24,7 @@ import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.services.AbstractRDFService;
 
 
 @Path("/data")
