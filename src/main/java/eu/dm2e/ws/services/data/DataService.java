@@ -2,6 +2,19 @@
 package eu.dm2e.ws.services.data;
 
 
+import eu.dm2e.ws.Config;
+import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.Parameter;
+import eu.dm2e.ws.api.Webservice;
+import eu.dm2e.ws.grafeo.GResource;
+import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -35,8 +48,35 @@ public class DataService extends AbstractRDFService {
     @GET
     public Response get() {
         Grafeo g = new GrafeoImpl();
-        g.addTriple("http://localhost/data", "dct:creator", "http://localhost/kai");
-        g.addTriple("http://localhost/data", "rdfs:comment", "foaf: darf hier nicht verwendet werden");
+
+        Webservice test = new Webservice();
+        test.setHello("Hi, I am a Webservice.");
+        test.setId(42);
+
+        Parameter param = new Parameter();
+        // param.setId(23);
+        param.setHello("Hi, I am a Parameter!");
+        param.setWebservice(test);
+        test.setParameter(param);
+
+        g.addObject(test);
+
+        return getResponse(g);
+    }
+
+    @GET
+    @Path("/mapTest")
+    public Response getMapTest(@Context UriInfo uriInfo) {
+        String source = uriInfo.getRequestUri().toString().replace("/mapTest","");
+        Grafeo g = new GrafeoImpl(source);
+        Webservice test = g.getObject(Webservice.class, g.resource("http://data.dm2e.eu/data/services/42"));
+
+        log.info("Result ID: " + test.getId());
+        log.info("Result Hello: " + test.getHello());
+        log.info("Result Parameter Hello: " + test.getParameter().getHello());
+        log.info("And back ;-): " + test.getParameter().getWebservice().getHello());
+
+
         return getResponse(g);
     }
 

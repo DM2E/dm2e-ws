@@ -36,6 +36,16 @@ public class GResourceImpl extends GValueImpl implements GResource {
     }
 
     @Override
+    public boolean isAnon() {
+        return resource.isAnon();
+    }
+
+    @Override
+    public String getAnonId() {
+        return resource.getId().toString();
+    }
+
+    @Override
     public void rename(String uri) {
         this.resource = ResourceUtils.renameResource(resource, uri);
         this.value = this.resource;
@@ -62,6 +72,12 @@ public class GResourceImpl extends GValueImpl implements GResource {
         if (value.isResource()) return new GResourceImpl(grafeo, value.asResource());
         if (value.isLiteral()) return new GLiteralImpl(grafeo, value.asLiteral());
         throw new RuntimeException("Not a literal or a resource value: " + getUri() + " -> " + uri);
+    }
+
+    @Override
+    public void set(String uri, GValue value) {
+        GResource prop = grafeo.resource(uri);
+        grafeo.addTriple(this, prop, value);
     }
 
     @Override

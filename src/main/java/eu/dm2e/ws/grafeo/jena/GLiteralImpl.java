@@ -22,16 +22,13 @@ public class GLiteralImpl extends GValueImpl implements GLiteral {
         this.grafeo = grafeo;
         this.value = this.literal;
     }
-    public GLiteralImpl(Grafeo grafeo, long literalValue)  {
+
+    public GLiteralImpl(Grafeo grafeo, Object literalValue)  {
         this.literal = getGrafeoImpl(grafeo).getModel().createTypedLiteral(literalValue);
         this.grafeo = grafeo;
         this.value = this.literal;
     }
-    public GLiteralImpl(GrafeoImpl grafeo, boolean truefalse) {
-        this.literal = getGrafeoImpl(grafeo).getModel().createTypedLiteral(truefalse);
-        this.grafeo = grafeo;
-        this.value = this.literal;
-	}
+
     public GLiteralImpl(Grafeo grafeo, Literal literal)  {
         this.literal = literal;
         this.grafeo = grafeo;

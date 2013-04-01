@@ -1,10 +1,11 @@
 package eu.dm2e.ws.grafeo;
 
+import com.hp.hpl.jena.query.ResultSet;
+import eu.dm2e.ws.grafeo.jena.GStatementImpl;
+
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
-
-import com.hp.hpl.jena.query.ResultSet;
 
 /**
  * Created with IntelliJ IDEA. User: kai Date: 3/5/13 Time: 11:21 AM To change
@@ -12,6 +13,8 @@ import com.hp.hpl.jena.query.ResultSet;
  */
 public interface Grafeo {
 	GResource findTopBlank();
+
+    void setNamespace(String prefix, String namespace);
 
 	void load(String uri);
 
@@ -25,13 +28,13 @@ public interface Grafeo {
 
 	GStatement addTriple(String subject, String predicate, String object);
 
-	GStatement addTriple(String subject, String predicate, GLiteral object);
+	GStatement addTriple(String subject, String predicate, GValue object);
+
+    void addObject(Object object);
 
 	GLiteral literal(String literal);
 
-	GLiteral literal(long literal);
-
-	GLiteral literal(boolean truefalse);
+	GLiteral literal(Object value);
 
 	GResource resource(String uri);
 
@@ -82,4 +85,9 @@ public interface Grafeo {
 	void readHeuristically(InputStream input);
 
 	void readHeuristically(File file);
+
+    <T> T getObject(Class T, GResource res);
+
+    GStatementImpl addTriple(GResource subject, GResource predicate,
+                             GValue object);
 }
