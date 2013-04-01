@@ -1,0 +1,30 @@
+@prefix bibo:    <http://purl.org/ontology/bibo/> .
+@prefix cc:      <http://creativecommons.org/ns#> .
+@prefix dc:      <http://purl.org/dc/elements/1.1/> .
+@prefix dcterms:  <http://purl.org/dc/terms/> .
+@prefix dct:     <http://purl.org/dc/terms/> .
+@prefix edm:     <http://www.europeana.eu/schemas/edm/> .
+@prefix fn:      <http://www.w3.org/2005/xpath-functions#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix geo:     <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix gr:      <http://purl.org/goodrelations/v1#> .
+@prefix ogp:     <http://ogp.me/ns#> .
+@prefix oo:      <http://purl.org/openorg/> .
+@prefix ore:     <http://www.openarchives.org/ore/terms/> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sesame:  <http://www.openrdf.org/schema/sesame#> .
+@prefix sioc:    <http://rdfs.org/sioc/ns#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix void:    <http://rdfs.org/ns/void#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+
+@prefix dm2e:    <http://onto.dm2e.eu/> .
+@prefix log:    <http://onto.dm2e.eu/logging#> .
+
+[]  a log:LogEntry ;
+    log:source <http://omnom.dm2e.eu/service/foobar> ;
+    log:context <http://omnom.dm2e.eu/workflow/1/slot/3> ;
+    log:level "DEBUG" ;
+    log:message "This is the message yay" .

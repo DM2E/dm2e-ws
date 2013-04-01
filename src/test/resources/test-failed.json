@@ -1,0 +1,7 @@
+{
+    "jobQueue": "eu.dm2e.task.worker.XsltWorker",
+    "jobStatus": "FAILED",
+    "jobConfig": {
+        "foo": "baz"
+    }
+}

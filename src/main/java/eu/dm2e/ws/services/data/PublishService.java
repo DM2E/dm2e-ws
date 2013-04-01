@@ -1,16 +1,23 @@
 package eu.dm2e.ws.services.data;
 
-import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Date;
 import java.util.logging.Logger;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
+import eu.dm2e.ws.NS;
+import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.services.AbstractRDFService;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,7 +29,7 @@ import java.util.logging.Logger;
 @Path("/published")
 public class PublishService extends AbstractRDFService {
     Logger log = Logger.getLogger(getClass().getName());
-
+    
     @GET
     @Path("/byURI")
     public Response getURI(@QueryParam("uri") String uri) {
@@ -33,14 +40,14 @@ public class PublishService extends AbstractRDFService {
         }
         log.info("URI: " + uri);
         Grafeo g = new GrafeoImpl();
-        g.readFromEndpoint("http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest", uri);
+        g.readFromEndpoint(NS.ENDPOINT, uri);
         return getResponse(g);
     }
 
     @GET
     public Response getList(@Context UriInfo uriInfo) {
         Grafeo g = new GrafeoImpl();
-        g.readTriplesFromEndpoint("http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest", null, "rdf:type", g.resource("void:Dataset"));
+        g.readTriplesFromEndpoint(NS.ENDPOINT, null, "rdf:type", g.resource("void:Dataset"));
         return getResponse(g);
     }
     @POST
@@ -51,7 +58,7 @@ public class PublishService extends AbstractRDFService {
         g.addTriple(graphUri, "rdf:type", "void:Dataset");
         g.addTriple(graphUri, "dct:created", g.now());
 
-        g.writeToEndpoint("http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest/statements", graphUri);
+        g.writeToEndpoint(NS.ENDPOINT_STATEMENTS, graphUri);
         return getResponse(g);
     }
 }

@@ -1,26 +1,39 @@
 package eu.dm2e.ws.grafeo.jena;
 
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.rdf.model.*;
-import com.hp.hpl.jena.update.UpdateExecutionFactory;
-import com.hp.hpl.jena.update.UpdateFactory;
-import com.hp.hpl.jena.update.UpdateProcessor;
-import com.hp.hpl.jena.update.UpdateRequest;
-import eu.dm2e.ws.grafeo.GLiteral;
-import eu.dm2e.ws.grafeo.GValue;
-import eu.dm2e.ws.grafeo.Grafeo;
-
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
+
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.ResIterator;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.update.UpdateExecutionFactory;
+import com.hp.hpl.jena.update.UpdateFactory;
+import com.hp.hpl.jena.update.UpdateProcessor;
+import com.hp.hpl.jena.update.UpdateRequest;
+
+import eu.dm2e.ws.grafeo.GLiteral;
+import eu.dm2e.ws.grafeo.GValue;
+import eu.dm2e.ws.grafeo.Grafeo;
 
 /**
  * Created with IntelliJ IDEA. User: kai Date: 3/2/13 Time: 2:27 PM To change
@@ -30,6 +43,8 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 	private Logger log = Logger.getLogger(getClass().getName());
 	protected Model model;
 	protected Map<String, String> namespaces = new HashMap<String, String>();
+	
+	public static String SPARQL_CONSTRUCT_EVERYTHING = "CONSTRUCT { ?s ?p ?o } WHERE { { GRAPH ?g { ?s ?p ?o } } UNION { ?s ?p ?o } }";
 
 	public GrafeoImpl() {
 		this(ModelFactory.createDefaultModel());
@@ -44,21 +59,15 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		this(ModelFactory.createDefaultModel());
 		this.model.read(input, null, lang);
 	}
-
-	public GrafeoImpl(File input) {
+	
+	public GrafeoImpl(InputStream input) {
 		this(ModelFactory.createDefaultModel());
-		try {
-			this.model.read(new FileInputStream(input), null, "N3");
-		} catch (Throwable t) {
-			try {
-				this.model.read(new FileInputStream(input), null, "RDF/XML");
-			} catch (Throwable t2) {
-				// TODO Throw proper exception that is converted to a proper
-				// HTTP response in DataService
-				throw new RuntimeException("Could not parse input: " + input,
-						t2);
-			}
-		}
+		this.readHeuristically(input);
+	}
+	
+	public GrafeoImpl(File file) {
+		this(ModelFactory.createDefaultModel());
+		this.readHeuristically(file);
 	}
 
 	/**
@@ -71,30 +80,19 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 	 *            the format of the content. If null it will be guessed.
 	 */
 	public GrafeoImpl(String content, String contentFormat) {
-		if (contentFormat != null) {
+		this(ModelFactory.createDefaultModel());
+		if (null == contentFormat)  {
+			this.readHeuristically(content);
+		} else {
 			try {
 				this.model.read(content, null, contentFormat);
 			} catch (Throwable t0) {
 				throw new RuntimeException("Could not parse input: " + content
 						+ " for given content format " + contentFormat, t0);
 			}
-		} else {
-			// now we guess the content type
-			try {
-				this.model.read(content, null, "N3");
-			} catch (Throwable t1) {
-				try {
-					this.model.read(content, null, "RDF/XML");
-				} catch (Throwable t2) {
-					// TODO Throw proper exception that is converted to a proper
-					// HTTP response in DataService
-					throw new RuntimeException("Could not parse input: "
-							+ content, t2);
-				}
-			}
 		}
-
 	}
+
 
 	@Override
 	public GResourceImpl findTopBlank() {
@@ -116,6 +114,38 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		this.model = model;
 		initDefaultNamespaces();
 		applyNamespaces(model);
+	}
+	
+	@Override
+	public void readHeuristically(String contentStr) {
+		InputStream content = new ByteArrayInputStream(contentStr.getBytes());
+		readHeuristically(content);
+	}
+	
+	@Override
+	public void readHeuristically(InputStream input) {
+		try {
+			this.model.read(input, null, "N3");
+		} catch (Throwable t) {
+			try {
+				this.model.read(input, null, "RDF/XML");
+			} catch (Throwable t2) {
+				// TODO Throw proper exception that is converted to a proper
+				// HTTP response in DataService
+				throw new RuntimeException("Could not parse input: " + input, t);
+			}
+		}
+	}
+	
+	@Override
+	public void readHeuristically(File file) {
+		FileInputStream fis;
+		try {
+			fis = new FileInputStream(file);
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException("File not found:  " + file.getAbsolutePath(), e);
+		}
+		readHeuristically(fis);
 	}
 
 	@Override
@@ -139,6 +169,11 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		}
 
 	}
+	
+	@Override
+	public void empty() {
+		model.removeAll();
+	}
 
 	@Override
 	public GResourceImpl get(String uri) {
@@ -160,6 +195,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		GStatementImpl statement;
 		String objectExp = expand(object);
 		try {
+			@SuppressWarnings("unused")
 			URI testUri = new URI(objectExp);
 			GResourceImpl or = new GResourceImpl(this, object);
 			statement = new GStatementImpl(this, s, p, or);
@@ -183,6 +219,16 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 	@Override
 	public GLiteralImpl literal(String literal) {
 		return new GLiteralImpl(this, literal);
+	}
+	
+	@Override
+	public GLiteralImpl literal(long number) {
+		return new GLiteralImpl(this, number);
+	}
+	
+	@Override
+	public GLiteralImpl literal(boolean truefalse) {
+		return new GLiteralImpl(this, truefalse);
 	}
 
 	@Override
@@ -242,6 +288,11 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		log.info("Reading from endpoint finished.");
 	}
 
+	@Override
+	public void readFromEndpoint(String endpoint, URI graphURI) {
+		readFromEndpoint(endpoint, graphURI.toString());
+	}
+
 	public void readTriplesFromEndpoint(String endpoint, String subject,
 			String predicate, GValue object) {
 
@@ -253,11 +304,11 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		StringBuilder sb = new StringBuilder("CONSTRUCT {");
 		sb.append(subject != null ? subject : "?s").append(" ");
 		sb.append(predicate != null ? predicate : "?p").append(" ");
-		sb.append(object != null ? object.toString() : "?p").append(" ");
+		sb.append(object != null ? object.toString() : "?o").append(" ");
 		sb.append("}  WHERE { ");
 		sb.append(subject != null ? subject : "?s").append(" ");
 		sb.append(predicate != null ? predicate : "?p").append(" ");
-		sb.append(object != null ? object.toString() : "?p").append(" ");
+		sb.append(object != null ? object.toString() : "?o").append(" ");
 		sb.append(" }");
 		Query query = QueryFactory.create(sb.toString());
 		log.info("Query: " + sb.toString());
@@ -285,6 +336,11 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		exec.execute();
 
 	}
+	
+	@Override
+	public void writeToEndpoint(String endpoint, URI graphURI) {
+		writeToEndpoint(endpoint, graphURI.toString());
+	}
 
 	@Override
 	public GLiteral now() {
@@ -305,6 +361,12 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		model.write(sw, "N-TRIPLE");
 		return sw.toString();
 	}
+	
+	@Override
+	public long size() {
+		return model.size();
+	}
+
 
 	protected void applyNamespaces(Model model) {
 		for (String prefix : namespaces.keySet()) {
@@ -316,7 +378,68 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		return model;
 
 	}
+	
+	@Override
+	public boolean executeSparqlAsk(String queryString) {
+	    Query query = QueryFactory.create(queryString);
+	    QueryExecution qe = QueryExecutionFactory.create(query, model);
+	    return  qe.execAsk();
+	}
 
+	@Override
+	public boolean containsStatementPattern(String s, String p, String o) {
+		s = s.startsWith("?") ? s : "<" + expand(s) + ">";
+		p = p.startsWith("?") ? p : "<" + expand(p) + ">";
+		o = o.startsWith("?") ? o : "<" + expand(o) + ">";
+		String queryString = String.format("ASK { %s %s %s }", s, p, o);
+		log.info(queryString);
+		return executeSparqlAsk(queryString);
+	}
+	
+	@Override
+	public boolean containsStatementPattern(String s, String p, GLiteral o) {
+		s = s.startsWith("?") ? s : "<" + expand(s) + ">";
+		p = p.startsWith("?") ? p : "<" + expand(p) + ">";
+		String queryString = String.format("ASK { %s %s %s }", s, p, o.getValue());
+		return executeSparqlAsk(queryString);
+	}
+	
+	@Override
+	public ResultSet executeSparqlSelect(String queryString) {
+	    log.info("SELECT query: " + queryString);
+	    Query query = QueryFactory.create(queryString);
+	    QueryExecution qe = QueryExecutionFactory.create(query, model);
+	    return qe.execSelect();
+	}
+	
+	@Override
+	public GrafeoImpl executeSparqlConstruct(String queryString) {
+	    Query query = QueryFactory.create(queryString);
+	    QueryExecution qe = QueryExecutionFactory.create(query, model);
+	    return new GrafeoImpl(qe.execConstruct());
+	}
+	
+	@Override
+	public boolean containsResource(String g) {
+		String gUri = expand(g);
+		if (model.containsResource(model.getResource(gUri)))
+			return true;
+		return false;
+	}
+	
+	public boolean containsResource(URI graphURI) {
+		return containsResource(graphURI.toString());
+	}
+	
+	public RDFNode firstMatchingObject(String s, String p) {
+		s = s.startsWith("?") ? s : "<" + expand(s) + ">";
+		p = p.startsWith("?") ? p : "<" + expand(p) + ">";
+		ResultSet iter = this.executeSparqlSelect(String.format("SELECT ?o { %s %s ?o } LIMIT 1", s, p));
+		if (! iter.hasNext())
+			return null; 
+		return iter.next().get("?o");
+	}
+	
 	protected void initDefaultNamespaces() {
 		// TODO: Put this in a config file (kai)
 		namespaces.put("foaf", "http://xmlns.com/foaf/0.1/");
@@ -338,6 +461,12 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		namespaces.put("void", "http://rdfs.org/ns/void#");
 		namespaces.put("edm", "http://www.europeana.eu/schemas/edm/");
 		namespaces.put("ore", "http://www.openarchives.org/ore/terms/");
+        namespaces.put("dm2e", "http://onto.dm2e.eu/onto#");
 
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return model.isEmpty();
 	}
 }

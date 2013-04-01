@@ -1,49 +1,85 @@
 package eu.dm2e.ws.grafeo;
 
+import java.io.File;
+import java.io.InputStream;
+import java.net.URI;
+
+import com.hp.hpl.jena.query.ResultSet;
 
 /**
- * Created with IntelliJ IDEA.
- * User: kai
- * Date: 3/5/13
- * Time: 11:21 AM
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: kai Date: 3/5/13 Time: 11:21 AM To change
+ * this template use File | Settings | File Templates.
  */
 public interface Grafeo {
-    GResource findTopBlank();
+	GResource findTopBlank();
 
-    void load(String uri);
+	void load(String uri);
 
-    GResource get(String uri);
+	void empty();
 
-    String expand(String uri);
+	boolean isEmpty();
 
-    GStatement addTriple(String subject, String predicate, String object);
+	GResource get(String uri);
 
-    GStatement addTriple(String subject, String predicate, GLiteral object);
+	String expand(String uri);
 
-    GLiteral literal(String literal);
+	GStatement addTriple(String subject, String predicate, String object);
 
-    GResource resource(String uri);
+	GStatement addTriple(String subject, String predicate, GLiteral object);
 
-    boolean isEscaped(String input);
+	GLiteral literal(String literal);
 
-    String unescapeLiteral(String literal);
+	GLiteral literal(long literal);
 
-    String escapeLiteral(String literal);
+	GLiteral literal(boolean truefalse);
 
-    String unescapeResource(String uri);
+	GResource resource(String uri);
 
-    String escapeResource(String uri);
+	boolean isEscaped(String input);
 
-    void readFromEndpoint(String endpoint, String graph);
+	String unescapeLiteral(String literal);
 
-    void readTriplesFromEndpoint(String endpoint, String subject, String predicate, GValue object);
+	String escapeLiteral(String literal);
 
-    void writeToEndpoint(String endpoint, String graph);
+	String unescapeResource(String uri);
 
-    String getNTriples();
+	String escapeResource(String uri);
 
-    GLiteral now();
+	void readFromEndpoint(String endpoint, String graph);
 
-    GLiteral date(Long timestamp);
+	void readFromEndpoint(String endpoint, URI graphURI);
+
+	void readTriplesFromEndpoint(String endpoint, String subject, String predicate, GValue object);
+
+	void writeToEndpoint(String endpoint, String graph);
+
+	void writeToEndpoint(String endpoint, URI graphURI);
+
+	String getNTriples();
+
+	long size();
+
+	GLiteral now();
+
+	GLiteral date(Long timestamp);
+
+	boolean executeSparqlAsk(String queryString);
+
+	boolean containsStatementPattern(String s, String p, String o);
+
+	boolean containsStatementPattern(String s, String p, GLiteral o);
+
+	boolean containsResource(String graph);
+
+	boolean containsResource(URI graphURI);
+
+	ResultSet executeSparqlSelect(String queryString);
+
+	Grafeo executeSparqlConstruct(String queryString);
+
+	void readHeuristically(String content);
+
+	void readHeuristically(InputStream input);
+
+	void readHeuristically(File file);
 }

@@ -1,0 +1,4 @@
+<configuration>
+	<properties fileName="dm2e-ws.local.properties" config-optional="true" />
+	<properties fileName="dm2e-ws.default.properties" />
+</configuration>

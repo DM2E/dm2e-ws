@@ -5,3 +5,5 @@ dm2e-ws.iml
 .project
 .settings
 .classpath
+files/
+catalog-v001.xml

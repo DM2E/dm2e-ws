@@ -2,15 +2,6 @@
 package eu.dm2e.ws.services.data;
 
 
-import eu.dm2e.ws.grafeo.GResource;
-import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -18,10 +9,28 @@ import java.net.URLDecoder;
 import java.util.Date;
 import java.util.logging.Logger;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
+import eu.dm2e.ws.NS;
+import eu.dm2e.ws.grafeo.GResource;
+import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.services.AbstractRDFService;
+
 
 @Path("/data")
 public class DataService extends AbstractRDFService {
     Logger log = Logger.getLogger(getClass().getName());
+    
 
     @GET
     public Response get() {
@@ -61,7 +70,8 @@ public class DataService extends AbstractRDFService {
     public Response getConfig(@Context UriInfo uriInfo, @PathParam("id") String id) {
         log.info("Configuration requested: " + uriInfo.getRequestUri());
         Grafeo g = new GrafeoImpl();
-        g.readFromEndpoint("http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest", uriInfo.getRequestUri().toString());
+        // @TODO should proabably use getRequestUriWithoutQuery().toString() here
+        g.readFromEndpoint(NS.ENDPOINT, uriInfo.getRequestUri().toString());
         return getResponse(g);
     }
 
@@ -69,7 +79,7 @@ public class DataService extends AbstractRDFService {
     @Path("configurations")
     public Response getConfig(@Context UriInfo uriInfo) {
         Grafeo g = new GrafeoImpl();
-        g.readTriplesFromEndpoint("http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest", null, "rdf:type", g.resource("http://example.org/classes/Configuration"));
+        g.readTriplesFromEndpoint(NS.ENDPOINT, null, "rdf:type", g.resource("http://example.org/classes/Configuration"));
         return getResponse(g);
     }
 
@@ -85,8 +95,9 @@ public class DataService extends AbstractRDFService {
         String uri = uriInfo.getRequestUri() + "/" + new Date().getTime();
         if (blank!=null) blank.rename(uri);
         g.addTriple(uri,"rdf:type","http://example.org/classes/Configuration");
-        g.writeToEndpoint("http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest/statements", uri);
+        g.writeToEndpoint(NS.ENDPOINT_STATEMENTS , uri);
         return Response.created(URI.create(uri)).entity(getResponseEntity(g)).build();
     }
+
 
 }
