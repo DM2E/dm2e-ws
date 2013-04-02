@@ -1,4 +1,4 @@
-package eu.dm2e.ws.services.data;
+package eu.dm2e.ws.services;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -16,6 +16,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -32,7 +33,6 @@ import javax.ws.rs.core.Variant;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.validator.routines.UrlValidator;
-import org.apache.jena.atlas.logging.Log;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
@@ -101,8 +101,6 @@ public abstract class AbstractRDFService {
 		return ub.build();
 	}
 	
-	protected abstract String getServiceDescriptionResourceName();
-	
 	protected GrafeoImpl getServiceDescriptionGrafeo() throws IOException  {
 //        InputStream descriptionStream  = Thread.currentThread().getContextClassLoader().getResourceAsStream("xslt-service-description.ttl");
 //		System.out.println(getServiceDescriptionResourceName());
@@ -118,6 +116,25 @@ public abstract class AbstractRDFService {
         if (blank!=null) blank.rename(uri);
 		return g;
 	}
+	
+	/**
+	 * Describes this service.
+	 */
+	@GET
+	@Path("/describe")
+	public Response getDescription(@Context UriInfo uriInfo)  {
+        Grafeo g;
+        
+        Logger log = Logger.getLogger(getClass().getName());
+		try {
+			g = getServiceDescriptionGrafeo();
+		} catch (Exception e) {
+			log.severe(e.toString());
+			return throwServiceError(e);
+		}
+        return getResponse(g);
+	}
+	
 	
 	@PUT
 	@Path("validate")

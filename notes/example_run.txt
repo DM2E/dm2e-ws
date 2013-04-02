@@ -1,0 +1,54 @@
+Client defines XSLT config ($CONFIG)
+    [] dm2e:xmlSource;
+       dm2e:xmlSource.
+
+POST /xslt $CONFIG
+    Unless $CONFIG contains 'resultFile':
+        XSLT Service registers a new file
+            POST /file/empty
+            ==> 202 $FILE_URI
+    XSLT Service stores config
+        POST /config $CONFIG
+        ==> 202 $CONFIG_URI
+    XSLT Service creates a new job ($JOBCONFIG)
+        [] dm2e:webService $XSLT_SERVICE_URI ;
+           dm2e:webServiceConfig $CONFIG_URI ;
+           dm2e:resultFile $FILE_URI .
+        POST /job $JOBCONFIG
+        ==> 202 $JOB_URI
+    XSLT Service posts $CONFIG_URI to message queue
+==> 202 $JOB_URI (HTTP Request is complete)
+
+XSLT worker receives $JOB_URI from message queue
+    XSLT Worker dereferences $JOBCONFIG from $JOB_URI
+    XSLT Worker waits for xmlSource and xsltSource to become ready
+        PUT $JOB_URI/status "WAITING"
+    XSLT Worker sets job status to started
+        PUT $JOB_URI/status "STARTED"
+    XSLT Worker applies xsltSource to xmlSource => $XML_RESULT
+    XLST Worker stores $XML_RESULT at $FILE_URI
+        PUT $FILE_URI file=$XML_RESULT
+    XSLT Worker sets job status to complete
+        PUT $JOB_URI/status "COMPLETED"
+
+While the XSLT Worker is running, the client can check on the progress:
+
+Progress of the job:
+GET $JOB_URI/status
+    ==> 200 ["WAITING", "STARTED", "FAILED", "COMPLETE"]
+
+Log messages:
+GET $JOB_URI/log
+    ==> 200 RDF with all the log messages
+
+Status of the job as a whole:
+GET $JOB_URI
+    ==> 200 RDF of the complete job
+
+Progress of the file
+GET -H "Accept: text/turtle" $FILE_URI
+    ==> 202 $JOB_URI dm2e:status "WAITING" ...
+    or
+    ==> 200 $JOB_URI dm2e:status "AVAILABLE" ...
+    or
+    ==> 404 $JOB_URI dm2e:status "DELETED" ...

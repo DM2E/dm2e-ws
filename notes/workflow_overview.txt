@@ -1,0 +1,18 @@
+Callbacks
+
+Every Service has a callback option
+
+$ME: The service subscribing
+$SERVICE: The service being subscribed
+$EVENT_TYPE: One of
+    dm2e:statusChangeEvent
+        payload: previousState currentState
+    dm2e:logEvent
+        payload: logEntry
+
+POST $SERVICE/callback
+[] dm2e:onEvent dm2e:statusChangeEvent ;
+   dm2e:callback $ME/callback
+
+Whenever $SERVICE changes it's status ... no, the JOB changes it's 
+

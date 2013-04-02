@@ -1,18 +1,23 @@
 package eu.dm2e.ws.services.data;
 
-import eu.dm2e.ws.Config;
-import eu.dm2e.ws.NS;
-import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Date;
 import java.util.logging.Logger;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
+import eu.dm2e.ws.NS;
+import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.services.AbstractRDFService;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,14 +30,6 @@ import java.util.logging.Logger;
 public class PublishService extends AbstractRDFService {
     Logger log = Logger.getLogger(getClass().getName());
     
-	private static final String SERVICE_DESCRIPTION_RESOURCE = Config.getString("dm2e.service.publish.description_resource");
-
-	@Override
-	protected String getServiceDescriptionResourceName() {
-		// TODO Auto-generated method stub
-		return SERVICE_DESCRIPTION_RESOURCE;
-	}
-
     @GET
     @Path("/byURI")
     public Response getURI(@QueryParam("uri") String uri) {

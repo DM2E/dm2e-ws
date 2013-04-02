@@ -1,4 +1,4 @@
-package eu.dm2e.ws.services.data;
+package eu.dm2e.ws.services.file;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -40,6 +40,7 @@ import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.jena.SparqlUpdate;
 import eu.dm2e.ws.httpmethod.PATCH;
+import eu.dm2e.ws.services.AbstractRDFService;
 
 /**
  * The service includes all necessary methods to upload a new file (no matter
@@ -55,7 +56,6 @@ public class FileService extends AbstractRDFService {
 
 	// private static Configuration config = Config.getConfig();
 	private static final String 
-			SERVICE_DESCRIPTION_RESOURCE = Config.getString("dm2e.service.config.description_resource"),
 			SERVICE_URI = Config.getString("dm2e.service.file.base_uri"),
 			STORAGE_ENDPOINT = Config.getString("dm2e.ws.sparql_endpoint"),
 			STORAGE_ENDPOINT_STATEMENTS = Config.getString("dm2e.ws.sparql_endpoint_statements"),
@@ -73,11 +73,6 @@ public class FileService extends AbstractRDFService {
 	}
 
 	Logger log = Logger.getLogger(getClass().getName());
-	
-	@Override
-	public String getServiceDescriptionResourceName() {
-		return SERVICE_DESCRIPTION_RESOURCE;
-	}	
 
 	/**
 	 * Saves the sent file to disk and stores derived metadata in the graph
