@@ -1,5 +1,6 @@
-package eu.dm2e.ws.api;
+package eu.dm2e.ws.api.omnom;
 
+import eu.dm2e.ws.api.Parameter;
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFId;

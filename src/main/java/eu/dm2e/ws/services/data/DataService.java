@@ -2,15 +2,13 @@
 package eu.dm2e.ws.services.data;
 
 
-import eu.dm2e.ws.Config;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.Parameter;
-import eu.dm2e.ws.api.Webservice;
+import eu.dm2e.ws.api.omnom.Webservice;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
-import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -28,15 +26,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
-import eu.dm2e.ws.NS;
-import eu.dm2e.ws.grafeo.GResource;
-import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.AbstractRDFService;
 
 
