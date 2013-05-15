@@ -184,17 +184,17 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
                     try {
                         Object value = PropertyUtils.getProperty(object, field.getName());
                         GValue gv = null;
-                        if (isAnnotatedObject(value)) {
-                            addObject(value);
-                            gv = getGResource(value);
-
-
-                        } else {
-                            gv = literal(value);
-                        }
-                        String property = field.getAnnotation(RDFProperty.class).value();
-                        log.info("Value for " + property + ": " + gv);
-                        result.set(property, gv);
+                        if (null != value) {
+							if (isAnnotatedObject(value)) {
+								addObject(value);
+								gv = getGResource(value);
+							} else {
+								gv = literal(value);
+							}
+							String property = field.getAnnotation(RDFProperty.class).value();
+	                        log.info("Value for " + property + ": " + gv);
+	                        result.set(property, gv);
+						}
                     } catch (InvocationTargetException e) {
                         throw new RuntimeException("An exception occurred: " + e, e);
                     } catch (NoSuchMethodException e) {
@@ -274,6 +274,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     }
 
     protected boolean isAnnotatedObject(Object object) {
+    	System.out.println(object);
         return object.getClass().isAnnotationPresent(RDFClass.class);
     }
 
@@ -458,14 +459,14 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         StringBuilder sb = new StringBuilder("CONSTRUCT {");
         sb.append(subject != null ? subject : "?s").append(" ");
         sb.append(predicate != null ? predicate : "?p").append(" ");
-        sb.append(object != null ? object.toString() : "?o").append(" ");
+        sb.append(object != null ? object.toEscapedString() : "?o").append(" ");
         sb.append("}  WHERE { ");
         sb.append(subject != null ? subject : "?s").append(" ");
         sb.append(predicate != null ? predicate : "?p").append(" ");
-        sb.append(object != null ? object.toString() : "?o").append(" ");
+        sb.append(object != null ? object.toEscapedString() : "?o").append(" ");
         sb.append(" }");
-        Query query = QueryFactory.create(sb.toString());
         log.info("Query: " + sb.toString());
+        Query query = QueryFactory.create(sb.toString());
         QueryExecution exec = QueryExecutionFactory.createServiceRequest(
                 endpoint, query);
         exec.execConstruct(model);
