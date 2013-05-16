@@ -2,7 +2,6 @@ package eu.dm2e.ws.grafeo.test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFId;
