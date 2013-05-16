@@ -93,6 +93,8 @@ public interface Grafeo {
 
     <T> T getObject(Class T, GResource res);
 
+	<T> T getObject(Class T, String resStr);
+
     GStatement addTriple(GResource subject, GResource predicate,
                              GValue object);
 

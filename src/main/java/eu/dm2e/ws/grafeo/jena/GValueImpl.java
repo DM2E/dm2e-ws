@@ -1,5 +1,7 @@
 package eu.dm2e.ws.grafeo.jena;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
@@ -95,6 +97,13 @@ public abstract class GValueImpl extends JenaImpl implements GValue {
             } else if (T.equals(Calendar.class)) {
                 log.info("Found Calendar.");
                 result = (T) DatatypeConverter.parseDateTime(toParse);
+            } else if (T.equals(URI.class)) {
+                log.info("Found URI.");
+                try {
+					result = (T) new URI(toParse);
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				}
             }
         } else {
             log.info("Found Resource.");

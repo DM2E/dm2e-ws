@@ -37,7 +37,7 @@ public class WebservicePojo {
      ********************/
     
     public WebservicePojo() {
-    	// TODO to make BeanUtils happy
+    	// to make BeanUtils happy
     }
     
     /*********************

@@ -381,9 +381,10 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
             	
             	// One-value property
             	else {
-        			log.severe(field.getName() + " is a boring " + field.getType().getClass());
+        			log.severe(field.getName() + " is a boring " + field.getType());
 					try {
 						GValue propValue = res.get(prop);
+						log.severe("" + prop + " : " + propValue);
 						if (null==propValue) {
 							continue;
 						}
@@ -410,6 +411,11 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
             }
         }
         return result;
+    }
+    
+    @Override
+    public <T> T getObject(Class T, String resStr) {
+    	return getObject(T, resource(resStr));
     }
 
     @Override
