@@ -414,6 +414,11 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     }
     
     @Override
+	public <T> T getObject(Class T, URI uri) {
+    	return getObject(T, resource(uri));
+	}
+    
+    @Override
     public <T> T getObject(Class T, String resStr) {
     	return getObject(T, resource(resStr));
     }
@@ -816,4 +821,5 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         namespaces.put("omnom", "http://onto.dm2e.eu/omnom/");
 
     }
+
 }

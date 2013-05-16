@@ -27,7 +27,6 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
 
-import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.sun.jersey.core.header.FormDataContentDisposition;
@@ -36,6 +35,7 @@ import com.sun.jersey.multipart.FormDataParam;
 
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.jena.SparqlUpdate;
@@ -60,9 +60,9 @@ public class FileService extends AbstractRDFService {
 			STORAGE_ENDPOINT = Config.getString("dm2e.ws.sparql_endpoint"),
 			STORAGE_ENDPOINT_STATEMENTS = Config.getString("dm2e.ws.sparql_endpoint_statements"),
 			
-			NS_DM2E = Config.getString("dm2e.ns.dm2e"),
-			PROP_DM2E_FILE_RETRIEVAL_URI = NS_DM2E + "file_retrieval_uri",
-			PROP_DM2E_FILE_LOCATION = NS_DM2E + "file_location";
+			NS_DM2E = Config.getString("dm2e.ns.dm2e");
+//			PROP_DM2E_FILE_RETRIEVAL_URI = NS_DM2E + "file_retrieval_uri",
+//			PROP_DM2E_FILE_LOCATION = NS_DM2E + "file_location";
 
 	// this defines the states a file can be in, in addition to the
 	// HTTP response when retrieving the file data.
@@ -84,12 +84,13 @@ public class FileService extends AbstractRDFService {
 	 *            The graph this file should be stored in
 	 * @param uri
 	 *            The URI that represents this file
+	 * @return 
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 * @throws NoSuchAlgorithmException
 	 * 
 	 */
-	private void storeAndDescribeFile(
+	private FilePojo storeAndDescribeFile(
 			InputStream fileInStream,
 			Grafeo oldG,
 			URI uri) throws FileNotFoundException, IOException {
@@ -126,10 +127,15 @@ public class FileService extends AbstractRDFService {
 
 		// TODO add right predicates here
 		// store file-based/implicit metadata
-		oldG.addTriple(uriStr, "dm2e:md5", oldG.literal(mdStr));
-		oldG.addTriple(uriStr, "dm2e:file_location", oldG.literal(f.getAbsolutePath()));
-		oldG.addTriple(uriStr, "dm2e:file_retrival_uri", uriStr);
-		oldG.addTriple(uriStr, "dm2e:file_size", oldG.literal(f.length()));
+		FilePojo filePojo = new FilePojo();
+		filePojo.setMd5(mdStr);
+		filePojo.setFileLocation(f.getAbsolutePath()); // TODO not a good "solution"
+		filePojo.setId(uri.toString());
+		filePojo.setFileRetrievalURI(uri);
+		filePojo.setFileSize(f.length());
+		oldG.addObject(filePojo);
+		
+		return filePojo;
 
 		// these are only available if this is an upload field and not just a
 		// form field
@@ -356,8 +362,9 @@ public class FileService extends AbstractRDFService {
 			
 			// if the file part is null, make sure that a
 			// dm2e:file_retrieval_uri is provided in meta
-			if (filePart == null && ! g.containsStatementPattern(uri.toString(), PROP_DM2E_FILE_RETRIEVAL_URI, "?o")) {
-				return throwServiceError("If no 'file' is set, <" + PROP_DM2E_FILE_RETRIEVAL_URI + "> is REQUIRED in 'meta'.");
+			FilePojo f = g.getObject(FilePojo.class, uri);
+			if (filePart == null && null == f.getFileRetrievalURI()) {
+				return throwServiceError("If no 'file' is set, omnom:fileRetrievalURI is REQUIRED in 'meta'.");
 			}
 		}
 
@@ -366,9 +373,10 @@ public class FileService extends AbstractRDFService {
 			try {
 				InputStream fileInStream = filePart.getValueAs(InputStream.class);
 				// store and describe file
-				storeAndDescribeFile(fileInStream, g, uri);
+				FilePojo filePojo = storeAndDescribeFile(fileInStream, g, uri);
 				// it's stored, set to AVAILABLE
-				g.addTriple(uriStr, "dm2e:fileStatus", g.literal(FileStatus.AVAILABLE.toString()));
+				filePojo.setFileStatus(FileStatus.AVAILABLE.toString());
+				g.addObject(filePojo);
 			} catch (IOException e) {
 				return throwServiceError(e);
 			}
@@ -445,9 +453,12 @@ public class FileService extends AbstractRDFService {
 		if (!g.containsResource(uri)) {
 			return Response.status(404).entity("No such file in the triplestore.").build();
 		}
+		FilePojo filePojo = g.getObject(FilePojo.class, g.resource(uri));
+		Grafeo outG = new GrafeoImpl();
+		outG.addObject(filePojo);
 		// TODO we need a link to the "get" ws where the file can be retrieved
 		// from because the internal information is not really useful
-		return getResponse(g);
+		return getResponse(outG);
 	}
 
 	/**
@@ -478,28 +489,30 @@ public class FileService extends AbstractRDFService {
 				return null;
 			}
 		}
-		String path;
-		try {
-			path = g.firstMatchingObject(uri, PROP_DM2E_FILE_LOCATION).toString();
-		} catch (NullPointerException e) {
-			return throwServiceError("File location of this file is unknown.");
-		}
-		RDFNode contentTypeNode = g.firstMatchingObject(uri, "dct:format");
-		RDFNode originalNameNode = g.firstMatchingObject(uri, "dm2e:original_name");
-		String contentType = contentTypeNode != null ? contentTypeNode.toString() : "text/plain";
-		String originalName = originalNameNode != null ? originalNameNode.toString() : "rdf_file_info";
+//		String path;
+//		try {
+//			path = g.firstMatchingObject(uri, PROP_DM2E_FILE_LOCATION).toString();
+//		} catch (NullPointerException e) {
+//			return throwServiceError("File location of this file is unknown.");
+//		}
+//		GLiteral contentTypeNode = (GLiteral) g.firstMatchingObject(uri, "dct:format");
+//		GLiteral originalNameNode = (GLiteral) g.firstMatchingObject(uri, "dm2e:original_name");
+//		String contentType = contentTypeNode != null ? contentTypeNode.toString() : "text/plain";
+//		String originalName = originalNameNode != null ? originalNameNode.toString() : "rdf_file_info";
+		
+		FilePojo filePojo = g.getObject(FilePojo.class, uri);
 		
 		FileInputStream fis;
 		try {
-			log.info(path);
-			fis = new FileInputStream(path);
+			log.info(filePojo.getFileLocation());
+			fis = new FileInputStream(filePojo.getFileLocation());
 		} catch (FileNotFoundException e) {
 			log.info(e.toString());
 			return Response.status(404).entity(
-					"File '" + path + "' not found on the server. " + e.toString()).build();
+					"File '" + filePojo.getFileLocation() + "' not found on the server. " + e.toString()).build();
 		}
-		return Response.ok(fis).header("Content-Type", contentType).header("Content-Disposition",
-				"attachment; filename=" + originalName).build();
+		return Response.ok(fis).header("Content-Type", filePojo.getMediaType()).header("Content-Disposition",
+				"attachment; filename=" + filePojo.getOriginalName()).build();
 	}
 	
 	/**

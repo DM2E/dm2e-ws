@@ -94,9 +94,12 @@ public interface Grafeo {
     <T> T getObject(Class T, GResource res);
 
 	<T> T getObject(Class T, String resStr);
+	
+	<T> T getObject(Class T, URI uri);
 
     GStatement addTriple(GResource subject, GResource predicate,
                              GValue object);
 
 	GValue firstMatchingObject(String string2, String string);
+
 }
