@@ -1,5 +1,6 @@
 package eu.dm2e.ws.grafeo;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.logging.Logger;
@@ -57,5 +58,43 @@ public class AnnotationExportTest {
 //		assertTrue(g.containsStatementPattern(pojo_uri, "omnom:some_number", g.literal(5)));
 //		assertTrue(g.containsStatementPattern(pojo_uri, "omnom:some_number", g.literal(11111)));
 	}
+	
+	@Test
+	public void testSetImport() {
+		GrafeoImpl g = new GrafeoImpl();
+		String uri = "http://foo";
+//		GResource res = g.resource(uri);
+		g.addTriple(uri, "rdf:type", "omnom:SetPojoTest");
+		g.addTriple(uri, "omnom:some_number", g.literal(5));
+		g.addTriple(uri, "omnom:some_number", g.literal(100));
+//		Set<GValue> set = res.getAll("omnom:some_number");
+//		log.info("foo: " + set);
+		SetPojo o = g.getObject(SetPojo.class, g.resource(uri));
+		log.info("" + o.getLiteralSet());
+		GrafeoImpl g2 = new GrafeoImpl();
+		g2.addObject(o);
+		assertEquals(g.getCanonicalNTriples(), g2.getCanonicalNTriples());
+//		log.info(g2.getNTriples());
+//		log.info(" " + o.getSome_number());
+	}
 
+	@Test
+	public void testListImport() {
+		GrafeoImpl g1 = new GrafeoImpl();
+		GrafeoImpl g2 = new GrafeoImpl();
+		String uri = "http://foo";
+		GResource res = g1.resource(uri);
+		ListPojo pojo = new ListPojo();
+		pojo.setIdURI(uri);
+		pojo.getIntegerResourceList().add(new IntegerPojo(uri+"/x1", 1));
+		pojo.getIntegerResourceList().add(new IntegerPojo(uri+"/x2", 2));
+		g1.addObject(pojo);
+//		log.info(g1.getCanonicalNTriples());
+		
+		ListPojo inPojo = g1.getObject(ListPojo.class, res);
+		g2.addObject(inPojo);
+//		log.warning(g2.getCanonicalNTriples());
+		assertEquals(g1.getCanonicalNTriples(), g2.getCanonicalNTriples());
+		
+	}
 }

@@ -13,6 +13,10 @@ public class IntegerPojo {
 	@RDFProperty("omnom:some_number")
 	private int some_number = 5;
 	
+	public IntegerPojo() {
+		
+	}
+	
 	public IntegerPojo(String id, int num) {
 		this.idURI = id;
 		this.some_number = num;
