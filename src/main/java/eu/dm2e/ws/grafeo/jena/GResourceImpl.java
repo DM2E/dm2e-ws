@@ -1,14 +1,18 @@
 package eu.dm2e.ws.grafeo.jena;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Logger;
+
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.ResourceUtils;
+
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.GValue;
 import eu.dm2e.ws.grafeo.Grafeo;
-
-import java.util.logging.Logger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -72,6 +76,28 @@ public class GResourceImpl extends GValueImpl implements GResource {
         if (value.isResource()) return new GResourceImpl(grafeo, value.asResource());
         if (value.isLiteral()) return new GLiteralImpl(grafeo, value.asLiteral());
         throw new RuntimeException("Not a literal or a resource value: " + getUri() + " -> " + uri);
+    }
+    
+    @Override
+    public Set<GValue> getAll(String uri) {
+        log.info("Check for all values for property: " + uri);
+        uri = grafeo.expand(uri);
+        Set<GValue> propSet = new HashSet<GValue>();
+        StmtIterator st = resource.listProperties(getGrafeoImpl(grafeo).model.createProperty(uri));
+        while (st.hasNext()) {
+        	Statement stmt = st.next();
+        	RDFNode thisValue = stmt.getObject();
+        	if (thisValue.isResource()) {
+        		propSet.add(new GResourceImpl(grafeo, thisValue.asResource()));
+        	}
+        	else if (thisValue.isLiteral()) {
+        		propSet.add(new GLiteralImpl(grafeo, thisValue.asLiteral()));
+        	}
+        	else {
+        		throw new RuntimeException("Not a literal or a resource value: " + getUri() + " -> " + uri);
+        	}
+        }
+		return propSet;
     }
 
     @Override

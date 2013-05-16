@@ -1,14 +1,17 @@
 package eu.dm2e.ws.grafeo.jena;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import javax.xml.bind.DatatypeConverter;
+
 import com.hp.hpl.jena.rdf.model.RDFNode;
+
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.GValue;
 import eu.dm2e.ws.grafeo.Grafeo;
-
-import javax.xml.bind.DatatypeConverter;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.logging.Logger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -56,6 +59,11 @@ public abstract class GValueImpl extends JenaImpl implements GValue {
     @Override
     public GValue get(String uri) {
         return resource().get(uri);
+    }
+    
+    @Override
+    public Set<GValue> getAll(String uri) {
+        return resource().getAll(uri);
     }
 
     @Override
