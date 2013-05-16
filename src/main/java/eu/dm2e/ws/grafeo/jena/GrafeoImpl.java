@@ -177,45 +177,75 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         String type = object.getClass().getAnnotation(RDFClass.class).value();
         log.info("Type: " + type);
         result.set("rdf:type", resource(type));
-        for (Field field : object.getClass().getDeclaredFields()) {
-            if (field.isAnnotationPresent(RDFProperty.class)) {
-                log.info("Field: " + field.getName());
-                String property = field.getAnnotation(RDFProperty.class).value();
-				try {
-					Object value = PropertyUtils.getProperty(object, field.getName());
-					GValue gv = null;
-					if (null != value) {
-						// nested annotated object
-						if (isAnnotatedObject(value)) {
-							addObject(value);
-							result.set(property, getGResource(value));
-						// unordered list / set items	
-						} else if (value instanceof Set) {
-							for (Object setItem : (Iterable) value) {
-								// nested object
-								if (isAnnotatedObject(setItem)) {
-									addObject(setItem);
-									result.set(property, getGResource(setItem));
+		for (Field field : object.getClass().getDeclaredFields()) {
+			if (!field.isAnnotationPresent(RDFProperty.class)) {
+				continue;
+			}
+			log.info("Field: " + field.getName());
+			String property = field.getAnnotation(RDFProperty.class).value();
+			try {
+				Object value = PropertyUtils.getProperty(object, field.getName());
+				GValue gv = null;
+				if (null != value) {
+					// nested annotated object
+					if (isAnnotatedObject(value)) {
+						addObject(value);
+						result.set(property, getGResource(value));
+						// unordered list / set items
+					} else if (value instanceof Set) {
+						Iterable valueIterable = (Iterable) value;
+						for (Object setItem : valueIterable) {
+							// nested object
+							if (isAnnotatedObject(setItem)) {
+								addObject(setItem);
+								result.set(property, getGResource(setItem));
 								// literal
-								} else {
-									result.set(property, literal(setItem));
-								}
+							} else {
+								result.set(property, literal(setItem));
 							}
-						// literal	
-						} else {
-							result.set(property, literal(value));
 						}
-//						log.info("Value for " + property + ": " + gv);
+					} else if (value instanceof List) {
+						result.set("rdf:type", resource("co:List"));
+						List valueList = (List) value;
+						result.set("co:size", literal(valueList.size()));
+						for (int i = 0; i < valueList.size(); i++) {
+							Object listItem = valueList.get(i);
+							String itemPrefix = field.getAnnotation(RDFProperty.class).itemPrefix();
+							GResource listItemResource = resource(result.getUri() + "/" + itemPrefix + (i + 1));
+							GResource listItemTargetResource = getGResource(listItem);
+							if (!isAnnotatedObject(listItem)) {
+								continue;
+							}
+							if (i == 0) {
+								result.set("co:first", listItemResource);
+							}
+							if (i == valueList.size() - 1) {
+								result.set("co:last", listItemResource);
+							}
+							listItemResource.set("co:index", literal(i+1));
+							listItemResource.set("co:itemContent", listItemTargetResource);
+							if (i < valueList.size() - 1) {
+								GResource nextlistItemResource = resource(result.getUri() + "/" + itemPrefix + (i+2));
+								listItemResource.set("co:next", nextlistItemResource);
+							}
+							addObject(listItem);
+							log.info(""+i);
+						}
+						// // TODO ordered lists
+						// literal
+					} else {
+						result.set(property, literal(value));
 					}
-				} catch (InvocationTargetException e) {
-					throw new RuntimeException("An exception occurred: " + e, e);
-				} catch (NoSuchMethodException e) {
-					throw new RuntimeException("No getter/setters for this property: " + e, e);
-				} catch (IllegalAccessException e) {
-					throw new RuntimeException("An exception occurred: " + e, e);
+					// log.info("Value for " + property + ": " + gv);
 				}
-            }
-        }
+			} catch (InvocationTargetException e) {
+				throw new RuntimeException("An exception occurred: " + e, e);
+			} catch (NoSuchMethodException e) {
+				throw new RuntimeException("No getter/setters for this property: " + e, e);
+			} catch (IllegalAccessException e) {
+				throw new RuntimeException("An exception occurred: " + e, e);
+			}
+		}
         return result;
     }
 
@@ -617,10 +647,16 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         // TODO handle blank nodes
     }
 
+    @Override
+    public boolean isEmpty() {
+        return model.isEmpty();
+    }
+
     protected void initDefaultNamespaces() {
         // TODO: Put this in a config file (kai)
         namespaces.put("foaf", "http://xmlns.com/foaf/0.1/");
         namespaces.put("dct", "http://purl.org/dc/terms/");
+        namespaces.put("co", "http://purl.org/co/");
         namespaces.put("dcterms", "http://purl.org/dc/terms/");
         namespaces.put("dc", "http://purl.org/dc/elements/1.1/");
         namespaces.put("skos", "http://www.w3.org/2004/02/skos/core#");
@@ -641,10 +677,5 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         namespaces.put("dm2e", "http://onto.dm2e.eu/omnom/");
         namespaces.put("omnom", "http://onto.dm2e.eu/omnom/");
 
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return model.isEmpty();
     }
 }
