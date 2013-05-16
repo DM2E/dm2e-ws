@@ -16,6 +16,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RDFProperty {
     String value();
+    String itemPrefix() default "item";
     /**
      * @return true if it is the inverse of the named relation (value()) that this relation represents
      */
