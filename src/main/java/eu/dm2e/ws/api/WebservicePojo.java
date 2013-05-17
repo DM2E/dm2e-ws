@@ -2,6 +2,7 @@ package eu.dm2e.ws.api;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
@@ -31,6 +32,25 @@ public class WebservicePojo {
 
     @RDFProperty("omnom:outputParam")
     private Set<ParameterPojo> outputParams = new HashSet<ParameterPojo>();
+    
+    /*********************
+     * HELPER FUNCTIONS
+     *********************/
+    public ParameterPojo getParamByName(String needle) {
+    	Logger log = Logger.getLogger(getClass().getName());
+    	Set<ParameterPojo> allParams = new HashSet<ParameterPojo>();
+    	allParams.addAll(inputParams);
+    	allParams.addAll(outputParams);
+    	for (ParameterPojo param : allParams) {
+    		if (param.getId().matches(".*" + needle + "$")) {
+    			return param;
+    		}
+    		else {
+    			log.severe(param.getId() + " doesn't match " + needle);
+    		}
+    	}
+    	return null;
+    }
     
     /*********************
      * CONSTRUCTORS

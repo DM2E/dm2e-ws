@@ -38,8 +38,9 @@ public class FileServiceTest {
 		FormDataMultiPart mp = new FormDataMultiPart();
 		FormDataBodyPart p = new FormDataBodyPart(FormDataContentDisposition
 				.name("file")
-				.fileName(
-				"file").build(), "FILE-CONTENT");
+				.fileName("file")
+				.build(),
+				"FILE-CONTENT");
 		mp.bodyPart(p);
 		String s = webResource.type(MediaType.MULTIPART_FORM_DATA_TYPE).post(String.class, mp);
 		log.info(s);

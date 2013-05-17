@@ -133,17 +133,12 @@ public class FileService extends AbstractRDFService {
 		filePojo.setId(uri.toString());
 		filePojo.setFileRetrievalURI(uri);
 		filePojo.setFileSize(f.length());
-		oldG.addObject(filePojo);
-		
-		return filePojo;
 
 		// these are only available if this is an upload field and not just a
 		// form field
-//		if (!filePart.isSimple()) {
-			// TODO this is wrong most of the time
-//			g.addTriple(uriStr, "dct:format", g.literal(filePart.getMediaType().toString()));
-//			g.addTriple(uriStr, "dm2e:original_name", g.literal(fileDisposition.getFileName()));
-//		}
+		oldG.addObject(filePojo);
+		
+		return filePojo;
 	}
 	
 	/**
@@ -374,6 +369,11 @@ public class FileService extends AbstractRDFService {
 				InputStream fileInStream = filePart.getValueAs(InputStream.class);
 				// store and describe file
 				FilePojo filePojo = storeAndDescribeFile(fileInStream, g, uri);
+				if (!filePart.isSimple()) {
+					// TODO this is wrong most of the time
+					filePojo.setMediaType(filePart.getMediaType().toString());
+					filePojo.setOriginalName(fileDisposition.getFileName());
+				}
 				// it's stored, set to AVAILABLE
 				filePojo.setFileStatus(FileStatus.AVAILABLE.toString());
 				g.addObject(filePojo);

@@ -18,10 +18,10 @@ public class WorkflowPojo extends WebservicePojo {
     private String id;
 	
     @RDFProperty("omnom:hasPosition")
-	List<WorkflowPositionPojo> positions = new ArrayList<WorkflowPositionPojo>();
+	private List<WorkflowPositionPojo> positions = new ArrayList<WorkflowPositionPojo>();
     
     @RDFProperty("omnom:hasParameterSlot")
-    Set<ParameterSlotPojo> parameterSlots = new HashSet<ParameterSlotPojo>();
+    private Set<ParameterSlotPojo> parameterSlots = new HashSet<ParameterSlotPojo>();
 	
 	@Override
 	public String toString() {
@@ -46,10 +46,14 @@ public class WorkflowPojo extends WebservicePojo {
      * GETTERS/SETTERS
      ********************/
 
+	// inherited
 //	public String getId() { return id; }
 //	public void setId(String id) { this.id = id; }
 
 	public List<WorkflowPositionPojo> getPositions() { return positions; }
 	public void setPositions(List<WorkflowPositionPojo> positions) { this.positions = positions; }
+
+	public Set<ParameterSlotPojo> getParameterSlots() { return parameterSlots; }
+	public void setParameterSlots(Set<ParameterSlotPojo> parameterSlots) { this.parameterSlots = parameterSlots; }
 
 }

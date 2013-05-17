@@ -13,11 +13,11 @@ public class ParameterSlotPojo {
 	@RDFId
 	private String id;
 	
-	@RDFProperty("omnom:inputForPosition")
+	@RDFProperty("omnom:forPosition")
 	private WorkflowPositionPojo inputForPosition;
-	
-	@RDFProperty("omnom:outputForPosition")
-	private WorkflowPositionPojo outputForPosition;
+//	
+//	@RDFProperty("omnom:outputForPosition")
+//	private WorkflowPositionPojo outputForPosition;
 	
 	@RDFProperty("omnom:forParam")
 	private ParameterPojo forParam;
@@ -32,11 +32,8 @@ public class ParameterSlotPojo {
 	public String getId() { return id; }
 	public void setId(String id) { this.id = id; }
 
-	public WorkflowPositionPojo getInputForPosition() { return inputForPosition; }
-	public void setInputForPosition(WorkflowPositionPojo inputForPosition) { this.inputForPosition = inputForPosition; }
-
-	public WorkflowPositionPojo getOutputForPosition() { return outputForPosition; }
-	public void setOutputForPosition(WorkflowPositionPojo outputForPosition) { this.outputForPosition = outputForPosition; }
+	public WorkflowPositionPojo getForPosition() { return inputForPosition; }
+	public void setForPosition(WorkflowPositionPojo inputForPosition) { this.inputForPosition = inputForPosition; }
 
 	public ParameterPojo getForParam() { return forParam; }
 	public void setForParam(ParameterPojo forParam) { this.forParam = forParam; }
