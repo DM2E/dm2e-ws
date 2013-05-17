@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
@@ -22,6 +23,27 @@ public class WorkflowPojo extends WebservicePojo {
     
     @RDFProperty("omnom:hasParameterSlot")
     private Set<ParameterSlotPojo> parameterSlots = new HashSet<ParameterSlotPojo>();
+    
+    // TODO this is not perfect, there could be several slots for the same position and the same parameter
+    public ParameterSlotPojo getSlotForPositionIndexAndParam(int index, ParameterPojo param) {
+    	WorkflowPositionPojo pos = this.getPositions().get(index);
+    	Logger log = Logger.getLogger(getClass().getName());
+    	if (null != pos) {
+    		for (ParameterSlotPojo thisSlot : parameterSlots) {
+//		    	log.info("" + thisSlot.getForPosition().getWebService());
+//		    	log.info(""+ pos.g);
+    			if (thisSlot.getForPosition() != pos) {
+    				continue;
+    			}
+		    	log.info("" + thisSlot.getForParam().getId());
+    			if (thisSlot.getForParam().getId().equals(param.getId())
+    					&& thisSlot.getForPosition() == pos) {
+    				return thisSlot;
+    			}
+    		}
+    	}
+    	return null;
+    }
 	
 	@Override
 	public String toString() {
