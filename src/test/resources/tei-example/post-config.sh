@@ -10,7 +10,7 @@ XSLT_SOURCE=$(zsh post-xslt-file.sh)
 RESULT_FILE=$(zsh post-result-file.sh)
 
 # the config to be posted
-CONFIG="@prefix dm2e: <http://onto.dm2e.eu/onto#> .
+CONFIG="@prefix dm2e: <http://onto.dm2e.eu/omnom/> .
 @prefix dm2e_types: <http://onto.dm2e.eu/types#> .
 @prefix omnom: <http://omnom.dm2e.eu/> .
 @prefix xslt_service: <http://omnom.dm2e.eu/service/xslt#> .

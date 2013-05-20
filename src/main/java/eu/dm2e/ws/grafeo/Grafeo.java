@@ -1,11 +1,10 @@
 package eu.dm2e.ws.grafeo;
 
-import com.hp.hpl.jena.query.ResultSet;
-import eu.dm2e.ws.grafeo.jena.GStatementImpl;
-
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
+
+import com.hp.hpl.jena.query.ResultSet;
 
 /**
  * Created with IntelliJ IDEA. User: kai Date: 3/5/13 Time: 11:21 AM To change
@@ -37,6 +36,8 @@ public interface Grafeo {
 	GLiteral literal(Object value);
 
 	GResource resource(String uri);
+	
+	GResource resource(URI uri);
 
 	boolean isEscaped(String input);
 
@@ -59,6 +60,10 @@ public interface Grafeo {
 	void writeToEndpoint(String endpoint, URI graphURI);
 
 	String getNTriples();
+
+	String getCanonicalNTriples();
+
+	String getTurtle();
 
 	long size();
 
@@ -88,6 +93,13 @@ public interface Grafeo {
 
     <T> T getObject(Class T, GResource res);
 
-    GStatementImpl addTriple(GResource subject, GResource predicate,
+	<T> T getObject(Class T, String resStr);
+	
+	<T> T getObject(Class T, URI uri);
+
+    GStatement addTriple(GResource subject, GResource predicate,
                              GValue object);
+
+	GValue firstMatchingObject(String string2, String string);
+
 }

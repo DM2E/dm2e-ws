@@ -1,11 +1,48 @@
 package eu.dm2e.ws.grafeo.jena;
 
-import com.hp.hpl.jena.query.*;
-import com.hp.hpl.jena.rdf.model.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.StringUtils;
+
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.AnonId;
+import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.ResIterator;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.update.UpdateExecutionFactory;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateProcessor;
 import com.hp.hpl.jena.update.UpdateRequest;
+
 import eu.dm2e.ws.grafeo.GLiteral;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.GValue;
@@ -14,15 +51,6 @@ import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFId;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
-import org.apache.commons.beanutils.PropertyUtils;
-
-import java.io.*;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
-import java.util.logging.Logger;
 
 /**
  * Created with IntelliJ IDEA. User: kai Date: 3/2/13 Time: 2:27 PM To change
@@ -166,92 +194,207 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     }
 
     private Set<Object> alreadyAdded = new HashSet<>();
+    /* (non-Javadoc)
+     * @see eu.dm2e.ws.grafeo.Grafeo#addObject(java.lang.Object)
+     */
     @Override
-    public GResource addObject(Object object) {
-        if (alreadyAdded.contains(object)) return getGResource(object);
-        alreadyAdded.add(object);
-        setAnnotatedNamespaces(object);
-        GResource result = getGResource(object);
+	public GResource addObject(Object object) {
+		if (alreadyAdded.contains(object)) return getGResource(object);
+		alreadyAdded.add(object);
+		setAnnotatedNamespaces(object);
+		GResource result = getGResource(object);
 
-        log.info("Subject: " + result);
-        String type = object.getClass().getAnnotation(RDFClass.class).value();
-        log.info("Type: " + type);
-        result.set("rdf:type", resource(type));
-        for (Field field : object.getClass().getDeclaredFields()) {
-            if (field.isAnnotationPresent(RDFProperty.class)) {
-                log.info("Field: " + field.getName());
-                try {
-                    try {
-                        Object value = PropertyUtils.getProperty(object, field.getName());
-                        GValue gv = null;
-                        if (isAnnotatedObject(value)) {
-                            addObject(value);
-                            gv = getGResource(value);
-
-
-                        } else {
-                            gv = literal(value);
-                        }
-                        String property = field.getAnnotation(RDFProperty.class).value();
-                        log.info("Value for " + property + ": " + gv);
-                        result.set(property, gv);
-                    } catch (InvocationTargetException e) {
-                        throw new RuntimeException("An exception occurred: " + e, e);
-                    } catch (NoSuchMethodException e) {
-                        throw new RuntimeException("An exception occurred: " + e, e);
-                    }
-
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException("An exception occurred: " + e, e);
-                }
-            }
-        }
-        return result;
-    }
+		log.info("Subject: " + result);
+		String type = object.getClass().getAnnotation(RDFClass.class).value();
+		log.info("Type: " + type);
+		result.set("rdf:type", resource(type));
+		for (Field field : object.getClass().getDeclaredFields()) {
+			if (!field.isAnnotationPresent(RDFProperty.class)) {
+				continue;
+			}
+			log.info("Field: " + field.getName());
+			String property = field.getAnnotation(RDFProperty.class).value();
+			Object value;
+			try {
+				value = PropertyUtils.getProperty(object, field.getName());
+			} catch (NoSuchMethodException e) {
+				log.severe("No getter/setters for " + field.getName() + " property: " + e);
+				continue;
+			} catch (InvocationTargetException e) {
+				throw new RuntimeException("An exception occurred: " + e, e);
+			} catch (IllegalAccessException e) {
+				throw new RuntimeException("An exception occurred: " + e, e);
+			}
+			if (null == value) {
+				continue;
+			}
+			// nested annotated object
+			if (isAnnotatedObject(value)) {
+				addObject(value);
+				result.set(property, getGResource(value));
+				// unordered list / set items
+			} else if (value instanceof Set) {
+				Iterable valueIterable = (Iterable) value;
+				for (Object setItem : valueIterable) {
+					// nested object
+					if (isAnnotatedObject(setItem)) {
+						addObject(setItem);
+						result.set(property, getGResource(setItem));
+						// literal
+					} else {
+						result.set(property, literal(setItem));
+					}
+				}
+			} else if (value instanceof List) {
+				result.set("rdf:type", resource("co:List"));
+				List valueList = (List) value;
+				result.set("co:size", literal(valueList.size()));
+				for (int i = 0; i < valueList.size(); i++) {
+					Object listItem = valueList.get(i);
+					String itemPrefix = field.getAnnotation(RDFProperty.class).itemPrefix();
+					GResource listItemResource = resource(result.getUri() + "/" + itemPrefix
+							+ (i + 1));
+					GResource listItemTargetResource = getGResource(listItem);
+					if (!isAnnotatedObject(listItem)) {
+						continue;
+					}
+					if (i == 0) {
+						result.set("co:first", listItemResource);
+					}
+					if (i == valueList.size() - 1) {
+						result.set("co:last", listItemResource);
+					}
+					listItemResource.set("co:index", literal(i + 1));
+					listItemResource.set("co:itemContent", listItemTargetResource);
+					if (i < valueList.size() - 1) {
+						GResource nextlistItemResource = resource(result.getUri() + "/"
+								+ itemPrefix + (i + 2));
+						listItemResource.set("co:next", nextlistItemResource);
+					}
+					addObject(listItem);
+					log.info("" + i);
+				}
+				// literal
+			} else {
+				result.set(property, literal(value));
+			}
+		}
+		return result;
+	}
 
     private Map<String,Object> objectCache = new HashMap<String, Object>();
-
-    @Override
-    public <T> T getObject(Class T, GResource res) {
-        String uri;
-        if (res.isAnon()) {
-            uri = res.getAnonId();
-        }  else {
-            uri = expand(res.getUri());
-        }
-
-        log.info("Creating object for URI: " + uri);
+    
+    private <T> T getSingleObject(Class T, GResource res, String uri) {
+        
+        // the built object
+        T result;
+        
+        // Cache
         if (objectCache.containsKey(uri)) {
             log.info("Cache hit!");
             return (T) objectCache.get(uri);
         }
-        T result;
+        log.info("Creating object for URI: " + uri);
+        
+    	// instantiate the class
         try {
-            result = (T) T.newInstance();
+        	result = (T) T.newInstance();
             objectCache.put(uri, result);
             log.info("Added to cache, uri: " + uri);
-        } catch (InstantiationException e) {
+        } catch (InstantiationException | IllegalAccessException | SecurityException e) {
             throw new RuntimeException("An exception occurred: " + e, e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("An exception occurred: " + e, e);
-        }
-        setAnnotatedNamespaces(result);
+		}
+        
+        // iterate fields in the class definition
         for (Field field : result.getClass().getDeclaredFields()) {
             log.info("Field: " + field.getName());
+            
+            // if it's a RDF property field
             if (field.isAnnotationPresent(RDFProperty.class)) {
-                try {
-                    try {
-                        String prop = field.getAnnotation(RDFProperty.class).value();
-                        PropertyUtils.setProperty(result, field.getName(), res.get(prop).getTypedValue(field.getType()));
-                    } catch (InvocationTargetException e) {
-                        throw new RuntimeException("An exception occurred: " + e, e);
-                    } catch (NoSuchMethodException e) {
-                        throw new RuntimeException("An exception occurred: " + e, e);
-                    }
-
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException("An exception occurred: " + e, e);
-                }
+            	
+            	// the property this field represents
+	            String prop = expand(field.getAnnotation(RDFProperty.class).value());
+	            
+	            // if it's a Set type
+            	if (field.getType().isAssignableFrom(java.util.Set.class)) {
+            		log.severe(field.getName() + " is a SET.");
+            		ParameterizedType subtype = (ParameterizedType) field.getGenericType();
+            		Class<?> subtypeClass = (Class<?>) subtype.getActualTypeArguments()[0];
+            		Set propSet = new HashSet();
+            		Set<GValue> propValues = res.getAll(prop);
+            		for (GValue thisValue : propValues) {
+            			
+            			// Sets can be composed of literals ...
+            			if (thisValue.isLiteral()) {
+							Object thisValueTyped = thisValue.getTypedValue(subtypeClass);
+							propSet.add(thisValueTyped);
+            			}
+            			
+            			// or resources
+            			else {
+            				// TODO infinite recursion on doubly-linked resources? Is that fixed by caching?
+            				Object nestedObject = getObject(subtypeClass, (GResource) thisValue);
+            				propSet.add(nestedObject);
+            			}
+            		}
+            		
+            		// store the property set
+            		try {
+						PropertyUtils.setProperty(result, field.getName(), propSet);
+					} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+						throw new RuntimeException("An exception occurred: " + e, e);
+					}
+            	}
+            	
+            	// List type
+            	else if (field.getType().isAssignableFrom(java.util.List.class)) {
+            		log.severe(field.getName() + " is a LIST.");
+            		ParameterizedType subtype = (ParameterizedType) field.getGenericType();
+            		Class<?> subtypeClass = (Class<?>) subtype.getActualTypeArguments()[0];
+            		int listSize = (int) ((null == res.get("co:size")) 
+            				? 0 
+    						: res.get("co:size").getTypedValue(Integer.class));
+            		if (listSize == 0) {
+            			continue;
+            		}
+            		
+            		ArrayList propArray = new ArrayList();
+            		GValue first = res.get("co:first");
+            		GValue nextValue = first;
+            		for (nextValue = first; nextValue != null ; nextValue = nextValue.get("co:next")) {
+            			GResource nextItemRes = nextValue.resource();
+            			GValue itemContentValue = nextItemRes.get("co:itemContent");
+            			if (null == itemContentValue) {
+            				continue;
+            			}
+            			GResource itemContentRes = itemContentValue.resource();
+            			Object itemContentObject = getObject(subtypeClass, itemContentRes);
+            			propArray.add(itemContentObject);
+            		}
+            		try{
+						PropertyUtils.setProperty(result, field.getName(), propArray);
+					} catch (InvocationTargetException | NoSuchMethodException  | IllegalAccessException e) {
+						throw new RuntimeException("An exception occurred: " + e, e);
+					}
+            		
+            	}
+            	
+            	// One-value property
+            	else {
+        			log.severe(field.getName() + " is a boring " + field.getType());
+					try {
+						GValue propValue = res.get(prop);
+						log.severe("" + prop + " : " + propValue);
+						if (null==propValue) {
+							continue;
+						}
+						PropertyUtils.setProperty(result, field.getName(), propValue.getTypedValue(field.getType()));
+					} catch (InvocationTargetException | NoSuchMethodException  | IllegalAccessException e) {
+						throw new RuntimeException("An exception occurred: " + e, e);
+					}
+            	}
+            	
+            // RDFId fields with a prefix
             } else if (field.isAnnotationPresent(RDFId.class) && !res.isAnon()) {
                 String prefix = field.getAnnotation(RDFId.class).prefix();
                 try {
@@ -266,19 +409,42 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
                     throw new RuntimeException("An exception occurred: " + e, e);
                 }
             }
-
-
         }
-
         return result;
+    }
+    
+    @Override
+	public <T> T getObject(Class T, URI uri) {
+    	return getObject(T, resource(uri));
+	}
+    
+    @Override
+    public <T> T getObject(Class T, String resStr) {
+    	return getObject(T, resource(resStr));
+    }
+
+    @Override
+    public <T> T getObject(Class T, GResource res) {
+    	String uri;
+        if (res.isAnon()) {
+            uri = res.getAnonId();
+        }  else {
+            uri = expand(res.getUri());
+        }
+        T result = null;
+        log.info("" +T);
+        
+        result =  getSingleObject(T, res, uri);
+        setAnnotatedNamespaces(result);
+        return result;
+
     }
 
     protected boolean isAnnotatedObject(Object object) {
+//    	System.out.println(object);
         return object.getClass().isAnnotationPresent(RDFClass.class);
     }
-
-
-
+    
     protected GResource getGResource(Object object) {
         String uri = null;
 
@@ -286,9 +452,9 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
             log.info("Field: " + field.getName());
             if (field.isAnnotationPresent(RDFId.class)) {
                 try {
-                    String id = PropertyUtils.getProperty(object, field.getName()).toString();
-                    if ("0".equals(id) || null == id) return new GResourceImpl(this, model.createResource(AnonId.create(object.toString())));
-                    uri = field.getAnnotation(RDFId.class).prefix() + id;
+                    Object id = PropertyUtils.getProperty(object, field.getName());
+                    if (null == id || "0".equals(id.toString()) ) return new GResourceImpl(this, model.createResource(AnonId.create(object.toString())));
+                    uri = field.getAnnotation(RDFId.class).prefix() + id.toString();
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException("An exception occurred: " + e, e);
                 } catch (NoSuchMethodException e) {
@@ -392,6 +558,11 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     }
 
     @Override
+    public GResourceImpl resource(URI uri) {
+        return new GResourceImpl(this, uri.toString());
+    }
+
+    @Override
     public boolean isEscaped(String input) {
         return input.startsWith("\"") && input.endsWith("\"")
                 && input.length() > 1 || input.startsWith("<")
@@ -458,14 +629,14 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         StringBuilder sb = new StringBuilder("CONSTRUCT {");
         sb.append(subject != null ? subject : "?s").append(" ");
         sb.append(predicate != null ? predicate : "?p").append(" ");
-        sb.append(object != null ? object.toString() : "?o").append(" ");
+        sb.append(object != null ? object.toEscapedString() : "?o").append(" ");
         sb.append("}  WHERE { ");
         sb.append(subject != null ? subject : "?s").append(" ");
         sb.append(predicate != null ? predicate : "?p").append(" ");
-        sb.append(object != null ? object.toString() : "?o").append(" ");
+        sb.append(object != null ? object.toEscapedString() : "?o").append(" ");
         sb.append(" }");
-        Query query = QueryFactory.create(sb.toString());
         log.info("Query: " + sb.toString());
+        Query query = QueryFactory.create(sb.toString());
         QueryExecution exec = QueryExecutionFactory.createServiceRequest(
                 endpoint, query);
         exec.execConstruct(model);
@@ -513,6 +684,22 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     public String getNTriples() {
         StringWriter sw = new StringWriter();
         model.write(sw, "N-TRIPLE");
+        return sw.toString();
+    }
+    
+    @Override
+    public String getCanonicalNTriples() {
+        StringWriter sw = new StringWriter();
+        model.write(sw, "N-TRIPLE");
+        String[] lines = sw.toString().split("\n");
+        Arrays.sort(lines);
+        return StringUtils.join(lines,"\n");
+    }
+    
+    @Override
+    public String getTurtle() {
+        StringWriter sw = new StringWriter();
+        model.write(sw, "TURTLE");
         return sw.toString();
     }
 
@@ -585,19 +772,34 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         return containsResource(graphURI.toString());
     }
 
-    public RDFNode firstMatchingObject(String s, String p) {
+    public GValueImpl firstMatchingObject(String s, String p) {
         s = s.startsWith("?") ? s : "<" + expand(s) + ">";
         p = p.startsWith("?") ? p : "<" + expand(p) + ">";
         ResultSet iter = this.executeSparqlSelect(String.format("SELECT ?o { %s %s ?o } LIMIT 1", s, p));
         if (!iter.hasNext())
             return null;
-        return iter.next().get("?o");
+//        return new GValueImpl(this, iter.next().get("?o"));
+        RDFNode jenaNode = iter.next().get("?o");
+        if (jenaNode.isLiteral()) {
+        	return new GLiteralImpl(this, (Literal) jenaNode);
+        }
+        else if (jenaNode.isURIResource()) {
+        	return new GResourceImpl(this, (Resource) jenaNode);
+        }
+        return null;
+        // TODO handle blank nodes
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return model.isEmpty();
     }
 
     protected void initDefaultNamespaces() {
         // TODO: Put this in a config file (kai)
         namespaces.put("foaf", "http://xmlns.com/foaf/0.1/");
         namespaces.put("dct", "http://purl.org/dc/terms/");
+        namespaces.put("co", "http://purl.org/co/");
         namespaces.put("dcterms", "http://purl.org/dc/terms/");
         namespaces.put("dc", "http://purl.org/dc/elements/1.1/");
         namespaces.put("skos", "http://www.w3.org/2004/02/skos/core#");
@@ -615,12 +817,9 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         namespaces.put("void", "http://rdfs.org/ns/void#");
         namespaces.put("edm", "http://www.europeana.eu/schemas/edm/");
         namespaces.put("ore", "http://www.openarchives.org/ore/terms/");
-        namespaces.put("dm2e", "http://onto.dm2e.eu/onto#");
+        namespaces.put("dm2e", "http://onto.dm2e.eu/omnom/");
+        namespaces.put("omnom", "http://onto.dm2e.eu/omnom/");
 
     }
 
-    @Override
-    public boolean isEmpty() {
-        return model.isEmpty();
-    }
 }

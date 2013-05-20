@@ -1,0 +1,14 @@
+* Communication objects (*Pojo) are pretty much complete
+* RDF API needs improvement
+* proper export of GLiteral-typed properties
+* List import makes the containig class a list
+* Easy way to get the full URI of something with prefixed RDFId
+* POJOs should implement hashCode to make retrieving them easier
+* consider UUID for id generation in some cases
+* Write proper unit tests
+* Implement Workflow Job execution logic
+** Generate one slot for every position/webservice/param combination
+** Decide which slots to generate for input params of workflow
+** Check whether data flow has no gaps (connectedness of the slots)
+** Validate input params (correct type)
+* Use Grafeo's getCanonicalNTriples to compare RDF output for equality

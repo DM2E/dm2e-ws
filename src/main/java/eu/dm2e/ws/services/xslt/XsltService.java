@@ -13,14 +13,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Resource;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 
 import eu.dm2e.ws.Config;
-import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.AbstractRDFService;
 import eu.dm2e.ws.worker.XsltExecutorService;
@@ -31,9 +29,8 @@ public class XsltService extends AbstractRDFService {
 	private Logger log = Logger.getLogger(getClass().getName());
 	
 //	private static final String NS_XSLT_SERVICE = Config.getString("dm2e.service.xslt.namespace");
-	private static final String PROPERTY_HAS_WEB_SERVICE_CONFIG = NS.DM2E + "hasWebServiceConfig";
+//	private static final String PROPERTY_HAS_WEB_SERVICE_CONFIG = NS.DM2E + "hasWebServiceConfig";
 	
-	// TODO shouldnot be hardwired
 	private static final String URI_JOB_SERVICE = Config.getString("dm2e.service.job.base_uri");
 	private static final String URI_CONFIG_SERVICE = Config.getString("dm2e.service.config.base_uri");
 	
@@ -52,25 +49,28 @@ public class XsltService extends AbstractRDFService {
 		
 		// create the job
 		log.info("Creating the job");
+		JobPojo jobPojo = new JobPojo();
 		GrafeoImpl g = new GrafeoImpl();
-		Model m = g.getModel();
-		Resource emptyResource = m.createResource();
-		emptyResource.addProperty(m.createProperty(NS.RDF + "type"), m.createResource(NS.DM2E + "Job"));
-		emptyResource.addLiteral(m.createProperty(NS.DM2E + "status"), "NOT_STARTED");
-		emptyResource.addProperty(m.createProperty(NS.DM2E + "hasWebSerice"), m.createResource(uriInfo.getRequestUri().toASCIIString()));
-		emptyResource.addProperty(m.createProperty(PROPERTY_HAS_WEB_SERVICE_CONFIG), m.createResource(configURI));
+		jobPojo.setWebService(uriInfo.getRequestUri().toASCIIString());
+		jobPojo.setWebServiceConfig(configURI);
+		g.addObject(jobPojo);
+		
+		log.info(g.getNTriples());
 		ClientResponse jobResponse = jobResource
 			.accept("text/turtle")
 			.post(ClientResponse.class, g.getNTriples());
+		log.info(jobResponse.toString());
+		log.info(jobResponse.getEntity(String.class).toString());
 		URI jobUri = jobResponse.getLocation();
-		g.findTopBlank().rename(jobUri.toString());
-		
 		
 		// post the job to the worker
 		log.info("Posting the job to the worker queue");
 		XsltExecutorService.INSTANCE.handleJobUri(jobUri.toString());
 		
 		// return location of the job
+		jobPojo.setId(jobUri.toString());
+		g = new GrafeoImpl();
+		g.addObject(jobPojo);
 		return Response.created(jobUri).entity(getResponseEntity(g)).build();
 	}
 	

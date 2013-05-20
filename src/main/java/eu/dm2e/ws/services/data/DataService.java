@@ -2,17 +2,6 @@
 package eu.dm2e.ws.services.data;
 
 
-import eu.dm2e.ws.NS;
-import eu.dm2e.ws.api.Parameter;
-import eu.dm2e.ws.api.omnom.Webservice;
-import eu.dm2e.ws.grafeo.GResource;
-import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
-
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -26,7 +15,17 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
+import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.ParameterPojo;
+import eu.dm2e.ws.api.WebservicePojo;
+import eu.dm2e.ws.grafeo.GResource;
+import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.AbstractRDFService;
 
 
@@ -39,15 +38,15 @@ public class DataService extends AbstractRDFService {
     public Response get() {
         Grafeo g = new GrafeoImpl();
 
-        Webservice test = new Webservice();
+        WebservicePojo test = new WebservicePojo();
         test.setHello("Hi, I am a Webservice.");
-        test.setId(42);
+        test.setId("http://data.dm2e.eu/data/services/42");
 
-        Parameter param = new Parameter();
+        ParameterPojo param = new ParameterPojo();
         // param.setId(23);
         param.setHello("Hi, I am a Parameter!");
         param.setWebservice(test);
-        test.setParameter(param);
+        test.getInputParams().add(param);
 
         g.addObject(test);
 
@@ -59,12 +58,12 @@ public class DataService extends AbstractRDFService {
     public Response getMapTest(@Context UriInfo uriInfo) {
         String source = uriInfo.getRequestUri().toString().replace("/mapTest","");
         Grafeo g = new GrafeoImpl(source);
-        Webservice test = g.getObject(Webservice.class, g.resource("http://data.dm2e.eu/data/services/42"));
+        WebservicePojo test = g.getObject(WebservicePojo.class, g.resource("http://data.dm2e.eu/data/services/42"));
 
         log.info("Result ID: " + test.getId());
         log.info("Result Hello: " + test.getHello());
-        log.info("Result Parameter Hello: " + test.getParameter().getHello());
-        log.info("And back ;-): " + test.getParameter().getWebservice().getHello());
+        log.info("Result Parameter Hello: " + test.getInputParams().iterator().next().getHello());
+        log.info("And back ;-): " + test.getInputParams().iterator().next().getWebservice().getHello());
 
 
         return getResponse(g);

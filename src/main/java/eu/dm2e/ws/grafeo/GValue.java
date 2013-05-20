@@ -1,5 +1,7 @@
 package eu.dm2e.ws.grafeo;
 
+import java.util.Set;
+
 /**
  * Created with IntelliJ IDEA.
  * User: kai
@@ -11,6 +13,7 @@ public interface GValue {
     @Override
     String toString();
     GValue get(String uri);
+    Set<GValue> getAll(String uri);
     Grafeo getGrafeo();
 
     GResource resource();
