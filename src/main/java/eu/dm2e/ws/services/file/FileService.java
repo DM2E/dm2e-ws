@@ -430,6 +430,7 @@ public class FileService extends AbstractRDFService {
 	 * @return
 	 */
 	@GET
+    @Path("byURI")
 	public Response getFileByUri(@QueryParam("uri") String uriStr) {
 
 		URI uri;

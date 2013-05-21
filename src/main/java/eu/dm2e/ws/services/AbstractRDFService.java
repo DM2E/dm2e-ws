@@ -1,5 +1,16 @@
 package eu.dm2e.ws.services;
 
+import com.hp.hpl.jena.rdf.model.Model;
+import eu.dm2e.ws.Config;
+import eu.dm2e.ws.api.ParameterPojo;
+import eu.dm2e.ws.api.WebservicePojo;
+import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.validator.routines.UrlValidator;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -7,38 +18,8 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Logger;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.core.Variant;
-
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.validator.routines.UrlValidator;
-
-import com.hp.hpl.jena.rdf.model.Model;
-
-import eu.dm2e.ws.api.ParameterPojo;
-import eu.dm2e.ws.api.WebservicePojo;
-import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
 @Produces({ MediaType.TEXT_PLAIN, "application/rdf+xml",
 		"application/x-turtle", "text/turtle", "text/rdf+n3" })
@@ -49,7 +30,6 @@ public abstract class AbstractRDFService {
 
 	Logger log = Logger.getLogger(getClass().getName());
 	
-	public abstract WebservicePojo getWebServicePojo();
 	public static final String PLAIN = MediaType.TEXT_PLAIN;
 	public static final String XML = "application/rdf+xml";
 	public static final String TTL_A = "application/x-turtle";
@@ -59,6 +39,7 @@ public abstract class AbstractRDFService {
 	protected static final UrlValidator urlValidator = new UrlValidator(allowedSchemes,
 		UrlValidator.ALLOW_ALL_SCHEMES + UrlValidator.ALLOW_LOCAL_URLS
 	);
+    protected WebservicePojo webservicePojo = new WebservicePojo();
 
 	List<Variant> supportedVariants;
 	Map<MediaType, String> mediaType2Language = new HashMap<MediaType, String>();
@@ -116,10 +97,52 @@ public abstract class AbstractRDFService {
 //		return g;
 //	}
 	
-	/**
-	 * Describes this service.
-	 */
-	@GET
+
+
+    /**
+     * Default implementation of the webservice description.
+     * Implementing subclasses should provide further information
+     * by calling the setters of the returned description pojo.
+     *
+     * @return The webservice description
+     */
+    public  WebservicePojo getWebServicePojo() {
+        if (webservicePojo.getId()==null)    {
+            String base = Config.config.getString("dm2e.ws.base_uri");
+            if (base.endsWith("/")) base = base.substring(0,base.length()-1);
+            webservicePojo.setId(base + this.getClass().getAnnotation(Path.class).value());
+        }
+        return webservicePojo;
+    }
+
+    /**
+     *
+     * Implementation of the default behaviour, which is a 303 redirect
+     * from the base URI to /describe, where the webservice description is returned.
+     *
+     * @param uriInfo
+     * @return
+     */
+    @GET
+    public Response getBase(@Context UriInfo uriInfo)  {
+        StringBuilder uri = new StringBuilder(uriInfo.getRequestUri().toString());
+        if (!uri.toString().endsWith("/")) uri.append("/");
+        uri.append("describe");
+        try {
+            return Response.seeOther(new URI(uri.toString())).build();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("An exception occurred: " + e, e);
+        }
+
+    }
+
+    /**
+     * The serialization of the webservice description is returned.
+     *
+     * @param uriInfo
+     * @return
+     */
+    @GET
 	@Path("/describe")
 	public Response getDescription(@Context UriInfo uriInfo)  {
         WebservicePojo wsDesc = this.getWebServicePojo();

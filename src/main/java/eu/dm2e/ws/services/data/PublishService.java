@@ -1,24 +1,19 @@
 package eu.dm2e.ws.services.data;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.Date;
-import java.util.logging.Logger;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.AbstractRDFService;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Date;
+import java.util.logging.Logger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -53,6 +48,7 @@ public class PublishService extends AbstractRDFService {
     }
 
     @GET
+    @Path("datasets")
     public Response getList(@Context UriInfo uriInfo) {
         Grafeo g = new GrafeoImpl();
         g.readTriplesFromEndpoint(NS.ENDPOINT, null, "rdf:type", g.resource("void:Dataset"));

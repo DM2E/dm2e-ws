@@ -2,6 +2,18 @@
 package eu.dm2e.ws.services.data;
 
 
+import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.WebservicePojo;
+import eu.dm2e.ws.grafeo.GResource;
+import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.services.AbstractRDFService;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -9,55 +21,15 @@ import java.net.URLDecoder;
 import java.util.Date;
 import java.util.logging.Logger;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-
-import eu.dm2e.ws.NS;
-import eu.dm2e.ws.api.ParameterPojo;
-import eu.dm2e.ws.api.WebservicePojo;
-import eu.dm2e.ws.grafeo.GResource;
-import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
-import eu.dm2e.ws.services.AbstractRDFService;
-
-
+/**
+ * Examples and tests of several webservices...
+ */
 @Path("/data")
 public class DataService extends AbstractRDFService {
     Logger log = Logger.getLogger(getClass().getName());
-    
-	@Override
-	public WebservicePojo getWebServicePojo() {
-		WebservicePojo ws = new WebservicePojo();
-		ws.setId("http://localhost:9998/data");
-		return ws;
-	}
 
-
-    @GET
-    public Response get() {
-        Grafeo g = new GrafeoImpl();
-
-        WebservicePojo test = new WebservicePojo();
-        test.setHello("Hi, I am a Webservice.");
-        test.setId("http://data.dm2e.eu/data/services/42");
-
-        ParameterPojo param = new ParameterPojo();
-        // param.setId(23);
-        param.setHello("Hi, I am a Parameter!");
-        param.setWebservice(test);
-        test.getInputParams().add(param);
-
-        g.addObject(test);
-
-        return getResponse(g);
+    public DataService() {
+        this.getWebServicePojo().setHello("Hi all ;-)");
     }
 
     @GET
