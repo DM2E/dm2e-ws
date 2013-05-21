@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.AbstractRDFService;
@@ -29,6 +30,13 @@ import eu.dm2e.ws.services.AbstractRDFService;
 @Path("/published")
 public class PublishService extends AbstractRDFService {
     Logger log = Logger.getLogger(getClass().getName());
+    
+	@Override
+	public WebservicePojo getWebServicePojo() {
+		WebservicePojo ws = new WebservicePojo();
+		ws.setId("http://localhost:9998/published");
+		return ws;
+	}
     
     @GET
     @Path("/byURI")

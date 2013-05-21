@@ -5,7 +5,6 @@ import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFId;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
-import eu.dm2e.ws.grafeo.jena.GLiteralImpl;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
 

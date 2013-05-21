@@ -25,6 +25,8 @@ import com.hp.hpl.jena.rdf.model.NodeIterator;
 
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.GLiteral;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -49,6 +51,13 @@ public class JobRdfService extends AbstractRDFService {
 			JOB_STATUS_PROP = NS.DM2E + "status",
 			JOB_LOGENTRY_PROP = NS.DM2E + "hasLogEntry";
 	//@formatter:on
+	
+	@Override
+	public WebservicePojo getWebServicePojo() {
+		WebservicePojo ws = new WebservicePojo();
+		ws.setId("http://localhost:9998/job");
+		return ws;
+	}
 
 	@GET
 	@Path("/{resourceID}")
@@ -80,24 +89,25 @@ public class JobRdfService extends AbstractRDFService {
 		log.info("Config posted.");
 		// TODO use Exception to return proper HTTP response if input can not be
 		// parsed as RDF
-		Grafeo g;
+		Grafeo inputGrafeo;
 		try {
-			g = new GrafeoImpl(bodyAsFile);
-			// } catch (MalformedURLException e) {
+			inputGrafeo = new GrafeoImpl(bodyAsFile);
 		} catch (Exception e) {
 			return throwServiceError(e);
 		}
-		GResource blank = g.findTopBlank();
+		GResource blank = inputGrafeo.findTopBlank();
 		if (blank == null) {
 			return throwServiceError("No top blank node found. Check your job description.");
 		}
 		String id = "" + new Date().getTime();
-		String uri = uriInfo.getRequestUri() + "/" + id;
-		blank.rename(uri);
-		g.addTriple(uri, "rdf:type", NS.DM2E + "Job");
-		g.addTriple(uri, NS.DM2E + "status", g.literal(JobStatusConstants.NOT_STARTED.toString()));
-		g.writeToEndpoint(NS.ENDPOINT_STATEMENTS, uri);
-		return Response.created(URI.create(uri)).entity(getResponseEntity(g)).build();
+		log.warning("Instantiating Job POJO.");
+		String uri = getWebServicePojo().getId() + "/" + id;
+		JobPojo jobPojo = inputGrafeo.getObject(JobPojo.class, blank);
+		jobPojo.setId(uri);
+		Grafeo outputGrafeo = new GrafeoImpl();
+		outputGrafeo.addObject(jobPojo);
+		outputGrafeo.writeToEndpoint(NS.ENDPOINT_STATEMENTS, uri);
+		return Response.created(URI.create(uri)).entity(getResponseEntity(inputGrafeo)).build();
 	}
 
 	@PUT

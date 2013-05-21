@@ -35,6 +35,7 @@ import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -132,6 +133,26 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         }
         return fallback != null ? new GResourceImpl(this, fallback) : null;
     }
+    
+    @Override
+    public GResourceImpl findTopBlank(String uri) {
+        ResIterator it = model.listSubjects();
+        GResourceImpl typeObjectGResource = new GResourceImpl(this, uri);
+        GResourceImpl typePropertyGResource = new GResourceImpl(this, "rdf:type");
+        Resource typeObjectResource = typeObjectGResource.getResource();
+        Property typeProperty = model.createProperty(typePropertyGResource.getUri());
+        while (it.hasNext()) {
+            Resource res = it.next();
+            if (res.isAnon()) {
+                if (model.listStatements(null, null, res).hasNext())
+                    continue;
+                if (model.listStatements(res, typeProperty, typeObjectResource).hasNext()) {
+	                return new GResourceImpl(this, res);
+                }
+            }
+        }
+        return null;
+    }
 
     public GrafeoImpl(Model model) {
         this.model = model;
@@ -204,15 +225,15 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		setAnnotatedNamespaces(object);
 		GResource result = getGResource(object);
 
-		log.info("Subject: " + result);
+		log.fine("Subject: " + result);
 		String type = object.getClass().getAnnotation(RDFClass.class).value();
-		log.info("Type: " + type);
+		log.fine("Type: " + type);
 		result.set("rdf:type", resource(type));
 		for (Field field : object.getClass().getDeclaredFields()) {
 			if (!field.isAnnotationPresent(RDFProperty.class)) {
 				continue;
 			}
-			log.info("Field: " + field.getName());
+			log.fine("Field: " + field.getName());
 			String property = field.getAnnotation(RDFProperty.class).value();
 			Object value;
 			try {
@@ -307,7 +328,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         
         // iterate fields in the class definition
         for (Field field : result.getClass().getDeclaredFields()) {
-            log.info("Field: " + field.getName());
+            log.fine("Field: " + field.getName());
             
             // if it's a RDF property field
             if (field.isAnnotationPresent(RDFProperty.class)) {
@@ -317,7 +338,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 	            
 	            // if it's a Set type
             	if (field.getType().isAssignableFrom(java.util.Set.class)) {
-            		log.severe(field.getName() + " is a SET.");
+            		log.info(field.getName() + " is a SET.");
             		ParameterizedType subtype = (ParameterizedType) field.getGenericType();
             		Class<?> subtypeClass = (Class<?>) subtype.getActualTypeArguments()[0];
             		Set propSet = new HashSet();
@@ -348,7 +369,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
             	
             	// List type
             	else if (field.getType().isAssignableFrom(java.util.List.class)) {
-            		log.severe(field.getName() + " is a LIST.");
+            		log.info(field.getName() + " is a LIST.");
             		ParameterizedType subtype = (ParameterizedType) field.getGenericType();
             		Class<?> subtypeClass = (Class<?>) subtype.getActualTypeArguments()[0];
             		int listSize = (int) ((null == res.get("co:size")) 
@@ -381,10 +402,10 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
             	
             	// One-value property
             	else {
-        			log.severe(field.getName() + " is a boring " + field.getType());
+        			log.info(field.getName() + " is a boring " + field.getType());
 					try {
 						GValue propValue = res.get(prop);
-						log.severe("" + prop + " : " + propValue);
+						log.fine("" + prop + " : " + propValue);
 						if (null==propValue) {
 							continue;
 						}
@@ -449,7 +470,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         String uri = null;
 
         for (Field field : object.getClass().getDeclaredFields()) {
-            log.info("Field: " + field.getName());
+            log.fine("Field: " + field.getName());
             if (field.isAnnotationPresent(RDFId.class)) {
                 try {
                     Object id = PropertyUtils.getProperty(object, field.getName());
