@@ -6,6 +6,8 @@ import java.net.URI;
 
 import com.hp.hpl.jena.query.ResultSet;
 
+import eu.dm2e.ws.grafeo.jena.GResourceImpl;
+
 /**
  * Created with IntelliJ IDEA. User: kai Date: 3/5/13 Time: 11:21 AM To change
  * this template use File | Settings | File Templates.
@@ -101,5 +103,7 @@ public interface Grafeo {
                              GValue object);
 
 	GValue firstMatchingObject(String string2, String string);
+
+	GResourceImpl findTopBlank(String uri);
 
 }

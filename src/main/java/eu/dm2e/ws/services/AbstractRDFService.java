@@ -1,6 +1,5 @@
 package eu.dm2e.ws.services;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -35,12 +34,9 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.NodeIterator;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
 
-import eu.dm2e.ws.NS;
-import eu.dm2e.ws.grafeo.GResource;
+import eu.dm2e.ws.api.ParameterPojo;
+import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
@@ -51,6 +47,9 @@ import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 		MediaType.MULTIPART_FORM_DATA })
 public abstract class AbstractRDFService {
 
+	Logger log = Logger.getLogger(getClass().getName());
+	
+	public abstract WebservicePojo getWebServicePojo();
 	public static final String PLAIN = MediaType.TEXT_PLAIN;
 	public static final String XML = "application/rdf+xml";
 	public static final String TTL_A = "application/x-turtle";
@@ -101,21 +100,21 @@ public abstract class AbstractRDFService {
 		return ub.build();
 	}
 	
-	protected GrafeoImpl getServiceDescriptionGrafeo() throws IOException  {
-//        InputStream descriptionStream  = Thread.currentThread().getContextClassLoader().getResourceAsStream("xslt-service-description.ttl");
-//		System.out.println(getServiceDescriptionResourceName());
-//		InputStream descriptionStream = ClassLoader.getSystemResource(getServiceDescriptionResourceName()).openStream();
-        InputStream descriptionStream  = this.getClass().getResourceAsStream("service-description.ttl");
-		if (null == descriptionStream) {
-			throw new FileNotFoundException();
-		}
-        GrafeoImpl g = new GrafeoImpl(descriptionStream, "TURTLE");
-        // rename top blank node if any
-        GResource blank = g.findTopBlank();
-        String uri = getRequestUriWithoutQuery().toString();
-        if (blank!=null) blank.rename(uri);
-		return g;
-	}
+//	protected GrafeoImpl getServiceDescriptionGrafeo() throws IOException  {
+////        InputStream descriptionStream  = Thread.currentThread().getContextClassLoader().getResourceAsStream("xslt-service-description.ttl");
+////		System.out.println(getServiceDescriptionResourceName());
+////		InputStream descriptionStream = ClassLoader.getSystemResource(getServiceDescriptionResourceName()).openStream();
+//        InputStream descriptionStream  = this.getClass().getResourceAsStream("service-description.ttl");
+//		if (null == descriptionStream) {
+//			throw new FileNotFoundException();
+//		}
+//        GrafeoImpl g = new GrafeoImpl(descriptionStream, "TURTLE");
+//        // rename top blank node if any
+//        GResource blank = g.findTopBlank();
+//        String uri = getRequestUriWithoutQuery().toString();
+//        if (blank!=null) blank.rename(uri);
+//		return g;
+//	}
 	
 	/**
 	 * Describes this service.
@@ -123,16 +122,10 @@ public abstract class AbstractRDFService {
 	@GET
 	@Path("/describe")
 	public Response getDescription(@Context UriInfo uriInfo)  {
-        Grafeo g;
-        
-        Logger log = Logger.getLogger(getClass().getName());
-		try {
-			g = getServiceDescriptionGrafeo();
-		} catch (Exception e) {
-			log.severe(e.toString());
-			return throwServiceError(e);
-		}
-        return getResponse(g);
+        WebservicePojo wsDesc = this.getWebServicePojo();
+        Grafeo g = new GrafeoImpl();
+        g.addObject(wsDesc);
+        return Response.ok().entity(getResponseEntity(g)).build();
 	}
 	
 	
@@ -217,12 +210,21 @@ public abstract class AbstractRDFService {
 	
 
 	protected void validateServiceInput(String configUriStr) throws Exception {
-		GrafeoImpl inputGrafeo = new GrafeoImpl();
+		Grafeo inputGrafeo = new GrafeoImpl();
 		inputGrafeo.load(configUriStr);
 		if (inputGrafeo.isEmpty()) {
 			throw new Exception("config model is empty.");
 		}
-		GrafeoImpl schemaGrafeo = this.getServiceDescriptionGrafeo();
+		WebservicePojo wsDesc = this.getWebServicePojo();
+		for (ParameterPojo param : wsDesc.getInputParams()) {
+			if (param.getIsRequired()) {
+				if (! inputGrafeo.containsStatementPattern("?s", "omnom:forParam", param.getId())) {
+					log.severe(configUriStr + " does not contain '?s omnom:forParam " + param.getId());
+					throw new RuntimeException(configUriStr + " does not contain '?s omnom:forParam " + param.getId());
+				}
+			}
+		}
+//		GrafeoImpl schemaGrafeo = this.getServiceDescriptionGrafeo();
 		// TODO this is the right way to to do it but Jena won't
 		// croak on cardinality restrictions being broken
 //		Model mergedModel = schemaGrafeo.getModel().union(inputGrafeo.getModel());
@@ -249,19 +251,19 @@ public abstract class AbstractRDFService {
 //	        }
 //		}
 		
-		Model schemaModel = schemaGrafeo.getModel();
-		
-		// Validate requiredParam
-		Property requiredProp = schemaModel.createProperty(NS.DM2E + "requiredParam");
-		NodeIterator iter = schemaModel.listObjectsOfProperty(requiredProp); 
-		while (iter.hasNext()) {
-			// this must be easier than stringifying all the time...
-			RDFNode thisNode = iter.next();
-			Property thisProp = schemaModel.createProperty(thisNode.toString());
-			if (! inputGrafeo.getModel().contains(null, thisProp)) {
-				throw new Exception("Missing required param " + thisProp.toString());
-			}
-		}
+//		Model schemaModel = schemaGrafeo.getModel();
+//		
+//		// Validate requiredParam
+//		Property requiredProp = schemaModel.createProperty(NS.DM2E + "requiredParam");
+//		NodeIterator iter = schemaModel.listObjectsOfProperty(requiredProp); 
+//		while (iter.hasNext()) {
+//			// this must be easier than stringifying all the time...
+//			RDFNode thisNode = iter.next();
+//			Property thisProp = schemaModel.createProperty(thisNode.toString());
+//			if (! inputGrafeo.getModel().contains(null, thisProp)) {
+//				throw new Exception("Missing required param " + thisProp.toString());
+//			}
+//		}
 		
 		// todo do range checks so that services accept certain types
 	}

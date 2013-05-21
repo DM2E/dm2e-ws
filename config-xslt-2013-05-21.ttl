@@ -1,0 +1,61 @@
+@prefix dc:      <http://purl.org/dc/elements/1.1/> .
+@prefix ogp:     <http://ogp.me/ns#> .
+@prefix edm:     <http://www.europeana.eu/schemas/edm/> .
+@prefix geo:     <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix oo:      <http://purl.org/openorg/> .
+@prefix dm2e:    <http://onto.dm2e.eu/omnom/> .
+@prefix void:    <http://rdfs.org/ns/void#> .
+@prefix ore:     <http://www.openarchives.org/ore/terms/> .
+@prefix omnom:   <http://onto.dm2e.eu/omnom/> .
+@prefix dcterms:  <http://purl.org/dc/terms/> .
+@prefix sioc:    <http://rdfs.org/sioc/ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix co:      <http://purl.org/co/> .
+@prefix dct:     <http://purl.org/dc/terms/> .
+@prefix bibo:    <http://purl.org/ontology/bibo/> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix gr:      <http://purl.org/goodrelations/v1#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix cc:      <http://creativecommons.org/ns#> .
+
+[]    a       omnom:WebServiceConfig ;
+      omnom:assignment
+              [ a       omnom:ParameterAssignment ;
+                omnom:forParam <http://data.dm2e.eu/data/services/xslt/xsltInParam> ;
+                omnom:parameterValue
+                        "http://141.20.126.155/api/file/50c7266ee18a91933e000003/data"^^<java:eu.dm2e.ws.grafeo.jena.GLiteralImpl>
+              ] ;
+      omnom:assignment
+              [ a       omnom:ParameterAssignment ;
+                omnom:forParam <http://data.dm2e.eu/data/services/xslt/xmlInParam> ;
+                omnom:parameterValue
+                        "http://141.20.126.155/api/file/50c73992e18a91933e00001a/data"^^<java:eu.dm2e.ws.grafeo.jena.GLiteralImpl>
+              ] ;
+      omnom:hasWebService <http://localhost:9998/service/xslt> .
+
+
+# <http://data.dm2e.eu/data/services/xslt/xmlOutParam>
+#       a       omnom:Parameter ;
+#       omnom:isRequired "false"^^xsd:boolean ;
+#       omnom:webservice <http://localhost:9998/service/xslt> ;
+#       dc:title "XML output"^^xsd:string .
+# 
+# <http://data.dm2e.eu/data/services/xslt/xsltInParam>
+#       a       omnom:Parameter ;
+#       omnom:isRequired "true"^^xsd:boolean ;
+#       omnom:webservice <http://localhost:9998/service/xslt> ;
+#       dc:title "XSLT input"^^xsd:string .
+# 
+# <http://data.dm2e.eu/data/services/xslt/xmlInParam>
+#       a       omnom:Parameter ;
+#       omnom:isRequired "true"^^xsd:boolean ;
+#       omnom:webservice <http://localhost:9998/service/xslt> ;
+#       dc:title "XML input"^^xsd:string .
+# 
+# <http://localhost:9998/service/xslt>
+#       a       omnom:Webservice ;
+#       omnom:inputParam <http://data.dm2e.eu/data/services/xslt/xsltInParam> , <http://data.dm2e.eu/data/services/xslt/xmlInParam> ;
+#       omnom:outputParam <http://data.dm2e.eu/data/services/xslt/xmlOutParam> .

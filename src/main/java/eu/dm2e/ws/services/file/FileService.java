@@ -36,6 +36,7 @@ import com.sun.jersey.multipart.FormDataParam;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.jena.SparqlUpdate;
@@ -73,6 +74,13 @@ public class FileService extends AbstractRDFService {
 	}
 
 	Logger log = Logger.getLogger(getClass().getName());
+	
+	@Override
+	public WebservicePojo getWebServicePojo() {
+		WebservicePojo ws = new WebservicePojo();
+		ws.setId("http://localhost:9998/file");
+		return ws;
+	}
 
 	/**
 	 * Saves the sent file to disk and stores derived metadata in the graph

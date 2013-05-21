@@ -33,6 +33,13 @@ import eu.dm2e.ws.services.AbstractRDFService;
 public class DataService extends AbstractRDFService {
     Logger log = Logger.getLogger(getClass().getName());
     
+	@Override
+	public WebservicePojo getWebServicePojo() {
+		WebservicePojo ws = new WebservicePojo();
+		ws.setId("http://localhost:9998/data");
+		return ws;
+	}
+
 
     @GET
     public Response get() {
@@ -119,8 +126,12 @@ public class DataService extends AbstractRDFService {
     public Response postConfig(@Context UriInfo uriInfo, File input) {
         log.info("Config posted.");
         // TODO use Exception to return proper HTTP response if input can not be parsed as RDF
+        // TODO BUG this fails if newlines aren't correctly transmitted
+        log.severe(input.toString());
         Grafeo g = new GrafeoImpl(input);
-        GResource blank = g.findTopBlank();
+        log.severe(g.getTurtle());
+        GResource blank = g.findTopBlank("omnom:WebServiceConfig");
+        log.severe(""+blank);
         String uri = uriInfo.getRequestUri() + "/" + new Date().getTime();
         if (blank!=null) blank.rename(uri);
         g.addTriple(uri,"rdf:type","http://example.org/classes/Configuration");
