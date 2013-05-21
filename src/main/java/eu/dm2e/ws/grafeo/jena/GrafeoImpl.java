@@ -1,48 +1,11 @@
 package eu.dm2e.ws.grafeo.jena;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
-
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang.StringUtils;
-
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.AnonId;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.ResIterator;
-import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.query.*;
+import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.update.UpdateExecutionFactory;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateProcessor;
 import com.hp.hpl.jena.update.UpdateRequest;
-
 import eu.dm2e.ws.grafeo.GLiteral;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.GValue;
@@ -51,6 +14,17 @@ import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFId;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.StringUtils;
+
+import java.io.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Created with IntelliJ IDEA. User: kai Date: 3/2/13 Time: 2:27 PM To change
@@ -351,7 +325,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
             		log.severe(field.getName() + " is a LIST.");
             		ParameterizedType subtype = (ParameterizedType) field.getGenericType();
             		Class<?> subtypeClass = (Class<?>) subtype.getActualTypeArguments()[0];
-            		int listSize = (int) ((null == res.get("co:size")) 
+            		int listSize = (Integer) ((null == res.get("co:size"))
             				? 0 
     						: res.get("co:size").getTypedValue(Integer.class));
             		if (listSize == 0) {
