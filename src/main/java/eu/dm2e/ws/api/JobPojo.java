@@ -1,5 +1,8 @@
 package eu.dm2e.ws.api;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFId;
@@ -27,6 +30,36 @@ public class JobPojo {
     // TODO is this even necessary when we have parameters
     @RDFProperty("omnom:hasWebServiceConfig")
     private WebServiceConfigPojo webServiceConfig;
+    
+    @RDFProperty("omnom:hasLogEntry")
+    private Set<LogEntryPojo> logEntries = new HashSet<LogEntryPojo>();
+    
+    @RDFProperty("omnom:hasOutputParam")
+    private Set<ParameterAssignmentPojo> outputParameters= new HashSet<ParameterAssignmentPojo>();
+    
+    public void addLogEntry(LogEntryPojo entry) {
+    	this.logEntries.add(entry);
+    	// TODO update to triplestore
+    }
+    public void addLogEntry(String message, String level) {
+    	LogEntryPojo entry = new LogEntryPojo();
+    	entry.setMessage(message);
+    	entry.setLevel(level);
+    	this.logEntries.add(entry);
+    	// TODO update to triplestore
+    }
+    
+    public void addOutputParameterAssignment(ParameterAssignmentPojo ass) {
+    	this.outputParameters.add(ass);
+    	// TODO update to triplestore
+    }
+    public void addOutputParameterAssignment(String forParam, String value) {
+    	ParameterAssignmentPojo ass = new ParameterAssignmentPojo();
+    	// TODO ParameterPojo for forParam can be deduced by the job's web service
+    	ass.setForParam(this.webService.getParamByName(forParam));
+    	ass.setParameterValue(value);
+    	// TODO update to triplestore
+    }
 
 	public String getId() { return id; }
 	public void setId(String id) { this.id = id; }
@@ -35,16 +68,12 @@ public class JobPojo {
 
 	public WebservicePojo getWebService() { return webService; }
 	public void setWebService(WebservicePojo webService) { this.webService = webService; }
-	public void setWebService(String webService) {
-		this.webService = new WebservicePojo();
-		this.webService.setId(webService);
-	}
-	public WebServiceConfigPojo getWebServiceConfig() {
-		return webServiceConfig;
-	}
-	public void setWebServiceConfig(WebServiceConfigPojo webServiceConfig) {
-		this.webServiceConfig = webServiceConfig;
-	}
+//	public void setWebService(String webService) {
+//		this.webService = new WebservicePojo();
+//		this.webService.setId(webService);
+//	}
+	public WebServiceConfigPojo getWebServiceConfig() { return webServiceConfig; }
+	public void setWebServiceConfig(WebServiceConfigPojo webServiceConfig) { this.webServiceConfig = webServiceConfig; }
 	
 //	public URI getWebServiceConfig() { return webServiceConfig; }
 //	public void setWebServiceConfig(URI webServiceConfig) { this.webServiceConfig = webServiceConfig; }
