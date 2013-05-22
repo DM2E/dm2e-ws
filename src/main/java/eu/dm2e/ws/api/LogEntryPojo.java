@@ -1,6 +1,6 @@
 package eu.dm2e.ws.api;
 
-import java.util.Date;
+import java.util.Calendar;
 
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
@@ -19,7 +19,7 @@ public class LogEntryPojo {
 	private String level;
 	
 	@RDFProperty("dc:date")
-	private Date timestamp;
+	private Calendar timestamp;
 
 	public String getMessage() { return message; }
 	public void setMessage(String message) { this.message = message; }
@@ -27,8 +27,9 @@ public class LogEntryPojo {
 	public String getLevel() { return level; }
 	public void setLevel(String level) { this.level = level; }
 	public void setLevel(LogLevel level) { this.level = level.toString(); }
+	
+	public Calendar getTimestamp() { return timestamp; }
+	public void setTimestamp(Calendar timestamp) { this.timestamp = timestamp; }
 
-	public Date getTimestamp() { return timestamp; }
-	public void setTimestamp(Date timestamp) { this.timestamp = timestamp; }
 
 }

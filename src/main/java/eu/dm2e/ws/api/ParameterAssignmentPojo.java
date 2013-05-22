@@ -18,6 +18,7 @@ public class ParameterAssignmentPojo {
 	@RDFProperty("omnom:forParam")
 	private ParameterPojo forParam;
 	
+	// TODO this is a GValue because a parameter can be a literal or a link
 	@RDFProperty("omnom:parameterValue")
 	private GValue parameterValue;
 	
