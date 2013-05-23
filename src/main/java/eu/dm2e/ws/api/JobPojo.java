@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
+
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFId;
@@ -53,11 +55,23 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
     	this.logEntries.add(entry);
     	// TODO update to triplestore
     }
-    public void trace(String message) { log.info("Job " + getId() +": " + message); this.addLogEntry(message, LogLevel.TRACE.toString());}
-    public void debug(String message) { log.info("Job " + getId() +": " + message); this.addLogEntry(message, LogLevel.DEBUG.toString());}
-    public void info(String message)  { log.info("Job " + getId() +": " + message); this.addLogEntry(message, LogLevel.INFO.toString());}
-    public void warn(String message)  { log.warning("Job " + getId() +": " + message); this.addLogEntry(message, LogLevel.WARN.toString());}
-    public void fatal(String message) { log.severe("Job " + getId() +": " + message); this.addLogEntry(message, LogLevel.FATAL.toString());}
+    public void trace(String message) { log.info("Job " + getId() +": " + message);    this.addLogEntry(message, LogLevel.TRACE.toString()); this.publish();}
+    public void debug(String message) { log.info("Job " + getId() +": " + message);    this.addLogEntry(message, LogLevel.DEBUG.toString()); this.publish();}
+    public void info(String message)  { log.info("Job " + getId() +": " + message);    this.addLogEntry(message, LogLevel.INFO.toString());  this.publish();}
+    public void warn(String message)  { log.warning("Job " + getId() +": " + message); this.addLogEntry(message, LogLevel.WARN.toString());  this.publish();}
+    public void fatal(String message) { log.severe("Job " + getId() +": " + message);  this.addLogEntry(message, LogLevel.FATAL.toString()); this.publish();}
+    public void fatal(Exception e) {
+    	StringBuilder messageSB = new StringBuilder();
+    	messageSB.append("Job <");
+    	messageSB.append(getId());
+    	messageSB.append("> : ");
+//    	messageSB.append(e.toString());
+//    	messageSB.append("\n");
+    	messageSB.append(ExceptionUtils.getStackTrace(e));
+    	log.severe(messageSB.toString());
+    	this.addLogEntry(messageSB.toString(), LogLevel.FATAL.toString());
+    	this.publish();
+	}
     
     /**
      * Output Parameters
@@ -90,14 +104,17 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
 	public void setStarted() {
 		this.trace("Status change: " + this.getStatus() + " => " + JobStatusConstants.STARTED);
 		this.setStatus(JobStatusConstants.STARTED.toString()); 
+		this.publish();
 	}
 	public void setFinished() {
 		this.trace("Status change: " + this.getStatus() + " => " + JobStatusConstants.FINISHED);
 		this.setStatus(JobStatusConstants.FINISHED.toString()); 
+		this.publish();
 	}
 	public void setFailed() {
 		this.trace("Status change: " + this.getStatus() + " => " + JobStatusConstants.FAILED);
 		this.setStatus(JobStatusConstants.FAILED.toString()); 
+		this.publish();
 	}
 	
 	/*********************
