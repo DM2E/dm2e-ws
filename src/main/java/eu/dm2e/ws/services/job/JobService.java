@@ -40,7 +40,7 @@ import eu.dm2e.ws.services.AbstractRDFService;
 //import java.util.ArrayList;
 
 @Path("/job")
-public class JobRdfService extends AbstractRDFService {
+public class JobService extends AbstractRDFService {
 
 	private Logger log = Logger.getLogger(getClass().getName());
 	// TODO there must be an easier way
