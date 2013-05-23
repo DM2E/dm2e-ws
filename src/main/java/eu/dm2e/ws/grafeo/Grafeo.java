@@ -73,8 +73,6 @@ public interface Grafeo {
 
 	GLiteral date(Long timestamp);
 
-	boolean executeSparqlAsk(String queryString);
-
 	boolean containsStatementPattern(String s, String p, String o);
 
 	boolean containsStatementPattern(String s, String p, GLiteral o);
@@ -83,9 +81,13 @@ public interface Grafeo {
 
 	boolean containsResource(URI graphURI);
 
+	boolean executeSparqlAsk(String queryString);
+
 	ResultSet executeSparqlSelect(String queryString);
 
 	Grafeo executeSparqlConstruct(String queryString);
+	
+	void executeSparqlUpdate(String queryString, String endpoint);
 
 	void readHeuristically(String content);
 
@@ -105,5 +107,9 @@ public interface Grafeo {
 	GValue firstMatchingObject(String string2, String string);
 
 	GResourceImpl findTopBlank(String uri);
+
+	void emptyGraph(String endpoint, String graph);
+
+
 
 }

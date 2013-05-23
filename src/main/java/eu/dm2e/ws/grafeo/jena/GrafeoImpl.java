@@ -2,7 +2,6 @@ package eu.dm2e.ws.grafeo.jena;
 
 import com.hp.hpl.jena.query.*;
 import com.hp.hpl.jena.rdf.model.*;
-import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.update.UpdateExecutionFactory;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateProcessor;
@@ -713,6 +712,13 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         return model;
 
     }
+    
+    @Override
+    public void executeSparqlUpdate(String queryString, String endpoint) {
+        UpdateRequest update = UpdateFactory.create(queryString);
+        UpdateProcessor exec = UpdateExecutionFactory.createRemoteForm(update, endpoint);
+        exec.execute();
+    }
 
     @Override
     public boolean executeSparqlAsk(String queryString) {
@@ -783,6 +789,17 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         return null;
         // TODO handle blank nodes
     }
+    
+	@Override
+	public void emptyGraph(String endpoint, String graph) {
+		String updateStr = new SparqlUpdate.Builder()
+			.graph(graph)
+			.delete("?s ?p ?o.")
+			.build().toString();
+        log.info("Empty Graph query: " + updateStr);
+        this.executeSparqlUpdate(updateStr, endpoint);
+	}
+
 
     @Override
     public boolean isEmpty() {
@@ -813,6 +830,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         namespaces.put("ore", "http://www.openarchives.org/ore/terms/");
         namespaces.put("dm2e", "http://onto.dm2e.eu/omnom/");
         namespaces.put("omnom", "http://onto.dm2e.eu/omnom/");
+        namespaces.put("omnom_types", "http://onto.dm2e.eu/omnom-types/");
 
     }
 

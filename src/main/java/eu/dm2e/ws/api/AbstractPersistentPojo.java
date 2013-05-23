@@ -50,6 +50,7 @@ public abstract class AbstractPersistentPojo<T> {
 	public void publish(String endPoint, String graph) {
 		Grafeo g = new GrafeoImpl();
 		g.addObject(this);
+		g.emptyGraph(endPoint, graph);
 		g.writeToEndpoint(endPoint, graph);
 	}
 	public void publish(String endPoint) {
