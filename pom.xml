@@ -6,6 +6,18 @@
 	<packaging>jar</packaging>
 	<version>1.0-SNAPSHOT</version>
 	<name>dm2e-ws</name>
+	<distributionManagement>
+        <snapshotRepository>
+            <name>LSKI Snapshot Repository</name>
+            <id>lski-snapshots</id>
+            <url>https://breda.informatik.uni-mannheim.de/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <name>LSKI Repository</name>
+            <id>lski-releases</id>
+            <url>https://breda.informatik.uni-mannheim.de/nexus/content/repositories/releases</url>
+        </repository>
+    </distributionManagement>
 	<dependencies>
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
@@ -45,6 +57,7 @@
         	<groupId>net.sf.saxon</groupId>
         	<artifactId>Saxon-B</artifactId>
         	<version>9.0</version>
+
         </dependency>
         <dependency>
         	<groupId>org.apache.commons</groupId>
