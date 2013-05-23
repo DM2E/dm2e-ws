@@ -46,6 +46,18 @@ public abstract class AbstractPersistentPojo<T> {
 		}
 		return theThing;
 	}
+	public T readFromEndpoint(String endpoint, String graph) {
+		Grafeo g = new GrafeoImpl();
+		g.readFromEndpoint(endpoint, graph);
+		return g.getObject(this.getClass(), graph);
+	}
+	public T readFromEndpoint(String endpoint) {
+		return readFromEndpoint(endpoint, this.getId());
+	}
+	public T readFromEndpoint() {
+		String endPoint = Config.getString("dm2e.ws.sparql_endpoint_statements");
+		return readFromEndpoint(endPoint);
+	}
 	
 	public void publish(String endPoint, String graph) {
 		Grafeo g = new GrafeoImpl();

@@ -29,7 +29,11 @@ public class DemoService extends AbstractRDFService {
 		/*	
 		 * Resolve configURI to WebServiceConfigPojo
 		 */
-		WebServiceConfigPojo wsConf = resolveWebSerivceConfigPojo(configURI);
+//		WebServiceConfigPojo wsConf = resolveWebSerivceConfigPojo(configURI);
+		// TODO not very elegant
+		WebServiceConfigPojo wsConfDummy = new WebServiceConfigPojo();
+		wsConfDummy.setId(configURI);
+		WebServiceConfigPojo wsConf = wsConfDummy.readFromEndpoint();
 		
 		/*	
 		 * Build JobPojo
