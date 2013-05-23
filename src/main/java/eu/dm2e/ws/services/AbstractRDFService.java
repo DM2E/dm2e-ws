@@ -3,6 +3,7 @@ package eu.dm2e.ws.services;
 import com.hp.hpl.jena.rdf.model.Model;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.api.ParameterPojo;
+import eu.dm2e.ws.api.WebServiceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
@@ -28,7 +29,7 @@ import java.util.logging.Logger;
 		MediaType.MULTIPART_FORM_DATA })
 public abstract class AbstractRDFService {
 
-	Logger log = Logger.getLogger(getClass().getName());
+	protected Logger log = Logger.getLogger(getClass().getName());
 	
 	public static final String PLAIN = MediaType.TEXT_PLAIN;
 	public static final String XML = "application/rdf+xml";
@@ -308,4 +309,18 @@ public abstract class AbstractRDFService {
 			model.write(output, mediaType2Language.get(this.mediaType));
 		}
 	}
+	
+	protected WebServiceConfigPojo resolveWebSerivceConfigPojo(String configURI) {
+		// TODO Auto-generated method stub
+		Grafeo g = new GrafeoImpl();
+		g.readFromEndpoint(Config.getString("dm2e.ws.sparql_endpoint_statements"), configURI);
+		try {
+			WebServiceConfigPojo wsConf = g.getObject(WebServiceConfigPojo.class, configURI);
+			return wsConf;
+		} catch (Exception e) {
+			log.warning(e.toString());
+		}
+		return null;
+	}
+
 }

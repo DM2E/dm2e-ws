@@ -432,7 +432,6 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         result =  getSingleObject(T, res, uri);
         setAnnotatedNamespaces(result);
         return result;
-
     }
 
     protected boolean isAnnotatedObject(Object object) {

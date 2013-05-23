@@ -1,0 +1,88 @@
+@prefix dc:      <http://purl.org/dc/elements/1.1/> .
+@prefix ogp:     <http://ogp.me/ns#> .
+@prefix edm:     <http://www.europeana.eu/schemas/edm/> .
+@prefix geo:     <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix oo:      <http://purl.org/openorg/> .
+@prefix omnom_xslt:        <http://omnom.dm2e.eu/service/xslt#> .
+@prefix omnom:    <http://onto.dm2e.eu/omnom/> .
+@prefix omnom_type:        <http://onto.dm2e.eu/omnom_type/> .
+@prefix void:    <http://rdfs.org/ns/void#> .
+@prefix ore:     <http://www.openarchives.org/ore/terms/> .
+@prefix dcterms:  <http://purl.org/dc/terms/> .
+@prefix sioc:    <http://rdfs.org/sioc/ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dct:     <http://purl.org/dc/terms/> .
+@prefix bibo:    <http://purl.org/ontology/bibo/> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix gr:      <http://purl.org/goodrelations/v1#> .
+@prefix sesame:  <http://www.openrdf.org/schema/sesame#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix fn:      <http://www.w3.org/2005/xpath-functions#> .
+@prefix cc:      <http://creativecommons.org/ns#> .
+#@prefix mint: <http://mint-projects.image.ntua.gr/dm2e/>
+
+# $MINT = http://mint-projects.image.ntua.gr/dm2e
+
+# This is a mapping, being both the description of the JSON/MINT format of the mapping
+# and containing links to the XSLT version and the XML this was originally based on
+# as well as the item root path
+<$MINT/mapping/1234/>
+    a       omnom:MintMapping ,
+            omnom:File ;
+    omnom:resourceType omnom_type:MintMapping ;
+    dc:date "2013-04-03T02:34:56Z"^^xsd:dateTime ;
+    omnom:fileOwner <$MINT/user/kba_dm2e> ;
+    omnom:mintItemRoot "/" ;
+    omnom:mintMappingAsXslt <$MINT/mapping/1234/xslt> ;
+    omnom:mintMappingBasedOn <$MINT/file/5678> ;
+    omnom:hasVersion <$MINT/mapping/1234/2013-04-03T02:34:56Z> .
+
+# This is a snapshot version of the Mapping
+<$MINT/mapping/1234/2013-04-03T02:34:56Z>
+    a       omnom:MintMapping ,
+            omnom:File ;
+    omnom:resourceType omnom_type:MintMapping ;
+    dc:date "2013-04-03T02:34:56Z"^^xsd:dateTime ;
+    omnom:fileOwner <$MINT/user/kba_dm2e> ;
+    omnom:mintItemRoot "/" ;
+    omnom:mintMappingAsXslt <$MINT/mapping/1234/xslt/2013-05-23T12:34:56Z> ;
+    omnom:mintMappingBasedOn <$MINT/file/5678> ;
+    omnom:hasLatestVersion <$MINT/mapping/1234> .
+
+# This is an XML upload
+<$MINT/file/5678>
+    a omnom:File ;
+    omnom:resourceType omnom_type:XML ;
+    dcterms:extent "132132" ;
+    dc:date "2013-04-03T02:34:56Z"^^xsd:dateTime ;
+    omnom:fileOwner <$MINT/user/kba_dm2e> .
+
+# This is the XSLT, dynamically created from the mapping
+<$MINT/mapping/1234/xslt>
+    a omnom:File ;
+    omnom:resourceType omnom_type:XSLT ;
+    omnom:mintMapping <$MINT/mapping/1234> .
+
+# This is a fixed unchangeable XSLT
+<$MINT/mapping/1234/xslt/2013-05-23T12:34:56Z>
+    a omnom:File ;
+    omnom:resourceType omnom_type:XSLT ;
+    dcterms:extent "240432" ;
+    dc:date "2013-05-23T12:34:56Z"^^xsd:dateTime ;
+    omnom:mintMapping <$MINT/mapping/1234> .
+
+# This is just for completeness should change when we have a SSO system
+<$MINT/user/kba_dm2e>
+    a foaf:Person ;
+    foaf:name "Konstantin Baierer" .
+
+omnom_type:MintMapping
+    dcterms:format "application/mint+json" .
+omnom_type:XML
+    dcterms:format "application/xml" .
+omnom_type:XML
+    dcterms:format "text/xslt" .
+# vim: ft=n3

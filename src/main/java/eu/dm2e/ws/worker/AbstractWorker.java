@@ -6,6 +6,7 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 
+import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.model.JobLogger;
 
 /**
@@ -14,6 +15,16 @@ import eu.dm2e.ws.model.JobLogger;
  *
  */
 public abstract class AbstractWorker implements Runnable {
+	
+	protected JobPojo job;
+	
+	public AbstractWorker(JobPojo job){
+		this.job = job;
+	}
+	
+//	private AbstractWorker() { 
+//		// A worker must always be connected to exactly one job
+//	}
 
 	/**
 	 * Reacts to a message sent to the worker by interpreting it as a run
@@ -25,9 +36,11 @@ public abstract class AbstractWorker implements Runnable {
 	 */
 	public abstract void run();
 	
-	public abstract String getServiceUri();
+//	public abstract String getServiceUri();
 	
-	public abstract Client getClient();
+	// The HTTP REST client
+	protected Client client = new Client();
+	public Client getClient() { return client; }
 	
 //	public abstract String getRabbitQueueName();
 
@@ -53,4 +66,12 @@ public abstract class AbstractWorker implements Runnable {
 
 	public void waitForResources(List<WebResource> unreadyResources) {
 	}
+	
+	/*******************
+	 * GETTERS/SETTERS
+	 *******************/
+
+	public JobPojo getJob() { return job; }
+
+	public void setJob(JobPojo job) { this.job = job; }
 }

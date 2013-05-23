@@ -35,7 +35,24 @@ public class WebservicePojo {
     
     /*********************
      * HELPER FUNCTIONS
+     * @return 
      *********************/
+    private ParameterPojo addParameterByName(String paramName, boolean isOutput) {
+    	ParameterPojo param = new ParameterPojo();
+    	param.setId(this.getId() + "/param/" + paramName);
+    	param.setLabel(paramName);
+    	Set<ParameterPojo> paramSet = (isOutput) ? this.outputParams : this.inputParams;
+    	paramSet.add(param);
+    	return param;
+    }
+    
+    public ParameterPojo addInputParameter(String paramName) {
+    	return this.addParameterByName(paramName, false);
+    }
+    public ParameterPojo addOutputParameter(String paramName) {
+    	return this.addParameterByName(paramName, true);
+    }
+    
     public ParameterPojo getParamByName(String needle) {
     	Logger log = Logger.getLogger(getClass().getName());
     	Set<ParameterPojo> allParams = new HashSet<ParameterPojo>();

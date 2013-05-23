@@ -13,6 +13,7 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
  * To change this template use File | Settings | File Templates.
  */
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/",
+			 "skos", "http://www.w3.org/2004/02/skos/core#",
 			 "dc", "http://purl.org/dc/elements/1.1/"})
 @RDFClass("omnom:Parameter")
 public class ParameterPojo {
@@ -27,12 +28,15 @@ public class ParameterPojo {
     @RDFProperty("dc:title")
     private String title;
     
+    @RDFProperty("skos:label")
+    private String label;
+    
     @RDFProperty("omnom:isRequired")
     private boolean isRequired;
 	
-	@RDFProperty("omnom:parameterValue")
-	private String parameterValue;
-	
+//	@RDFProperty("omnom:parameterValue")
+//	private String parameterValue;
+//	
 	@RDFProperty("omnom:parameterType")
 	private String parameterType;
 
@@ -43,10 +47,10 @@ public class ParameterPojo {
 	 * CONSTRUCTORS
 	 *****************/
 
-    public ParameterPojo(String title, String value) {
-    	this.title = title;
-    	this.parameterValue = value;
-	}
+//    public ParameterPojo(String title, String value) {
+//    	this.title = title;
+//    	this.parameterValue = value;
+//	}
 
 	public ParameterPojo() {
 		// TODO Auto-generated constructor stub
@@ -68,11 +72,14 @@ public class ParameterPojo {
     public String getTitle() { return title; }
 	public void setTitle(String title) { this.title = title; }
 
+    public String getLabel() { return label; }
+	public void setLabel(String label) { this.title = label; }
+
 	public boolean getIsRequired() { return isRequired; }
 	public void setIsRequired(boolean isRequired) { this.isRequired = isRequired; }
-
-	public String getParameterValue() { return parameterValue; }
-	public void setParameterValue(String parameterValue) { this.parameterValue = parameterValue; }
+//
+//	public String getParameterValue() { return parameterValue; }
+//	public void setParameterValue(String parameterValue) { this.parameterValue = parameterValue; }
 
 	public String getParameterType() { return parameterType; }
 	public void setParameterType(String parameterType) { this.parameterType = parameterType; }

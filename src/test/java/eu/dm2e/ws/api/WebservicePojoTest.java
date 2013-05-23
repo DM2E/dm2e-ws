@@ -1,6 +1,5 @@
 package eu.dm2e.ws.api;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Logger;
 
@@ -63,11 +62,11 @@ public class WebservicePojoTest {
 		
 		ParameterAssignmentPojo ass1 = new ParameterAssignmentPojo();
 		ass1.setForParam(xmlInParam);
-		ass1.setParameterValue(g.literal(new URI("http://141.20.126.155/api/file/50c73992e18a91933e00001a/data")));
+		ass1.setParameterValue("http://141.20.126.155/api/file/50c73992e18a91933e00001a/data");
 		
 		ParameterAssignmentPojo ass2 = new ParameterAssignmentPojo();
 		ass2.setForParam(xsltInParam);
-		ass2.setParameterValue(g.literal(new URI("http://141.20.126.155/api/file/50c7266ee18a91933e000003/data")));
+		ass2.setParameterValue("http://141.20.126.155/api/file/50c7266ee18a91933e000003/data");
 		
 		wsconf.setWebservice(ws);
 		wsconf.getParameterAssignments().add(ass1);
