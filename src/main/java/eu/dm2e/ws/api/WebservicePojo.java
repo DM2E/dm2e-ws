@@ -41,6 +41,7 @@ public class WebservicePojo {
     	ParameterPojo param = new ParameterPojo();
     	param.setId(this.getId() + "/param/" + paramName);
     	param.setLabel(paramName);
+    	param.setWebservice(this);
     	Set<ParameterPojo> paramSet = (isOutput) ? this.outputParams : this.inputParams;
     	paramSet.add(param);
     	return param;
