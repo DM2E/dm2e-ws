@@ -42,6 +42,7 @@ public class DemoWorker extends AbstractWorker{
 		
 		job.debug("DemoWorker is finished now.");
 		job.setStatus(JobStatusConstants.FINISHED);
+		job.publish();
 	}
 
 }

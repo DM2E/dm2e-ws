@@ -1,7 +1,9 @@
-package eu.dm2e.ws.worker;
+package eu.dm2e.ws.services.xslt;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import eu.dm2e.ws.api.JobPojo;
 
 public enum XsltExecutorService {
 	INSTANCE;
@@ -11,8 +13,8 @@ public enum XsltExecutorService {
 		executor = Executors.newCachedThreadPool();
 	}
 			
-	public void handleJobUri(String jobUri) {
-		executor.submit(new XsltWorker(jobUri));
+	public void handleJob(JobPojo job) {
+		executor.submit(new XsltWorker(job));
 	}
 
 }
