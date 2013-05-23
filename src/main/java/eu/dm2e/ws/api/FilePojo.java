@@ -12,7 +12,7 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 	 "dc", "http://purl.org/dc/elements/1.1/",
 	 "dct", "http://purl.org/dc/terms/"})
 @RDFClass("omnom:File")
-public class FilePojo {
+public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 	
 	@RDFId
 	private String id;
@@ -34,6 +34,9 @@ public class FilePojo {
 	
 	@RDFProperty("dct:extent")
 	private long fileSize;
+	
+	@RDFProperty("omnom:generatedBy")
+	private JobPojo generatorJob;
 	
 	@RDFProperty("omnom:fileRetrievalURI")
 	private URI fileRetrievalURI;
@@ -130,4 +133,7 @@ public class FilePojo {
 
 	public String getFileStatus() { return fileStatus; }
 	public void setFileStatus(String fileStatus) { this.fileStatus = fileStatus; }
+	
+	public JobPojo getGeneratorJob() { return generatorJob; }
+	public void setGeneratorJob(JobPojo generatorJob) { this.generatorJob = generatorJob; }
 }
