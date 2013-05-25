@@ -1,47 +1,30 @@
 package eu.dm2e.ws.services.file;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataBodyPart;
+import com.sun.jersey.multipart.FormDataParam;
+import eu.dm2e.ws.Config;
+import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.grafeo.jena.SparqlUpdate;
+import eu.dm2e.ws.httpmethod.PATCH;
+import eu.dm2e.ws.services.AbstractRDFService;
+import org.apache.commons.io.IOUtils;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Logger;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.apache.commons.io.IOUtils;
-
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataParam;
-
-import eu.dm2e.ws.Config;
-import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.api.FilePojo;
-import eu.dm2e.ws.api.WebservicePojo;
-import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
-import eu.dm2e.ws.grafeo.jena.SparqlUpdate;
-import eu.dm2e.ws.httpmethod.PATCH;
-import eu.dm2e.ws.services.AbstractRDFService;
 
 /**
  * The service includes all necessary methods to upload a new file (no matter
@@ -54,6 +37,7 @@ import eu.dm2e.ws.services.AbstractRDFService;
  */
 @Path("/file")
 public class FileService extends AbstractRDFService {
+
 
 	// private static Configuration config = Config.getConfig();
 	private static final String 
@@ -74,15 +58,13 @@ public class FileService extends AbstractRDFService {
 	}
 
 	Logger log = Logger.getLogger(getClass().getName());
-	
-	@Override
-	public WebservicePojo getWebServicePojo() {
-		WebservicePojo ws = new WebservicePojo();
-		ws.setId("http://localhost:9998/file");
-		return ws;
-	}
 
-	/**
+
+    public FileService() {
+
+    }
+
+    /**
 	 * Saves the sent file to disk and stores derived metadata in the graph
 	 * {@code uri} of Grafeo {@code g}
 	 * 

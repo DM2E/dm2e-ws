@@ -57,7 +57,7 @@ public class WebservicePojoTest {
 	@Test
 	public void testRunXsltService() throws URISyntaxException {
 		WebservicePojo ws = XsltServiceTest.getWebService();
-		WebServiceConfigPojo wsconf = new WebServiceConfigPojo();
+		WebserviceConfigPojo wsconf = new WebserviceConfigPojo();
 		GrafeoImpl g = new GrafeoImpl();
 		
 		ParameterAssignmentPojo ass1 = new ParameterAssignmentPojo();

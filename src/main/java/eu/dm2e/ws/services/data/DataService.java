@@ -3,6 +3,7 @@ package eu.dm2e.ws.services.data;
 
 
 import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -29,7 +30,10 @@ public class DataService extends AbstractRDFService {
     Logger log = Logger.getLogger(getClass().getName());
 
     public DataService() {
-        this.getWebServicePojo().setHello("Hi all ;-)");
+        ParameterPojo p1 = new ParameterPojo();
+        p1.setWebservice(getWebServicePojo());
+        p1.setId("http://localhost:9998/data/params/1");
+        getWebServicePojo().getInputParams().add(p1);
     }
 
     @GET
@@ -40,9 +44,6 @@ public class DataService extends AbstractRDFService {
         WebservicePojo test = g.getObject(WebservicePojo.class, g.resource("http://data.dm2e.eu/data/services/42"));
 
         log.info("Result ID: " + test.getId());
-        log.info("Result Hello: " + test.getHello());
-        log.info("Result Parameter Hello: " + test.getInputParams().iterator().next().getHello());
-        log.info("And back ;-): " + test.getInputParams().iterator().next().getWebservice().getHello());
 
 
         return getResponse(g);

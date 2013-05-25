@@ -1,9 +1,11 @@
 package eu.dm2e.ws.services;
 
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.api.ParameterPojo;
-import eu.dm2e.ws.api.WebServiceConfigPojo;
+import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
@@ -15,6 +17,7 @@ import javax.ws.rs.core.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -22,7 +25,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.logging.Logger;
 
-@Produces({ MediaType.TEXT_PLAIN, "application/rdf+xml",
+@Produces({ MediaType.TEXT_HTML, MediaType.TEXT_PLAIN, "application/rdf+xml",
 		"application/x-turtle", "text/turtle", "text/rdf+n3" })
 @Consumes({ MediaType.TEXT_PLAIN, "application/rdf+xml",
 		"application/x-turtle", "text/turtle", "text/rdf+n3",
@@ -110,8 +113,9 @@ public abstract class AbstractRDFService {
     public  WebservicePojo getWebServicePojo() {
         if (webservicePojo.getId()==null)    {
             String base = Config.config.getString("dm2e.ws.base_uri");
-            if (base.endsWith("/")) base = base.substring(0,base.length()-1);
-            webservicePojo.setId(base + this.getClass().getAnnotation(Path.class).value());
+            String path = this.getClass().getAnnotation(Path.class).value();
+            if (base.endsWith("/") && path.startsWith("/")) base = base.substring(0,base.length()-1);
+            webservicePojo.setId(base + path);
         }
         return webservicePojo;
     }
@@ -126,14 +130,8 @@ public abstract class AbstractRDFService {
      */
     @GET
     public Response getBase(@Context UriInfo uriInfo)  {
-        StringBuilder uri = new StringBuilder(uriInfo.getRequestUri().toString());
-        if (!uri.toString().endsWith("/")) uri.append("/");
-        uri.append("describe");
-        try {
-            return Response.seeOther(new URI(uri.toString())).build();
-        } catch (URISyntaxException e) {
-            throw new RuntimeException("An exception occurred: " + e, e);
-        }
+        URI uri = appendPath(uriInfo.getRequestUri(),"describe");
+        return Response.seeOther(uri).build();
 
     }
 
@@ -199,6 +197,11 @@ public abstract class AbstractRDFService {
 	protected Response getResponse(Model model) {
 		Variant selectedVariant = request.selectVariant(supportedVariants);
 		assert selectedVariant != null;
+        if (uriInfo.getQueryParameters().containsKey("debug")) {
+            return Response.ok(
+                    new HTMLOutput(model),
+                    MediaType.TEXT_HTML_TYPE).build();
+        }
 
 		return Response.ok(
 				new RDFOutput(model, selectedVariant.getMediaType()),
@@ -214,6 +217,9 @@ public abstract class AbstractRDFService {
 	protected StreamingOutput getResponseEntity(Model model) {
 		Variant selectedVariant = request.selectVariant(supportedVariants);
 		assert selectedVariant != null;
+        if (uriInfo.getQueryParameters().containsKey("debug")) {
+            return new HTMLOutput(model);
+        }
 		return new RDFOutput(model, selectedVariant.getMediaType());
 
 	}
@@ -248,6 +254,8 @@ public abstract class AbstractRDFService {
 				}
 			}
 		}
+
+
 //		GrafeoImpl schemaGrafeo = this.getServiceDescriptionGrafeo();
 		// TODO this is the right way to to do it but Jena won't
 		// croak on cardinality restrictions being broken
@@ -292,6 +300,27 @@ public abstract class AbstractRDFService {
 		// todo do range checks so that services accept certain types
 	}
 
+    protected URI appendPath(URI uri, String path) {
+        String query = uri.getQuery();
+        String u = uri.toString();
+        log.info("Query: " + query);
+        if (query!=null) {
+            log.info("URI: " + u);
+            u = u.replace("?" + query,"");
+        }
+        if (!u.endsWith("/") && !path.startsWith("/")) u = u + "/";
+        u = u + path;
+        if (query!=null) {
+            u = u + "?" + query;
+        }
+        log.info("Result: " + u);
+        try {
+            return new URI(u);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("An exception occurred: " + e, e);
+        }
+    }
+
 	protected class RDFOutput implements StreamingOutput {
 		Logger log = Logger.getLogger(getClass().getName());
 		Model model;
@@ -309,13 +338,13 @@ public abstract class AbstractRDFService {
 			model.write(output, mediaType2Language.get(this.mediaType));
 		}
 	}
-	
-	protected WebServiceConfigPojo resolveWebSerivceConfigPojo(String configURI) {
+
+	protected WebserviceConfigPojo resolveWebSerivceConfigPojo(String configURI) {
 		// TODO Auto-generated method stub
 		Grafeo g = new GrafeoImpl();
 		g.readFromEndpoint(Config.getString("dm2e.ws.sparql_endpoint_statements"), configURI);
 		try {
-			WebServiceConfigPojo wsConf = g.getObject(WebServiceConfigPojo.class, configURI);
+			WebserviceConfigPojo wsConf = g.getObject(WebserviceConfigPojo.class, configURI);
 			return wsConf;
 		} catch (Exception e) {
 			log.warning(e.toString());
@@ -323,4 +352,40 @@ public abstract class AbstractRDFService {
 		return null;
 	}
 
+
+    protected class HTMLOutput implements StreamingOutput {
+        Logger log = Logger.getLogger(getClass().getName());
+        Model model;
+
+        public HTMLOutput(Model model) {
+            this.model = model;
+
+        }
+
+        @Override
+        public void write(OutputStream output) throws IOException,
+                WebApplicationException {
+            PrintWriter pw = new PrintWriter(output);
+            pw.write("<html><body><table>");
+            StmtIterator it = model.listStatements();
+            while (it.hasNext()) {
+                Statement st = it.nextStatement();
+                pw.write("<tr><td>");
+                    pw.write("<a href=\"");
+                        pw.write(st.getSubject().getURI());
+                        pw.write("?debug\">");
+                        pw.write(st.getSubject().getURI());
+                    pw.write("</a>");
+                pw.write("</td><td>");
+                pw.write(st.getPredicate().getURI());
+                pw.write("</td><td>");
+                pw.write(st.getObject().toString());
+                pw.write("</td></tr>");
+
+            }
+            pw.write("</table></body></html>");
+            pw.close();
+            output.flush();
+        }
+    }
 }

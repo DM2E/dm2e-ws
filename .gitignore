@@ -1,3 +1,4 @@
+src/main/resources/dm2e-ws.local.properties
 target
 bin
 dm2e-ws.iml

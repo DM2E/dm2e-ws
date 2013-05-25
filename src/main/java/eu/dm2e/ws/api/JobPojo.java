@@ -32,7 +32,7 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
     private WebservicePojo webService;
 
     @RDFProperty("omnom:hasWebServiceConfig")
-    private WebServiceConfigPojo webServiceConfig;
+    private WebserviceConfigPojo webserviceConfig;
     
     @RDFProperty("omnom:hasLogEntry")
     private Set<LogEntryPojo> logEntries = new HashSet<LogEntryPojo>();
@@ -131,8 +131,8 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
 	public WebservicePojo getWebService() { return webService; }
 	public void setWebService(WebservicePojo webService) { this.webService = webService; }
 	
-	public WebServiceConfigPojo getWebServiceConfig() { return webServiceConfig; }
-	public void setWebServiceConfig(WebServiceConfigPojo webServiceConfig) { this.webServiceConfig = webServiceConfig; }
+	public WebserviceConfigPojo getWebserviceConfig() { return webserviceConfig; }
+	public void setWebserviceConfig(WebserviceConfigPojo webserviceConfig) { this.webserviceConfig = webserviceConfig; }
 	
 	public Set<LogEntryPojo> getLogEntries() { return logEntries; }
 	public void setLogEntries(Set<LogEntryPojo> logEntries) { this.logEntries = logEntries; }

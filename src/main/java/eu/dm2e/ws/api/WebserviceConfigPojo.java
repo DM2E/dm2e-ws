@@ -1,19 +1,15 @@
 package eu.dm2e.ws.api;
 
+import eu.dm2e.ws.grafeo.annotations.*;
+
 import java.util.HashSet;
 import java.util.Set;
-
-import eu.dm2e.ws.grafeo.annotations.Namespaces;
-import eu.dm2e.ws.grafeo.annotations.RDFClass;
-import eu.dm2e.ws.grafeo.annotations.RDFId;
-import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
-import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/"})
 @RDFClass("omnom:WebServiceConfig")
 //@RDFInstancePrefix("http://data.dm2e.eu/config/")
 @RDFInstancePrefix("http://localhost:9998/data/configurations/")
-public class WebServiceConfigPojo extends AbstractPersistentPojo<WebServiceConfigPojo>{
+public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfigPojo>{
 	
 	@RDFId
 	private String id;

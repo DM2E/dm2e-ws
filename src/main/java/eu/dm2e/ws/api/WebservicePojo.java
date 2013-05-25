@@ -1,13 +1,13 @@
 package eu.dm2e.ws.api;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.logging.Logger;
-
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFId;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,9 +23,6 @@ public class WebservicePojo {
 //    @RDFId(prefix="http://data.dm2e.eu/data/services/")
 	@RDFId
     private String id;
-
-    @RDFProperty("omnom:helloWorld")
-    private String hello;
 
     @RDFProperty("omnom:inputParam")
     private Set<ParameterPojo> inputParams = new HashSet<ParameterPojo>();
@@ -84,8 +81,6 @@ public class WebservicePojo {
 
 	public String getId() { return id; }
 	public void setId(String id) { this.id = id; }
-	public String getHello() { return hello; }
-	public void setHello(String hello) { this.hello = hello; }
 	public Set<ParameterPojo> getInputParams() { return inputParams; }
 	public void setInputParams(Set<ParameterPojo> inputParams) { this.inputParams = inputParams; }
 	public Set<ParameterPojo> getOutputParams() { return outputParams; }

@@ -8,7 +8,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import eu.dm2e.ws.api.JobPojo;
-import eu.dm2e.ws.api.WebServiceConfigPojo;
+import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.services.AbstractRDFService;
 
@@ -27,13 +27,13 @@ public class DemoService extends AbstractRDFService {
 	public Response runDemoService(String configURI) {
 		
 		/*	
-		 * Resolve configURI to WebServiceConfigPojo
+		 * Resolve configURI to WebserviceConfigPojo
 		 */
-//		WebServiceConfigPojo wsConf = resolveWebSerivceConfigPojo(configURI);
+//		WebserviceConfigPojo wsConf = resolveWebSerivceConfigPojo(configURI);
 		// TODO not very elegant
-		WebServiceConfigPojo wsConfDummy = new WebServiceConfigPojo();
+		WebserviceConfigPojo wsConfDummy = new WebserviceConfigPojo();
 		wsConfDummy.setId(configURI);
-		WebServiceConfigPojo wsConf = wsConfDummy.readFromEndpoint();
+		WebserviceConfigPojo wsConf = wsConfDummy.readFromEndpoint();
 		
 		/*	
 		 * Build JobPojo
@@ -41,7 +41,7 @@ public class DemoService extends AbstractRDFService {
 		JobPojo job = new JobPojo();
 		// TODO the job probably doesn't even need a webservice reference since it's in the conf already
 		job.setWebService(wsConf.getWebservice());
-		job.setWebServiceConfig(wsConf);
+		job.setWebserviceConfig(wsConf);
 		job.publish();
 		
 		/*
@@ -62,7 +62,7 @@ public class DemoService extends AbstractRDFService {
 	@POST
 	@Consumes(MediaType.WILDCARD)
 	public Response postDemoService(String rdfString) {
-		WebServiceConfigPojo conf = new WebServiceConfigPojo().constructFromRdfString(rdfString);
+		WebserviceConfigPojo conf = new WebserviceConfigPojo().constructFromRdfString(rdfString);
 		conf.publish();
 		return this.runDemoService(conf.getId());
 	}

@@ -14,7 +14,7 @@ A) Using the same configuration uri http://dm2e/config/1234
 SELECT ?result
 WHERE {
     ?job a dm2e:Job .
-    ?job dm2e:webServiceConfig <http://dm2e/config/1234> .
+    ?job dm2e:webserviceConfig <http://dm2e/config/1234> .
     ?job dm2e:jobStatus "SUCCESS" .
     ?job dm2e:resultFile ?result .
 }
@@ -35,7 +35,7 @@ WHERE {
     ?job a dm2e:Job .
     ?job dm2e:jobStatus "SUCCESS" .
     ?job dm2e:resultFile ?result .
-    ?job dm2e:webServiceConfig ?config .
+    ?job dm2e:webserviceConfig ?config .
     ?config <http://foo/one> "Value1" .
     ?config <http://foo/two> "Value2" .
 }

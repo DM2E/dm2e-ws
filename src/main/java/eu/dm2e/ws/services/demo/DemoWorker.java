@@ -1,7 +1,7 @@
 package eu.dm2e.ws.services.demo;
 
 import eu.dm2e.ws.api.JobPojo;
-import eu.dm2e.ws.api.WebServiceConfigPojo;
+import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.model.JobStatusConstants;
 import eu.dm2e.ws.worker.AbstractWorker;
 
@@ -13,7 +13,7 @@ public class DemoWorker extends AbstractWorker{
 	public void run() {
 		job.debug("DemoWorker starts to run now.");
 		
-		WebServiceConfigPojo wsConf = job.getWebServiceConfig();
+		WebserviceConfigPojo wsConf = job.getWebserviceConfig();
 		job.debug("wsConf: " + wsConf);
 		
 		int sleepTime = 0;

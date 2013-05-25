@@ -110,8 +110,8 @@ public class XsltWorker extends AbstractWorker {
 		// Get the input parameters
 		String xmlUrl, xsltUrl;
 		try {
-			xmlUrl = job.getWebServiceConfig().getParameterValueByName("xmlInParam");
-			xsltUrl = job.getWebServiceConfig().getParameterValueByName("xsltInParam");
+			xmlUrl = job.getWebserviceConfig().getParameterValueByName("xmlInParam");
+			xsltUrl = job.getWebserviceConfig().getParameterValueByName("xsltInParam");
 			job.debug("XML URL: " + xmlUrl);
 			job.debug("XSL URL: " + xsltUrl);
 		} catch (Exception e) {

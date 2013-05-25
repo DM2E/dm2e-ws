@@ -1,18 +1,16 @@
 package eu.dm2e.ws.services.file;
 
-import java.util.logging.Logger;
-
-import javax.ws.rs.core.MediaType;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.ws.rs.core.MediaType;
+import java.util.logging.Logger;
 
 public class FileServiceTest {
 	
@@ -44,7 +42,7 @@ public class FileServiceTest {
 		mp.bodyPart(p);
 		String s = webResource.type(MediaType.MULTIPART_FORM_DATA_TYPE).post(String.class, mp);
 		log.info(s);
-
+        assert(1==1);
 	}
 
 }

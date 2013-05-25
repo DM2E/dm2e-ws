@@ -12,7 +12,7 @@ POST /xslt $CONFIG
         ==> 202 $CONFIG_URI
     XSLT Service creates a new job ($JOBCONFIG)
         [] dm2e:webService $XSLT_SERVICE_URI ;
-           dm2e:webServiceConfig $CONFIG_URI ;
+           dm2e:webserviceConfig $CONFIG_URI ;
            dm2e:resultFile $FILE_URI .
         POST /job $JOBCONFIG
         ==> 202 $JOB_URI

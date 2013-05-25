@@ -13,7 +13,7 @@ import javax.ws.rs.core.UriInfo;
 
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.ParameterPojo;
-import eu.dm2e.ws.api.WebServiceConfigPojo;
+import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.services.AbstractRDFService;
 
@@ -62,9 +62,9 @@ public class XsltService extends AbstractRDFService {
 //			return throwServiceError(e);
 //		}
 		/*	
-		 * Resolve configURI to WebServiceConfigPojo
+		 * Resolve configURI to WebserviceConfigPojo
 		 */
-		WebServiceConfigPojo wsConf = resolveWebSerivceConfigPojo(configURI);
+		WebserviceConfigPojo wsConf = resolveWebSerivceConfigPojo(configURI);
 
 //		WebResource jobResource = Client.create().resource(URI_JOB_SERVICE);
 
@@ -73,14 +73,14 @@ public class XsltService extends AbstractRDFService {
 		JobPojo job = new JobPojo();
 		// TODO the job probably doesn't even need a webservice reference since it's in the conf already
 		job.setWebService(wsConf.getWebservice());
-		job.setWebServiceConfig(wsConf);
+		job.setWebserviceConfig(wsConf);
 		job.publish();
 //		JobPojo jobPojo = new JobPojo();
 //		jobPojo.setWebService(getWebServicePojo());
 //		GrafeoImpl g = new GrafeoImpl();
 //		configPojo = 
 		// TODO web service config pojo must be creatable from URI
-//		jobPojo.setWebServiceConfig(configURI);
+//		jobPojo.setWebserviceConfig(configURI);
 //		g.addObject(jobPojo);
 
 //		log.info(g.getTurtle());
@@ -110,7 +110,7 @@ public class XsltService extends AbstractRDFService {
 	@Consumes(MediaType.WILDCARD)
 	public Response postTransformation(@Context UriInfo uriInfo, String rdfString) {
 
-		WebServiceConfigPojo conf = new WebServiceConfigPojo().constructFromRdfString(rdfString);
+		WebserviceConfigPojo conf = new WebserviceConfigPojo().constructFromRdfString(rdfString);
 		conf.publish();
 //		return Response.ok(conf.getTurtle()).build();
 		return this.putTransformation(conf.getId());
