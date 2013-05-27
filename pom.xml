@@ -194,6 +194,11 @@
 	</properties>
 	<repositories>
         <repository>
+            <name>LSKI Snapshot Repository</name>
+            <id>lski-snapshots</id>
+            <url>https://breda.informatik.uni-mannheim.de/nexus/content/repositories/snapshots</url>
+        </repository>
+        <repository>
 			<id>glassfish.java.net</id>
 			<name>GlassFish Maven Repository</name>
 			<url>http://download.java.net/maven/glassfish</url>
