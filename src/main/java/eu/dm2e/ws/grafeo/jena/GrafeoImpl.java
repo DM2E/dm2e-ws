@@ -343,13 +343,15 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
             			if (thisValue.isLiteral()) {
 							Object thisValueTyped = thisValue.getTypedValue(subtypeClass);
 							propSet.add(thisValueTyped);
-            			}
+                            log.info("Added literal value: " + thisValue.toString());
+                        }
             			
             			// or resources
             			else {
             				// TODO infinite recursion on doubly-linked resources? Is that fixed by caching?
             				Object nestedObject = getObject(subtypeClass, (GResource) thisValue);
             				propSet.add(nestedObject);
+                            log.info("Added resource value: " + thisValue.resource().getUri());
             			}
             		}
             		

@@ -1,18 +1,17 @@
 package eu.dm2e.ws.grafeo.jena;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.logging.Logger;
-
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.ResourceUtils;
-
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.GValue;
 import eu.dm2e.ws.grafeo.Grafeo;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -89,10 +88,12 @@ public class GResourceImpl extends GValueImpl implements GResource {
         	RDFNode thisValue = stmt.getObject();
         	if (thisValue.isResource()) {
         		propSet.add(new GResourceImpl(grafeo, thisValue.asResource()));
+                log.info("Found resource value: " + thisValue.asResource().getURI());
         	}
         	else if (thisValue.isLiteral()) {
         		propSet.add(new GLiteralImpl(grafeo, thisValue.asLiteral()));
-        	}
+                log.info("Found literal value: " + thisValue.asLiteral().getValue());
+            }
         	else {
         		throw new RuntimeException("Not a literal or a resource value: " + getUri() + " -> " + uri);
         	}

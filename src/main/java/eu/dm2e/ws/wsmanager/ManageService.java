@@ -67,8 +67,8 @@ public class ManageService {
 
     public static void startFuseki() {
         ServerConfig config = new ServerConfig();
-        config.port = 8000;
-        config.pagesPort = 8000;
+        config.port = 9997;
+        config.pagesPort = 9997;
         DatasetRef ds = new DatasetRef();
         ds.name = "test";
         config.services = new ArrayList<>();
