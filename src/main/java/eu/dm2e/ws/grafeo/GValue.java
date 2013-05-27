@@ -23,4 +23,6 @@ public interface GValue {
     <T> T getTypedValue(Class T);
 
     boolean isLiteral();
+
+    GLiteral literal();
 }

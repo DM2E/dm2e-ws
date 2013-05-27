@@ -286,7 +286,7 @@ public abstract class AbstractRDFService {
 //		Model schemaModel = schemaGrafeo.getModel();
 //		
 //		// Validate requiredParam
-//		Property requiredProp = schemaModel.createProperty(NS.DM2E + "requiredParam");
+//		Property requiredProp = schemaModel.createProperty(NS.OMNOM + "requiredParam");
 //		NodeIterator iter = schemaModel.listObjectsOfProperty(requiredProp); 
 //		while (iter.hasNext()) {
 //			// this must be easier than stringifying all the time...

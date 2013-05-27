@@ -56,14 +56,18 @@ public class DemoServiceITCase {
             throw new RuntimeException("An exception occurred: " + e, e);
         }
         Grafeo g = new GrafeoImpl(joburi.toString());
-        assert(g.resource(joburi.toString()).get("omnom:status").getTypedValue(String.class).equals(JobStatusConstants.STARTED));
+        String status =  g.resource(joburi.toString()).get("omnom:status").literal().getValue();
+        log.info("Status after 1 seconds: " + status);
+        assert(status.equals(JobStatusConstants.STARTED.name()));
         try {
             Thread.sleep(12000);
         } catch (InterruptedException e) {
             throw new RuntimeException("An exception occurred: " + e, e);
         }
         g = new GrafeoImpl(joburi.toString());
-        assert(g.resource(joburi.toString()).get("omnom:status").getTypedValue(String.class).equals(JobStatusConstants.FINISHED));
+        status =  g.resource(joburi.toString()).get("omnom:status").literal().getValue();
+        log.info("Status after 12 seconds: " + status);
+        assert(status.equals(JobStatusConstants.FINISHED.name()));
 
     }
 

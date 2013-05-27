@@ -14,9 +14,12 @@ import java.util.logging.Logger;
 
 public abstract class AbstractPersistentPojo<T> {
 	
+    Logger log = Logger.getLogger(getClass().getName());
+//	public static getClass {
+//		return T;
+//	}
 	abstract String getId();
 	abstract void setId(String id);
-    Logger log = Logger.getLogger(getClass().getName());
 	
 	public URI getIdAsURI() {
 		URI uri = null;
@@ -47,6 +50,12 @@ public abstract class AbstractPersistentPojo<T> {
 			return null;
 		}
 		return theThing;
+	}
+	
+	public T readFromEndPointById(String id) {
+		this.setId(id);
+		T theNewPojo = this.readFromEndpoint();
+		return theNewPojo;
 	}
 	public T readFromEndpoint(String endpoint, String graph) {
 		Grafeo g = new GrafeoImpl();
