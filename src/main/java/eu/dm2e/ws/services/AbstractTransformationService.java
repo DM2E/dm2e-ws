@@ -55,7 +55,7 @@ public abstract class AbstractTransformationService extends AbstractRDFService i
         try {
             AbstractTransformationService instance = getClass().newInstance();
             Method method = getClass().getMethod("setJobPojo",JobPojo.class);
-            method.invoke(instance, jobPojo);
+            method.invoke(instance, job);
             TransformationExecutorService.INSTANCE.handleJob(instance);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException("An exception occurred: " + e, e);

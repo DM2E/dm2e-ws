@@ -22,32 +22,22 @@ public class NewDemoService extends AbstractTransformationService {
 
     @Override
     public void run() {
-        log.info("Seriously, we start now...");
-        // jobPojo.debug("DemoWorker starts to run now.");
-        log.info("1");
-
+        jobPojo.debug("DemoWorker starts to run now.");
         WebserviceConfigPojo wsConf = jobPojo.getWebserviceConfig();
-        log.info("2");
         jobPojo.debug("wsConf: " + wsConf);
-        log.info("3");
 
         int sleepTime = 0;
-        log.info("4");
-        jobPojo.debug(wsConf.getParameterValueByName("sleepTime"));
-        log.info("5");
+        jobPojo.debug(wsConf.getParameterValueByName("sleeptime"));
+
         try {
-            sleepTime = Integer.parseInt(wsConf.getParameterValueByName("sleepTime"));
-            log.info("6");
+            sleepTime = Integer.parseInt(wsConf.getParameterValueByName("sleeptime"));
         } catch(Exception e) {
             jobPojo.warn("Exception occured!: " + e);
-            log.info("7");
-
         }
 
         jobPojo.debug("DemoWorker will sleep for " + sleepTime + " seconds.");
         jobPojo.setStarted();
 
-        log.info("We go to sleep for " + sleepTime + " seconds.");
         // snooze
         try {
             for (int i=0 ; i < sleepTime ; i++) {
@@ -61,7 +51,6 @@ public class NewDemoService extends AbstractTransformationService {
         }
 
         jobPojo.debug("DemoWorker is finished now.");
-        log.info("We are finished :-)");
         jobPojo.setStatus(JobStatusConstants.FINISHED);
         jobPojo.publish();
     }

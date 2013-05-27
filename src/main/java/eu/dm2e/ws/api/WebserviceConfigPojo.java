@@ -25,14 +25,15 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
 	 ********************/
 	
 	public ParameterAssignmentPojo getParameterAssignmentForParam(String paramName) {
-		for (ParameterAssignmentPojo ass : this.parameterAssignments) {
+		log.info("Access to param assignment by name: " + paramName);
+        for (ParameterAssignmentPojo ass : this.parameterAssignments) {
 			try { 
 //				log.warning("" + ass.getForParam().getId());
 				if (ass.getForParam().getId().matches(".*" + paramName + "$")
 					||
 					ass.getForParam().getLabel().equals(paramName)
 					){
-					return ass;
+                    return ass;
 				}
 			} catch (NullPointerException e) {
 				continue;
@@ -45,6 +46,7 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
     	if (null != ass) {
     		return ass.getParameterValue();
     	}
+        log.info("No value found for: " + needle);
     	return null;
     }
     
