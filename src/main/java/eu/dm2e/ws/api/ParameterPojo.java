@@ -51,6 +51,18 @@ public class ParameterPojo {
 	public ParameterPojo() {
 		// TODO Auto-generated constructor stub
 	}
+
+
+    /******************
+     * HELPERS
+     *****************/
+
+    public ParameterAssignmentPojo createAssignment(String value) {
+        ParameterAssignmentPojo pa = new ParameterAssignmentPojo();
+        pa.setForParam(this);
+        pa.setParameterValue(value);
+        return pa;
+    }
 	
 	/******************
 	 * GETTERS/SETTERS

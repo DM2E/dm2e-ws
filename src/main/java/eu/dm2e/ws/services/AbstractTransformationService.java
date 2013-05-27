@@ -9,6 +9,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,24 +21,15 @@ import java.lang.reflect.InvocationTargetException;
 public abstract class AbstractTransformationService extends AbstractRDFService implements Runnable {
     protected JobPojo jobPojo;
 
-    /**
-     * Default Constructor, to be used by JAX-RS for the REST API
-     */
-    protected AbstractTransformationService() {
-    }
 
-    /**
-     * This constructor is used by the executor service, where one instance is created for each job.
-     * @param jobPojo
-     */
-    protected AbstractTransformationService(JobPojo jobPojo) {
+
+    public void setJobPojo(JobPojo jobPojo) {
         this.jobPojo = jobPojo;
     }
 
-
     @PUT
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response runDemoService(String configURI) {
+    public Response startService(String configURI) {
 
         /*
            * Resolve configURI to WebserviceConfigPojo
@@ -61,7 +53,9 @@ public abstract class AbstractTransformationService extends AbstractRDFService i
            * Let the asynchronous worker handle the job
            */
         try {
-            AbstractTransformationService instance = getClass().getConstructor(JobPojo.class).newInstance(job);
+            AbstractTransformationService instance = getClass().newInstance();
+            Method method = getClass().getMethod("setJobPojo",JobPojo.class);
+            method.invoke(instance, jobPojo);
             TransformationExecutorService.INSTANCE.handleJob(instance);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException("An exception occurred: " + e, e);
@@ -96,10 +90,10 @@ public abstract class AbstractTransformationService extends AbstractRDFService i
      */
     @POST
     @Consumes(MediaType.WILDCARD)
-    public Response postDemoService(String rdfString) {
+    public Response postConfig(String rdfString) {
         WebserviceConfigPojo conf = new WebserviceConfigPojo().constructFromRdfString(rdfString);
         conf.publish();
-        return this.runDemoService(conf.getId());
+        return this.startService(conf.getId());
     }
 
 }

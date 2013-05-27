@@ -1,12 +1,10 @@
 package eu.dm2e.ws.services.demo;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import eu.dm2e.ws.api.ParameterAssignmentPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
-import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,19 +40,17 @@ public class DemoServiceITCase {
         // fail("Not yet implemented");
         WebResource webResource = client.resource(URI_BASE + "/service/newdemo");
         WebserviceConfigPojo config = new WebserviceConfigPojo();
-        Grafeo g1 = new GrafeoImpl();
-        g1.load(webResource.getURI().toString());
-        WebservicePojo ws = g1.getObject(WebservicePojo.class, webResource.getURI());
+        WebservicePojo ws = new WebservicePojo(webResource.getURI());
         config.setWebservice(ws);
-        ParameterAssignmentPojo pa = new ParameterAssignmentPojo();
-        pa.setForParam(ws.getParamByName("sleeptime"));
-        pa.setParameterValue("10000");
-        config.getParameterAssignments().add(pa);
-        Grafeo g = new GrafeoImpl();
-        g.addObject(config);
-        log.info("Config to post: " + g.getTurtle());
-        webResource.post(g.getTurtle());
+        config.getParameterAssignments().add(ws.getParamByName("sleeptime").createAssignment("10"));
+        ClientResponse response = webResource.post(ClientResponse.class, config.getTurtle());
+        log.info("JOB STARTED WITH RESPONSE: " + response.getStatus() + " / Location: " + response.getLocation() + " / Content: " + response.getEntity(String.class));
+        try {
+            Thread.sleep(1000);
 
+        } catch (InterruptedException e) {
+            throw new RuntimeException("An exception occurred: " + e, e);
+        }
 
     }
 

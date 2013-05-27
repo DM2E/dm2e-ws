@@ -1,10 +1,15 @@
 package eu.dm2e.ws.api;
 
+import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFId;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import org.apache.commons.beanutils.BeanUtils;
 
+import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -19,6 +24,8 @@ import java.util.logging.Logger;
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/"})
 @RDFClass("omnom:Webservice")
 public class WebservicePojo {
+
+
 
 //    @RDFId(prefix="http://data.dm2e.eu/data/services/")
 	@RDFId
@@ -74,7 +81,18 @@ public class WebservicePojo {
     public WebservicePojo() {
     	// to make BeanUtils happy
     }
-    
+
+    public WebservicePojo(URI uri) {
+        Grafeo g = new GrafeoImpl(uri.toString());
+        WebservicePojo ws = g.getObject(WebservicePojo.class, uri);
+        try {
+            BeanUtils.copyProperties(this, ws);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("An exception occurred: " + e, e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException("An exception occurred: " + e, e);
+        }
+    }
     /*********************
      * GETTERS/SETTERS
      ********************/

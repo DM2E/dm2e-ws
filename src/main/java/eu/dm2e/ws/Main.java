@@ -28,7 +28,7 @@ public class Main {
 				"DM2E main services started (Data, Config, File). WADL at\n"
 				+"\n"
 				+"Hit enter to stop"));
-        // ManageService.startFuseki();
+        ManageService.startFuseki();
 		System.in.read();
 		ManageService.stopAll();
 

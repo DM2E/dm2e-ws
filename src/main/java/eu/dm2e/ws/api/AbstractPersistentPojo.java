@@ -1,9 +1,5 @@
 package eu.dm2e.ws.api;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.UUID;
-
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -11,10 +7,16 @@ import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.UUID;
+import java.util.logging.Logger;
+
 public abstract class AbstractPersistentPojo<T> {
 	
 	abstract String getId();
 	abstract void setId(String id);
+    Logger log = Logger.getLogger(getClass().getName());
 	
 	public URI getIdAsURI() {
 		URI uri = null;
@@ -55,11 +57,12 @@ public abstract class AbstractPersistentPojo<T> {
 		return readFromEndpoint(endpoint, this.getId());
 	}
 	public T readFromEndpoint() {
-		String endPoint = Config.getString("dm2e.ws.sparql_endpoint_statements");
+		String endPoint = Config.getString("dm2e.ws.sparql_endpoint");
 		return readFromEndpoint(endPoint);
 	}
 	
 	public void publish(String endPoint, String graph) {
+        log.info("Writing to endpoint: " + endPoint + " / Graph: " + graph);
 		Grafeo g = new GrafeoImpl();
 		g.addObject(this);
 		g.emptyGraph(endPoint, graph);
