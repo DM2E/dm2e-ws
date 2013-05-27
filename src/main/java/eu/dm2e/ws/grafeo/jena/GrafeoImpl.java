@@ -127,6 +127,27 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         return null;
     }
 
+    @Override
+    public Set<GResource> findByClass(String uri) {
+        ResIterator it = model.listSubjects();
+        GResourceImpl typeObjectGResource = new GResourceImpl(this, uri);
+        GResourceImpl typePropertyGResource = new GResourceImpl(this, "rdf:type");
+        Resource typeObjectResource = typeObjectGResource.getResource();
+        Property typeProperty = model.createProperty(typePropertyGResource.getUri());
+        Set<GResource> result = new HashSet<>();
+        while (it.hasNext()) {
+            Resource res = it.next();
+                if (model.listStatements(null, null, res).hasNext())
+                    continue;
+                if (model.listStatements(res, typeProperty, typeObjectResource).hasNext()) {
+                    result.add(new GResourceImpl(this, res));
+                }
+
+        }
+        return result;
+    }
+
+
     public GrafeoImpl(Model model) {
         this.model = model;
         initDefaultNamespaces();
@@ -170,7 +191,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         log.fine("Load data from URI: " + uri);
         uri = expand(uri);
         try {
-            this.model.read(uri, null, "N3");
+            this.model.read(uri);
             log.info("Content read, found N3.");
         } catch (Throwable t) {
             try {

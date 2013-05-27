@@ -1,30 +1,18 @@
 package eu.dm2e.ws;
 
-import com.sun.jersey.api.container.grizzly2.GrizzlyWebContainerFactory;
+import eu.dm2e.ws.wsmanager.ManageService;
+import org.apache.jena.fuseki.server.SPARQLServer;
 import org.glassfish.grizzly.http.server.HttpServer;
+
+import javax.ws.rs.Path;
 import java.io.IOException;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
-import javax.ws.rs.core.UriBuilder;
-
+@Path("manage")
 public class Main {
 
-	static URI getBaseURI() {
-		return UriBuilder.fromUri(
-				Config.config.getString("dm2e.ws.base_uri", "http://localhost:9998/")).build();
-	}
-
-	protected static HttpServer startServer()
-			throws IOException {
-		final Map<String, String> initParams = new HashMap<String, String>();
-
-		initParams.put("com.sun.jersey.config.property.packages", "eu.dm2e.ws.services");
-
-		System.out.println("Starting grizzly2...");
-		return GrizzlyWebContainerFactory.create(getBaseURI(), initParams);
-	}
+    static HttpServer httpServer;
+    static HttpServer manageServer;
+    static SPARQLServer sparqlServer;
 
 	public static void main(String[] args)
 			throws IOException {
@@ -35,13 +23,14 @@ public class Main {
 		}
 
 		// Grizzly 2 initialization
-		HttpServer httpServer = startServer();
+		ManageService.startServer();
 		System.out.println(String.format(
 				"DM2E main services started (Data, Config, File). WADL at\n"
-				+"%sapplication.wadl\n"
-				+"Hit enter to stop",
-				getBaseURI()));
+				+"\n"
+				+"Hit enter to stop"));
+        // ManageService.startFuseki();
 		System.in.read();
-		httpServer.stop();
+		ManageService.stopAll();
+
 	}
 }

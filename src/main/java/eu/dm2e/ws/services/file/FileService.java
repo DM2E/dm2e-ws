@@ -396,12 +396,15 @@ public class FileService extends AbstractRDFService {
 	 * @return
 	 */
 	private Response getFile(URI uri) {
-
+        log.info("File requested: " + uri);
 		// if the accept header is a RDF type, send metadata, otherwise data
 		if (DM2E_MediaType.expectsRdfResponse(headers)) {
-			return getFileMetaDataByUri(uri);
+			log.info("METADATA will be sent");
+            return getFileMetaDataByUri(uri);
 		} else {
-			return getFileDataByUri(uri);
+            log.info("FILE will be sent");
+
+            return getFileDataByUri(uri);
 		}
 	}
 	

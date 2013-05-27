@@ -3,6 +3,7 @@ package eu.dm2e.ws.grafeo;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Set;
 
 import com.hp.hpl.jena.query.ResultSet;
 
@@ -111,5 +112,5 @@ public interface Grafeo {
 	void emptyGraph(String endpoint, String graph);
 
 
-
+    Set<GResource> findByClass(String uri);
 }

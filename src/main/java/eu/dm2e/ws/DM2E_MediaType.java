@@ -1,12 +1,12 @@
 package eu.dm2e.ws;
 
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
+import java.util.logging.Logger;
 
 public class DM2E_MediaType {
 	/**
@@ -27,6 +27,7 @@ public class DM2E_MediaType {
 		DM2E_MediaType.APPLICATION_RDF_XML,
 	})
 	 */
+    private static Logger log = Logger.getLogger(DM2E_MediaType.class.getName());
 	public static final String
 			// TURTLE
 			TEXT_TURTLE = "text/turtle",
@@ -57,6 +58,7 @@ public class DM2E_MediaType {
 	public static boolean expectsRdfResponse(HttpHeaders headers) {
 		boolean doesExpectRdf = false;
 		for (MediaType thisType : headers.getAcceptableMediaTypes()) {
+            log.info("Accept header: " + thisType.toString());
 			if (SET_OF_RDF_TYPES.contains(thisType.toString())) {
 				doesExpectRdf = true;
 				break;
