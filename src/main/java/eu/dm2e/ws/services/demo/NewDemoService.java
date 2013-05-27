@@ -41,7 +41,7 @@ public class NewDemoService extends AbstractTransformationService {
         // snooze
         try {
             for (int i=0 ; i < sleepTime ; i++) {
-                jobPojo.debug("Still Sleeping for " + (sleepTime - i) + "seconds.");
+                jobPojo.debug("Still Sleeping for " + (sleepTime - i) + " seconds.");
                 Thread.sleep(1000);
             }
         } catch (InterruptedException e) {

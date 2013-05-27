@@ -95,7 +95,7 @@ public class XsltWorker extends AbstractWorker {
 		//		String configUri;
 		//		try {
 		//			NodeIterator iter = jobModel.getModel().listObjectsOfProperty(
-		//					jobModel.getModel().createProperty(NS.DM2E + "hasWebServiceConfig"));
+		//					jobModel.getModel().createProperty(NS.OMNOM + "hasWebServiceConfig"));
 		//			configUri = iter.next().toString();
 		//		} catch (Exception e) {
 		//			jobLog.severe("Job is missing hasWebServiceConfig: " + e.toString());
@@ -188,7 +188,7 @@ public class XsltWorker extends AbstractWorker {
 		FilePojo fileDesc = new FilePojo();
 		fileDesc.setGeneratorJob(job);
 		fileDesc.setMediaType(xml_type.toString());
-		//			metaModel.add(blank, metaModel.createProperty(NS.DM2E + "generatedBy"), metaModel.createResource(jobUri));
+		//			metaModel.add(blank, metaModel.createProperty(NS.OMNOM + "generatedBy"), metaModel.createResource(jobUri));
 		//			String metaNTriples = metaGrafeo.getNTriples().replaceAll("_[^\\s]+", "[]");
 		//			String metaNTriples = metaGrafeo.getNTriples();	
 		MediaType n3_type = MediaType.valueOf(DM2E_MediaType.TEXT_RDF_N3);

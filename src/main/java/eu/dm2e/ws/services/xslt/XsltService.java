@@ -24,7 +24,7 @@ public class XsltService extends AbstractRDFService {
 
 	// private static final String NS_XSLT_SERVICE =
 	// Config.getString("dm2e.service.xslt.namespace");
-	// private static final String PROPERTY_HAS_WEB_SERVICE_CONFIG = NS.DM2E +
+	// private static final String PROPERTY_HAS_WEB_SERVICE_CONFIG = NS.OMNOM +
 	// "hasWebServiceConfig";
 
 //	private static final String URI_JOB_SERVICE = Config.getString("dm2e.service.job.base_uri");

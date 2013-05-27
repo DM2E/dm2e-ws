@@ -1,28 +1,9 @@
 package eu.dm2e.ws.services.job;
 
-import java.io.File;
-import java.net.URI;
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
-
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.JobPojo;
@@ -37,6 +18,16 @@ import eu.dm2e.ws.grafeo.jena.SparqlUpdate;
 import eu.dm2e.ws.model.JobStatusConstants;
 import eu.dm2e.ws.services.AbstractRDFService;
 
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.File;
+import java.net.URI;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 //import java.util.ArrayList;
 
 @Path("/job")
@@ -48,8 +39,8 @@ public class JobService extends AbstractRDFService {
 			Level.SEVERE, };
 	//@formatter:off
 	private static final String
-			JOB_STATUS_PROP = NS.DM2E + "status",
-			JOB_LOGENTRY_PROP = NS.DM2E + "hasLogEntry";
+			JOB_STATUS_PROP = NS.OMNOM + "status",
+			JOB_LOGENTRY_PROP = NS.OMNOM + "hasLogEntry";
 	//@formatter:on
 	
 	@Override
@@ -63,22 +54,25 @@ public class JobService extends AbstractRDFService {
 	@Path("/{resourceID}")
 	@Consumes(MediaType.WILDCARD)
 	public Response getJob(@PathParam("resourceID") String resourceID) {
+		log.info("Access to job: " + resourceID);
 		// kb: need to use Jena model
 		GrafeoImpl g = new GrafeoImpl();
 		g.readFromEndpoint(NS.ENDPOINT, getRequestUriWithoutQuery());
 		Model jenaModel = g.getModel();
-		NodeIterator iter = jenaModel.listObjectsOfProperty(jenaModel.createProperty(NS.DM2E
-				+ "status"));
+		NodeIterator iter = jenaModel.listObjectsOfProperty(jenaModel.createProperty(JOB_STATUS_PROP));
 		if (null == iter || !iter.hasNext()) {
 			return throwServiceError("No Job Status in this one. Not good.");
 		}
-		String jobStatus = iter.next().toString();
+		String jobStatus = iter.next().asLiteral().getString();
+        log.info("Job status: " + jobStatus);
 		int httpStatus;
 		if (jobStatus.equals(JobStatusConstants.NOT_STARTED.toString())) httpStatus = 202;
-		else if (jobStatus.equals(JobStatusConstants.NOT_STARTED.toString())) httpStatus = 202;
+		else if (jobStatus.equals(JobStatusConstants.STARTED.toString())) httpStatus = 202;
 		else if (jobStatus.equals(JobStatusConstants.FAILED.toString())) httpStatus = 409;
 		else if (jobStatus.equals(JobStatusConstants.FINISHED.toString())) httpStatus = 200;
 		else httpStatus = 400;
+
+        log.info("Returned HTTP Status: " + httpStatus);
 
 		return Response.status(httpStatus).entity(getResponseEntity(g)).build();
 	}
@@ -122,7 +116,7 @@ public class JobService extends AbstractRDFService {
 		GrafeoImpl g = new GrafeoImpl();
 		g.readFromEndpoint(NS.ENDPOINT, jobUriStr);
 		Model jenaModel = g.getModel();
-		NodeIterator iter = jenaModel.listObjectsOfProperty(jenaModel.createProperty(NS.DM2E
+		NodeIterator iter = jenaModel.listObjectsOfProperty(jenaModel.createProperty(NS.OMNOM
 				+ "status"));
 		if (null == iter || !iter.hasNext()) {
 			throw new Exception("No Job Status in this one. Not good.");
