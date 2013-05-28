@@ -1,16 +1,16 @@
 package eu.dm2e.ws.api;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.UUID;
+import java.util.logging.Logger;
+
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.UUID;
-import java.util.logging.Logger;
 
 public abstract class AbstractPersistentPojo<T> {
 	
@@ -33,11 +33,23 @@ public abstract class AbstractPersistentPojo<T> {
 	}
 	
 	// TODO this should be a static method but it's impossible to determine the runtime static class
+	public T constructFromRdfString(String rdfString, String id) {
+		Grafeo g = new GrafeoImpl();
+		g.readHeuristically(rdfString);
+		T theThing = g.getObject(this.getClass(), id);
+		return theThing;
+	}
 	public T constructFromRdfString(String rdfString) {
 		Grafeo g = new GrafeoImpl();
 		g.readHeuristically(rdfString);
 		String rdfType = this.getClass().getAnnotation(RDFClass.class).value();
-		String prefix = this.getClass().getAnnotation(RDFInstancePrefix.class).value();
+		String prefix = "http://FOOBAR/";
+		try { 
+			prefix = this.getClass().getAnnotation(RDFInstancePrefix.class).value();
+		} catch (NullPointerException e) {
+			// TODO
+			throw(e);
+		}
 		GResource topBlank = g.findTopBlank(rdfType);
 		T theThing;
 		if (null != topBlank) {
@@ -46,8 +58,7 @@ public abstract class AbstractPersistentPojo<T> {
 			theThing = g.getObject(this.getClass(), newURI);
 		}
 		else {
-			// TODO handle RDF strings with Things of Type T that have a URI
-			return null;
+			throw new RuntimeException("No top blank node.");
 		}
 		return theThing;
 	}
@@ -55,6 +66,16 @@ public abstract class AbstractPersistentPojo<T> {
 	public T readFromEndPointById(String id) {
 		this.setId(id);
 		T theNewPojo = this.readFromEndpoint();
+		return theNewPojo;
+	}
+	public T readFromEndPointById(String id, String endpoint) {
+		this.setId(id);
+		T theNewPojo = this.readFromEndpoint(endpoint);
+		return theNewPojo;
+	}
+	public T readFromEndPointById(String id, String endpoint, String graph) {
+		this.setId(id);
+		T theNewPojo = this.readFromEndpoint(endpoint, graph);
 		return theNewPojo;
 	}
 	public T readFromEndpoint(String endpoint, String graph) {
@@ -101,6 +122,9 @@ public abstract class AbstractPersistentPojo<T> {
 	}
 	public String getNTriples() {
 		return getGrafeo().getNTriples();
+	}
+	public String getCanonicalNTriples() {
+		return getGrafeo().getCanonicalNTriples();
 	}
 	
 }

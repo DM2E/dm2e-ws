@@ -1,6 +1,12 @@
 package eu.dm2e.ws.grafeo.jena;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 import com.hp.hpl.jena.rdf.model.Literal;
+
 import eu.dm2e.ws.grafeo.GLiteral;
 import eu.dm2e.ws.grafeo.Grafeo;
 
@@ -24,7 +30,16 @@ public class GLiteralImpl extends GValueImpl implements GLiteral {
     }
 
     public GLiteralImpl(Grafeo grafeo, Object literalValue)  {
-        this.literal = getGrafeoImpl(grafeo).getModel().createTypedLiteral(literalValue);
+    	if (literalValue.getClass().equals(Date.class)) {
+    		TimeZone tz = TimeZone.getTimeZone("UTC");
+    		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    		df.setTimeZone(tz);
+    		String nowAsISO = df.format(literalValue);
+    		this.literal = getGrafeoImpl(grafeo).getModel().createTypedLiteral(nowAsISO, "http://www.w3.org/2001/XMLSchema#dateTime");
+    	}
+    	else {
+	        this.literal = getGrafeoImpl(grafeo).getModel().createTypedLiteral(literalValue);
+    	}
         this.grafeo = grafeo;
         this.value = this.literal;
     }
