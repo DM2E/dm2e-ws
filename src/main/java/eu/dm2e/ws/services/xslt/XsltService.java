@@ -10,14 +10,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.WebResource.Builder;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataMultiPart;
-
-import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.ParameterAssignmentPojo;
 import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebservicePojo;
@@ -50,7 +42,6 @@ public class XsltService extends AbstractTransformationService {
 	@Override
 	public void run() {
 		log.warning("FOO");
-		WebResource fileResource = jerseyClient.resource(FILE_SERVICE_URI);
 		jobPojo.debug("Starting to handle XSLT transformation job");
 		String xmlUrl, xsltUrl;
 		try {
@@ -91,55 +82,25 @@ public class XsltService extends AbstractTransformationService {
 			jobPojo.setFailed();
 			return;
 		}
-		jobPojo.info("Writing result to file service.");
+		jobPojo.info("Getting the transformation result as a string.");
 		String xslResultStr = "";
 		try {
-			// kb Tue May 28 03:24:34 CEST 2013
-			// TODO BUG hangs here!
 			xslResultStr = xslResultStrWriter.toString();
 			if (xslResultStr.length() == 0) {
-				throw new RuntimeException("Empty result.");
+				throw new RuntimeException("No result from the transformation.");
+			}
+			else if (xslResultStr.equals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")) {
+				jobPojo.warn("XSLT transformation yielded in empty XML file.");
 			}
 		} catch (Exception e) {
 			jobPojo.debug(e);
 			jobPojo.setFailed();
 			return;
 		}
-		FormDataMultiPart form = new FormDataMultiPart();
-
-		// add file part
-		MediaType xml_type = MediaType.valueOf(MediaType.APPLICATION_XML);
-		FormDataBodyPart fileFDBP = new FormDataBodyPart("file", xslResultStr, xml_type);
-		form.bodyPart(fileFDBP);
-
-		// add metadata part
-		// FormDataBodyPart metaFDBP = new FormDataBodyPart("meta",
-		// xslResult, xml_type);
-		FilePojo fileDesc = new FilePojo();
-		fileDesc.setGeneratorJob(jobPojo);
-		fileDesc.setMediaType(xml_type.toString());
-		//			metaModel.add(blank, metaModel.createProperty(NS.OMNOM + "generatedBy"), metaModel.createResource(jobUri));
-		//			String metaNTriples = metaGrafeo.getNTriples().replaceAll("_[^\\s]+", "[]");
-		//			String metaNTriples = metaGrafeo.getNTriples();	
-		MediaType n3_type = MediaType.valueOf(DM2E_MediaType.TEXT_RDF_N3);
-		FormDataBodyPart metaFDBP = new FormDataBodyPart("meta", fileDesc.getNTriples(), n3_type);
-		form.bodyPart(metaFDBP);
-
-
-		Builder builder = fileResource
-				.type(MediaType.MULTIPART_FORM_DATA)
-				.accept(DM2E_MediaType.TEXT_TURTLE)
-				.entity(form);
-		ClientResponse resp = builder.post(ClientResponse.class);
-		if (resp.getStatus() >= 400) {
-			jobPojo.fatal("File storage failed: " + resp.getEntity(String.class));
-			return;
-		}
-		String fileLocation = resp.getLocation().toString();
-		jobPojo.info("File stored at: " + fileLocation);
-		fileDesc.setFileRetrievalURI(fileLocation);
-		fileDesc.publish();
 		
+		String fileLocation = this.storeAsFile(xslResultStr, MediaType.APPLICATION_XML);
+
+		jobPojo.info("Store result URI on the job (" + fileLocation + ").");
 		ParameterAssignmentPojo ass = new ParameterAssignmentPojo();
 		ass.setForParam(jobPojo.getWebService().getParamByName("xmlOutParam"));
 		ass.setParameterValue(fileLocation);

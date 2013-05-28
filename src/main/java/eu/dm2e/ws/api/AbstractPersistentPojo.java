@@ -90,7 +90,12 @@ public abstract class AbstractPersistentPojo<T> {
 	}
 	public void publish(String endPoint) {
 		if (null == this.getId()) {
-			String prefix = this.getClass().getAnnotation(RDFInstancePrefix.class).value();
+			String prefix;
+			try {
+				prefix = this.getClass().getAnnotation(RDFInstancePrefix.class).value();
+			} catch (NullPointerException e) {
+				prefix = "http://data.dm2e.eu/THIS_CLASS_SHOULD_HAVE_A_RDFINSTANCEPREFIX/";
+			}
 			String newURI = prefix+UUID.randomUUID().toString();
 			this.setId(newURI);
 		}

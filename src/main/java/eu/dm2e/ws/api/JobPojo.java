@@ -5,8 +5,12 @@ import eu.dm2e.ws.model.JobStatusConstants;
 import eu.dm2e.ws.model.LogLevel;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/",
@@ -66,6 +70,75 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
     	StringBuilder messageSB = new StringBuilder();
     	messageSB.append(ExceptionUtils.getStackTrace(e));
     	return messageSB.toString();
+    }
+    
+    public Set<LogEntryPojo> getLogEntries(LogLevel minLevel, LogLevel maxLevel) {
+		Set<LogEntryPojo> restrictedLogEntries = new HashSet<LogEntryPojo>();
+		if (minLevel == null) {
+			minLevel = LogLevel.TRACE;
+		}
+		if (maxLevel == null) {
+			maxLevel = LogLevel.FATAL;
+		}
+		for (LogEntryPojo logEntry : this.getLogEntries()) {
+			if (LogLevel.valueOf(logEntry.getLevel()).ordinal() >= minLevel.ordinal()
+				&& LogLevel.valueOf(logEntry.getLevel()).ordinal() <= maxLevel.ordinal()) {
+				restrictedLogEntries.add(logEntry);
+			}
+		}
+		return restrictedLogEntries;
+    }
+    public Set<LogEntryPojo> getLogEntries(String minLevelStr, String maxLevelStr) {
+    	LogLevel minLevel = null,
+    			 maxLevel = null;
+    	try {
+			minLevel = LogLevel.valueOf(minLevelStr);
+			maxLevel = LogLevel.valueOf(maxLevelStr);
+		} catch (Exception e) {
+			// TODO this isn't really a problem
+		}
+    	return getLogEntries(minLevel, maxLevel);
+    }
+    public Set<LogEntryPojo> getLogEntries(LogLevel minLevel) {
+    	return getLogEntries(minLevel, null);
+    }
+    public Set<LogEntryPojo> getLogEntries(String minLevelStr) {
+    	return getLogEntries(minLevelStr, null);
+    }
+    public List<LogEntryPojo> getLogEntriesSortedByDate(LogLevel minLevel, LogLevel maxLevel) {
+    	List<LogEntryPojo> logList = new ArrayList<LogEntryPojo>(this.getLogEntries(minLevel, maxLevel));
+    	Collections.sort(logList, new Comparator<LogEntryPojo>() {
+			@Override
+			public int compare(LogEntryPojo l1, LogEntryPojo l2) {
+				return l1.getTimestamp().compareTo(l2.getTimestamp());
+			}
+    	});
+    	return logList;
+    }
+    public List<LogEntryPojo> getLogEntriesSortedByDate(String minLevelStr, String maxLevelStr) {
+    	LogLevel minLevel = null,
+    			 maxLevel = null;
+    	try {
+			minLevel = LogLevel.valueOf(minLevelStr);
+			maxLevel = LogLevel.valueOf(maxLevelStr);
+		} catch (Exception e) {
+			// TODO this isn't really a problem
+		}
+    	return getLogEntriesSortedByDate(minLevel, maxLevel);
+    }
+    public String toLogString(String minLevel, String maxLevel) {
+    	List<LogEntryPojo> logEntries = this.getLogEntriesSortedByDate(minLevel, maxLevel);
+    	StringBuilder outputBuilder = new StringBuilder();
+		for (LogEntryPojo logEntry : logEntries) {
+			outputBuilder.append("[");
+			outputBuilder.append(logEntry.getLevel());
+			outputBuilder.append("] ");
+			outputBuilder.append(logEntry.getTimestamp());
+			outputBuilder.append(": ");
+			outputBuilder.append(logEntry.getMessage());
+			outputBuilder.append("\n");
+		} 
+		return outputBuilder.toString();
     }
     
     /**

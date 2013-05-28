@@ -6,12 +6,14 @@ import java.net.URISyntaxException;
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFId;
+import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/",
 	 "dc", "http://purl.org/dc/elements/1.1/",
 	 "dct", "http://purl.org/dc/terms/"})
 @RDFClass("omnom:File")
+@RDFInstancePrefix("http://localhost:9998/file/")
 public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 	
 	@RDFId

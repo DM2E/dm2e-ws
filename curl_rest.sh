@@ -30,9 +30,12 @@ AC_LOG='Accept: text/x-log'
 
 alias POST="curl -v -X POST"
 alias GET="curl -v -X GET"
+alias GETT="GET -H '$AC_TURTLE'"
 alias GETTURTLE="GET -H '$AC_TURTLE'"
 alias GET_TURTLE="GET -H '$AC_TURTLE'"
 alias GET_LOG="GET -H '$AC_LOG'"
+alias GETLOG="GET -H '$AC_LOG'"
+alias GETL="GET -H '$AC_LOG'"
 alias PUT="curl -v -X PUT"
 alias DELETE="curl -v -X DELETE"
 alias PATCH="curl -v -X PATCH"
