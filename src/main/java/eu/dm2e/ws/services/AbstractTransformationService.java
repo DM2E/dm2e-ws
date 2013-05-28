@@ -1,17 +1,26 @@
 package eu.dm2e.ws.services;
 
-import com.sun.jersey.api.client.Client;
-import eu.dm2e.ws.Config;
-import eu.dm2e.ws.api.JobPojo;
-import eu.dm2e.ws.api.WebserviceConfigPojo;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.WebResource.Builder;
+import com.sun.jersey.multipart.FormDataBodyPart;
+import com.sun.jersey.multipart.FormDataMultiPart;
+
+import eu.dm2e.ws.Config;
+import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.api.WebserviceConfigPojo;
 
 /**
  * TODO document
@@ -103,6 +112,53 @@ public abstract class AbstractTransformationService extends AbstractRDFService i
         }
         conf.publish();
         return this.startService(conf.getId());
+    }
+    
+    protected String storeAsFile(String fileData, String mediaTypeStr) {
+		WebResource fileResource = jerseyClient.resource(FILE_SERVICE_URI);
+	    jobPojo.trace("Building file service multipart envelope.");
+		FormDataMultiPart form = new FormDataMultiPart();
+
+		// add file part
+		MediaType fileType = MediaType.valueOf(mediaTypeStr);
+		FormDataBodyPart fileFDBP = new FormDataBodyPart("file", fileData, fileType);
+		form.bodyPart(fileFDBP);
+
+		// add metadata part
+		FilePojo fileDesc = new FilePojo();
+		fileDesc.setGeneratorJob(jobPojo);
+		fileDesc.setMediaType(fileType.toString());
+		MediaType n3_type = MediaType.valueOf(DM2E_MediaType.TEXT_RDF_N3);
+		FormDataBodyPart metaFDBP = new FormDataBodyPart("meta", fileDesc.getNTriples(), n3_type);
+		form.bodyPart(metaFDBP);
+
+		// build the response stub
+		Builder builder = fileResource
+				.type(MediaType.MULTIPART_FORM_DATA)
+				.accept(DM2E_MediaType.TEXT_TURTLE)
+				.entity(form);
+		
+		// Post the file to the file service
+		jobPojo.info("Posting result to the file service.");
+		ClientResponse resp = builder.post(ClientResponse.class);
+		if (resp.getStatus() >= 400) {
+			jobPojo.fatal("File storage failed: " + resp.getEntity(String.class));
+			jobPojo.setFailed();
+			return null;
+		}
+		String fileLocation = resp.getLocation().toString();
+		if (fileLocation == null) {
+			jobPojo.warn("File Service didn't respond with a Location header.");
+			return null;
+		}
+		jobPojo.info("File stored at: " + fileLocation);
+		try {
+			fileDesc.setFileRetrievalURI(fileLocation);
+			fileDesc.publish();
+		} catch(Exception e) {
+			jobPojo.fatal(e);
+		}
+		return fileLocation;
     }
 
 }
