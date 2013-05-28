@@ -6,7 +6,9 @@ import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import org.apache.commons.beanutils.BeanUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
@@ -63,34 +65,22 @@ public abstract class AbstractPersistentPojo<T> {
 		return theThing;
 	}
 	
-	public T readFromEndPointById(String id) {
+	public void readFromEndPointById(String id) {
 		this.setId(id);
-		T theNewPojo = this.readFromEndpoint();
-		return theNewPojo;
-	}
-	public T readFromEndPointById(String id, String endpoint) {
-		this.setId(id);
-		T theNewPojo = this.readFromEndpoint(endpoint);
-		return theNewPojo;
-	}
-	public T readFromEndPointById(String id, String endpoint, String graph) {
-		this.setId(id);
-		T theNewPojo = this.readFromEndpoint(endpoint, graph);
-		return theNewPojo;
-	}
-	public T readFromEndpoint(String endpoint, String graph) {
-		Grafeo g = new GrafeoImpl();
-		g.readFromEndpoint(endpoint, graph);
-		return g.getObjectMapper().getObject(this.getClass(), graph);
-	}
-	public T readFromEndpoint(String endpoint) {
-		return readFromEndpoint(endpoint, this.getId());
-	}
-	public T readFromEndpoint() {
-		String endPoint = Config.getString("dm2e.ws.sparql_endpoint");
-		return readFromEndpoint(endPoint);
-	}
-	
+        String endPoint = Config.getString("dm2e.ws.sparql_endpoint");
+        Grafeo g = new GrafeoImpl();
+        g.readFromEndpoint(endPoint, this.getId());
+		T theNewPojo = g.getObjectMapper().getObject(this.getClass(), this.getId());
+        try {
+            BeanUtils.copyProperties(this, theNewPojo);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("An exception occurred: " + e, e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException("An exception occurred: " + e, e);
+        }
+    }
+
+
 	public void publish(String endPoint, String graph) {
         log.info("Writing to endpoint: " + endPoint + " / Graph: " + graph);
 		Grafeo g = new GrafeoImpl();

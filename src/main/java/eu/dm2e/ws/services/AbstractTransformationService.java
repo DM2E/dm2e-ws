@@ -1,19 +1,17 @@
 package eu.dm2e.ws.services;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import com.sun.jersey.api.client.Client;
+import eu.dm2e.ws.Config;
+import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.api.WebserviceConfigPojo;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import com.sun.jersey.api.client.Client;
-
-import eu.dm2e.ws.Config;
-import eu.dm2e.ws.api.JobPojo;
-import eu.dm2e.ws.api.WebserviceConfigPojo;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * TODO document
@@ -43,9 +41,9 @@ public abstract class AbstractTransformationService extends AbstractRDFService i
         /*
          * Resolve configURI to WebserviceConfigPojo
          */
-        WebserviceConfigPojo wsConf = null;
+        WebserviceConfigPojo wsConf = new WebserviceConfigPojo();
 		try {
-			wsConf = new WebserviceConfigPojo().readFromEndPointById(configURI);
+			wsConf.readFromEndPointById(configURI);
 		} catch (Exception e) {
 			return throwServiceError(e);
 		}

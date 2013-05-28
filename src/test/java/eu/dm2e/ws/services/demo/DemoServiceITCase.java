@@ -3,6 +3,7 @@ package eu.dm2e.ws.services.demo;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -57,7 +58,8 @@ public class DemoServiceITCase {
             throw new RuntimeException("An exception occurred: " + e, e);
         }
         Grafeo g = new GrafeoImpl(joburi.toString());
-        String status =  g.resource(joburi.toString()).get("omnom:status").literal().getValue();
+        JobPojo job = g.getObjectMapper().getObject(JobPojo.class, joburi.toString());
+        String status =  job.getStatus();
         log.info("Status after 1 seconds: " + status);
         assert(status.equals(JobStatusConstants.STARTED.name()));
         try {
@@ -66,7 +68,8 @@ public class DemoServiceITCase {
             throw new RuntimeException("An exception occurred: " + e, e);
         }
         g = new GrafeoImpl(joburi.toString());
-        status =  g.resource(joburi.toString()).get("omnom:status").literal().getValue();
+        job = g.getObjectMapper().getObject(JobPojo.class, joburi.toString());
+        status =  job.getStatus();
         log.info("Status after 4 seconds: " + status);
         assert(status.equals(JobStatusConstants.FINISHED.name()));
 

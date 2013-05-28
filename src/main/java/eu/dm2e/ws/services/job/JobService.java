@@ -50,7 +50,8 @@ public class JobService extends AbstractRDFService {
 	public Response getJob(@PathParam("resourceID") String resourceID) {
 		log.info("Access to job: " + resourceID);
 		String uriStr = uriInfo.getRequestUri().toString();
-		JobPojo job = new JobPojo().readFromEndPointById(uriStr);
+		JobPojo job = new JobPojo();
+        job.readFromEndPointById(uriStr);
 		String jobStatus = job.getStatus();
         log.info("Job status: " + jobStatus);
 		int httpStatus;
