@@ -4,10 +4,9 @@ import eu.dm2e.ws.wsmanager.ManageService;
 import org.apache.jena.fuseki.server.SPARQLServer;
 import org.glassfish.grizzly.http.server.HttpServer;
 
-import javax.ws.rs.Path;
 import java.io.IOException;
 
-@Path("manage")
+
 public class Main {
 
     static HttpServer httpServer;

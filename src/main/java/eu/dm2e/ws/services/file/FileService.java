@@ -304,14 +304,15 @@ public class FileService extends AbstractRDFService {
 			@FormDataParam("meta") FormDataContentDisposition metaDisposition,
 			@FormDataParam("file") FormDataBodyPart filePart,
 			@FormDataParam("file") FormDataContentDisposition fileDisposition) {
-
+        log.info("A new file is to be stored here.");
 		// The model for this resource
 		GrafeoImpl g = new GrafeoImpl();
 		// Identifier for this resource (used in URI generation and for filename)
 		String uniqueStr = createUniqueStr();
 		// name of the new resource
 		String uriStr = SERVICE_URI + uniqueStr;
-		URI uri;
+		log.info("Its URI will be: " + uriStr);
+        URI uri;
 		try {
 			uri = new URI(uriStr);
 		} catch (URISyntaxException e) {
@@ -327,6 +328,7 @@ public class FileService extends AbstractRDFService {
 			return throwServiceError(msg);
 		}
 
+        log.info("Everything seems to be sane so far...");
 		// metadata is present
 		if (metaPart != null) {
 			
@@ -353,9 +355,12 @@ public class FileService extends AbstractRDFService {
 			}
 		}
 
+        log.info("Metadata is processed.");
+
 		// There **is** a file to be processed
 		if (filePart != null) { 
 			try {
+                log.info("We start to read the file...");
 				InputStream fileInStream = filePart.getValueAs(InputStream.class);
 				// store and describe file
 				FilePojo filePojo = storeAndDescribeFile(fileInStream, g, uri);
@@ -368,10 +373,14 @@ public class FileService extends AbstractRDFService {
 				filePojo.setFileStatus(FileStatus.AVAILABLE.toString());
 				g.getObjectMapper().addObject(filePojo);
 			} catch (IOException e) {
+                log.severe("An exception occured during file reading: " + e);
 				return throwServiceError(e);
 			}
 		}
 
+        log.info("File is hopefully stored.");
+
+        log.info("Final RDF to be stored for this file: " + g.getTurtle());
 		// store RDF data
 		g.writeToEndpoint(STORAGE_ENDPOINT_STATEMENTS, uri);
 		return Response.created(uri).entity(getResponseEntity(g)).build();
