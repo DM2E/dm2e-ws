@@ -2,15 +2,14 @@ package eu.dm2e.ws.services;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
 import eu.dm2e.ws.Config;
-import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.api.FilePojo;
 
 import javax.ws.rs.core.MediaType;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.logging.Logger;
 
 /**
@@ -22,26 +21,55 @@ import java.util.logging.Logger;
  */
 public class Client {
 
-    com.sun.jersey.api.client.Client client = new com.sun.jersey.api.client.Client();
+    com.sun.jersey.api.client.Client jerseyClient = new com.sun.jersey.api.client.Client();
     Logger log = Logger.getLogger(getClass().getName());
 
-    public String publishFile(File file, Grafeo meta) {
-        WebResource webResource = client.resource(Config.getString("dm2e.service.file.base_uri"));
+    public String publishFile(File file, FilePojo meta) {
+        WebResource fileResource = jerseyClient.resource(Config.getString("dm2e.service.file.base_uri"));
+        FormDataMultiPart form = new FormDataMultiPart();
 
-        InputStream stream = null;
-        try {
-            log.info("Publishing a file to " + webResource.getURI());
-            log.info("File path: " + file.getPath());
-            stream = new FileInputStream(file);
-            FormDataMultiPart part = new FormDataMultiPart().field("file", stream, MediaType.APPLICATION_OCTET_STREAM_TYPE);
-            ClientResponse response = webResource.type(MediaType.MULTIPART_FORM_DATA_TYPE).post(ClientResponse.class, part);
-            log.info("File stored at: " + response.getLocation().toString());
-            return response.getLocation().toString();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException("An exception occurred: " + e, e);
+        // add file part
+        MediaType fileType = MediaType.APPLICATION_OCTET_STREAM_TYPE;
+        FormDataBodyPart fileFDBP = new FormDataBodyPart("file", file, fileType);
+        form.bodyPart(fileFDBP);
+
+        // add metadata part
+        FilePojo fileDesc = new FilePojo();
+        // fileDesc.setGeneratorJob(jobPojo);
+        fileDesc.setMediaType(fileType.toString());
+        MediaType n3_type = MediaType.valueOf(DM2E_MediaType.TEXT_RDF_N3);
+        FormDataBodyPart metaFDBP = new FormDataBodyPart("meta", fileDesc.getNTriples(), n3_type);
+        form.bodyPart(metaFDBP);
+
+        // build the response stub
+        WebResource.Builder builder = fileResource
+                .type(MediaType.MULTIPART_FORM_DATA)
+                .accept(DM2E_MediaType.TEXT_TURTLE)
+                .entity(form);
+
+        // Post the file to the file service
+        // jobPojo.info("Posting result to the file service.");
+        ClientResponse resp = builder.post(ClientResponse.class);
+        if (resp.getStatus() >= 400) {
+            // jobPojo.fatal("File storage failed: " + resp.getEntity(String.class));
+            // jobPojo.setFailed();
+            throw new RuntimeException("File storage failed with status " + resp.getStatus() + ": " + resp.getEntity(String.class));
         }
-
-
+        String fileLocation = resp.getLocation().toString();
+        if (fileLocation == null) {
+            // jobPojo.warn("File Service didn't respond with a Location header.");
+            throw new RuntimeException("We didn't get a location header, ooumph! Status " + resp.getStatus() + ": " + resp.getEntity(String.class));
+        }
+        // jobPojo.info("File stored at: " + fileLocation);
+        try {
+            fileDesc.setFileRetrievalURI(fileLocation);
+            fileDesc.publish();
+        } catch(Exception e) {
+            // jobPojo.fatal(e);
+            throw new RuntimeException("Error publishing file metadata: " + e, e);
+        }
+        log.info("File stored, URI: " + fileLocation);
+        return fileLocation;
 
 
     }

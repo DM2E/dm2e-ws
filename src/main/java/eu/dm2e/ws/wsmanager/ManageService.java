@@ -4,7 +4,6 @@ import com.hp.hpl.jena.sparql.core.DatasetGraph;
 import com.hp.hpl.jena.sparql.core.DatasetGraphFactory;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.container.grizzly2.GrizzlyWebContainerFactory;
-import eu.dm2e.ws.Config;
 import org.apache.jena.fuseki.server.DatasetRef;
 import org.apache.jena.fuseki.server.SPARQLServer;
 import org.apache.jena.fuseki.server.ServerConfig;
@@ -44,8 +43,7 @@ public class ManageService {
 
 
     public static URI getBaseURI() {
-        return UriBuilder.fromUri(
-                Config.config.getString("dm2e.ws.base_uri", "http://localhost:9998/")).build();
+        return UriBuilder.fromUri("http://localhost:9998/").build();
     }
     public static void startServer() {
         final Map<String, String> initParams = new HashMap<String, String>();
