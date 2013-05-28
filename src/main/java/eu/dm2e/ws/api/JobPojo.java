@@ -1,5 +1,10 @@
 package eu.dm2e.ws.api;
 
+import eu.dm2e.ws.grafeo.annotations.*;
+import eu.dm2e.ws.model.JobStatusConstants;
+import eu.dm2e.ws.model.LogLevel;
+import org.apache.commons.lang.exception.ExceptionUtils;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -7,16 +12,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.commons.lang.exception.ExceptionUtils;
-
-import eu.dm2e.ws.grafeo.annotations.Namespaces;
-import eu.dm2e.ws.grafeo.annotations.RDFClass;
-import eu.dm2e.ws.grafeo.annotations.RDFId;
-import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
-import eu.dm2e.ws.grafeo.annotations.RDFProperty;
-import eu.dm2e.ws.model.JobStatusConstants;
-import eu.dm2e.ws.model.LogLevel;
 
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/",
 			 "dc", "http://purl.org/dc/elements/1.1/"})
@@ -162,7 +157,33 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
     	this.publish();
     	// TODO update to triplestore
     }
-    
+
+    public ParameterAssignmentPojo getParameterAssignmentForParam(String paramName) {
+        log.info("Access to param assignment by name: " + paramName);
+        for (ParameterAssignmentPojo ass : this.outputParameters) {
+            try {
+//				log.warning("" + ass.getForParam().getId());
+                if (ass.getForParam().getId().matches(".*" + paramName + "$")
+                        ||
+                        ass.getForParam().getLabel().equals(paramName)
+                        ){
+                    return ass;
+                }
+            } catch (NullPointerException e) {
+                continue;
+            }
+        }
+        return null;
+    }
+    public String getParameterValueByName(String needle) {
+        ParameterAssignmentPojo ass = this.getParameterAssignmentForParam(needle);
+        if (null != ass) {
+            return ass.getParameterValue();
+        }
+        log.info("No value found for: " + needle);
+        return null;
+    }
+
     /**
      * Publish the job
      */

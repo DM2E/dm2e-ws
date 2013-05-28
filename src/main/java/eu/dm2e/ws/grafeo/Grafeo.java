@@ -119,4 +119,6 @@ public interface Grafeo {
     GResourceImpl createBlank(String id);
 
 	Set<GResource> listResourceObjects();
+
+    void loadWithoutContentNegotiation(String uri);
 }

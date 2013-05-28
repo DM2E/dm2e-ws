@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  */
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/"})
 @RDFClass("omnom:Webservice")
-public class WebservicePojo {
+public class WebservicePojo extends AbstractPersistentPojo<WebservicePojo> {
 
 
 
