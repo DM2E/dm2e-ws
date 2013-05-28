@@ -116,4 +116,6 @@ public interface Grafeo {
     ObjectMapper getObjectMapper();
 
     GResourceImpl createBlank(String id);
+
+    void loadWithoutContentNegotiation(String uri);
 }
