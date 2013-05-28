@@ -1,35 +1,30 @@
 package eu.dm2e.ws.services.xslt;
 
-import java.util.logging.Logger;
+import java.io.StringWriter;
+import java.net.URL;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
-import eu.dm2e.ws.api.JobPojo;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.WebResource.Builder;
+import com.sun.jersey.multipart.FormDataBodyPart;
+import com.sun.jersey.multipart.FormDataMultiPart;
+
+import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.api.ParameterAssignmentPojo;
 import eu.dm2e.ws.api.ParameterPojo;
-import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
-import eu.dm2e.ws.services.AbstractRDFService;
+import eu.dm2e.ws.services.AbstractTransformationService;
 
 @Path("/service/xslt")
-public class XsltService extends AbstractRDFService {
-
-	private Logger log = Logger.getLogger(getClass().getName());
-
-	// private static final String NS_XSLT_SERVICE =
-	// Config.getString("dm2e.service.xslt.namespace");
-	// private static final String PROPERTY_HAS_WEB_SERVICE_CONFIG = NS.OMNOM +
-	// "hasWebServiceConfig";
-
-//	private static final String URI_JOB_SERVICE = Config.getString("dm2e.service.job.base_uri");
-//	private static final String URI_CONFIG_SERVICE = Config
-//		.getString("dm2e.service.config.base_uri");
+public class XsltService extends AbstractTransformationService {
 
 	@Override
 	public WebservicePojo getWebServicePojo() {
@@ -52,77 +47,107 @@ public class XsltService extends AbstractRDFService {
 		return ws;
 	}
 
-	@PUT
-	@Consumes(MediaType.TEXT_PLAIN)
-	public Response putTransformation(String configURI) {
+	@Override
+	public void run() {
+		log.warning("FOO");
+		WebResource fileResource = jerseyClient.resource(FILE_SERVICE_URI);
+		jobPojo.debug("Starting to handle XSLT transformation job");
+		String xmlUrl, xsltUrl;
+		try {
+			// TODO this should be refactored to a validation routine in the JobPojo
+			xmlUrl = jobPojo.getWebserviceConfig().getParameterValueByName("xmlInParam");
+			xsltUrl = jobPojo.getWebserviceConfig().getParameterValueByName("xsltInParam");
+			if (null == xmlUrl) {
+				throw new NullPointerException("xmlUrl is null");
+			}
+			if (null == xsltUrl) {
+				throw new NullPointerException("xsltUrl is null");
+			}
+		} catch (Exception e) {
+			jobPojo.fatal(e);
+			jobPojo.setFailed();
+			return;
+		}
+		jobPojo.debug("XML URL: " + xmlUrl);
+		jobPojo.debug("XSL URL: " + xsltUrl);
+		jobPojo.info("Starting transformation");
 
-//		try {
-//			validateServiceInput(configURI);
-//		} catch (Exception e) {
-//			return throwServiceError(e);
-//		}
-		/*	
-		 * Resolve configURI to WebserviceConfigPojo
-		 */
-		WebserviceConfigPojo wsConf = resolveWebSerivceConfigPojo(configURI);
+		// update job status
+		jobPojo.setStarted();
+		TransformerFactory tFactory = TransformerFactory.newInstance();
+		StringWriter xslResultStrWriter = new StringWriter();
+		try {
+			StreamSource xmlSource = new StreamSource(new URL(xmlUrl).openStream());
+			StreamSource xslSource = new StreamSource(new URL(xsltUrl).openStream());
+			Transformer transformer = tFactory.newTransformer(xslSource);
 
-//		WebResource jobResource = Client.create().resource(URI_JOB_SERVICE);
+			StreamResult xslResult = new StreamResult(xslResultStrWriter);
 
-		// create the job
-		log.info("Creating the job");
-		JobPojo job = new JobPojo();
-		// TODO the job probably doesn't even need a webservice reference since it's in the conf already
-		job.setWebService(wsConf.getWebservice());
-		job.setWebserviceConfig(wsConf);
-		job.publish();
-//		JobPojo jobPojo = new JobPojo();
-//		jobPojo.setWebService(getWebServicePojo());
-//		GrafeoImpl g = new GrafeoImpl();
-//		configPojo = 
-		// TODO web service config pojo must be creatable from URI
-//		jobPojo.setWebserviceConfig(configURI);
-//		g.addObject(jobPojo);
+			transformer.transform(xmlSource, xslResult);
 
-//		log.info(g.getTurtle());
-//		ClientResponse jobResponse = jobResource.accept("text/turtle").post(ClientResponse.class,
-//				g.getNTriples());
-//		log.info(jobResponse.toString());
-//		log.info(jobResponse.getEntity(String.class).toString());
-//		URI jobUri = jobResponse.getLocation();
+		} catch (Exception e) {
+			jobPojo.fatal("Error during XSLT transformation: " + e);
+			jobPojo.debug(e);
+			jobPojo.setFailed();
+			return;
+		}
+		jobPojo.info("Writing result to file service.");
+		String xslResultStr = "";
+		try {
+			// kb Tue May 28 03:24:34 CEST 2013
+			// TODO BUG hangs here!
+			xslResultStr = xslResultStrWriter.toString();
+			if (xslResultStr.length() == 0) {
+				throw new RuntimeException("Empty result.");
+			}
+		} catch (Exception e) {
+			jobPojo.debug(e);
+			jobPojo.setFailed();
+			return;
+		}
+		FormDataMultiPart form = new FormDataMultiPart();
 
-		// post the job to the worker
-		log.info("Posting the job to the worker queue");
-		XsltExecutorService.INSTANCE.handleJob(job);
-		return Response
-				.ok()
-				.entity(getResponseEntity(job.getGrafeo()))
-				.location(job.getIdAsURI())
-				.build();
+		// add file part
+		MediaType xml_type = MediaType.valueOf(MediaType.APPLICATION_XML);
+		FormDataBodyPart fileFDBP = new FormDataBodyPart("file", xslResultStr, xml_type);
+		form.bodyPart(fileFDBP);
 
-		// return location of the job
-//		jobPojo.setId(jobUri.toString());
-//		GrafeoImpl g2 = new GrafeoImpl();
-//		g2.addObject(jobPojo);
-//		return Response.created(jobUri).entity(getResponseEntity(g2)).build();
-	}
+		// add metadata part
+		// FormDataBodyPart metaFDBP = new FormDataBodyPart("meta",
+		// xslResult, xml_type);
+		FilePojo fileDesc = new FilePojo();
+		fileDesc.setGeneratorJob(jobPojo);
+		fileDesc.setMediaType(xml_type.toString());
+		//			metaModel.add(blank, metaModel.createProperty(NS.OMNOM + "generatedBy"), metaModel.createResource(jobUri));
+		//			String metaNTriples = metaGrafeo.getNTriples().replaceAll("_[^\\s]+", "[]");
+		//			String metaNTriples = metaGrafeo.getNTriples();	
+		MediaType n3_type = MediaType.valueOf(DM2E_MediaType.TEXT_RDF_N3);
+		FormDataBodyPart metaFDBP = new FormDataBodyPart("meta", fileDesc.getNTriples(), n3_type);
+		form.bodyPart(metaFDBP);
 
-	@POST
-	@Consumes(MediaType.WILDCARD)
-	public Response postTransformation(@Context UriInfo uriInfo, String rdfString) {
 
-		WebserviceConfigPojo conf = new WebserviceConfigPojo().constructFromRdfString(rdfString);
-		conf.publish();
-//		return Response.ok(conf.getTurtle()).build();
-		return this.putTransformation(conf.getId());
-//		WebResource configResource = Client.create().resource(URI_CONFIG_SERVICE);
-//		log.severe(URI_CONFIG_SERVICE);
-//
-//		// post the config
-//		log.info("Persisting config.");
-//		ClientResponse configResponse = configResource.accept("text/turtle").post(
-//				ClientResponse.class, body);
-//		URI configUri = configResponse.getLocation();
-//
-//		return putTransformation(configUri.toString());
+		Builder builder = fileResource
+				.type(MediaType.MULTIPART_FORM_DATA)
+				.accept(DM2E_MediaType.TEXT_TURTLE)
+				.entity(form);
+		ClientResponse resp = builder.post(ClientResponse.class);
+		if (resp.getStatus() >= 400) {
+			jobPojo.fatal("File storage failed: " + resp.getEntity(String.class));
+			return;
+		}
+		String fileLocation = resp.getLocation().toString();
+		jobPojo.info("File stored at: " + fileLocation);
+		fileDesc.setFileRetrievalURI(fileLocation);
+		fileDesc.publish();
+		
+		ParameterAssignmentPojo ass = new ParameterAssignmentPojo();
+		ass.setForParam(jobPojo.getWebService().getParamByName("xmlOutParam"));
+		ass.setParameterValue(fileLocation);
+		jobPojo.addOutputParameterAssignment(ass);
+		jobPojo.publish();
+
+		// Update job status
+		jobPojo.info("XSLT Transformation complete.");
+		jobPojo.setFinished();
 	}
 }

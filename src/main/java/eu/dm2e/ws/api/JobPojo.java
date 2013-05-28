@@ -1,8 +1,8 @@
 package eu.dm2e.ws.api;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 
@@ -20,7 +20,7 @@ import eu.dm2e.ws.model.LogLevel;
 @RDFInstancePrefix("http://localhost:9998/job/")
 public class JobPojo extends AbstractPersistentPojo<JobPojo>{
 	
-	Logger log = Logger.getLogger(getClass().getName());
+//	Logger log = Logger.getLogger(getClass().getName());
 	
     @RDFId
     private String id;
@@ -28,6 +28,7 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
     @RDFProperty("omnom:status")
     private String status = JobStatusConstants.NOT_STARTED.toString();
     
+    // TODO the job probably doesn't even need a webservice reference since it's in the conf already
     @RDFProperty("omnom:hasWebService")
     private WebservicePojo webService;
 
@@ -52,6 +53,7 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
     	LogEntryPojo entry = new LogEntryPojo();
     	entry.setMessage(message);
     	entry.setLevel(level);
+    	entry.setTimestamp(new Date());
     	this.logEntries.add(entry);
     	// TODO update to triplestore
     }
@@ -60,18 +62,16 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
     public void info(String message)  { log.info("Job " + getId() +": " + message);    this.addLogEntry(message, LogLevel.INFO.toString());  this.publish();}
     public void warn(String message)  { log.warning("Job " + getId() +": " + message); this.addLogEntry(message, LogLevel.WARN.toString());  this.publish();}
     public void fatal(String message) { log.severe("Job " + getId() +": " + message);  this.addLogEntry(message, LogLevel.FATAL.toString()); this.publish();}
-    public void fatal(Exception e) {
+    
+    public void trace(Exception e) { String msg = this.exceptionToString(e); this.trace(msg); }
+    public void debug(Exception e) { String msg = this.exceptionToString(e); this.debug(msg); }
+    public void fatal(Exception e) { String msg = this.exceptionToString(e); this.fatal(msg); }
+    
+    private String exceptionToString(Exception e) {
     	StringBuilder messageSB = new StringBuilder();
-    	messageSB.append("Job <");
-    	messageSB.append(getId());
-    	messageSB.append("> : ");
-//    	messageSB.append(e.toString());
-//    	messageSB.append("\n");
     	messageSB.append(ExceptionUtils.getStackTrace(e));
-    	log.severe(messageSB.toString());
-    	this.addLogEntry(messageSB.toString(), LogLevel.FATAL.toString());
-    	this.publish();
-	}
+    	return messageSB.toString();
+    }
     
     /**
      * Output Parameters

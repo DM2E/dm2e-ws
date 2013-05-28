@@ -55,15 +55,9 @@ public class JobService extends AbstractRDFService {
 	@Consumes(MediaType.WILDCARD)
 	public Response getJob(@PathParam("resourceID") String resourceID) {
 		log.info("Access to job: " + resourceID);
-		// kb: need to use Jena model
-		GrafeoImpl g = new GrafeoImpl();
-		g.readFromEndpoint(NS.ENDPOINT, getRequestUriWithoutQuery());
-		Model jenaModel = g.getModel();
-		NodeIterator iter = jenaModel.listObjectsOfProperty(jenaModel.createProperty(JOB_STATUS_PROP));
-		if (null == iter || !iter.hasNext()) {
-			return throwServiceError("No Job Status in this one. Not good.");
-		}
-		String jobStatus = iter.next().asLiteral().getString();
+		String uriStr = uriInfo.getRequestUri().toString();
+		JobPojo job = new JobPojo().readFromEndPointById(uriStr);
+		String jobStatus = job.getStatus();
         log.info("Job status: " + jobStatus);
 		int httpStatus;
 		if (jobStatus.equals(JobStatusConstants.NOT_STARTED.toString())) httpStatus = 202;
@@ -71,10 +65,8 @@ public class JobService extends AbstractRDFService {
 		else if (jobStatus.equals(JobStatusConstants.FAILED.toString())) httpStatus = 409;
 		else if (jobStatus.equals(JobStatusConstants.FINISHED.toString())) httpStatus = 200;
 		else httpStatus = 400;
-
         log.info("Returned HTTP Status: " + httpStatus);
-
-		return Response.status(httpStatus).entity(getResponseEntity(g)).build();
+		return Response.status(httpStatus).entity(getResponseEntity(job.getGrafeo())).build();
 	}
 
 	@POST
