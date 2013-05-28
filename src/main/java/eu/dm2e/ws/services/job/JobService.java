@@ -88,10 +88,10 @@ public class JobService extends AbstractRDFService {
 		String id = "" + new Date().getTime();
 		log.warning("Instantiating Job POJO.");
 		String uri = getWebServicePojo().getId() + "/" + id;
-		JobPojo jobPojo = inputGrafeo.getObject(JobPojo.class, blank);
+		JobPojo jobPojo = inputGrafeo.getObjectMapper().getObject(JobPojo.class, blank);
 		jobPojo.setId(uri);
 		Grafeo outputGrafeo = new GrafeoImpl();
-		outputGrafeo.addObject(jobPojo);
+		outputGrafeo.getObjectMapper().addObject(jobPojo);
 		outputGrafeo.writeToEndpoint(NS.ENDPOINT_STATEMENTS, uri);
 		return Response.created(URI.create(uri)).entity(getResponseEntity(inputGrafeo)).build();
 	}

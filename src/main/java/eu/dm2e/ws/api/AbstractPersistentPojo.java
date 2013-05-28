@@ -1,16 +1,16 @@
 package eu.dm2e.ws.api;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.UUID;
-import java.util.logging.Logger;
-
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.UUID;
+import java.util.logging.Logger;
 
 public abstract class AbstractPersistentPojo<T> {
 	
@@ -36,7 +36,7 @@ public abstract class AbstractPersistentPojo<T> {
 	public T constructFromRdfString(String rdfString, String id) {
 		Grafeo g = new GrafeoImpl();
 		g.readHeuristically(rdfString);
-		T theThing = g.getObject(this.getClass(), id);
+		T theThing = g.getObjectMapper().getObject(this.getClass(), id);
 		return theThing;
 	}
 	public T constructFromRdfString(String rdfString) {
@@ -55,7 +55,7 @@ public abstract class AbstractPersistentPojo<T> {
 		if (null != topBlank) {
 			String newURI = prefix + UUID.randomUUID().toString();;
 			topBlank.rename(newURI);
-			theThing = g.getObject(this.getClass(), newURI);
+			theThing = g.getObjectMapper().getObject(this.getClass(), newURI);
 		}
 		else {
 			throw new RuntimeException("No top blank node.");
@@ -81,7 +81,7 @@ public abstract class AbstractPersistentPojo<T> {
 	public T readFromEndpoint(String endpoint, String graph) {
 		Grafeo g = new GrafeoImpl();
 		g.readFromEndpoint(endpoint, graph);
-		return g.getObject(this.getClass(), graph);
+		return g.getObjectMapper().getObject(this.getClass(), graph);
 	}
 	public T readFromEndpoint(String endpoint) {
 		return readFromEndpoint(endpoint, this.getId());
@@ -94,7 +94,7 @@ public abstract class AbstractPersistentPojo<T> {
 	public void publish(String endPoint, String graph) {
         log.info("Writing to endpoint: " + endPoint + " / Graph: " + graph);
 		Grafeo g = new GrafeoImpl();
-		g.addObject(this);
+		g.getObjectMapper().addObject(this);
 		g.emptyGraph(endPoint, graph);
 		g.writeToEndpoint(endPoint, graph);
 	}
@@ -113,7 +113,7 @@ public abstract class AbstractPersistentPojo<T> {
 	
 	public Grafeo getGrafeo() {
 		GrafeoImpl g = new GrafeoImpl();
-		g.addObject(this);
+		g.getObjectMapper().addObject(this);
 		return g;
 	}
 	

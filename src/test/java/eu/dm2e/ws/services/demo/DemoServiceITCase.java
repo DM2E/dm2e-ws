@@ -42,11 +42,12 @@ public class DemoServiceITCase {
     @Test
     public void testDemo() {
         // fail("Not yet implemented");
-        WebResource webResource = client.resource(URI_BASE + "/service/newdemo");
+        WebResource webResource = client.resource(URI_BASE + "/service/demo");
         WebserviceConfigPojo config = new WebserviceConfigPojo();
         WebservicePojo ws = new WebservicePojo(webResource.getURI());
         config.setWebservice(ws);
-        config.getParameterAssignments().add(ws.getParamByName("sleeptime").createAssignment("10"));
+        config.getParameterAssignments().add(ws.getParamByName("sleeptime").createAssignment("2"));
+        log.info("Configuration created for Test: " + config.getTurtle());
         ClientResponse response = webResource.post(ClientResponse.class, config.getTurtle());
         log.info("JOB STARTED WITH RESPONSE: " + response.getStatus() + " / Location: " + response.getLocation() + " / Content: " + response.getEntity(String.class));
         URI joburi = response.getLocation();
@@ -60,13 +61,13 @@ public class DemoServiceITCase {
         log.info("Status after 1 seconds: " + status);
         assert(status.equals(JobStatusConstants.STARTED.name()));
         try {
-            Thread.sleep(12000);
+            Thread.sleep(3000);
         } catch (InterruptedException e) {
             throw new RuntimeException("An exception occurred: " + e, e);
         }
         g = new GrafeoImpl(joburi.toString());
         status =  g.resource(joburi.toString()).get("omnom:status").literal().getValue();
-        log.info("Status after 12 seconds: " + status);
+        log.info("Status after 4 seconds: " + status);
         assert(status.equals(JobStatusConstants.FINISHED.name()));
 
     }

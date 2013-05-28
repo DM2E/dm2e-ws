@@ -1,20 +1,13 @@
 package eu.dm2e.ws.services.workflow;
 
-import java.util.logging.Logger;
-
-import org.junit.Assert;
-import org.junit.Test;
-
-import eu.dm2e.ws.api.ParameterPojo;
-import eu.dm2e.ws.api.ParameterSlotAssignmentPojo;
-import eu.dm2e.ws.api.ParameterSlotPojo;
-import eu.dm2e.ws.api.WebservicePojo;
-import eu.dm2e.ws.api.WorkflowJobPojo;
-import eu.dm2e.ws.api.WorkflowPojo;
-import eu.dm2e.ws.api.WorkflowPositionPojo;
+import eu.dm2e.ws.api.*;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.publish.PublishServiceTest;
 import eu.dm2e.ws.services.xslt.XsltServiceTest;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.util.logging.Logger;
 
 public class WorkflowTest {
 
@@ -70,7 +63,7 @@ public class WorkflowTest {
 		wfJob.getSlotAssignments().add(graph_slot_ass);
 		
 		GrafeoImpl g = new GrafeoImpl();
-		g.addObject(wfJob);
+		g.getObjectMapper().addObject(wfJob);
 		log.info(g.getTurtle());
 //		log.info("" + x);
 		// ass1.setForSlot(
@@ -157,7 +150,7 @@ public class WorkflowTest {
 		slot_0_graph.setConnectedSlot(slot_2_graph);
 
 		GrafeoImpl g = new GrafeoImpl();
-		g.addObject(wf);
+		g.getObjectMapper().addObject(wf);
 		// slot1.setWebService("http://foo");
 		// log.info(g.getCanonicalNTriples());
 		log.info(g.getTurtle());

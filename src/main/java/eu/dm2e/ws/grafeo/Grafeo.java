@@ -1,17 +1,22 @@
 package eu.dm2e.ws.grafeo;
 
+import com.hp.hpl.jena.query.ResultSet;
+import eu.dm2e.ws.grafeo.gom.ObjectMapper;
+import eu.dm2e.ws.grafeo.jena.GResourceImpl;
+
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Set;
 
-import com.hp.hpl.jena.query.ResultSet;
-
-import eu.dm2e.ws.grafeo.jena.GResourceImpl;
-
 /**
- * Created with IntelliJ IDEA. User: kai Date: 3/5/13 Time: 11:21 AM To change
- * this template use File | Settings | File Templates.
+ * The Grafeo API is a simple RDF API. The goal is the minimization of
+ * code in the applications, by introducing conventions and convenience
+ * methods. Grafeo is specifically created for the requirements in the
+ * DM2E project, the suitability as general purpose RDF API is secondary.
+ *
+ * Author: Kai Eckert, Konstantin Baierer
+ *
  */
 public interface Grafeo {
 	GResource findTopBlank();
@@ -32,9 +37,7 @@ public interface Grafeo {
 
 	GStatement addTriple(String subject, String predicate, GValue object);
 
-    GResource addObject(Object object);
-
-	GLiteral literal(String literal);
+    GLiteral literal(String literal);
 
 	GLiteral literal(Object value);
 
@@ -96,12 +99,6 @@ public interface Grafeo {
 
 	void readHeuristically(File file);
 
-    <T> T getObject(Class T, GResource res);
-
-	<T> T getObject(Class T, String resStr);
-	
-	<T> T getObject(Class T, URI uri);
-
     GStatement addTriple(GResource subject, GResource predicate,
                              GValue object);
 
@@ -113,4 +110,10 @@ public interface Grafeo {
 
 
     Set<GResource> findByClass(String uri);
+
+    GResourceImpl createBlank();
+
+    ObjectMapper getObjectMapper();
+
+    GResourceImpl createBlank(String id);
 }

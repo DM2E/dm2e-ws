@@ -98,6 +98,7 @@ public class GResourceImpl extends GValueImpl implements GResource {
         		throw new RuntimeException("Not a literal or a resource value: " + getUri() + " -> " + uri);
         	}
         }
+        log.info("Returning number of values: " + propSet.size());
 		return propSet;
     }
 

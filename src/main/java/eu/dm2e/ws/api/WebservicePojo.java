@@ -67,10 +67,8 @@ public class WebservicePojo {
     		if (param.getId().matches(".*" + needle + "$")) {
     			return param;
     		}
-    		else {
-    			log.severe(param.getId() + " doesn't match " + needle);
-    		}
     	}
+        log.warning("No parameter found for needle: " + needle);
     	return null;
     }
     
@@ -84,7 +82,7 @@ public class WebservicePojo {
 
     public WebservicePojo(URI uri) {
         Grafeo g = new GrafeoImpl(uri.toString());
-        WebservicePojo ws = g.getObject(WebservicePojo.class, uri);
+        WebservicePojo ws = g.getObjectMapper().getObject(WebservicePojo.class, uri);
         try {
             BeanUtils.copyProperties(this, ws);
         } catch (IllegalAccessException e) {

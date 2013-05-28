@@ -146,7 +146,7 @@ public abstract class AbstractRDFService {
 	public Response getDescription(@Context UriInfo uriInfo)  {
         WebservicePojo wsDesc = this.getWebServicePojo();
         Grafeo g = new GrafeoImpl();
-        g.addObject(wsDesc);
+        g.getObjectMapper().addObject(wsDesc);
         return Response.ok().entity(getResponseEntity(g)).build();
 	}
 	
@@ -344,7 +344,7 @@ public abstract class AbstractRDFService {
 		Grafeo g = new GrafeoImpl();
 		g.readFromEndpoint(Config.getString("dm2e.ws.sparql_endpoint_statements"), configURI);
 		try {
-			WebserviceConfigPojo wsConf = g.getObject(WebserviceConfigPojo.class, configURI);
+			WebserviceConfigPojo wsConf = g.getObjectMapper().getObject(WebserviceConfigPojo.class, configURI);
 			return wsConf;
 		} catch (Exception e) {
 			log.warning(e.toString());

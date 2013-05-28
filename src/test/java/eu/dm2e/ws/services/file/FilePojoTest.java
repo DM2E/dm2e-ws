@@ -1,13 +1,12 @@
 package eu.dm2e.ws.services.file;
 
-import static org.junit.Assert.*;
+import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import org.junit.Test;
 
 import java.util.logging.Logger;
 
-import org.junit.Test;
-
-import eu.dm2e.ws.api.FilePojo;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import static org.junit.Assert.assertEquals;
 
 public class FilePojoTest {
 	Logger log = Logger.getLogger(getClass().getName());
@@ -26,7 +25,7 @@ public class FilePojoTest {
 		fileMetaStr.append("<" + fileUri + "> omnom:fileRetrievalURI \"" + fileRetrievalURIShouldBe + "\". \n");
 		fileMetaStr.append("<" + fileUri + "> dct:extent \"123456\". \n");
 		g.readHeuristically(fileMetaStr.toString());
-		FilePojo fp = g.getObject(FilePojo.class, g.resource(fileUri));
+		FilePojo fp = g.getObjectMapper().getObject(FilePojo.class, g.resource(fileUri));
 		assertEquals(fileUri, fp.getId());
 		assertEquals(123456L, fp.getFileSize());
 		assertEquals(fileLocationShouldBe, fp.getFileLocation());
@@ -48,9 +47,9 @@ public class FilePojoTest {
 		fp1.setFileRetrievalURI(fileRetrievalURIShouldBe);
 		fp1.setFileLocation(fileLocationShouldBe);
 		
-		g1.addObject(fp1);
-		FilePojo fp2 = g1.getObject(FilePojo.class, fileUri);
-		g2.addObject(fp2);
+		g1.getObjectMapper().addObject(fp1);
+		FilePojo fp2 = g1.getObjectMapper().getObject(FilePojo.class, fileUri);
+		g2.getObjectMapper().addObject(fp2);
 		assertEquals(g1.getCanonicalNTriples(), g2.getCanonicalNTriples());
 		log.info(g2.getNTriples());
 		

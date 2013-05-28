@@ -126,7 +126,7 @@ public class FileService extends AbstractRDFService {
 
 		// these are only available if this is an upload field and not just a
 		// form field
-		oldG.addObject(filePojo);
+		oldG.getObjectMapper().addObject(filePojo);
 		
 		return filePojo;
 	}
@@ -197,7 +197,7 @@ public class FileService extends AbstractRDFService {
 	 * @param metaDisposition
 	 * @param filePart
 	 * @param fileDisposition
-	 * @param uri
+	 * @param uriStr
 	 * @return
 	 */
 	@PUT
@@ -347,7 +347,7 @@ public class FileService extends AbstractRDFService {
 			
 			// if the file part is null, make sure that a
 			// dm2e:file_retrieval_uri is provided in meta
-			FilePojo f = g.getObject(FilePojo.class, uri);
+			FilePojo f = g.getObjectMapper().getObject(FilePojo.class, uri);
 			if (filePart == null && null == f.getFileRetrievalURI()) {
 				return throwServiceError("If no 'file' is set, omnom:fileRetrievalURI is REQUIRED in 'meta'.");
 			}
@@ -366,7 +366,7 @@ public class FileService extends AbstractRDFService {
 				}
 				// it's stored, set to AVAILABLE
 				filePojo.setFileStatus(FileStatus.AVAILABLE.toString());
-				g.addObject(filePojo);
+				g.getObjectMapper().addObject(filePojo);
 			} catch (IOException e) {
 				return throwServiceError(e);
 			}
@@ -447,9 +447,9 @@ public class FileService extends AbstractRDFService {
 		if (!g.containsResource(uri)) {
 			return Response.status(404).entity("No such file in the triplestore.").build();
 		}
-		FilePojo filePojo = g.getObject(FilePojo.class, g.resource(uri));
+		FilePojo filePojo = g.getObjectMapper().getObject(FilePojo.class, g.resource(uri));
 		Grafeo outG = new GrafeoImpl();
-		outG.addObject(filePojo);
+		outG.getObjectMapper().addObject(filePojo);
 		// TODO we need a link to the "get" ws where the file can be retrieved
 		// from because the internal information is not really useful
 		return getResponse(outG);
@@ -459,7 +459,7 @@ public class FileService extends AbstractRDFService {
 	 * Returns the file. If the file is not stored by the file storage the
 	 * request is redirected. Otherwise the internal file is returned directly.
 	 * 
-	 * @param uri
+	 * @param uriObject
 	 *            the identifier of the file.
 	 * @return the file or redirected to the location of the file.
 	 */
@@ -494,7 +494,7 @@ public class FileService extends AbstractRDFService {
 //		String contentType = contentTypeNode != null ? contentTypeNode.toString() : "text/plain";
 //		String originalName = originalNameNode != null ? originalNameNode.toString() : "rdf_file_info";
 		
-		FilePojo filePojo = g.getObject(FilePojo.class, uri);
+		FilePojo filePojo = g.getObjectMapper().getObject(FilePojo.class, uri);
 		
 		FileInputStream fis;
 		try {

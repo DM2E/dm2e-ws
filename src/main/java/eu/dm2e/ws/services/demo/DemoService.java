@@ -13,7 +13,7 @@ import javax.ws.rs.Path;
  * Time: 12:58 PM
  * To change this template use File | Settings | File Templates.
  */
-@Path("/service/newdemo")
+@Path("/service/demo")
 public class DemoService extends AbstractTransformationService {
 
     public DemoService() {
