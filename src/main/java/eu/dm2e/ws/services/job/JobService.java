@@ -95,7 +95,8 @@ public class JobService extends AbstractRDFService {
 	@Path("/{id}/status")
 	public Response getJobStatus(@PathParam("id") String id) {
 		String resourceUriStr = getRequestUriWithoutQuery().toString().replaceAll("/status$", "");
-		JobPojo jobPojo = new JobPojo().readFromEndPointById(resourceUriStr);
+		JobPojo jobPojo = new JobPojo();
+		jobPojo.readFromEndPointById(resourceUriStr);
 		return Response.ok(jobPojo.getStatus()).build();
 	}
 
@@ -114,7 +115,8 @@ public class JobService extends AbstractRDFService {
 		}
 		
 		String resourceUriStr = getRequestUriWithoutQuery().toString().replaceAll("/status$", "");
-		JobPojo jobPojo = new JobPojo().readFromEndPointById(resourceUriStr);
+		JobPojo jobPojo = new JobPojo();
+		jobPojo.readFromEndPointById(resourceUriStr);
 		jobPojo.setStatus(newStatus);
 		jobPojo.publish();
 		return Response.created(getRequestUriWithoutQuery()).build();
@@ -131,7 +133,8 @@ public class JobService extends AbstractRDFService {
 	//@formatter:on
 
 		String resourceUriStr = getRequestUriWithoutQuery().toString().replaceAll("/log$", "");
-		JobPojo jobPojo = new JobPojo().readFromEndPointById(resourceUriStr);
+		JobPojo jobPojo = new JobPojo();;
+		jobPojo.readFromEndPointById(resourceUriStr);
 		LogEntryPojo logEntry = null;
 		
 		try {
@@ -150,7 +153,8 @@ public class JobService extends AbstractRDFService {
 	public Response addLogEntryAsText(String logString) {
 		String resourceUriStr = getRequestUriWithoutQuery().toString().replaceAll("/log$", "");
 		
-		JobPojo jobPojo = new JobPojo().readFromEndPointById(resourceUriStr);
+		JobPojo jobPojo = new JobPojo();
+		jobPojo.readFromEndPointById(resourceUriStr);
 		jobPojo.addLogEntry(logString, LogLevel.DEBUG.toString());
 		jobPojo.publish();
 		return Response.created(getRequestUriWithoutQuery()).build();
@@ -167,7 +171,8 @@ public class JobService extends AbstractRDFService {
 	public Response listLogEntries(@QueryParam("minLevel") String minLevelStr, @QueryParam("maxLevel") String maxLevelStr) {
 
 		String resourceUriStr = getRequestUriWithoutQuery().toString().replaceAll("/log$", "");
-		JobPojo jobPojo = new JobPojo().readFromEndPointById(resourceUriStr);
+		JobPojo jobPojo = new JobPojo();
+		jobPojo.readFromEndPointById(resourceUriStr);
 		Set<LogEntryPojo> logEntries = jobPojo.getLogEntries(minLevelStr, maxLevelStr);
 		Grafeo logGrafeo = new GrafeoImpl();
 		for (LogEntryPojo logEntry : logEntries) {
@@ -181,7 +186,8 @@ public class JobService extends AbstractRDFService {
 	@Produces({ "text/x-log" })
 	public Response listLogEntriesAsLogFile(@QueryParam("minLevel") String minLevelStr, @QueryParam("maxLevel") String maxLevelStr) {
 		String resourceUriStr = getRequestUriWithoutQuery().toString().replaceAll("/log$", "");
-		JobPojo jobPojo = new JobPojo().readFromEndPointById(resourceUriStr);
+		JobPojo jobPojo = new JobPojo();
+		jobPojo.readFromEndPointById(resourceUriStr);
 		List<LogEntryPojo> logEntries = jobPojo.getLogEntriesSortedByDate(minLevelStr, maxLevelStr);
 		StringBuilder outputBuilder = new StringBuilder();
 		for (LogEntryPojo logEntry : logEntries) {
