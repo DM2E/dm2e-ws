@@ -131,6 +131,20 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
 		}
     	return getLogEntriesSortedByDate(minLevel, maxLevel);
     }
+    public String toLogString(String minLevel, String maxLevel) {
+    	List<LogEntryPojo> logEntries = this.getLogEntriesSortedByDate(minLevel, maxLevel);
+    	StringBuilder outputBuilder = new StringBuilder();
+		for (LogEntryPojo logEntry : logEntries) {
+			outputBuilder.append("[");
+			outputBuilder.append(logEntry.getLevel());
+			outputBuilder.append("] ");
+			outputBuilder.append(logEntry.getTimestamp());
+			outputBuilder.append(": ");
+			outputBuilder.append(logEntry.getMessage());
+			outputBuilder.append("\n");
+		} 
+		return outputBuilder.toString();
+    }
     
     /**
      * Output Parameters

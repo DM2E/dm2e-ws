@@ -3,7 +3,6 @@ package eu.dm2e.ws.services.job;
 import java.io.File;
 import java.net.URI;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -188,17 +187,13 @@ public class JobService extends AbstractRDFService {
 		String resourceUriStr = getRequestUriWithoutQuery().toString().replaceAll("/log$", "");
 		JobPojo jobPojo = new JobPojo();
 		jobPojo.readFromEndPointById(resourceUriStr);
-		List<LogEntryPojo> logEntries = jobPojo.getLogEntriesSortedByDate(minLevelStr, maxLevelStr);
-		StringBuilder outputBuilder = new StringBuilder();
-		for (LogEntryPojo logEntry : logEntries) {
-			outputBuilder.append("[");
-			outputBuilder.append(logEntry.getLevel());
-			outputBuilder.append("] ");
-			outputBuilder.append(logEntry.getTimestamp());
-			outputBuilder.append(": ");
-			outputBuilder.append(logEntry.getMessage());
-			outputBuilder.append("\n");
-		}
-		return Response.ok().entity(outputBuilder.toString()).build();
+		return Response.ok().entity(jobPojo.toLogString(minLevelStr, maxLevelStr)).build();
+	}
+	
+	@GET
+	@Path("/{id}")
+	@Produces({ "text/x-log" })
+	public Response listLogEntriesAsLogFileFromJob(@QueryParam("minLevel") String minLevelStr, @QueryParam("maxLevel") String maxLevelStr) {
+		return this.listLogEntriesAsLogFile(minLevelStr, maxLevelStr);
 	}
 }

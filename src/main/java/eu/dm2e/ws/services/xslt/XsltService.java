@@ -91,20 +91,23 @@ public class XsltService extends AbstractTransformationService {
 			jobPojo.setFailed();
 			return;
 		}
-		jobPojo.info("Writing result to file service.");
+		jobPojo.info("Getting the transformation result as a string.");
 		String xslResultStr = "";
 		try {
-			// kb Tue May 28 03:24:34 CEST 2013
-			// TODO BUG hangs here!
 			xslResultStr = xslResultStrWriter.toString();
 			if (xslResultStr.length() == 0) {
-				throw new RuntimeException("Empty result.");
+				throw new RuntimeException("No result from the transformation.");
+			}
+			else if (xslResultStr.equals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")) {
+				jobPojo.warn("XSLT transformation yielded in empty XML file.");
 			}
 		} catch (Exception e) {
 			jobPojo.debug(e);
 			jobPojo.setFailed();
 			return;
 		}
+		
+		jobPojo.trace("Building file service multipart envelope.");
 		FormDataMultiPart form = new FormDataMultiPart();
 
 		// add file part
@@ -113,33 +116,37 @@ public class XsltService extends AbstractTransformationService {
 		form.bodyPart(fileFDBP);
 
 		// add metadata part
-		// FormDataBodyPart metaFDBP = new FormDataBodyPart("meta",
-		// xslResult, xml_type);
 		FilePojo fileDesc = new FilePojo();
 		fileDesc.setGeneratorJob(jobPojo);
 		fileDesc.setMediaType(xml_type.toString());
-		//			metaModel.add(blank, metaModel.createProperty(NS.OMNOM + "generatedBy"), metaModel.createResource(jobUri));
-		//			String metaNTriples = metaGrafeo.getNTriples().replaceAll("_[^\\s]+", "[]");
-		//			String metaNTriples = metaGrafeo.getNTriples();	
 		MediaType n3_type = MediaType.valueOf(DM2E_MediaType.TEXT_RDF_N3);
 		FormDataBodyPart metaFDBP = new FormDataBodyPart("meta", fileDesc.getNTriples(), n3_type);
 		form.bodyPart(metaFDBP);
 
-
+		// build the response stub
 		Builder builder = fileResource
 				.type(MediaType.MULTIPART_FORM_DATA)
 				.accept(DM2E_MediaType.TEXT_TURTLE)
 				.entity(form);
+		
+		// Post the file to the file service
+		jobPojo.info("Posting result to the file service.");
 		ClientResponse resp = builder.post(ClientResponse.class);
 		if (resp.getStatus() >= 400) {
 			jobPojo.fatal("File storage failed: " + resp.getEntity(String.class));
+			jobPojo.setFailed();
 			return;
 		}
 		String fileLocation = resp.getLocation().toString();
 		jobPojo.info("File stored at: " + fileLocation);
-		fileDesc.setFileRetrievalURI(fileLocation);
-		fileDesc.publish();
+		try {
+			fileDesc.setFileRetrievalURI(fileLocation);
+			fileDesc.publish();
+		} catch(Exception e) {
+			jobPojo.fatal(e);
+		}
 		
+		jobPojo.info("Store result URI on the job (" + fileLocation + ").");
 		ParameterAssignmentPojo ass = new ParameterAssignmentPojo();
 		ass.setForParam(jobPojo.getWebService().getParamByName("xmlOutParam"));
 		ass.setParameterValue(fileLocation);
