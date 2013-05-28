@@ -52,7 +52,7 @@ public abstract class AbstractTransformationService extends AbstractRDFService i
          */
         WebserviceConfigPojo wsConf = new WebserviceConfigPojo();
 		try {
-			wsConf.readFromEndPointById(configURI);
+			wsConf.readFromEndPointById(configURI, true);
 		} catch (Exception e) {
 			return throwServiceError(e);
 		}

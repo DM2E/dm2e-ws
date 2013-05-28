@@ -1,13 +1,14 @@
 package eu.dm2e.ws.grafeo;
 
-import com.hp.hpl.jena.query.ResultSet;
-import eu.dm2e.ws.grafeo.gom.ObjectMapper;
-import eu.dm2e.ws.grafeo.jena.GResourceImpl;
-
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Set;
+
+import com.hp.hpl.jena.query.ResultSet;
+
+import eu.dm2e.ws.grafeo.gom.ObjectMapper;
+import eu.dm2e.ws.grafeo.jena.GResourceImpl;
 
 /**
  * The Grafeo API is a simple RDF API. The goal is the minimization of
@@ -116,4 +117,6 @@ public interface Grafeo {
     ObjectMapper getObjectMapper();
 
     GResourceImpl createBlank(String id);
+
+	Set<GResource> listResourceObjects();
 }

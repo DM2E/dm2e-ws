@@ -618,5 +618,19 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         if (objectMapper==null) objectMapper = new ObjectMapper(this);
         return objectMapper;
     }
+    
+    @Override
+    public Set<GResource> listResourceObjects() {
+    	Set<GResource> resList = new HashSet<GResource>();
+    	NodeIterator iter = this.getModel().listObjects();
+    	while (iter.hasNext()) {
+    		RDFNode node = iter.next();
+    		if (node.isURIResource()) {
+    			GResource gres = this.resource(node.asResource().getURI());
+    			resList.add(gres);
+    		}
+    	}
+    	return resList;
+    }
 
 }
