@@ -246,16 +246,16 @@
 		<sesame.version>2.6.10</sesame.version>
 	</properties>
 	<repositories>
-        <repository>
-			<id>glassfish.java.net</id>
-			<name>GlassFish Maven Repository</name>
-			<url>http://download.java.net/maven/glassfish</url>
-			<layout>default</layout>
-		</repository>
 		<repository>
 			<id>m2.java.net</id>
 			<name>Java.net Maven 2 Repository</name>
 			<url>http://download.java.net/maven/2</url>
+			<layout>default</layout>
+		</repository>
+        <repository>
+			<id>glassfish.java.net</id>
+			<name>GlassFish Maven Repository</name>
+			<url>http://download.java.net/maven/glassfish</url>
 			<layout>default</layout>
 		</repository>
 		<repository>
@@ -273,4 +273,13 @@
             <url>http://repo1.maven.org/maven2</url>
         </repository>
 	</repositories>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>2.3</version>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>
