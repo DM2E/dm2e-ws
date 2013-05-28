@@ -84,7 +84,7 @@ public class WebservicePojo {
 
     public WebservicePojo(URI uri) {
         Grafeo g = new GrafeoImpl(uri.toString());
-        WebservicePojo ws = g.getObject(WebservicePojo.class, uri);
+        WebservicePojo ws = g.getObjectMapper().getObject(WebservicePojo.class, uri);
         try {
             BeanUtils.copyProperties(this, ws);
         } catch (IllegalAccessException e) {

@@ -40,7 +40,7 @@ public abstract class AbstractPersistentPojo<T> {
 		if (null != topBlank) {
 			String newURI = prefix + UUID.randomUUID().toString();;
 			topBlank.rename(newURI);
-			theThing = g.getObject(this.getClass(), newURI);
+			theThing = g.getObjectMapper().getObject(this.getClass(), newURI);
 		}
 		else {
 			// TODO handle RDF strings with Things of Type T that have a URI
@@ -51,7 +51,7 @@ public abstract class AbstractPersistentPojo<T> {
 	public T readFromEndpoint(String endpoint, String graph) {
 		Grafeo g = new GrafeoImpl();
 		g.readFromEndpoint(endpoint, graph);
-		return g.getObject(this.getClass(), graph);
+		return g.getObjectMapper().getObject(this.getClass(), graph);
 	}
 	public T readFromEndpoint(String endpoint) {
 		return readFromEndpoint(endpoint, this.getId());
@@ -64,7 +64,7 @@ public abstract class AbstractPersistentPojo<T> {
 	public void publish(String endPoint, String graph) {
         log.info("Writing to endpoint: " + endPoint + " / Graph: " + graph);
 		Grafeo g = new GrafeoImpl();
-		g.addObject(this);
+		g.getObjectMapper().addObject(this);
 		g.emptyGraph(endPoint, graph);
 		g.writeToEndpoint(endPoint, graph);
 	}
@@ -83,7 +83,7 @@ public abstract class AbstractPersistentPojo<T> {
 	
 	public Grafeo getGrafeo() {
 		GrafeoImpl g = new GrafeoImpl();
-		g.addObject(this);
+		g.getObjectMapper().addObject(this);
 		return g;
 	}
 	

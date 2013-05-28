@@ -1,13 +1,12 @@
 package eu.dm2e.ws.api;
 
-import java.net.URISyntaxException;
-import java.util.logging.Logger;
-
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.services.xslt.XsltServiceTest;
 import org.junit.Before;
 import org.junit.Test;
 
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
-import eu.dm2e.ws.services.xslt.XsltServiceTest;
+import java.net.URISyntaxException;
+import java.util.logging.Logger;
 
 public class WebservicePojoTest {
 	
@@ -50,7 +49,7 @@ public class WebservicePojoTest {
 		ws.getInputParams().add(xsltInParam);
 		ws.getOutputParams().add(xmlOutParam);
 		GrafeoImpl g = new GrafeoImpl();
-		g.addObject(ws);
+		g.getObjectMapper().addObject(ws);
 		log.info(g.getTurtle());
 	}
 	
@@ -72,7 +71,7 @@ public class WebservicePojoTest {
 		wsconf.getParameterAssignments().add(ass1);
 		wsconf.getParameterAssignments().add(ass2);
 		
-		g.addObject(wsconf);
+		g.getObjectMapper().addObject(wsconf);
 		log.info(g.getTurtle());
 	}
 

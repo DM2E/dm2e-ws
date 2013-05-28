@@ -41,7 +41,7 @@ public class DataService extends AbstractRDFService {
     public Response getMapTest(@Context UriInfo uriInfo) {
         String source = uriInfo.getRequestUri().toString().replace("/mapTest","");
         Grafeo g = new GrafeoImpl(source);
-        WebservicePojo test = g.getObject(WebservicePojo.class, g.resource("http://data.dm2e.eu/data/services/42"));
+        WebservicePojo test = g.getObjectMapper().getObject(WebservicePojo.class, g.resource("http://data.dm2e.eu/data/services/42"));
 
         log.info("Result ID: " + test.getId());
 

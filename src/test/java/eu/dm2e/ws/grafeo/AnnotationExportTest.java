@@ -1,16 +1,15 @@
 package eu.dm2e.ws.grafeo;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.logging.Logger;
-
-import org.junit.Test;
-
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.test.IntegerPojo;
 import eu.dm2e.ws.grafeo.test.ListPojo;
 import eu.dm2e.ws.grafeo.test.SetPojo;
+import org.junit.Test;
+
+import java.util.logging.Logger;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class AnnotationExportTest {
 	
@@ -33,7 +32,7 @@ public class AnnotationExportTest {
 		pojo.getLiteralSet().add(11111);
 //		log.info(pojo.getLiteralSet().toString());
 		Grafeo g = new GrafeoImpl();
-		g.addObject(pojo);
+		g.getObjectMapper().addObject(pojo);
 //		log.info(g.getNTriples());
 //		log.info(""+g.size());
 		assertTrue(g.containsStatementPattern(pojo_uri, "omnom:some_number", g.literal(5)));
@@ -52,7 +51,7 @@ public class AnnotationExportTest {
 //		pojo.getIntegerResourceList().add(new IntegerPojo("http://item5", 11111));
 //		log.info(pojo.getLiteralSet().toString());
 		Grafeo g = new GrafeoImpl();
-		g.addObject(pojo);
+		g.getObjectMapper().addObject(pojo);
 		log.info(g.getNTriples());
 //		log.info(""+g.size());
 //		assertTrue(g.containsStatementPattern(pojo_uri, "omnom:some_number", g.literal(5)));
@@ -69,10 +68,10 @@ public class AnnotationExportTest {
 		g.addTriple(uri, "omnom:some_number", g.literal(100));
 //		Set<GValue> set = res.getAll("omnom:some_number");
 //		log.info("foo: " + set);
-		SetPojo o = g.getObject(SetPojo.class, g.resource(uri));
+		SetPojo o = g.getObjectMapper().getObject(SetPojo.class, g.resource(uri));
 		log.info("" + o.getLiteralSet());
 		GrafeoImpl g2 = new GrafeoImpl();
-		g2.addObject(o);
+		g2.getObjectMapper().addObject(o);
 		assertEquals(g.getCanonicalNTriples(), g2.getCanonicalNTriples());
 //		log.info(g2.getNTriples());
 //		log.info(" " + o.getSome_number());
@@ -88,11 +87,11 @@ public class AnnotationExportTest {
 		pojo.setIdURI(uri);
 		pojo.getIntegerResourceList().add(new IntegerPojo(uri+"/x1", 1));
 		pojo.getIntegerResourceList().add(new IntegerPojo(uri+"/x2", 2));
-		g1.addObject(pojo);
+		g1.getObjectMapper().addObject(pojo);
 //		log.info(g1.getCanonicalNTriples());
 		
-		ListPojo inPojo = g1.getObject(ListPojo.class, res);
-		g2.addObject(inPojo);
+		ListPojo inPojo = g1.getObjectMapper().getObject(ListPojo.class, res);
+		g2.getObjectMapper().addObject(inPojo);
 //		log.warning(g2.getCanonicalNTriples());
 		assertEquals(g1.getCanonicalNTriples(), g2.getCanonicalNTriples());
 		

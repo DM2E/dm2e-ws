@@ -111,9 +111,11 @@ public abstract class GValueImpl extends JenaImpl implements GValue {
             }
         } else {
             log.info("Found Resource.");
-            result = grafeo.getObject(T, resource());
+            result = grafeo.getObjectMapper().getObject(T, resource());
         }
         return result;
     }
+
+
 
 }
