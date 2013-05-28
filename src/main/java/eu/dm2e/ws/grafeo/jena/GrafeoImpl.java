@@ -325,6 +325,11 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     }
 
     @Override
+    public GResourceImpl createBlank(String id) {
+        return new GResourceImpl(this, model.createResource(AnonId.create(id)));
+    }
+
+    @Override
     public GResourceImpl resource(URI uri) {
         return new GResourceImpl(this, uri.toString());
     }

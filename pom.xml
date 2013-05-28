@@ -130,10 +130,13 @@
 
 	</dependencies>
 	<build>
+
 		<plugins>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
 				<inherited>true</inherited>
 				<configuration>
 					<source>1.7</source>
@@ -152,6 +155,12 @@
                         </goals>
                         <configuration>
                             <mainClass>eu.dm2e.ws.Main</mainClass>
+                            <systemProperties>
+                                <property>
+                                    <key>java.util.logging.config.file</key>
+                                    <value>${project.build.outputDirectory}/logging.properties</value>
+                                </property>
+                            </systemProperties>
                         </configuration>
                     </execution>
                     <execution>
@@ -162,7 +171,12 @@
                         </goals>
                         <configuration>
                             <mainClass>eu.dm2e.ws.SetUp</mainClass>
-
+                            <systemProperties>
+                                <property>
+                                    <key>java.util.logging.config.file</key>
+                                    <value>${project.build.outputDirectory}/logging.properties</value>
+                                </property>
+                            </systemProperties>
                         </configuration>
                     </execution>
 
@@ -174,6 +188,12 @@
                         </goals>
                         <configuration>
                             <mainClass>eu.dm2e.ws.TearDown</mainClass>
+                            <systemProperties>
+                                <property>
+                                    <key>java.util.logging.config.file</key>
+                                    <value>${project.build.outputDirectory}/logging.properties</value>
+                                </property>
+                            </systemProperties>
                         </configuration>
                     </execution>
                 </executions>
@@ -188,14 +208,36 @@
                         <goals>
                             <goal>integration-test</goal>
                         </goals>
+                        <configuration>
+                            <systemProperties>
+                                <property>
+                                    <name>java.util.logging.config.file</name>
+                                    <value>${project.build.testOutputDirectory}/logging.properties</value>
+                                </property>
+                            </systemProperties>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>verify</id>
                         <goals>
                             <goal>verify</goal>
                         </goals>
+
                     </execution>
                 </executions>
+
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.14.1</version>
+                <configuration>
+                    <systemProperties>
+                        <property>
+                            <name>java.util.logging.config.file</name>
+                            <value>${project.build.testOutputDirectory}/logging.properties</value>
+                        </property>
+                    </systemProperties>
+                </configuration>
             </plugin>
         </plugins>
 	</build>

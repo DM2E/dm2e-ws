@@ -307,7 +307,7 @@ public class ObjectMapper {
             uri = grafeo.expand(res.getUri());
         }
         T result = null;
-        log.info("" +T);
+        log.info("Class: " +T);
 
         result =  getSingleObject(T, res, uri);
         setAnnotatedNamespaces(result);
@@ -327,7 +327,7 @@ public class ObjectMapper {
             if (field.isAnnotationPresent(RDFId.class)) {
                 try {
                     Object id = PropertyUtils.getProperty(object, field.getName());
-                    if (null == id || "0".equals(id.toString()) ) return grafeo.createBlank();
+                    if (null == id || "0".equals(id.toString()) ) return grafeo.createBlank(object.toString());
                     uri = field.getAnnotation(RDFId.class).prefix() + id.toString();
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException("An exception occurred: " + e, e);
@@ -339,7 +339,7 @@ public class ObjectMapper {
             }
         }
         if (uri==null) {
-            return grafeo.createBlank();
+            return grafeo.createBlank(object.toString());
         } else {
             uri = grafeo.expand(uri);
             return grafeo.resource(uri);

@@ -67,10 +67,8 @@ public class WebservicePojo {
     		if (param.getId().matches(".*" + needle + "$")) {
     			return param;
     		}
-    		else {
-    			log.severe(param.getId() + " doesn't match " + needle);
-    		}
     	}
+        log.warning("No parameter found for needle: " + needle);
     	return null;
     }
     

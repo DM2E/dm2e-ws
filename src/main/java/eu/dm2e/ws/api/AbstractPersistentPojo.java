@@ -1,16 +1,16 @@
 package eu.dm2e.ws.api;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.UUID;
-import java.util.logging.Logger;
-
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.UUID;
+import java.util.logging.Logger;
 
 public abstract class AbstractPersistentPojo<T> {
 	
@@ -36,7 +36,7 @@ public abstract class AbstractPersistentPojo<T> {
 	public T constructFromRdfString(String rdfString, String id) {
 		Grafeo g = new GrafeoImpl();
 		g.readHeuristically(rdfString);
-		T theThing = g.getObject(this.getClass(), id);
+		T theThing = g.getObjectMapper().getObject(this.getClass(), id);
 		return theThing;
 	}
 	public T constructFromRdfString(String rdfString) {

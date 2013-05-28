@@ -114,4 +114,6 @@ public interface Grafeo {
     GResourceImpl createBlank();
 
     ObjectMapper getObjectMapper();
+
+    GResourceImpl createBlank(String id);
 }
