@@ -1,20 +1,22 @@
 package eu.dm2e.ws.services.demo;
 
+import java.net.URI;
+import java.util.logging.Logger;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.model.JobStatusConstants;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.net.URI;
-import java.util.logging.Logger;
 
 /**
  * This file was created within the DM2E project.
