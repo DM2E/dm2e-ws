@@ -1,16 +1,18 @@
 package eu.dm2e.ws.services;
 
+import java.io.File;
+import java.util.logging.Logger;
+
+import javax.ws.rs.core.MediaType;
+
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
+
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.api.FilePojo;
-
-import javax.ws.rs.core.MediaType;
-import java.io.File;
-import java.util.logging.Logger;
 
 /**
  * This file was created within the DM2E project.
@@ -70,7 +72,14 @@ public class Client {
         }
         log.info("File stored, URI: " + fileLocation);
         return fileLocation;
-
-
     }
+//    public HttpResponse postRDF(String postTo, Grafeo g, Map<String,String> headers) {
+//    }
+
+    /*******************
+     * GETTERS/SETTERS
+     ********************/
+	public com.sun.jersey.api.client.Client getJerseyClient() { return jerseyClient; }
+	public void setJerseyClient(com.sun.jersey.api.client.Client jerseyClient) { this.jerseyClient = jerseyClient; }
+    
 }
