@@ -25,6 +25,10 @@ import java.net.URL;
 import java.util.*;
 import java.util.logging.Logger;
 
+/**
+ * TODO @GET /{id}/param/{param} 303 -> /{id}
+ *
+ */
 @Produces({ MediaType.TEXT_HTML, MediaType.TEXT_PLAIN, "application/rdf+xml",
 		"application/x-turtle", "text/turtle", "text/rdf+n3" })
 @Consumes({ MediaType.TEXT_PLAIN, "application/rdf+xml",
@@ -45,7 +49,7 @@ public abstract class AbstractRDFService {
 	);
     protected WebservicePojo webservicePojo = new WebservicePojo();
 
-	List<Variant> supportedVariants;
+	protected List<Variant> supportedVariants;
 	Map<MediaType, String> mediaType2Language = new HashMap<MediaType, String>();
 	@Context
 	Request request;
@@ -134,6 +138,20 @@ public abstract class AbstractRDFService {
         return Response.seeOther(uri).build();
 
     }
+    @GET
+    @Path("{id}/nested/{nestedId}")
+    public Response getConfigAssignment(
+    		@Context UriInfo uriInfo,
+     		@PathParam("id") String id,
+     		@PathParam("nestedId") String nestedId
+    		) {
+        log.info("Nested resource " + nestedId + " of service requested: " + uriInfo.getRequestUri());
+//        Grafeo g = new GrafeoImpl();
+        // @TODO should proabably use getRequestUriWithoutQuery().toString() here
+//        g.readFromEndpoint(NS.ENDPOINT, uriInfo.getRequestUri().toString());
+//        return getResponse(g);
+        return Response.seeOther(getRequestUriWithoutQuery()).build();
+    }
 
     /**
      * The serialization of the webservice description is returned.
@@ -149,6 +167,21 @@ public abstract class AbstractRDFService {
         g.getObjectMapper().addObject(wsDesc);
         return Response.ok().entity(getResponseEntity(g)).build();
 	}
+    
+    @GET
+    @Path("/param/{paramId}")
+    public Response getParamDescription() {
+    	String baseURIstr = getRequestUriWithoutQuery().toString();
+    	baseURIstr = baseURIstr.replaceAll("/param/[^/]+$", "");
+    	URI baseURI;
+		try {
+			baseURI = new URI(baseURIstr);
+		} catch (URISyntaxException e) {
+//			throw(e);
+			return throwServiceError(e);
+		}
+    	return Response.seeOther(baseURI).build();
+    }
 	
 	
 	@PUT
@@ -184,9 +217,13 @@ public abstract class AbstractRDFService {
 
 	protected AbstractRDFService() {
 		this.supportedVariants = Variant
-				.mediaTypes(MediaType.valueOf(PLAIN), MediaType.valueOf(XML),
-						MediaType.valueOf(TTL_A), MediaType.valueOf(TTL_T),
-						MediaType.valueOf(N3)).add().build();
+				.mediaTypes(
+						MediaType.valueOf(PLAIN),
+						MediaType.valueOf(XML),
+						MediaType.valueOf(TTL_A),
+						MediaType.valueOf(TTL_T),
+						MediaType.valueOf(N3)
+						).add().build();
 		mediaType2Language.put(MediaType.valueOf(PLAIN), "N-TRIPLE");
 		mediaType2Language.put(MediaType.valueOf(XML), "RDF/XML");
 		mediaType2Language.put(MediaType.valueOf(TTL_A), "TURTLE");

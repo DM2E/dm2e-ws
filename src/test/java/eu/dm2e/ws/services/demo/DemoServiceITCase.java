@@ -47,7 +47,8 @@ public class DemoServiceITCase {
         WebserviceConfigPojo config = new WebserviceConfigPojo();
         WebservicePojo ws = new WebservicePojo(webResource.getURI());
         config.setWebservice(ws);
-        config.getParameterAssignments().add(ws.getParamByName("sleeptime").createAssignment("2"));
+//        config.getParameterAssignments().add(ws.getParamByName("sleeptime").createAssignment("2"));
+        config.addParameterAssignment("sleeptime", "2");
         log.info("Configuration created for Test: " + config.getTurtle());
         ClientResponse response = webResource.post(ClientResponse.class, config.getTurtle());
         log.info("JOB STARTED WITH RESPONSE: " + response.getStatus() + " / Location: " + response.getLocation() + " / Content: " + response.getEntity(String.class));

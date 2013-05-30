@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/",
 			 "dc", "http://purl.org/dc/elements/1.1/"})
@@ -45,11 +46,13 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
      * LOGGING
      */
     public void addLogEntry(LogEntryPojo entry) {
+    	entry.setId(getId() + "/log/" + UUID.randomUUID().toString());
     	this.logEntries.add(entry);
     	// TODO update to triplestore
     }
     public void addLogEntry(String message, String level) {
     	LogEntryPojo entry = new LogEntryPojo();
+    	entry.setId(getId() + "/log/" + UUID.randomUUID().toString());
     	entry.setMessage(message);
     	entry.setLevel(level);
     	entry.setTimestamp(new Date());

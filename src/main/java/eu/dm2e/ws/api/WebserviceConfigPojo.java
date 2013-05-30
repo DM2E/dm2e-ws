@@ -4,6 +4,7 @@ import eu.dm2e.ws.grafeo.annotations.*;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/"})
 @RDFClass("omnom:WebServiceConfig")
@@ -26,7 +27,7 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
 	
 	public ParameterAssignmentPojo getParameterAssignmentForParam(String paramName) {
 		log.info("Access to param assignment by name: " + paramName);
-        for (ParameterAssignmentPojo ass : this.parameterAssignments) {
+        for (ParameterAssignmentPojo ass : this.getParameterAssignments()) {
 			try { 
 //				log.warning("" + ass.getForParam().getId());
 				if (ass.getForParam().getId().matches(".*" + paramName + "$")
@@ -41,6 +42,17 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
 		}
 		return null;
 	}
+	public void addParameterAssignment(ParameterAssignmentPojo ass) {
+		this.getParameterAssignments().add(ass);
+	}
+	public void addParameterAssignment(String paramName, String paramValue) {
+		log.info("adding parameter assignment");
+		ParameterPojo param = this.getWebservice().getParamByName(paramName);
+		ParameterAssignmentPojo ass = param.createAssignment(paramValue);
+		ass.setId(this.getId() + "/assignment/" + UUID.randomUUID().toString());
+		this.getParameterAssignments().add(ass);
+	}
+	
     public String getParameterValueByName(String needle) {
     	ParameterAssignmentPojo ass = this.getParameterAssignmentForParam(needle);
     	if (null != ass) {
