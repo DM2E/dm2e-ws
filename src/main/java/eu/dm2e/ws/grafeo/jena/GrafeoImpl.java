@@ -1,28 +1,59 @@
 package eu.dm2e.ws.grafeo.jena;
 
-import com.hp.hpl.jena.query.*;
-import com.hp.hpl.jena.rdf.model.*;
-import com.hp.hpl.jena.update.UpdateExecutionFactory;
-import com.hp.hpl.jena.update.UpdateFactory;
-import com.hp.hpl.jena.update.UpdateProcessor;
-import com.hp.hpl.jena.update.UpdateRequest;
-import eu.dm2e.ws.grafeo.GLiteral;
-import eu.dm2e.ws.grafeo.GResource;
-import eu.dm2e.ws.grafeo.GValue;
-import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.annotations.Namespaces;
-import eu.dm2e.ws.grafeo.annotations.RDFId;
-import eu.dm2e.ws.grafeo.gom.ObjectMapper;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang.StringUtils;
-
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Logger;
+
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.StringUtils;
+
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.AnonId;
+import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.ResIterator;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.update.UpdateExecutionFactory;
+import com.hp.hpl.jena.update.UpdateFactory;
+import com.hp.hpl.jena.update.UpdateProcessor;
+import com.hp.hpl.jena.update.UpdateRequest;
+
+import eu.dm2e.ws.grafeo.GLiteral;
+import eu.dm2e.ws.grafeo.GResource;
+import eu.dm2e.ws.grafeo.GStatement;
+import eu.dm2e.ws.grafeo.GValue;
+import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.grafeo.SkolemnizationMethod;
+import eu.dm2e.ws.grafeo.annotations.Namespaces;
+import eu.dm2e.ws.grafeo.annotations.RDFId;
+import eu.dm2e.ws.grafeo.gom.ObjectMapper;
 
 
 
@@ -346,6 +377,11 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     public String expand(String uri) {
         return model.expandPrefix(uri);
     }
+    
+    @Override
+    public String shorten(String uri) {
+        return model.shortForm(uri);
+    }
 
     @Override
     public GStatementImpl addTriple(String subject, String predicate,
@@ -356,7 +392,8 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         GStatementImpl statement;
         String objectExp = expand(object);
         try {
-            URI testUri = new URI(objectExp);
+//            URI testUri = 
+        	new URI(objectExp);
             GResourceImpl or = new GResourceImpl(this, object);
             statement = new GStatementImpl(this, s, p, or);
         } catch (URISyntaxException e) {
@@ -763,11 +800,88 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     	}
     	return resList;
     }
+    
+    @Override
+    public void skolemnizeSequential(String subject, String predicate, String template) {
+    	this.skolemnize(subject, predicate, template, SkolemnizationMethod.SEQUENTIAL_ID);
+    }
+    
+    @Override
+    public void skolemnizeUUID(String subject, String predicate, String template) {
+    	this.skolemnize(subject, predicate, template, SkolemnizationMethod.RANDOM_UUID);
+    }
+    
 
 	@Override
-	public void skolemnize(String newURI) {
-		for (GResource gres : this.listBlankObjects()) {
-			gres.rename(newURI + "/nested/" + UUID.randomUUID().toString());
+	public void skolemnize(String subject, String predicate, String template, SkolemnizationMethod method) {
+		subject = expand(subject);
+		predicate = expand(predicate);
+		Set<GResource> anonRes = new HashSet<>();
+		for (GStatement stmt : this.listAnonStatements(subject, predicate)) {
+			if (! anonRes.contains(stmt.getResourceValue())) {
+				anonRes.add(stmt.getResourceValue());
+			}
 		}
+		long i = 1;
+		for (GResource gres : anonRes) {
+			String randomId;
+			if (method.equals(SkolemnizationMethod.RANDOM_UUID)) {
+				randomId = UUID.randomUUID().toString();
+			}
+			else if (method.equals(SkolemnizationMethod.SEQUENTIAL_ID)) {
+				randomId = "" + i++;
+			}
+			else {
+				throw new RuntimeException("Unknown SkolemnizationMethod " + method.toString());
+			}
+			gres.rename(subject + "/" + template + "/" + randomId);
+		}
+	}
+	@Override
+	public Set<GStatement> listAnonStatements(String s, String p) {
+		return this.listAnonStatements(s, p, null);
+	}
+	@Override
+	public Set<GStatement> listAnonStatements(String s, String p, GResource o) {
+		Resource sS = null;
+		Property pP = null;
+		RDFNode oO = null;
+		if (s !=null)
+			sS = this.model.getResource(expand(s));
+		if (p != null)
+			pP = this.model.getProperty(expand(p));
+		if (o != null) {
+			// TODO how to get a Jena AnonId for a blank GResource?
+		}
+		StmtIterator iter = this.model.listStatements(sS, pP, oO);
+		Set<GStatement> matchingStmts = new HashSet<>();
+		while (iter.hasNext()) {
+			Statement jenaStmt = iter.next();
+			if (jenaStmt.getObject().isAnon()) {
+				GStatementImpl stmt = new GStatementImpl(this, jenaStmt);
+				matchingStmts.add(stmt);
+			}
+		}
+		return matchingStmts;
+	}
+	
+	@Override
+	public Set<GStatement> listResourceStatements(String s, String p, String o) {
+		Resource sS = null;
+		Property pP = null;
+		RDFNode oO = null;
+		if (s !=null)
+			sS = this.model.getResource(expand(s));
+		if (p != null)
+			pP = this.model.getProperty(expand(p));
+		if (o != null) 
+			oO = this.model.getResource(expand(s));
+		StmtIterator iter = this.model.listStatements(sS, pP, oO);
+		Set<GStatement> matchingStmts = new HashSet<>();
+		while (iter.hasNext()) {
+			GStatementImpl stmt = new GStatementImpl(this, iter.next());
+			matchingStmts.add(stmt);
+		}
+		return matchingStmts;
 	}
 }

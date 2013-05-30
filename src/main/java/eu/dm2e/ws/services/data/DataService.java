@@ -114,12 +114,23 @@ public class DataService extends AbstractRDFService {
         // TODO use Exception to return proper HTTP response if input can not be parsed as RDF
         // TODO BUG this fails if newlines aren't correctly transmitted
         log.severe(input.toString());
-        Grafeo g = new GrafeoImpl(input);
+        Grafeo g;
+        try {
+        	g = new GrafeoImpl(input);
+        } catch (Throwable t) {
+        	log.severe("Could not parse input.");
+        	return Response.status(400).entity("Bad RDF syntax.").build();
+        }
         log.severe(g.getTurtle());
         GResource blank = g.findTopBlank("omnom:WebServiceConfig");
-        log.severe(""+blank);
+        if (blank == null) {
+        	log.severe("Could not find a suitable top blank node.");
+        	return Response.status(400).entity("No suitable top blank node.").build();
+        }
+        log.severe("Top blank node: "+blank);
         String uri = uriInfo.getRequestUri() + "/" + new Date().getTime();
-        if (blank!=null) blank.rename(uri);
+        blank.rename(uri);
+        g.skolemnizeSequential(uri, "omnom:assignment", "assignment");
         g.addTriple(uri,"rdf:type","http://example.org/classes/Configuration");
         g.writeToEndpoint(NS.ENDPOINT_STATEMENTS , uri);
         return Response.created(URI.create(uri)).entity(getResponseEntity(g)).build();

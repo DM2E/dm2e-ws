@@ -235,11 +235,25 @@ public interface Grafeo {
 	Set<GResource> listResourceObjects();
 
 	/**
-	 * Replace blank nodes with URI-named resources.
+	 * Replace blank nodes that are objects of a triple with URIs.
 	 * 
 	 * @param newURI the string to base the naming on.
 	 */
-	void skolemnize(String newURI);
+	void skolemnize(String subject, String predicate, String template, SkolemnizationMethod method);
+	
+	/**
+	 * Replace blank nodes that are objects of a triple with URIs.
+	 * 
+	 * @param newURI the string to base the naming on.
+	 */
+	void skolemnizeUUID(String subject, String predicate, String template);
+	
+	/**
+	 * Replace blank nodes that are objects of a triple with URIs.
+	 * 
+	 * @param newURI the string to base the naming on.
+	 */
+	void skolemnizeSequential(String subject, String predicate, String template);
 
 	/**
 	 * List all blank nodes that appear as objects in triples in the graph.
@@ -247,6 +261,20 @@ public interface Grafeo {
 	 * @return A Set of GResource representing blank nodes
 	 */
 	Set<GResource> listBlankObjects();
+	
+	Set<GStatement> listResourceStatements(String s, String p, String o);
+	
+	Set<GStatement> listAnonStatements(String s, String p);
+
+	Set<GStatement> listAnonStatements(String s, String p, GResource o);
+
+	/**
+	 * Shorten the URI to a QName
+	 * 
+	 * @param uri The URI to shorten
+	 * @return Short form of the URI
+	 */
+	String shorten(String uri);
 	
 }
 
