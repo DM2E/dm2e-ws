@@ -13,7 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
-import java.net.URL;
 import java.util.logging.Logger;
 
 public class FileServiceITCase {
@@ -21,9 +20,8 @@ public class FileServiceITCase {
 	Logger log = Logger.getLogger(getClass().getName());
 
 	private Client client;
-	private static String URI_BASE = "http://localhost:9998";
 
-	@Before
+    @Before
 	public void setUp()
 			throws Exception {
 		client = new Client();
@@ -36,7 +34,8 @@ public class FileServiceITCase {
 	@Test
 	public void testFileOnly() {
 		// fail("Not yet implemented");
-		WebResource webResource = client.resource(URI_BASE + "/file");
+        String URI_BASE = "http://localhost:9998";
+        WebResource webResource = client.resource(URI_BASE + "/file");
 		FormDataMultiPart mp = new FormDataMultiPart();
 		FormDataBodyPart p = new FormDataBodyPart(FormDataContentDisposition
 				.name("file")
@@ -50,7 +49,7 @@ public class FileServiceITCase {
         for (GResource r:g.findByClass("omnom:File")) {
             log.info("RESPONSE: " + r.getUri());
             log.info("RESPONSE: " + r.getUri());
-            URL url = null;
+
                 // WebResource wr = client.resource("http://localhost:8000/test/sparql?query=select%20%3Fs%20%3Fp%20%3Fo%20where%20%7B%3Fs%20%3Fp%20%3Fo%7D");
                 WebResource wr = client.resource(r.getUri());
                 String resp = wr.get(String.class);

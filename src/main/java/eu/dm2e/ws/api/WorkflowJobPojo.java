@@ -13,7 +13,7 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 public class WorkflowJobPojo extends JobPojo {
 	
 	@RDFProperty("omnom:hasSlotAssignment")
-	private Set<ParameterSlotAssignmentPojo> slotAssignments = new HashSet<ParameterSlotAssignmentPojo>();
+	private Set<ParameterSlotAssignmentPojo> slotAssignments = new HashSet<>();
 	
     @RDFProperty("omnom:hasWebService")
     private WebservicePojo webService;

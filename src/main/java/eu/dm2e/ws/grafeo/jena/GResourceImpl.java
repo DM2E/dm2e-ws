@@ -14,11 +14,11 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 /**
- * Created with IntelliJ IDEA.
- * User: kai
- * Date: 3/2/13
- * Time: 2:45 PM
- * To change this template use File | Settings | File Templates.
+ * This file was created within the DM2E project.
+ * http://dm2e.eu
+ * http://github.com/dm2e
+ *
+ * Author: Kai Eckert, Konstantin Baierer
  */
 public class GResourceImpl extends GValueImpl implements GResource {
     private Resource resource;
@@ -81,7 +81,7 @@ public class GResourceImpl extends GValueImpl implements GResource {
     public Set<GValue> getAll(String uri) {
         log.info("Check for all values for property: " + uri);
         uri = grafeo.expand(uri);
-        Set<GValue> propSet = new HashSet<GValue>();
+        Set<GValue> propSet = new HashSet<>();
         StmtIterator st = resource.listProperties(getGrafeoImpl(grafeo).model.createProperty(uri));
         while (st.hasNext()) {
         	Statement stmt = st.next();

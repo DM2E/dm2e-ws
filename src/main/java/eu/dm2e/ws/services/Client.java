@@ -13,16 +13,16 @@ import java.io.File;
 import java.util.logging.Logger;
 
 /**
- * Created with IntelliJ IDEA.
- * User: kai
- * Date: 5/28/13
- * Time: 1:47 PM
- * To change this template use File | Settings | File Templates.
+ * This file was created within the DM2E project.
+ * http://dm2e.eu
+ * http://github.com/dm2e
+ *
+ * Author: Kai Eckert, Konstantin Baierer
  */
 public class Client {
 
-    com.sun.jersey.api.client.Client jerseyClient = new com.sun.jersey.api.client.Client();
-    Logger log = Logger.getLogger(getClass().getName());
+    private com.sun.jersey.api.client.Client jerseyClient = new com.sun.jersey.api.client.Client();
+    private Logger log = Logger.getLogger(getClass().getName());
 
     public String publishFile(File file, FilePojo meta) {
         WebResource fileResource = jerseyClient.resource(Config.getString("dm2e.service.file.base_uri"));

@@ -15,11 +15,11 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 /**
- * Created with IntelliJ IDEA.
- * User: kai
- * Date: 3/30/13
- * Time: 1:40 PM
- * To change this template use File | Settings | File Templates.
+ * This file was created within the DM2E project.
+ * http://dm2e.eu
+ * http://github.com/dm2e
+ *
+ * Author: Kai Eckert, Konstantin Baierer
  */
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/"})
 @RDFClass("omnom:Webservice")
@@ -32,10 +32,10 @@ public class WebservicePojo extends AbstractPersistentPojo<WebservicePojo> {
     private String id;
 
     @RDFProperty("omnom:inputParam")
-    private Set<ParameterPojo> inputParams = new HashSet<ParameterPojo>();
+    private Set<ParameterPojo> inputParams = new HashSet<>();
 
     @RDFProperty("omnom:outputParam")
-    private Set<ParameterPojo> outputParams = new HashSet<ParameterPojo>();
+    private Set<ParameterPojo> outputParams = new HashSet<>();
     
     /*********************
      * HELPER FUNCTIONS
@@ -60,7 +60,7 @@ public class WebservicePojo extends AbstractPersistentPojo<WebservicePojo> {
     
     public ParameterPojo getParamByName(String needle) {
     	Logger log = Logger.getLogger(getClass().getName());
-    	Set<ParameterPojo> allParams = new HashSet<ParameterPojo>();
+    	Set<ParameterPojo> allParams = new HashSet<>();
     	allParams.addAll(inputParams);
     	allParams.addAll(outputParams);
     	for (ParameterPojo param : allParams) {
@@ -85,9 +85,7 @@ public class WebservicePojo extends AbstractPersistentPojo<WebservicePojo> {
         WebservicePojo ws = g.getObjectMapper().getObject(WebservicePojo.class, uri);
         try {
             BeanUtils.copyProperties(this, ws);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("An exception occurred: " + e, e);
-        } catch (InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("An exception occurred: " + e, e);
         }
     }

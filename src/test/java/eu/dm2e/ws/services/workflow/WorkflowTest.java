@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 public class WorkflowTest {
 
-	Logger log = Logger.getLogger(getClass().getName());
+	private Logger log = Logger.getLogger(getClass().getName());
 
 	@Test
 	public void test() {

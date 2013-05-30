@@ -1,5 +1,12 @@
 package eu.dm2e.ws.grafeo.jena;
 
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import eu.dm2e.ws.grafeo.GLiteral;
+import eu.dm2e.ws.grafeo.GResource;
+import eu.dm2e.ws.grafeo.GValue;
+import eu.dm2e.ws.grafeo.Grafeo;
+
+import javax.xml.bind.DatatypeConverter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Calendar;
@@ -7,21 +14,12 @@ import java.util.Date;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.xml.bind.DatatypeConverter;
-
-import com.hp.hpl.jena.rdf.model.RDFNode;
-
-import eu.dm2e.ws.grafeo.GLiteral;
-import eu.dm2e.ws.grafeo.GResource;
-import eu.dm2e.ws.grafeo.GValue;
-import eu.dm2e.ws.grafeo.Grafeo;
-
 /**
- * Created with IntelliJ IDEA.
- * User: kai
- * Date: 3/4/13
- * Time: 12:42 AM
- * To change this template use File | Settings | File Templates.
+ * This file was created within the DM2E project.
+ * http://dm2e.eu
+ * http://github.com/dm2e
+ *
+ * Author: Kai Eckert, Konstantin Baierer
  */
 public abstract class GValueImpl extends JenaImpl implements GValue {
     protected RDFNode value;
@@ -93,7 +91,7 @@ public abstract class GValueImpl extends JenaImpl implements GValue {
                 result = (T) new Double(Double.parseDouble(toParse));
             } else if (T.equals(boolean.class) || T.equals(Boolean.class)) {
                 log.info("Found boolean.");
-                result = (T) new Boolean(Boolean.parseBoolean(toParse));
+                result = (T) Boolean.valueOf(Boolean.parseBoolean(toParse));
             } else if (T.equals(String.class)) {
                 log.info("Found String.");
                 result = (T) toParse;

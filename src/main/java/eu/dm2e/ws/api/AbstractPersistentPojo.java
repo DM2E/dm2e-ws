@@ -1,22 +1,20 @@
 package eu.dm2e.ws.api;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.UUID;
-import java.util.logging.Logger;
-
-import org.apache.commons.beanutils.BeanUtils;
-
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import org.apache.commons.beanutils.BeanUtils;
+
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.UUID;
+import java.util.logging.Logger;
 
 public abstract class AbstractPersistentPojo<T> {
 	
@@ -42,14 +40,13 @@ public abstract class AbstractPersistentPojo<T> {
 	public T constructFromRdfString(String rdfString, String id) {
 		Grafeo g = new GrafeoImpl();
 		g.readHeuristically(rdfString);
-		T theThing = g.getObjectMapper().getObject(this.getClass(), id);
-		return theThing;
+		return g.getObjectMapper().getObject(this.getClass(), id);
 	}
 	public T constructFromRdfString(String rdfString) {
 		Grafeo g = new GrafeoImpl();
 		g.readHeuristically(rdfString);
 		String rdfType = this.getClass().getAnnotation(RDFClass.class).value();
-		String prefix = "http://FOOBAR/";
+		String prefix;
 		try { 
 			prefix = this.getClass().getAnnotation(RDFInstancePrefix.class).value();
 		} catch (NullPointerException e) {
@@ -59,7 +56,7 @@ public abstract class AbstractPersistentPojo<T> {
 		GResource topBlank = g.findTopBlank(rdfType);
 		T theThing;
 		if (null != topBlank) {
-			String newURI = prefix + UUID.randomUUID().toString();;
+			String newURI = prefix + UUID.randomUUID().toString();
 			topBlank.rename(newURI);
 			theThing = g.getObjectMapper().getObject(this.getClass(), newURI);
 		}
@@ -94,9 +91,7 @@ public abstract class AbstractPersistentPojo<T> {
 		T theNewPojo = g.getObjectMapper().getObject(this.getClass(), this.getId());
         try {
             BeanUtils.copyProperties(this, theNewPojo);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("An exception occurred: " + e, e);
-        } catch (InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("An exception occurred: " + e, e);
         }
     }

@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 public class WebservicePojoTest {
 	
-	Logger log = Logger.getLogger(getClass().getName());
+	private Logger log = Logger.getLogger(getClass().getName());
 	
 	WebservicePojo ws;
 	ParameterPojo xsltInParam

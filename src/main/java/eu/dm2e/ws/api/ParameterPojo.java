@@ -6,11 +6,11 @@ import eu.dm2e.ws.grafeo.annotations.RDFId;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
 /**
- * Created with IntelliJ IDEA.
- * User: kai
- * Date: 3/31/13
- * Time: 5:08 PM
- * To change this template use File | Settings | File Templates.
+ * This file was created within the DM2E project.
+ * http://dm2e.eu
+ * http://github.com/dm2e
+ *
+ * Author: Kai Eckert, Konstantin Baierer
  */
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/",
 			 "skos", "http://www.w3.org/2004/02/skos/core#",

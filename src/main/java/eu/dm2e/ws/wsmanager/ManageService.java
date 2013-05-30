@@ -1,6 +1,5 @@
 package eu.dm2e.ws.wsmanager;
 
-import com.hp.hpl.jena.sparql.core.DatasetGraph;
 import com.hp.hpl.jena.sparql.core.DatasetGraphFactory;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.container.grizzly2.GrizzlyWebContainerFactory;
@@ -19,18 +18,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: kai
- * Date: 5/27/13
- * Time: 9:01 AM
- * To change this template use File | Settings | File Templates.
+ * This file was created within the DM2E project.
+ * http://dm2e.eu
+ * http://github.com/dm2e
+ *
+ * Author: Kai Eckert, Konstantin Baierer
  */
 @Path("/manage")
 public class ManageService {
 
-    static HttpServer httpServer;
-    static HttpServer manageServer;
-    static SPARQLServer sparqlServer;
+    private static HttpServer httpServer;
+    private static HttpServer manageServer;
+    private static SPARQLServer sparqlServer;
 
     @GET
     @Path("/stop")
@@ -46,8 +45,8 @@ public class ManageService {
         return UriBuilder.fromUri("http://localhost:9998/").build();
     }
     public static void startServer() {
-        final Map<String, String> initParams = new HashMap<String, String>();
-        final Map<String, String> initParams2 = new HashMap<String, String>();
+        final Map<String, String> initParams = new HashMap<>();
+        final Map<String, String> initParams2 = new HashMap<>();
 
         initParams.put("com.sun.jersey.config.property.packages", "eu.dm2e.ws.services");
         initParams2.put("com.sun.jersey.config.property.packages", "eu.dm2e.ws.wsmanager");
@@ -73,8 +72,7 @@ public class ManageService {
         config.services.add(ds);
         config.pages = "test";
         ds.allowDatasetUpdate = true;
-        DatasetGraph dsg = DatasetGraphFactory.createMem();
-        ds.dataset = dsg;
+        ds.dataset = DatasetGraphFactory.createMem();
         ds.updateEP.add("update");
         ds.queryEP.add("sparql");
         SPARQLServer server = new SPARQLServer(config);

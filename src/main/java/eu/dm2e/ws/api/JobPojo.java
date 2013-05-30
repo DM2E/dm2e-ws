@@ -35,10 +35,10 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
     private WebserviceConfigPojo webserviceConfig;
     
     @RDFProperty("omnom:hasLogEntry")
-    private Set<LogEntryPojo> logEntries = new HashSet<LogEntryPojo>();
+    private Set<LogEntryPojo> logEntries = new HashSet<>();
     
     @RDFProperty("omnom:hasOutputParam")
-    private Set<ParameterAssignmentPojo> outputParameters= new HashSet<ParameterAssignmentPojo>();
+    private Set<ParameterAssignmentPojo> outputParameters= new HashSet<>();
     
     
     /**
@@ -73,7 +73,7 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
     }
     
     public Set<LogEntryPojo> getLogEntries(LogLevel minLevel, LogLevel maxLevel) {
-		Set<LogEntryPojo> restrictedLogEntries = new HashSet<LogEntryPojo>();
+		Set<LogEntryPojo> restrictedLogEntries = new HashSet<>();
 		if (minLevel == null) {
 			minLevel = LogLevel.TRACE;
 		}
@@ -106,7 +106,7 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
     	return getLogEntries(minLevelStr, null);
     }
     public List<LogEntryPojo> getLogEntriesSortedByDate(LogLevel minLevel, LogLevel maxLevel) {
-    	List<LogEntryPojo> logList = new ArrayList<LogEntryPojo>(this.getLogEntries(minLevel, maxLevel));
+    	List<LogEntryPojo> logList = new ArrayList<>(this.getLogEntries(minLevel, maxLevel));
     	Collections.sort(logList, new Comparator<LogEntryPojo>() {
 			@Override
 			public int compare(LogEntryPojo l1, LogEntryPojo l2) {
@@ -170,7 +170,6 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
                     return ass;
                 }
             } catch (NullPointerException e) {
-                continue;
             }
         }
         return null;

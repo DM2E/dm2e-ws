@@ -71,9 +71,7 @@ public class ObjectMapper {
             } catch (NoSuchMethodException e) {
                 log.severe("No getter/setters for " + field.getName() + " property: " + e);
                 continue;
-            } catch (InvocationTargetException e) {
-                throw new RuntimeException("An exception occurred: " + e, e);
-            } catch (IllegalAccessException e) {
+            } catch (InvocationTargetException | IllegalAccessException e) {
                 throw new RuntimeException("An exception occurred: " + e, e);
             }
             if (null == value) {
@@ -136,7 +134,7 @@ public class ObjectMapper {
     /**
      * The object cache to avoid circles in the object hierarchy.
      */
-    private Map<String,Object> objectCache = new HashMap<String, Object>();
+    private Map<String,Object> objectCache = new HashMap<>();
 
     private <T> T getSingleObject(Class T, GResource res, String uri) {
 
@@ -216,7 +214,7 @@ public class ObjectMapper {
 
                     ArrayList propArray = new ArrayList();
                     GValue first = res.get("co:first");
-                    GValue nextValue = first;
+                    GValue nextValue;
                     for (nextValue = first; nextValue != null ; nextValue = nextValue.get("co:next")) {
                         GResource nextItemRes = nextValue.resource();
                         GValue itemContentValue = nextItemRes.get("co:itemContent");
@@ -257,11 +255,7 @@ public class ObjectMapper {
                     String id = uri.replace(prefix, "");
                     Object o = grafeo.literal(id).getTypedValue(field.getType());
                     PropertyUtils.setProperty(result, field.getName(), o);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException("An exception occurred: " + e, e);
-                } catch (InvocationTargetException e) {
-                    throw new RuntimeException("An exception occurred: " + e, e);
-                } catch (NoSuchMethodException e) {
+                } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                     throw new RuntimeException("An exception occurred: " + e, e);
                 }
             }
@@ -306,10 +300,8 @@ public class ObjectMapper {
         }  else {
             uri = grafeo.expand(res.getUri());
         }
-        T result = null;
         log.info("Class: " +T);
-
-        result =  getSingleObject(T, res, uri);
+        T result = getSingleObject(T, res, uri);
         setAnnotatedNamespaces(result);
         return result;
     }
@@ -329,11 +321,7 @@ public class ObjectMapper {
                     Object id = PropertyUtils.getProperty(object, field.getName());
                     if (null == id || "0".equals(id.toString()) ) return grafeo.createBlank(object.toString());
                     uri = field.getAnnotation(RDFId.class).prefix() + id.toString();
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException("An exception occurred: " + e, e);
-                } catch (NoSuchMethodException e) {
-                    throw new RuntimeException("An exception occurred: " + e, e);
-                } catch (InvocationTargetException e) {
+                } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                     throw new RuntimeException("An exception occurred: " + e, e);
                 }
             }

@@ -14,7 +14,7 @@ public class ListPojo {
 	private String idURI;
 	
 	@RDFProperty("omnom:some_number")
-	private List<IntegerPojo> integerResourceList = new ArrayList<IntegerPojo>();
+	private List<IntegerPojo> integerResourceList = new ArrayList<>();
 	
 	public String getIdURI() { return idURI; }
 	public void setIdURI(String idURI) { this.idURI = idURI; }

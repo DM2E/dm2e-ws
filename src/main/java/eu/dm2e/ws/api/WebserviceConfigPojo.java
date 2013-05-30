@@ -15,7 +15,7 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
 	private String id;
 	
 	@RDFProperty("omnom:assignment")
-	private Set<ParameterAssignmentPojo> parameterAssignments = new HashSet<ParameterAssignmentPojo>();
+	private Set<ParameterAssignmentPojo> parameterAssignments = new HashSet<>();
 	
 	@RDFProperty("omnom:hasWebService")
 	private WebservicePojo webservice;
@@ -36,8 +36,7 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
                     return ass;
 				}
 			} catch (NullPointerException e) {
-				continue;
-			}
+            }
 		}
 		return null;
 	}

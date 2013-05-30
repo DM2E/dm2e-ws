@@ -24,16 +24,13 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.logging.Logger;
 
-/**
- * Created with IntelliJ IDEA. User: kai Date: 3/2/13 Time: 2:27 PM To change
- * this template use File | Settings | File Templates.
- */
+
 
 public class GrafeoImpl extends JenaImpl implements Grafeo {
 
     private Logger log = Logger.getLogger(getClass().getName());
     protected Model model;
-    protected Map<String, String> namespaces = new HashMap<String, String>();
+    protected Map<String, String> namespaces = new HashMap<>();
     protected ObjectMapper objectMapper;
 
     public static String SPARQL_CONSTRUCT_EVERYTHING = "CONSTRUCT { ?s ?p ?o } WHERE { { GRAPH ?g { ?s ?p ?o } } UNION { ?s ?p ?o } }";
@@ -239,11 +236,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
                     Object id = PropertyUtils.getProperty(object, field.getName());
                     if (null == id || "0".equals(id.toString()) ) return new GResourceImpl(this, model.createResource(AnonId.create(object.toString())));
                     uri = field.getAnnotation(RDFId.class).prefix() + id.toString();
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException("An exception occurred: " + e, e);
-                } catch (NoSuchMethodException e) {
-                    throw new RuntimeException("An exception occurred: " + e, e);
-                } catch (InvocationTargetException e) {
+                } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                     throw new RuntimeException("An exception occurred: " + e, e);
                 }
             }
@@ -297,7 +290,6 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         GStatementImpl statement;
         String objectExp = expand(object);
         try {
-            @SuppressWarnings("unused")
             URI testUri = new URI(objectExp);
             GResourceImpl or = new GResourceImpl(this, object);
             statement = new GStatementImpl(this, s, p, or);
@@ -373,7 +365,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 
     @Override
     public String escapeLiteral(String literal) {
-        return new StringBuilder("\"").append(literal).append("\"").toString();
+        return "\"" + literal + "\"";
     }
 
     @Override
@@ -388,7 +380,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     public String escapeResource(String uri) {
         if (isEscaped(uri))
             return uri;
-        return new StringBuilder("<").append(uri).append(">").toString();
+        return "<" + uri + ">";
     }
 
     @Override
@@ -564,9 +556,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     @Override
     public boolean containsResource(String g) {
         String gUri = expand(g);
-        if (model.containsResource(model.getResource(gUri)))
-            return true;
-        return false;
+        return model.containsResource(model.getResource(gUri));
     }
 
     public boolean containsResource(URI graphURI) {
@@ -643,13 +633,12 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     
     @Override
     public Set<GResource> listResourceObjects() {
-    	Set<GResource> resList = new HashSet<GResource>();
+    	Set<GResource> resList = new HashSet<>();
     	NodeIterator iter = this.getModel().listObjects();
     	while (iter.hasNext()) {
     		RDFNode node = iter.next();
     		if (node.isURIResource()) {
-    			GResource gres = this.resource(node.asResource().getURI());
-    			resList.add(gres);
+    			resList.add(this.resource(node.asResource().getURI()));
     		}
     	}
     	return resList;

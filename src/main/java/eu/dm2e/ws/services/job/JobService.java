@@ -1,22 +1,5 @@
 package eu.dm2e.ws.services.job;
 
-import java.io.File;
-import java.net.URI;
-import java.util.Date;
-import java.util.Set;
-import java.util.logging.Logger;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.JobPojo;
@@ -28,6 +11,15 @@ import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.model.JobStatusConstants;
 import eu.dm2e.ws.model.LogLevel;
 import eu.dm2e.ws.services.AbstractRDFService;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.File;
+import java.net.URI;
+import java.util.Date;
+import java.util.Set;
+import java.util.logging.Logger;
 
 //import java.util.ArrayList;
 
@@ -127,12 +119,12 @@ public class JobService extends AbstractRDFService {
 	@Consumes({ DM2E_MediaType.APPLICATION_RDF_TRIPLES,
 				DM2E_MediaType.APPLICATION_RDF_XML,
 				DM2E_MediaType.TEXT_RDF_N3, 
-				DM2E_MediaType.TEXT_TURTLE, })
+				DM2E_MediaType.TEXT_TURTLE})
 	public Response addLogEntryAsRDF(String logRdfStr)  {
 	//@formatter:on
 
 		String resourceUriStr = getRequestUriWithoutQuery().toString().replaceAll("/log$", "");
-		JobPojo jobPojo = new JobPojo();;
+		JobPojo jobPojo = new JobPojo();
 		jobPojo.readFromEndPointById(resourceUriStr);
 		LogEntryPojo logEntry = null;
 		

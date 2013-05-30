@@ -1,11 +1,11 @@
 package eu.dm2e.ws.grafeo.test;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFId;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @RDFClass("omnom:SetPojoTest")
 public class SetPojo {
@@ -14,7 +14,7 @@ public class SetPojo {
 	private String idURI;
 	
 	@RDFProperty("omnom:some_number")
-	private Set<Integer> literalSet = new HashSet<Integer>();
+	private Set<Integer> literalSet = new HashSet<>();
 	
 	public String getIdURI() { return idURI; }
 	public void setIdURI(String idURI) { this.idURI = idURI; }

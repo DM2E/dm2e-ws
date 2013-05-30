@@ -7,11 +7,11 @@ import eu.dm2e.ws.services.AbstractTransformationService;
 import javax.ws.rs.Path;
 
 /**
- * Created with IntelliJ IDEA.
- * User: kai
- * Date: 5/27/13
- * Time: 12:58 PM
- * To change this template use File | Settings | File Templates.
+ * This file was created within the DM2E project.
+ * http://dm2e.eu
+ * http://github.com/dm2e
+ *
+ * Author: Kai Eckert, Konstantin Baierer
  */
 @Path("/service/demo")
 public class DemoService extends AbstractTransformationService {

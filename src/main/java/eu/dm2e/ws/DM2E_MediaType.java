@@ -18,7 +18,8 @@ public class DM2E_MediaType {
 	 * 
 	 * @see <http://www.w3.org/2011/rdf-wg/wiki/N-Triples-Format#Media_type>
 	 */
-	/**
+	/*
+     *
 	 * This is for copy/pasting (since Annotations don't support arrays, sigh
 	@Consumes({
 		DM2E_MediaType.TEXT_TURTLE,
@@ -44,15 +45,15 @@ public class DM2E_MediaType {
 		APPLICATION_RDF_XML
 	};
 	public final static Set<String> SET_OF_RDF_TYPES = Collections
-			.unmodifiableSet(new HashSet<String>(Arrays.asList(rdfMediaTypes)));
+			.unmodifiableSet(new HashSet<>(Arrays.asList(rdfMediaTypes)));
 	
-	public static boolean isRdfRequest(HttpHeaders headers) {
-		boolean rdfTrueFalse = false;
-		if (null != headers.getMediaType()
+	public static boolean noRdfRequest(HttpHeaders headers) {
+		boolean isRDF = false;
+        if (null != headers.getMediaType()
 				&& SET_OF_RDF_TYPES.contains(headers.getMediaType().toString())) {
-			rdfTrueFalse = true;
+			isRDF = true;
 		}
-		return rdfTrueFalse;
+		return !isRDF;
 	}
 	
 	public static boolean expectsRdfResponse(HttpHeaders headers) {

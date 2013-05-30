@@ -27,7 +27,7 @@ import java.util.logging.Logger;
  */
 @Path("/data")
 public class DataService extends AbstractRDFService {
-    Logger log = Logger.getLogger(getClass().getName());
+    private Logger log = Logger.getLogger(getClass().getName());
 
     public DataService() {
         ParameterPojo p1 = new ParameterPojo();

@@ -87,11 +87,12 @@ public class FileService extends AbstractRDFService {
 		// store the file
 		// TODO think about where to store
 		MessageDigest md = null;
+        byte[] mdBytes = null;
 		try {
 			md = MessageDigest.getInstance("MD5");
+            mdBytes = md.digest();
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException("MD5 algorithm not available: " + e, e);
 		}
 
 		DigestInputStream fileDigestInStream = new DigestInputStream(fileInStream, md);
@@ -108,11 +109,11 @@ public class FileService extends AbstractRDFService {
 		// @formatter:on
 
 		// calculate and format checksum
-		byte[] mdBytes = md.digest();
+
 		StringBuilder mdStrBuilder = new StringBuilder();
-		for (int i = 0; i < mdBytes.length; i++) {
-			mdStrBuilder.append(Integer.toString((mdBytes[i] & 0xff) + 0x100, 16).substring(1));
-		}
+        for (byte mdByte : mdBytes) {
+            mdStrBuilder.append(Integer.toString((mdByte & 0xff) + 0x100, 16).substring(1));
+        }
 		String mdStr = mdStrBuilder.toString();
 
 		// TODO add right predicates here
@@ -589,7 +590,7 @@ public class FileService extends AbstractRDFService {
 			InputStream bodyInputStream) {
 		
 		// Check if the data is of a RDF content type
-		if (!DM2E_MediaType.isRdfRequest(headers)) {
+		if (DM2E_MediaType.noRdfRequest(headers)) {
 			return throwServiceError("The request must be of a RDF type", 406);
 		}
 		

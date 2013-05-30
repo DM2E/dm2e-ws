@@ -19,10 +19,10 @@ public class WorkflowPojo extends WebservicePojo {
     private String id;
 	
     @RDFProperty("omnom:hasPosition")
-	private List<WorkflowPositionPojo> positions = new ArrayList<WorkflowPositionPojo>();
+	private List<WorkflowPositionPojo> positions = new ArrayList<>();
     
     @RDFProperty("omnom:hasParameterSlot")
-    private Set<ParameterSlotPojo> parameterSlots = new HashSet<ParameterSlotPojo>();
+    private Set<ParameterSlotPojo> parameterSlots = new HashSet<>();
     
     // TODO this is not perfect, there could be several slots for the same position and the same parameter
     public ParameterSlotPojo getSlotForPositionIndexAndParam(int index, ParameterPojo param) {

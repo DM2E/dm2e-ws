@@ -21,15 +21,15 @@ public class FilePojoTest {
 		fileMetaStr.append("@prefix omnom: <http://onto.dm2e.eu/omnom/>. \n");
 		fileMetaStr.append("@prefix dct: <http://purl.org/dc/terms/>. \n");
 		fileMetaStr.append("@prefix xsd: <http://www.w3.org/2001/XMLSchema#>. \n");
-		fileMetaStr.append("<" + fileUri + "> omnom:fileLocation \"" + fileLocationShouldBe + "\". \n");
-		fileMetaStr.append("<" + fileUri + "> omnom:fileRetrievalURI \"" + fileRetrievalURIShouldBe + "\". \n");
-		fileMetaStr.append("<" + fileUri + "> dct:extent \"123456\". \n");
+		fileMetaStr.append("<").append(fileUri).append("> omnom:fileLocation \"").append(fileLocationShouldBe).append("\". \n");
+		fileMetaStr.append("<").append(fileUri).append("> omnom:fileRetrievalURI \"").append(fileRetrievalURIShouldBe).append("\". \n");
+		fileMetaStr.append("<").append(fileUri).append("> dct:extent \"123456\". \n");
 		g.readHeuristically(fileMetaStr.toString());
 		FilePojo fp = g.getObjectMapper().getObject(FilePojo.class, g.resource(fileUri));
 		assertEquals(fileUri, fp.getId());
 		assertEquals(123456L, fp.getFileSize());
 		assertEquals(fileLocationShouldBe, fp.getFileLocation());
-		assertEquals(fileRetrievalURIShouldBe, fp.getFileRetrievalURI());
+		assertEquals(fileRetrievalURIShouldBe, fp.getFileRetrievalURI().toString());
 //		log.info(g.getNTriples());
 //		fail("Not yet implemented");
 	}

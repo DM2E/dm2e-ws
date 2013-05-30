@@ -46,7 +46,7 @@ public abstract class AbstractRDFService {
     protected WebservicePojo webservicePojo = new WebservicePojo();
 
 	List<Variant> supportedVariants;
-	Map<MediaType, String> mediaType2Language = new HashMap<MediaType, String>();
+	Map<MediaType, String> mediaType2Language = new HashMap<>();
 	@Context
 	Request request;
 	@Context
@@ -54,25 +54,25 @@ public abstract class AbstractRDFService {
 	@Context 
 	protected HttpHeaders headers;
 	
-	public Response throwServiceError(String msg, int status) {
+	protected Response throwServiceError(String msg, int status) {
 		return Response.status(status).entity(msg).build();
 	}
-	public Response throwServiceError(String msg) {
+	protected Response throwServiceError(String msg) {
 		return throwServiceError(msg, 400);
 	}
-	public Response throwServiceError(Exception e) {
+	protected Response throwServiceError(Exception e) {
 		return throwServiceError(e.toString() + "\n" + ExceptionUtils.getStackTrace(e), 400);
 	}
 	
 	protected URI getUriForString(String uriStr) throws URISyntaxException {
 		if (null == uriStr)
-			throw new URISyntaxException("", "Must provide 'uri' query parameterk.");
+			throw new URISyntaxException("", "Must provide 'uri' query parameter.");
 		
 		// this might throw a URISyntaxException as well
 		URI uri = new URI(uriStr);
 		
 		// stricter validation than just throwing an URISyntaxException (Sesame is picky about URLs)
-		if (! validateUri(uriStr)) 
+		if (notValid(uriStr))
 			throw new URISyntaxException(uriStr, "'uri' parameter is not a valid URI.");
 		
 		return uri;
@@ -166,8 +166,7 @@ public abstract class AbstractRDFService {
 		return getGrafeoForUriWithContentNegotiation(getUriForString(uriStr));
 	}
 	protected Grafeo getGrafeoForUriWithContentNegotiation(URI uri) throws IOException {
-		URL url = null;
-		url = new URL(uri.toString());
+		URL url = new URL(uri.toString());
 		InputStream in = null;
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
 		con.setRequestMethod("GET");
@@ -229,13 +228,12 @@ public abstract class AbstractRDFService {
 
 	}
 
-	protected static boolean validateUri(String uri) {
-		return urlValidator.isValid(uri);
+	protected static boolean notValid(String uri) {
+		return !urlValidator.isValid(uri);
 	}
 	
 	protected String createUniqueStr() {
-		String uniqueStr = new Date().getTime() + "_" + UUID.randomUUID().toString();
-		return uniqueStr;
+		return new Date().getTime() + "_" + UUID.randomUUID().toString();
 	}
 	
 
@@ -255,49 +253,6 @@ public abstract class AbstractRDFService {
 			}
 		}
 
-
-//		GrafeoImpl schemaGrafeo = this.getServiceDescriptionGrafeo();
-		// TODO this is the right way to to do it but Jena won't
-		// croak on cardinality restrictions being broken
-//		Model mergedModel = schemaGrafeo.getModel().union(inputGrafeo.getModel());
-//		
-////		inputGrafeo.getModel().union()
-//		kkk
-//		OntModelSpec mySpec = OntModelSpec.OWL_DL_MEM_RULE_INF;
-//		Reasoner reasoner = ReasonerRegistry.getOWLReasoner();
-//		mySpec.setReasoner(reasoner);
-//		reasoner.bindSchema(schemaGrafeo.getModel());
-////		InfModel reasoningModel = ModelFactory.createInfModel(reasoner, inputGrafeo.getModel());
-//		OntModel ontModel = ModelFactory.createOntologyModel(mySpec, mergedModel);
-//		
-//		ValidityReport validity = ontModel.validate();
-//		
-//		Logger log = Logger.getLogger(getClass().getName());
-//		if (validity.isValid()) {
-//			log.warning("w00t it's valid!!!");
-//		}
-//		else {
-//	        for (Iterator<Report> i = validity.getReports(); i.hasNext(); ) {
-//	            Report report = i.next();
-//	            log.severe(" - " + report);
-//	        }
-//		}
-		
-//		Model schemaModel = schemaGrafeo.getModel();
-//		
-//		// Validate requiredParam
-//		Property requiredProp = schemaModel.createProperty(NS.OMNOM + "requiredParam");
-//		NodeIterator iter = schemaModel.listObjectsOfProperty(requiredProp); 
-//		while (iter.hasNext()) {
-//			// this must be easier than stringifying all the time...
-//			RDFNode thisNode = iter.next();
-//			Property thisProp = schemaModel.createProperty(thisNode.toString());
-//			if (! inputGrafeo.getModel().contains(null, thisProp)) {
-//				throw new Exception("Missing required param " + thisProp.toString());
-//			}
-//		}
-		
-		// todo do range checks so that services accept certain types
 	}
 
     protected URI appendPath(URI uri, String path) {
@@ -334,18 +289,17 @@ public abstract class AbstractRDFService {
 		@Override
 		public void write(OutputStream output) throws IOException,
 				WebApplicationException {
-			log.fine("Mediatype: " + this.mediaType);
+			log.fine("Media type: " + this.mediaType);
 			model.write(output, mediaType2Language.get(this.mediaType));
 		}
 	}
 
-	protected WebserviceConfigPojo resolveWebSerivceConfigPojo(String configURI) {
+	protected WebserviceConfigPojo resolveWebServiceConfigPojo(String configURI) {
 		// TODO Auto-generated method stub
 		Grafeo g = new GrafeoImpl();
 		g.readFromEndpoint(Config.getString("dm2e.ws.sparql_endpoint_statements"), configURI);
 		try {
-			WebserviceConfigPojo wsConf = g.getObjectMapper().getObject(WebserviceConfigPojo.class, configURI);
-			return wsConf;
+			return g.getObjectMapper().getObject(WebserviceConfigPojo.class, configURI);
 		} catch (Exception e) {
 			log.warning(e.toString());
 		}

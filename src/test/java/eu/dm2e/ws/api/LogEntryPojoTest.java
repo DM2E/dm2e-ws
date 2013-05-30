@@ -1,18 +1,18 @@
 package eu.dm2e.ws.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.util.Date;
-
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Date;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 public class LogEntryPojoTest {
-	String id = "http://log.foo/bar/1234",
-			level = "DEBUG";
-	Date timestamp = new Date();
-	String asCanonicalNTriples = "<http://log.foo/bar/1234> <http://onto.dm2e.eu/omnom/hasLogLevel> \"DEBUG\"^^<http://www.w3.org/2001/XMLSchema#string> ."
+	private String id = "http://log.foo/bar/1234";
+    private String level = "DEBUG";
+	private Date timestamp = new Date();
+	private String asCanonicalNTriples = "<http://log.foo/bar/1234> <http://onto.dm2e.eu/omnom/hasLogLevel> \"DEBUG\"^^<http://www.w3.org/2001/XMLSchema#string> ."
 		 + "\n<http://log.foo/bar/1234> <http://purl.org/dc/elements/1.1/date> \"1913-02-10T19:10:20Z\"^^<http://www.w3.org/2001/XMLSchema#dateTime> ."
 		 + "\n<http://log.foo/bar/1234> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://onto.dm2e.eu/omnom/LogEntry> .";
 	
@@ -20,7 +20,7 @@ public class LogEntryPojoTest {
 	@Before
 	public void setUp(){
 		timestamp.setYear(13);
-		timestamp.setMonth(01);
+		timestamp.setMonth(1);
 		timestamp.setDate(10);
 		timestamp.setHours(20);
 		timestamp.setMinutes(10);

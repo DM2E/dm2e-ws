@@ -6,11 +6,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created with IntelliJ IDEA.
- * User: kai
- * Date: 3/30/13
- * Time: 5:35 PM
- * To change this template use File | Settings | File Templates.
+ * This file was created within the DM2E project.
+ * http://dm2e.eu
+ * http://github.com/dm2e
+ *
+ * Author: Kai Eckert, Konstantin Baierer
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

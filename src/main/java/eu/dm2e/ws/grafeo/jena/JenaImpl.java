@@ -6,13 +6,13 @@ import eu.dm2e.ws.grafeo.GStatement;
 import eu.dm2e.ws.grafeo.Grafeo;
 
 /**
- * Created with IntelliJ IDEA.
- * User: kai
- * Date: 3/5/13
- * Time: 11:37 AM
- * To change this template use File | Settings | File Templates.
+ * This file was created within the DM2E project.
+ * http://dm2e.eu
+ * http://github.com/dm2e
+ *
+ * Author: Kai Eckert, Konstantin Baierer
  */
-public class JenaImpl {
+class JenaImpl {
 
     GrafeoImpl getGrafeoImpl(Grafeo grafeo) {
         assert grafeo instanceof GrafeoImpl;

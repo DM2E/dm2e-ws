@@ -1,11 +1,11 @@
 package eu.dm2e.ws.grafeo;
 
 /**
- * Created with IntelliJ IDEA.
- * User: kai
- * Date: 3/5/13
- * Time: 11:22 AM
- * To change this template use File | Settings | File Templates.
+ * This file was created within the DM2E project.
+ * http://dm2e.eu
+ * http://github.com/dm2e
+ *
+ * Author: Kai Eckert, Konstantin Baierer
  */
 public interface GResource extends GValue {
     void rename(String uri);

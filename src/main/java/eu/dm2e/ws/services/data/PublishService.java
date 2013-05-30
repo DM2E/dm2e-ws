@@ -16,15 +16,15 @@ import java.util.Date;
 import java.util.logging.Logger;
 
 /**
- * Created with IntelliJ IDEA.
- * User: kai
- * Date: 3/5/13
- * Time: 3:47 PM
- * To change this template use File | Settings | File Templates.
+ * This file was created within the DM2E project.
+ * http://dm2e.eu
+ * http://github.com/dm2e
+ *
+ * Author: Kai Eckert, Konstantin Baierer
  */
 @Path("/published")
 public class PublishService extends AbstractRDFService {
-    Logger log = Logger.getLogger(getClass().getName());
+    private Logger log = Logger.getLogger(getClass().getName());
     
 	@Override
 	public WebservicePojo getWebServicePojo() {

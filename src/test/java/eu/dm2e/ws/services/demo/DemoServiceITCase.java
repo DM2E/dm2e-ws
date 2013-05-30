@@ -17,18 +17,17 @@ import java.net.URI;
 import java.util.logging.Logger;
 
 /**
- * Created with IntelliJ IDEA.
- * User: kai
- * Date: 5/27/13
- * Time: 1:41 PM
- * To change this template use File | Settings | File Templates.
+ * This file was created within the DM2E project.
+ * http://dm2e.eu
+ * http://github.com/dm2e
+ *
+ * Author: Kai Eckert, Konstantin Baierer
  */
 public class DemoServiceITCase {
 
     Logger log = Logger.getLogger(getClass().getName());
 
     private Client client;
-    private static String URI_BASE = "http://localhost:9998";
 
     @Before
     public void setUp()
@@ -43,6 +42,7 @@ public class DemoServiceITCase {
     @Test
     public void testDemo() {
         // fail("Not yet implemented");
+        String URI_BASE = "http://localhost:9998";
         WebResource webResource = client.resource(URI_BASE + "/service/demo");
         WebserviceConfigPojo config = new WebserviceConfigPojo();
         WebservicePojo ws = new WebservicePojo(webResource.getURI());

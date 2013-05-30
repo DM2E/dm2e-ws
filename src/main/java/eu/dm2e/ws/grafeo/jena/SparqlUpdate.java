@@ -1,15 +1,15 @@
 package eu.dm2e.ws.grafeo.jena;
 
-import java.util.logging.Logger;
-
 import com.hp.hpl.jena.update.UpdateExecutionFactory;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateProcessor;
 import com.hp.hpl.jena.update.UpdateRequest;
 
+import java.util.logging.Logger;
+
 public class SparqlUpdate {
 	
-	Logger log = Logger.getLogger(getClass().getName());
+	private Logger log = Logger.getLogger(getClass().getName());
 	
 	private String graph, endpoint, deleteClause, insertClause, whereClause;
 

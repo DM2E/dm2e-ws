@@ -4,11 +4,11 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import eu.dm2e.ws.grafeo.*;
 
 /**
- * Created with IntelliJ IDEA.
- * User: kai
- * Date: 3/2/13
- * Time: 4:28 PM
- * To change this template use File | Settings | File Templates.
+ * This file was created within the DM2E project.
+ * http://dm2e.eu
+ * http://github.com/dm2e
+ *
+ * Author: Kai Eckert, Konstantin Baierer
  */
 public class GStatementImpl extends JenaImpl implements GStatement {
     private GResource subject;

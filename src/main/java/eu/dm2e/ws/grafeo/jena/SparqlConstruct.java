@@ -1,15 +1,15 @@
 package eu.dm2e.ws.grafeo.jena;
 
-import java.util.logging.Logger;
-
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 
+import java.util.logging.Logger;
+
 public class SparqlConstruct {
 	
-	Logger log = Logger.getLogger(getClass().getName());
+	private Logger log = Logger.getLogger(getClass().getName());
 	
 	private String graph, endpoint, constructClause, whereClause;
 

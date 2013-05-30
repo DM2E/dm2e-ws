@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 public class WebserviceConfigPojoTest {
 	
-	Logger log = Logger.getLogger(getClass().getName());
+	private Logger log = Logger.getLogger(getClass().getName());
 	
 
 
