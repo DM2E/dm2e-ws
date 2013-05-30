@@ -16,10 +16,14 @@ import eu.dm2e.ws.services.AbstractRDFService;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.apache.commons.io.IOUtils;
+
 import java.io.File;
 import java.net.URI;
 import java.util.Date;
 import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 //import java.util.ArrayList;
@@ -138,9 +142,13 @@ public class JobService extends AbstractRDFService {
 		LogEntryPojo logEntry = null;
 		
 		try {
-			 logEntry = new LogEntryPojo().constructFromRdfString(logRdfStr);
-			 jobPojo.addLogEntry(logEntry);
-			 jobPojo.publish();
+			Grafeo g = new GrafeoImpl(IOUtils.toInputStream(logRdfStr));
+			GResource blank = g.findTopBlank();
+			String newUri = resourceUriStr + "/log/" + UUID.randomUUID().toString();
+			blank.rename(newUri);
+			logEntry = g.getObjectMapper().getObject(LogEntryPojo.class, newUri);
+			jobPojo.addLogEntry(logEntry);
+			jobPojo.publish();
 		} catch (Exception e) {
 			return throwServiceError(e);
 		}

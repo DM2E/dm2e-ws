@@ -48,11 +48,11 @@ public class LogEntryPojoTest {
 		assertEquals(asCanonicalNTriples, logentry.getCanonicalNTriples());
 	}
 	
-	@Test
-	public void testFromCanonicalNTriples() {
-		LogEntryPojo logentry = null;
-		logentry = new LogEntryPojo().constructFromRdfString(asCanonicalNTriples, id);
-		assertEquals(asCanonicalNTriples, logentry.getCanonicalNTriples());
-	}
+//	@Test
+//	public void testFromCanonicalNTriples() {
+//		LogEntryPojo logentry = null;
+//		logentry = new LogEntryPojo().constructFromRdfString(asCanonicalNTriples, id);
+//		assertEquals(asCanonicalNTriples, logentry.getCanonicalNTriples());
+//	}
 
 }

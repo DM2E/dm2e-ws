@@ -107,12 +107,18 @@ public abstract class AbstractTransformationService extends AbstractRDFService i
     @POST
     @Consumes(MediaType.WILDCARD)
     public Response postConfig(String rdfString) {
-        WebserviceConfigPojo conf = new WebserviceConfigPojo().constructFromRdfString(rdfString);
-        if (null == conf) {
-        	return throwServiceError("Invalid RDF string passed as configuration.");
-        }
-        conf.publish();
-        return this.startService(conf.getId());
+//        WebserviceConfigPojo conf = new WebserviceConfigPojo().constructFromRdfString(rdfString);
+//        if (null == conf) {
+//        	return throwServiceError("Invalid RDF string passed as configuration.");
+//        }
+//        conf.publish();
+    	WebResource webResource = jerseyClient.resource("http://localhost:9998/data/configurations");
+    	ClientResponse resp = webResource.post(ClientResponse.class, rdfString);
+    	if (null == resp.getLocation()) {
+    		log.severe("Invalid RDF string posted as configuration.");
+    		return throwServiceError(resp.getEntity(String.class));
+    	}
+        return this.startService(resp.getLocation().toString());
     }
     
     protected String storeAsFile(String fileData, String mediaTypeStr) {

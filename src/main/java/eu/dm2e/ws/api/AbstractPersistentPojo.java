@@ -1,18 +1,17 @@
 package eu.dm2e.ws.api;
 
-import eu.dm2e.ws.Config;
-import eu.dm2e.ws.grafeo.GResource;
-import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.annotations.RDFClass;
-import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
-import org.apache.commons.beanutils.BeanUtils;
-
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
 import java.util.logging.Logger;
+
+import org.apache.commons.beanutils.BeanUtils;
+
+import eu.dm2e.ws.Config;
+import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
 public abstract class AbstractPersistentPojo<T> {
 	
@@ -34,36 +33,49 @@ public abstract class AbstractPersistentPojo<T> {
 		return uri;
 	}
 	
+	// TODO think harder whether this is necessary and how to do skolemnization properly
 	// TODO this should be a static method but it's impossible to determine the runtime static class
-	public T constructFromRdfString(String rdfString, String id) {
-		Grafeo g = new GrafeoImpl();
-		g.readHeuristically(rdfString);
-		return g.getObjectMapper().getObject(this.getClass(), id);
-	}
-	public T constructFromRdfString(String rdfString) {
-		Grafeo g = new GrafeoImpl();
-		g.readHeuristically(rdfString);
-		String rdfType = this.getClass().getAnnotation(RDFClass.class).value();
-		String prefix;
-		try { 
-			prefix = this.getClass().getAnnotation(RDFInstancePrefix.class).value();
-		} catch (NullPointerException e) {
-			// TODO
-			throw(e);
-		}
-		GResource topBlank = g.findTopBlank(rdfType);
-		T theThing;
-		if (null != topBlank) {
-			String newURI = prefix + UUID.randomUUID().toString();
-			topBlank.rename(newURI);
-			g.skolemnize(newURI);
-			theThing = g.getObjectMapper().getObject(this.getClass(), newURI);
-		}
-		else {
-			throw new RuntimeException("No top blank node.");
-		}
-		return theThing;
-	}
+//	public T constructFromRdfString(String rdfString, String id) {
+//		Grafeo g = new GrafeoImpl();
+//		g.readHeuristically(rdfString);
+//		return g.getObjectMapper().getObject(this.getClass(), id);
+//	}
+//	
+//	public T constructFromRdfString(String rdfString) {
+//		Grafeo g = new GrafeoImpl();
+//		g.readHeuristically(rdfString);
+//		String rdfType = this.getClass().getAnnotation(RDFClass.class).value();
+//		String prefix;
+//		try { 
+//			prefix = this.getClass().getAnnotation(RDFInstancePrefix.class).value();
+//		} catch (NullPointerException e) {
+//			throw(e);
+//		}
+//		GResource topBlank = g.findTopBlank(rdfType);
+//		T theThing;
+//		if (null != topBlank) {
+//			String newURI = prefix + UUID.randomUUID().toString();
+//			topBlank.rename(newURI);
+////			g.skolemnize(newURI);
+////			for (Field field : this.getClass().getDeclaredFields()) {
+////				if (field.isAnnotationPresent(RDFProperty.class)) {
+////					Object prop = PropertyUtils.getProperty(this, field.getName());
+////					try {
+////						Object id = PropertyUtils.getProperty(object, field.getName());
+////						if (null == id || "0".equals(id.toString()) ) return new GResourceImpl(this, model.createResource(AnonId.create(object.toString())));
+////						uri = field.getAnnotation(RDFId.class).prefix() + id.toString();
+////					} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+////						throw new RuntimeException("An exception occurred: " + e, e);
+////					}
+////				}
+////			}
+//			theThing = g.getObjectMapper().getObject(this.getClass(), newURI);
+//		}
+//		else {
+//			throw new RuntimeException("No top blank node.");
+//		}
+//		return theThing;
+//	}
 	
 	public void loadFromURI(String id) {
 		this.loadFromURI(id, 0);
