@@ -1,5 +1,6 @@
 package eu.dm2e.ws.grafeo.jena;
 
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
 import eu.dm2e.ws.grafeo.*;
 
@@ -42,6 +43,25 @@ public class GStatementImpl extends JenaImpl implements GStatement {
         this.predicate = predicate;
         this.subject = subject;
         this.statement = createStatement();
+    }
+    
+    public GStatementImpl(Grafeo grafeo, Statement jenaStmt) {
+    	this.grafeo = grafeo;
+    	RDFNode jenaSubject, jenaPredicate, jenaObject;
+    	jenaSubject = jenaStmt.getSubject();
+    	jenaPredicate = jenaStmt.getPredicate();
+    	jenaObject = jenaStmt.getObject();
+    	this.subject = new GResourceImpl(grafeo, jenaSubject.asResource().getURI());
+    	this.predicate = new GResourceImpl(grafeo, jenaPredicate.asResource().getURI());
+    	if (jenaObject.isLiteral()) {
+    		this.literal = true;
+    		this.literalValue = new GLiteralImpl(grafeo, jenaObject.asLiteral());
+    	}
+    	else {
+	    	this.literal = false;
+	    	this.resourceValue = new GResourceImpl(grafeo, jenaObject.asResource());
+    	}
+    	this.statement = jenaStmt;
     }
 
 
