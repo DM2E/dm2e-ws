@@ -42,6 +42,7 @@ public abstract class AbstractTransformationService extends AbstractRDFService i
     public void setJobPojo(JobPojo jobPojo) {
         this.jobPojo = jobPojo;
     }
+    
 
     @PUT
     @Consumes(MediaType.TEXT_PLAIN)
@@ -52,7 +53,7 @@ public abstract class AbstractTransformationService extends AbstractRDFService i
          */
         WebserviceConfigPojo wsConf = new WebserviceConfigPojo();
 		try {
-			wsConf.readFromEndPointById(configURI, true);
+			wsConf.loadFromURI(configURI, 1);
 		} catch (Exception e) {
 			return throwServiceError(e);
 		}
