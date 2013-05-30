@@ -53,6 +53,18 @@ public class GLiteralImpl extends GValueImpl implements GLiteral {
     public String getValue() {
         return literal.getLexicalForm();
     }
+    
+    @Override
+    public String getTypedValue() {
+    	
+    	String datatypeURI = literal.getDatatypeURI();
+    	if (null == datatypeURI) {
+    		return "\"" + literal.getLexicalForm() + "\"";
+    	}
+    	else {
+	        return "\"" + literal.getLexicalForm() + "\"^^<" + datatypeURI + ">";
+    	}
+    }
 
     public Literal getLiteral() {
         return literal;

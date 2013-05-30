@@ -666,9 +666,21 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 
     @Override
     public boolean containsStatementPattern(String s, String p, String o) {
-        s = s.startsWith("?") ? s : "<" + expand(s) + ">";
-        p = p.startsWith("?") ? p : "<" + expand(p) + ">";
-        o = o.startsWith("?") ? o : "<" + expand(o) + ">";
+    	if (s == null) {
+    		s = "?s";
+    	} else  {
+	        s = s.startsWith("?") ? s : "<" + expand(s) + ">";
+    	}
+    	if (p == null) {
+    		p = "?p";
+    	} else  {
+	        p = p.startsWith("?") ? p : "<" + expand(p) + ">";
+    	}
+    	if (o == null) {
+    		o = "?o";
+    	} else  {
+	        o = o.startsWith("?") ? o : "<" + expand(o) + ">";
+    	}
         String queryString = String.format("ASK { %s %s %s }", s, p, o);
         log.info(queryString);
         return executeSparqlAsk(queryString);
@@ -676,9 +688,22 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 
     @Override
     public boolean containsStatementPattern(String s, String p, GLiteral o) {
-        s = s.startsWith("?") ? s : "<" + expand(s) + ">";
-        p = p.startsWith("?") ? p : "<" + expand(p) + ">";
-        String queryString = String.format("ASK { %s %s %s }", s, p, o.getValue());
+    	if (s == null) {
+    		s = "?s";
+    	} else  {
+	        s = s.startsWith("?") ? s : "<" + expand(s) + ">";
+    	}
+    	if (p == null) {
+    		p = "?p";
+    	} else  {
+	        p = p.startsWith("?") ? p : "<" + expand(p) + ">";
+    	}
+    	String oStr = "?o";
+    	if (o != null) {
+	        oStr = o.getTypedValue();
+    	}
+        String queryString = String.format("ASK { %s %s %s }", s, p, oStr);
+        log.info("ASK query: " + queryString);
         return executeSparqlAsk(queryString);
     }
 
