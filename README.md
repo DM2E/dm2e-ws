@@ -25,3 +25,5 @@ Post Test:
  curl --data "[] <http://purl.org/dc/terms/creator> <http://localhost/kai>; <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://onto.dm2e.eu/omnom/WebServiceConfig> ." http://localhost:9998/data/configurations
 
 This should return your RDF data and replace the blank node with a new URI.
+
+Have fun!
