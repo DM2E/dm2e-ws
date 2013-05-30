@@ -27,4 +27,4 @@
                 omnom:forParam <http://localhost:9998/service/demo/param/sleepTime> ;
                 omnom:parameterValue "10"
               ] ;
-      omnom:hasWebService <http://localhost:9998/service/demo> ; .
+      omnom:hasWebservice <http://localhost:9998/service/demo> ; .

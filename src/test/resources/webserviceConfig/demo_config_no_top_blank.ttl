@@ -32,10 +32,9 @@
         omnom:webservice  <http://localhost:9998/service/newdemo> ;
         dc:title          "sleeptime"^^xsd:string .
 
-[
+[]
   omnom:assignment     [ a                     omnom:ParameterAssignment ;
                          omnom:forParam        <http://localhost:9998/service/newdemo/param/sleeptime> ;
                          omnom:parameterValue  "10"^^xsd:string
                        ] ;
-  omnom:hasWebService  <http://localhost:9998/service/newdemo>
-] .
+  omnom:hasWebservice  <http://localhost:9998/service/newdemo> .

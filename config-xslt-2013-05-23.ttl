@@ -32,7 +32,7 @@
                 omnom:forParam <http://localhost:9998/service/xslt/param/xmlInParam> ;
                 omnom:parameterValue "http://141.20.126.155/api/file/50c73992e18a91933e00001a/data"
               ] ;
-      omnom:hasWebService <http://localhost:9998/service/xslt> .
+      omnom:hasWebservice <http://localhost:9998/service/xslt> .
 
 
 # vim: ft=n3

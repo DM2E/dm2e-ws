@@ -34,7 +34,7 @@
                 omnom:parameterValue
                         "http://141.20.126.155/api/file/50c73992e18a91933e00001a/data"^^<java:eu.dm2e.ws.grafeo.jena.GLiteralImpl>
               ] ;
-      omnom:hasWebService <http://localhost:9998/service/xslt> .
+      omnom:hasWebservice <http://localhost:9998/service/xslt> .
 
 
 # <http://data.dm2e.eu/data/services/xslt/xmlOutParam>
