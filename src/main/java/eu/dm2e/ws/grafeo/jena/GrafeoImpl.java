@@ -884,4 +884,10 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		}
 		return matchingStmts;
 	}
+
+    @Override
+    public boolean isGraphEquivalent(Grafeo g) {
+        GrafeoImpl gi = (GrafeoImpl) g;
+        return getModel().isIsomorphicWith(gi.getModel());
+    }
 }

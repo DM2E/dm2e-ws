@@ -261,7 +261,7 @@ public interface Grafeo {
 	 * @return A Set of GResource representing blank nodes
 	 */
 	Set<GResource> listBlankObjects();
-	
+
 	Set<GStatement> listResourceStatements(String s, String p, String o);
 	
 	Set<GStatement> listAnonStatements(String s, String p);
@@ -276,5 +276,6 @@ public interface Grafeo {
 	 */
 	String shorten(String uri);
 	
+    boolean isGraphEquivalent(Grafeo g);
 }
 
