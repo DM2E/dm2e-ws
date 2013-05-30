@@ -33,7 +33,7 @@ public class AnnotationExportTest {
 //		log.info(pojo.getLiteralSet().toString());
 		Grafeo g = new GrafeoImpl();
 		g.getObjectMapper().addObject(pojo);
-//		log.info(g.getNTriples());
+		log.info(g.getTurtle());
 //		log.info(""+g.size());
 		assertTrue(g.containsStatementPattern(pojo_uri, "omnom:some_number", g.literal(5)));
 		assertTrue(g.containsStatementPattern(pojo_uri, "omnom:some_number", g.literal(11111)));

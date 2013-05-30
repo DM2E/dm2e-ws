@@ -1,0 +1,9 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix omnom: <http://onto.dm2e.eu/omnom/> .
+
+# In order to use Xturtle as productively as possible, you should know how to use
+# project references as well as turtle templates. If in doubt, have a look at
+# https://github.com/AKSW/Xturtle/wiki/Usage
+
+[] a omnom:Job .
