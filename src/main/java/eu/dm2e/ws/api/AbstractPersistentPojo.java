@@ -8,11 +8,9 @@ import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import org.apache.commons.beanutils.BeanUtils;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -58,6 +56,7 @@ public abstract class AbstractPersistentPojo<T> {
 		if (null != topBlank) {
 			String newURI = prefix + UUID.randomUUID().toString();
 			topBlank.rename(newURI);
+			g.skolemnize(newURI);
 			theThing = g.getObjectMapper().getObject(this.getClass(), newURI);
 		}
 		else {
@@ -65,29 +64,19 @@ public abstract class AbstractPersistentPojo<T> {
 		}
 		return theThing;
 	}
-	public void readFromEndPointById(String id) {
-		this.readFromEndPointById(id, false);
+	
+	public void loadFromURI(String id) {
+		this.loadFromURI(id, 0);
 	}
 	
-	public void readFromEndPointById(String id, boolean expand) {
+	public void loadFromURI(String id, int expansionSteps) {
 		this.setId(id);
-        String endPoint = Config.getString("dm2e.ws.sparql_endpoint");
         Grafeo g = new GrafeoImpl();
-        g.readFromEndpoint(endPoint, this.getId());
-        // Add statements from graphs that are terminal nodes in this graph
-        if (expand) {
-        	log.info("Before expansion: "+ g.size());
-        	for (GResource gres : g.listResourceObjects()) {
-//        		g.readFromEndpoint(endPoint, gres.getUri());
-        		try {
-					g.readHeuristically(new URL(gres.getUri()).openStream());
-				} catch (IOException e) {
-					log.warning("Couldn't derefrence <"+gres.getUri()+"> Trying to read from endpoint");
-					g.readFromEndpoint(endPoint, gres.getUri());
-				}
-    		}
-        	log.info("After expansion: "+ g.size());
-        }
+        try {
+			g.load(this.getId(), expansionSteps);
+		} catch (Exception e1) {
+			throw new RuntimeException(e1);
+		}
 		T theNewPojo = g.getObjectMapper().getObject(this.getClass(), this.getId());
         try {
             BeanUtils.copyProperties(this, theNewPojo);

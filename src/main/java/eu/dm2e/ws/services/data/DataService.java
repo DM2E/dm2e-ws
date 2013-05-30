@@ -83,6 +83,19 @@ public class DataService extends AbstractRDFService {
         g.readFromEndpoint(NS.ENDPOINT, uriInfo.getRequestUri().toString());
         return getResponse(g);
     }
+    
+    @GET
+    @Path("configurations/{id}/assignment/{assId}")
+    public Response getConfigAssignment(
+    		@Context UriInfo uriInfo,
+     		@PathParam("id") String id,
+     		@PathParam("assId") String assId
+    		) {
+        log.info("Assignment " + assId + " of configuration requested: " + uriInfo.getRequestUri());
+
+        return Response.seeOther(getRequestUriWithoutQuery()).build();
+    }
+ 
 
     @GET
     @Path("configurations")

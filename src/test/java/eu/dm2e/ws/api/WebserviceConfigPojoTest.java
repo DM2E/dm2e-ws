@@ -22,8 +22,8 @@ public class WebserviceConfigPojoTest {
         ws.addInputParameter("testparam2");
         ws.addOutputParameter("testparam3");
         config.setWebservice(ws);
-        config.getParameterAssignments().add(ws.getParamByName("testparam1").createAssignment("1"));
-        config.getParameterAssignments().add(ws.getParamByName("testparam2").createAssignment("2"));
+        config.addParameterAssignment("testparam1", "1");
+        config.addParameterAssignment("testparam2", "2");
         config.setId("http://example.org/config1");
         Grafeo g = new GrafeoImpl();
         g.getObjectMapper().addObject(config);

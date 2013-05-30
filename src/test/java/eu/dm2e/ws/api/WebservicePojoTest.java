@@ -68,8 +68,8 @@ public class WebservicePojoTest {
 		ass2.setParameterValue("http://141.20.126.155/api/file/50c7266ee18a91933e000003/data");
 		
 		wsconf.setWebservice(ws);
-		wsconf.getParameterAssignments().add(ass1);
-		wsconf.getParameterAssignments().add(ass2);
+		wsconf.addParameterAssignment(ass1);
+		wsconf.addParameterAssignment(ass2);
 		
 		g.getObjectMapper().addObject(wsconf);
 		log.info(g.getTurtle());

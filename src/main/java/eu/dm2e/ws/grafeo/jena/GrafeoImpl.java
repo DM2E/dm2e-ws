@@ -181,14 +181,20 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         }
         readHeuristically(fis);
     }
-
+    
     @Override
     public void load(String uri) {
+    	this.load(uri, 0);
+    }
+
+    @Override
+    public void load(String uri, int expansionSteps) {
         log.fine("Load data from URI: " + uri);
         uri = expand(uri);
         try {
+        	// NOTE: read(String uri) does content-negotiation - sort of
             this.model.read(uri);
-            log.info("Content read, found N3.");
+            log.info("Content read.");
         } catch (Throwable t) {
             try {
                 this.model.read(uri, null, "RDF/XML");
@@ -197,9 +203,29 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
                 // TODO Throw proper exception that is converted to a proper
                 // HTTP response in DataService
                 log.severe("Could not parse URI content: " + t2.getMessage());
-                throw new RuntimeException("Could not parse uri content: "
-                        + uri, t2);
+                t.printStackTrace();
+                t2.printStackTrace();
+                throw new RuntimeException("Could not parse uri content: " + uri, t2);
             }
+        }
+        // Expand the graph by recursively loading additional resources
+        Set<GResource> resourceCache = new HashSet<GResource>();
+        for ( ; expansionSteps > 0 ; expansionSteps--) {
+        	log.info("Expansion No. " + expansionSteps);
+        	log.info("Before expansion: "+ this.size());
+        	for (GResource gres : this.listResourceObjects()) {
+        		if (resourceCache.contains(gres)){
+        			continue;
+        		}
+				try {
+					this.load(gres.getUri(), 0);
+				} catch (Throwable t) {
+					log.info("Failed to load resource " + gres.getUri() +".");
+//					t.printStackTrace();
+				}
+				resourceCache.add(gres);
+    		}
+        	log.info("After expansion: "+ this.size());
         }
 
     }
@@ -223,8 +249,48 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
                         + uri, t2);
             }
         }
-
     }
+
+    @Override
+    public void loadWithoutContentNegotiation(String uri, int expansionSteps) {
+        log.fine("Load data from URI: " + uri);
+        uri = expand(uri);
+        try {
+            this.model.read(uri, null, "N3");
+            log.info("Content read, found N3.");
+        } catch (Throwable t) {
+            try {
+                this.model.read(uri, null, "RDF/XML");
+                log.info("Content read, found RDF/XML.");
+            } catch (Throwable t2) {
+                // TODO Throw proper exception that is converted to a proper
+                // HTTP response in DataService
+                log.severe("Could not parse URI content: " + t2.getMessage());
+                throw new RuntimeException("Could not parse uri content: "
+                        + uri, t2);
+            }
+        }
+        // Expand the graph by recursively loading additional resources
+        Set<GResource> resourceCache = new HashSet<GResource>();
+        for ( ; expansionSteps > 0 ; expansionSteps--) {
+            log.info("Expansion No. " + expansionSteps);
+            log.info("Before expansion: "+ this.size());
+            for (GResource gres : this.listResourceObjects()) {
+                if (resourceCache.contains(gres)){
+                    continue;
+                }
+                try {
+                    this.loadWithoutContentNegotiation(gres.getUri(), 0);
+                } catch (Throwable t) {
+                    log.info("Failed to load resource " + gres.getUri() +".");
+//					t.printStackTrace();
+                }
+                resourceCache.add(gres);
+            }
+            log.info("After expansion: "+ this.size());
+        }
+    }
+
 
     protected GResource getGResource(Object object) {
         String uri = null;
@@ -384,7 +450,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     }
 
     @Override
-    public void readFromEndpoint(String endpoint, String graph) {
+    public void readFromEndpoint(String endpoint, String graph, int expansionSteps) {
         StringBuilder sb = new StringBuilder(
                 "CONSTRUCT {?s ?p ?o}  WHERE { GRAPH <");
         sb.append(graph);
@@ -392,11 +458,51 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         sb.append("?s ?p ?o");
         sb.append("} . }");
         Query query = QueryFactory.create(sb.toString());
-        log.info("Query: " + sb.toString());
+        log.finest("Query: " + sb.toString());
         QueryExecution exec = QueryExecutionFactory.createServiceRequest(
                 endpoint, query);
+        long sizeBefore = size();
         exec.execConstruct(model);
+        long stmtsAdded = size() - sizeBefore;
+        if (stmtsAdded == 0) {
+        	throw new RuntimeException("Graph contained no statements: " + graph);
+        }
+        log.info("Added " + stmtsAdded + " statements to the graph.");
+        
+        // Expand the graph by recursively loading additional resources
+        Set<GResource> resourceCache = new HashSet<GResource>();
+        for ( ; expansionSteps > 0 ; expansionSteps--) {
+        	log.info("SCHMExpansion No. " + expansionSteps);
+    		log.info("LIVELIVE");
+        	log.info("Before expansion: "+ this.size());
+        	for (GResource gres : this.listResourceObjects()) {
+        		if (resourceCache.contains(gres)){
+        			continue;
+        		}
+        		try {
+        			log.info("Reading graph " + graph + " from endpoint " + endpoint + ".");
+        			this.readFromEndpoint(endpoint, graph, 0);
+        		} catch (Throwable t) {
+        			log.info("Graph not found in endpoint: " + graph);
+        			try {
+						this.load(gres.getUri(), 0);
+	        		} catch (Throwable t2) {
+	        			log.warning("URI un-dereferenceable: " + graph);
+	        			log.warning("Continuing because this concerns only nested resources.");
+//	        			throw(t2);
+	        		}
+        		}
+        		log.severe("LIVE");
+				resourceCache.add(gres);
+    		}
+        	log.info("After expansion: "+ this.size());
+        }
         log.info("Reading from endpoint finished.");
+    }
+    
+    @Override
+	public void readFromEndpoint(String endpoint, String graph) {
+    	this.readFromEndpoint(endpoint, graph, 0);
     }
 
     @Override
@@ -404,6 +510,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         readFromEndpoint(endpoint, graphURI.toString());
     }
 
+    @Override
     public void readTriplesFromEndpoint(String endpoint, String subject,
                                         String predicate, GValue object) {
 
@@ -421,7 +528,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         sb.append(predicate != null ? predicate : "?p").append(" ");
         sb.append(object != null ? object.toEscapedString() : "?o").append(" ");
         sb.append(" }");
-        log.info("Query: " + sb.toString());
+        log.finest("Query: " + sb.toString());
         Query query = QueryFactory.create(sb.toString());
         QueryExecution exec = QueryExecutionFactory.createServiceRequest(
                 endpoint, query);
@@ -433,14 +540,14 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         StringBuilder sb = new StringBuilder("CREATE SILENT GRAPH <");
         sb.append(graph);
         sb.append(">");
-        log.info("Query 1: " + sb.toString());
+        log.finest("Query 1: " + sb.toString());
         UpdateRequest update = UpdateFactory.create(sb.toString());
         sb = new StringBuilder("INSERT DATA { GRAPH <");
         sb.append(graph);
         sb.append("> {");
         sb.append(getNTriples());
         sb.append("}}");
-        log.info("Query 2: " + sb.toString());
+        log.finest("Query 2: " + sb.toString());
         update.add(sb.toString());
         UpdateProcessor exec = UpdateExecutionFactory.createRemoteForm(update,
                 endpoint);
@@ -643,5 +750,24 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     	}
     	return resList;
     }
+    @Override
+    public Set<GResource> listBlankObjects() {
+    	Set<GResource> resList = new HashSet<GResource>();
+    	NodeIterator iter = this.getModel().listObjects();
+    	while (iter.hasNext()) {
+    		RDFNode node = iter.next();
+    		if (node.isAnon()) {
+    			GResource gres = new GResourceImpl(this, node.asResource());
+    			resList.add(gres);
+    		}
+    	}
+    	return resList;
+    }
 
+	@Override
+	public void skolemnize(String newURI) {
+		for (GResource gres : this.listBlankObjects()) {
+			gres.rename(newURI + "/nested/" + UUID.randomUUID().toString());
+		}
+	}
 }

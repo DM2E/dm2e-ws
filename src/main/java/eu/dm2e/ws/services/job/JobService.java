@@ -1,5 +1,6 @@
 package eu.dm2e.ws.services.job;
 
+import eu.dm2e.ws.Config;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.JobPojo;
@@ -22,6 +23,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 //import java.util.ArrayList;
+// TODO @GET /{id}/result with JSON
 
 @Path("/job")
 public class JobService extends AbstractRDFService {
@@ -30,8 +32,9 @@ public class JobService extends AbstractRDFService {
 	
 	@Override
 	public WebservicePojo getWebServicePojo() {
-		WebservicePojo ws = new WebservicePojo();
-		ws.setId("http://localhost:9998/job");
+		WebservicePojo ws = super.getWebServicePojo();
+		ws.setLabel("Job Service");
+//		ws.setId("http://localhost:9998/job");
 		return ws;
 	}
 
@@ -41,8 +44,10 @@ public class JobService extends AbstractRDFService {
 	public Response getJob(@PathParam("resourceID") String resourceID) {
 		log.info("Access to job: " + resourceID);
 		String uriStr = uriInfo.getRequestUri().toString();
-		JobPojo job = new JobPojo();
-        job.readFromEndPointById(uriStr);
+		Grafeo g = new GrafeoImpl();
+		log.info("Reading job from endpoint " + Config.getString("dm2e.ws.sparql_endpoint"));
+		g.readFromEndpoint(Config.getString("dm2e.ws.sparql_endpoint"), uriStr);
+		JobPojo job = g.getObjectMapper().getObject(JobPojo.class, g.resource(uriStr));
 		String jobStatus = job.getStatus();
         log.info("Job status: " + jobStatus);
 		int httpStatus;
@@ -52,7 +57,11 @@ public class JobService extends AbstractRDFService {
 		else if (jobStatus.equals(JobStatusConstants.FINISHED.toString())) httpStatus = 200;
 		else httpStatus = 400;
         log.info("Returned HTTP Status: " + httpStatus);
-		return Response.status(httpStatus).entity(getResponseEntity(job.getGrafeo())).build();
+        try {
+			return Response.status(httpStatus).entity(getResponseEntity(job.getGrafeo())).build();
+        } catch (NullPointerException e) {
+			return Response.notAcceptable(supportedVariants).build();
+        }
 	}
 
 	@POST
@@ -87,7 +96,7 @@ public class JobService extends AbstractRDFService {
 	public Response getJobStatus(@PathParam("id") String id) {
 		String resourceUriStr = getRequestUriWithoutQuery().toString().replaceAll("/status$", "");
 		JobPojo jobPojo = new JobPojo();
-		jobPojo.readFromEndPointById(resourceUriStr);
+		jobPojo.loadFromURI(resourceUriStr);
 		return Response.ok(jobPojo.getStatus()).build();
 	}
 
@@ -107,7 +116,7 @@ public class JobService extends AbstractRDFService {
 		
 		String resourceUriStr = getRequestUriWithoutQuery().toString().replaceAll("/status$", "");
 		JobPojo jobPojo = new JobPojo();
-		jobPojo.readFromEndPointById(resourceUriStr);
+		jobPojo.loadFromURI(resourceUriStr);
 		jobPojo.setStatus(newStatus);
 		jobPojo.publish();
 		return Response.created(getRequestUriWithoutQuery()).build();
@@ -125,7 +134,7 @@ public class JobService extends AbstractRDFService {
 
 		String resourceUriStr = getRequestUriWithoutQuery().toString().replaceAll("/log$", "");
 		JobPojo jobPojo = new JobPojo();
-		jobPojo.readFromEndPointById(resourceUriStr);
+		jobPojo.loadFromURI(resourceUriStr);
 		LogEntryPojo logEntry = null;
 		
 		try {
@@ -145,7 +154,7 @@ public class JobService extends AbstractRDFService {
 		String resourceUriStr = getRequestUriWithoutQuery().toString().replaceAll("/log$", "");
 		
 		JobPojo jobPojo = new JobPojo();
-		jobPojo.readFromEndPointById(resourceUriStr);
+		jobPojo.loadFromURI(resourceUriStr);
 		jobPojo.addLogEntry(logString, LogLevel.DEBUG.toString());
 		jobPojo.publish();
 		return Response.created(getRequestUriWithoutQuery()).build();
@@ -163,7 +172,7 @@ public class JobService extends AbstractRDFService {
 
 		String resourceUriStr = getRequestUriWithoutQuery().toString().replaceAll("/log$", "");
 		JobPojo jobPojo = new JobPojo();
-		jobPojo.readFromEndPointById(resourceUriStr);
+		jobPojo.loadFromURI(resourceUriStr);
 		Set<LogEntryPojo> logEntries = jobPojo.getLogEntries(minLevelStr, maxLevelStr);
 		Grafeo logGrafeo = new GrafeoImpl();
 		for (LogEntryPojo logEntry : logEntries) {
@@ -178,7 +187,7 @@ public class JobService extends AbstractRDFService {
 	public Response listLogEntriesAsLogFile(@QueryParam("minLevel") String minLevelStr, @QueryParam("maxLevel") String maxLevelStr) {
 		String resourceUriStr = getRequestUriWithoutQuery().toString().replaceAll("/log$", "");
 		JobPojo jobPojo = new JobPojo();
-		jobPojo.readFromEndPointById(resourceUriStr);
+		jobPojo.loadFromURI(resourceUriStr);
 		return Response.ok().entity(jobPojo.toLogString(minLevelStr, maxLevelStr)).build();
 	}
 	

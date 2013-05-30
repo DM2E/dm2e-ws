@@ -21,7 +21,10 @@ import java.util.logging.Logger;
  *
  * Author: Kai Eckert, Konstantin Baierer
  */
-@Namespaces({"omnom", "http://onto.dm2e.eu/omnom/"})
+@Namespaces({
+	"omnom", "http://onto.dm2e.eu/omnom/",
+	"rdfs", "http://www.w3.org/2000/01/rdf-schema#"
+	})
 @RDFClass("omnom:Webservice")
 public class WebservicePojo extends AbstractPersistentPojo<WebservicePojo> {
 
@@ -30,6 +33,9 @@ public class WebservicePojo extends AbstractPersistentPojo<WebservicePojo> {
 //    @RDFId(prefix="http://data.dm2e.eu/data/services/")
 	@RDFId
     private String id;
+	
+	@RDFProperty("rdfs:label")
+	private String label;
 
     @RDFProperty("omnom:inputParam")
     private Set<ParameterPojo> inputParams = new HashSet<>();
@@ -95,8 +101,13 @@ public class WebservicePojo extends AbstractPersistentPojo<WebservicePojo> {
 
 	public String getId() { return id; }
 	public void setId(String id) { this.id = id; }
+	
+	public String getLabel() { return label; }
+	public void setLabel(String label) { this.label = label; }
+	
 	public Set<ParameterPojo> getInputParams() { return inputParams; }
 	public void setInputParams(Set<ParameterPojo> inputParams) { this.inputParams = inputParams; }
+	
 	public Set<ParameterPojo> getOutputParams() { return outputParams; }
 	public void setOutputParams(Set<ParameterPojo> outputParams) { this.outputParams = outputParams; }
 

@@ -10,7 +10,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import eu.dm2e.ws.api.ParameterAssignmentPojo;
 import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.services.AbstractTransformationService;
@@ -101,10 +100,7 @@ public class XsltService extends AbstractTransformationService {
 		String fileLocation = this.storeAsFile(xslResultStr, MediaType.APPLICATION_XML);
 
 		jobPojo.info("Store result URI on the job (" + fileLocation + ").");
-		ParameterAssignmentPojo ass = new ParameterAssignmentPojo();
-		ass.setForParam(jobPojo.getWebService().getParamByName("xmlOutParam"));
-		ass.setParameterValue(fileLocation);
-		jobPojo.addOutputParameterAssignment(ass);
+		jobPojo.addOutputParameterAssignment("xmlOutParam", fileLocation);
 		jobPojo.publish();
 
 		// Update job status
