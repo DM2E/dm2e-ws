@@ -770,4 +770,10 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 			gres.rename(newURI + "/nested/" + UUID.randomUUID().toString());
 		}
 	}
+
+    @Override
+    public boolean isGraphEquivalent(Grafeo g) {
+        GrafeoImpl gi = (GrafeoImpl) g;
+        return getModel().isIsomorphicWith(gi.getModel());
+    }
 }

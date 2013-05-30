@@ -247,6 +247,7 @@ public interface Grafeo {
 	 * @return A Set of GResource representing blank nodes
 	 */
 	Set<GResource> listBlankObjects();
-	
+
+    boolean isGraphEquivalent(Grafeo g);
 }
 

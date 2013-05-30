@@ -120,7 +120,6 @@ public class DataService extends AbstractRDFService {
         log.severe(""+blank);
         String uri = uriInfo.getRequestUri() + "/" + new Date().getTime();
         if (blank!=null) blank.rename(uri);
-        g.addTriple(uri,"rdf:type","http://example.org/classes/Configuration");
         g.writeToEndpoint(NS.ENDPOINT_STATEMENTS , uri);
         return Response.created(URI.create(uri)).entity(getResponseEntity(g)).build();
     }

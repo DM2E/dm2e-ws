@@ -16,10 +16,12 @@ Instructions:
 Test:
 
 - Open http://localhost:9998/data in your browser
-- Triple: <http://localhost/data> <http://purl.org/dc/terms/creator> <http://localhost/kai> should be shown
+- A webservice description in RDF should be shown
+  (depending on your browser settings, you have to look at the page source.)
+
 
 Post Test:
 
-curl --data "[] <http://purl.org/dc/terms/creator> <http://localhost/kai> ." http://localhost:9998/data/configurations
+ curl --data "[] <http://purl.org/dc/terms/creator> <http://localhost/kai>; <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://onto.dm2e.eu/omnom/WebServiceConfig> ." http://localhost:9998/data/configurations
 
 This should return your RDF data and replace the blank node with a new URI.
