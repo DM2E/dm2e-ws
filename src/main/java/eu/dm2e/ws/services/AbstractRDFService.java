@@ -146,20 +146,20 @@ public abstract class AbstractRDFService {
         return Response.seeOther(uri).build();
 
     }
-    @GET
-    @Path("{id}/nested/{nestedId}")
-    public Response getConfigAssignment(
-    		@Context UriInfo uriInfo,
-     		@PathParam("id") String id,
-     		@PathParam("nestedId") String nestedId
-    		) {
-        log.info("Nested resource " + nestedId + " of service requested: " + uriInfo.getRequestUri());
-//        Grafeo g = new GrafeoImpl();
-        // @TODO should proabably use getRequestUriWithoutQuery().toString() here
-//        g.readFromEndpoint(NS.ENDPOINT, uriInfo.getRequestUri().toString());
-//        return getResponse(g);
-        return Response.seeOther(getRequestUriWithoutQuery()).build();
-    }
+//    @GET
+//    @Path("{id}/nested/{nestedId}")
+//    public Response getConfigAssignment(
+//    		@Context UriInfo uriInfo,
+//     		@PathParam("id") String id,
+//     		@PathParam("nestedId") String nestedId
+//    		) {
+//        log.info("Nested resource " + nestedId + " of service requested: " + uriInfo.getRequestUri());
+////        Grafeo g = new GrafeoImpl();
+//        // @TODO should proabably use getRequestUriWithoutQuery().toString() here
+////        g.readFromEndpoint(NS.ENDPOINT, uriInfo.getRequestUri().toString());
+////        return getResponse(g);
+//        return Response.seeOther(getRequestUriWithoutQuery()).build();
+//    }
 
     /**
      * The serialization of the webservice description is returned.
@@ -169,11 +169,11 @@ public abstract class AbstractRDFService {
      */
     @GET
 	@Path("/describe")
-	public Response getDescription(@Context UriInfo uriInfo)  {
+	public Response getDescription()  {
         WebservicePojo wsDesc = this.getWebServicePojo();
-        Grafeo g = new GrafeoImpl();
-        g.getObjectMapper().addObject(wsDesc);
-        return Response.ok().entity(getResponseEntity(g)).build();
+//        Grafeo g = new GrafeoImpl();
+//        g.getObjectMapper().addObject(wsDesc);
+        return Response.ok().entity(getResponseEntity(wsDesc.getGrafeo())).build();
 	}
     
     @GET
