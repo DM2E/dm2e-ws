@@ -50,14 +50,14 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
     	this.logEntries.add(entry);
     	// TODO update to triplestore
     }
-    public void addLogEntry(String message, String level) {
+    public LogEntryPojo addLogEntry(String message, String level) {
     	LogEntryPojo entry = new LogEntryPojo();
     	entry.setId(getId() + "/log/" + UUID.randomUUID().toString());
     	entry.setMessage(message);
     	entry.setLevel(level);
     	entry.setTimestamp(new Date());
     	this.logEntries.add(entry);
-    	// TODO update to triplestore
+    	return entry;
     }
     public void trace(String message) { log.info("Job " + getId() +": " + message);    this.addLogEntry(message, LogLevel.TRACE.toString()); this.publish();}
     public void debug(String message) { log.info("Job " + getId() +": " + message);    this.addLogEntry(message, LogLevel.DEBUG.toString()); this.publish();}
@@ -94,12 +94,10 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
     public Set<LogEntryPojo> getLogEntries(String minLevelStr, String maxLevelStr) {
     	LogLevel minLevel = null,
     			 maxLevel = null;
-    	try {
-			minLevel = LogLevel.valueOf(minLevelStr);
-			maxLevel = LogLevel.valueOf(maxLevelStr);
-		} catch (Exception e) {
-			// TODO this isn't really a problem
-		}
+    	try { minLevel = LogLevel.valueOf(minLevelStr);
+		} catch (Exception e) { /* this isn't really a problem */ }
+    	try { maxLevel = LogLevel.valueOf(maxLevelStr);
+		} catch (Exception e) { /* this isn't really a problem */ }
     	return getLogEntries(minLevel, maxLevel);
     }
     public Set<LogEntryPojo> getLogEntries(LogLevel minLevel) {
@@ -121,12 +119,10 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
     public List<LogEntryPojo> getLogEntriesSortedByDate(String minLevelStr, String maxLevelStr) {
     	LogLevel minLevel = null,
     			 maxLevel = null;
-    	try {
-			minLevel = LogLevel.valueOf(minLevelStr);
-			maxLevel = LogLevel.valueOf(maxLevelStr);
-		} catch (Exception e) {
-			// TODO this isn't really a problem
-		}
+    	try { minLevel = LogLevel.valueOf(minLevelStr);
+		} catch (Exception e) { /* this isn't really a problem */ }
+    	try { maxLevel = LogLevel.valueOf(maxLevelStr);
+		} catch (Exception e) { /* this isn't really a problem */ }
     	return getLogEntriesSortedByDate(minLevel, maxLevel);
     }
     public String toLogString(String minLevel, String maxLevel) {
