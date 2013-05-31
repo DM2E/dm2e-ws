@@ -4,6 +4,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import eu.dm2e.ws.Config;
+import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
@@ -43,6 +44,7 @@ public abstract class AbstractRDFService {
 	public static final String TTL_A = "application/x-turtle";
 	public static final String TTL_T = "text/turtle";
 	public static final String N3 = "text/rdf+n3";
+	public static final String RDF_TRIPLES = "application/rdf-triples";
 	protected static String[] allowedSchemes = { "http", "https", "file", "ftp" };
 	protected static final UrlValidator urlValidator = new UrlValidator(allowedSchemes,
 		UrlValidator.ALLOW_ALL_SCHEMES + UrlValidator.ALLOW_LOCAL_URLS
@@ -66,6 +68,12 @@ public abstract class AbstractRDFService {
 	}
 	protected Response throwServiceError(Exception e) {
 		return throwServiceError(e.toString() + "\n" + ExceptionUtils.getStackTrace(e), 400);
+	}
+	protected Response throwServiceError(ErrorMsg err) {
+		return throwServiceError(err.getMessage());
+	}
+	protected Response throwServiceError(String badString, ErrorMsg err) {
+		return throwServiceError(badString + ": " + err.getMessage());
 	}
 	
 	protected URI getUriForString(String uriStr) throws URISyntaxException {
@@ -221,13 +229,15 @@ public abstract class AbstractRDFService {
 						MediaType.valueOf(XML),
 						MediaType.valueOf(TTL_A),
 						MediaType.valueOf(TTL_T),
-						MediaType.valueOf(N3)
+						MediaType.valueOf(N3),
+						MediaType.valueOf(RDF_TRIPLES)
 						).add().build();
 		mediaType2Language.put(MediaType.valueOf(PLAIN), "N-TRIPLE");
 		mediaType2Language.put(MediaType.valueOf(XML), "RDF/XML");
 		mediaType2Language.put(MediaType.valueOf(TTL_A), "TURTLE");
 		mediaType2Language.put(MediaType.valueOf(TTL_T), "TURTLE");
 		mediaType2Language.put(MediaType.valueOf(N3), "N3");
+		mediaType2Language.put(MediaType.valueOf(RDF_TRIPLES), "N-TRIPLE");
 	}
 
 	protected Response getResponse(Model model) {
