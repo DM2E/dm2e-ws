@@ -47,6 +47,9 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
 	public void addParameterAssignment(String paramName, String paramValue) {
 		log.info("adding parameter assignment");
 		ParameterPojo param = this.getWebservice().getParamByName(paramName);
+		if (null == param) {
+			throw new RuntimeException("Webservice contains no such parameter: " + paramName);
+		}
 		ParameterAssignmentPojo ass = param.createAssignment(paramValue);
 		ass.setId(this.getId() + "/assignment/" + UUID.randomUUID().toString());
 		this.getParameterAssignments().add(ass);

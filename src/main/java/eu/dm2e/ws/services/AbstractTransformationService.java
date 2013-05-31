@@ -112,7 +112,7 @@ public abstract class AbstractTransformationService extends AbstractRDFService i
 //        	return throwServiceError("Invalid RDF string passed as configuration.");
 //        }
 //        conf.publish();
-    	WebResource webResource = jerseyClient.resource("http://localhost:9998/data/configurations");
+    	WebResource webResource = jerseyClient.resource("http://localhost:9998/config");
     	ClientResponse resp = webResource.post(ClientResponse.class, rdfString);
     	if (null == resp.getLocation()) {
     		log.severe("Invalid RDF string posted as configuration.");

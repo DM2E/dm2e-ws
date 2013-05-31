@@ -74,67 +74,7 @@ public class DataService extends AbstractRDFService {
         return getResponse(g);
     }
 
-    @GET
-    @Path("configurations/{id}")
-    public Response getConfig(@Context UriInfo uriInfo, @PathParam("id") String id) {
-        log.info("Configuration requested: " + uriInfo.getRequestUri());
-        Grafeo g = new GrafeoImpl();
-        // @TODO should proabably use getRequestUriWithoutQuery().toString() here
-        g.readFromEndpoint(NS.ENDPOINT, uriInfo.getRequestUri().toString());
-        return getResponse(g);
-    }
-    
-    @GET
-    @Path("configurations/{id}/assignment/{assId}")
-    public Response getConfigAssignment(
-    		@Context UriInfo uriInfo,
-     		@PathParam("id") String id,
-     		@PathParam("assId") String assId
-    		) {
-        log.info("Assignment " + assId + " of configuration requested: " + uriInfo.getRequestUri());
 
-        return Response.seeOther(getRequestUriWithoutQuery()).build();
-    }
- 
-
-    @GET
-    @Path("configurations")
-    public Response getConfig(@Context UriInfo uriInfo) {
-        Grafeo g = new GrafeoImpl();
-        g.readTriplesFromEndpoint(NS.ENDPOINT, null, "rdf:type", g.resource("http://example.org/classes/Configuration"));
-        return getResponse(g);
-    }
-
-
-    @POST
-    @Path("configurations")
-    @Consumes(MediaType.WILDCARD)
-    public Response postConfig(@Context UriInfo uriInfo, File input) {
-        log.info("Config posted.");
-        // TODO use Exception to return proper HTTP response if input can not be parsed as RDF
-        // TODO BUG this fails if newlines aren't correctly transmitted
-        log.severe(input.toString());
-        Grafeo g;
-        try {
-        	g = new GrafeoImpl(input);
-        } catch (Throwable t) {
-        	log.severe("Could not parse input.");
-        	return Response.status(400).entity("Bad RDF syntax.").build();
-        }
-        log.severe(g.getTurtle());
-        GResource blank = g.findTopBlank("omnom:WebServiceConfig");
-        if (blank == null) {
-        	log.severe("Could not find a suitable top blank node.");
-        	return Response.status(400).entity("No suitable top blank node.").build();
-        }
-        log.severe("Top blank node: "+blank);
-        String uri = uriInfo.getRequestUri() + "/" + new Date().getTime();
-        blank.rename(uri);
-        g.skolemnizeSequential(uri, "omnom:assignment", "assignment");
-//        g.addTriple(uri,"rdf:type","http://example.org/classes/Configuration");
-        g.writeToEndpoint(NS.ENDPOINT_STATEMENTS , uri);
-        return Response.created(URI.create(uri)).entity(getResponseEntity(g)).build();
-    }
 
 
 }

@@ -150,7 +150,7 @@ public class FileService extends AbstractRDFService {
 		// Identifier for this resource (used in URI generation and for filename)
 		String uniqueStr = createUniqueStr();
 		// name of the new resource
-		String uriStr = SERVICE_URI + uniqueStr;
+		String uriStr = SERVICE_URI + "/" + uniqueStr;
 		URI uri;
 		try {
 			uri = new URI(uriStr);
@@ -311,7 +311,7 @@ public class FileService extends AbstractRDFService {
 		// Identifier for this resource (used in URI generation and for filename)
 		String uniqueStr = createUniqueStr();
 		// name of the new resource
-		String uriStr = SERVICE_URI + uniqueStr;
+		String uriStr = SERVICE_URI + "/" + uniqueStr;
 		log.info("Its URI will be: " + uriStr);
         URI uri;
 		try {
