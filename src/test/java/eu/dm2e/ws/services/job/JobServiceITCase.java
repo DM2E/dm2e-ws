@@ -3,53 +3,38 @@ package eu.dm2e.ws.services.job;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 
+import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.ErrorMsg;
+import eu.dm2e.ws.OmnomTestCase;
+import eu.dm2e.ws.OmnomTestResources;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.Client;
 
-public class JobServiceITCase {
+public class JobServiceITCase extends OmnomTestCase {
 	private static final String BASE_URI = "http://localhost:9998";
-	Logger log = Logger.getLogger(getClass().getName());
-	private Client client;
 	private WebResource webResource;
 	private URI globalJob;
+	String[] logLevels = {"TRACE", "DEBUG", "INFO", "WARN", "FATAL"};
 	
-	private Map<WSConf, String> configString = new HashMap<>();
-	private Map<WSConf, File> configFile = new HashMap<>();
-	private enum WSConf {
-		DEMO_JOB("/job/demo_job.ttl");
-		
-		final String path;
-		WSConf(String path) { this.path = path; }
-		String getPath() { return path; }
-	};
 
 	@Before
 	public void setUp() throws Exception {
 		client = new Client();
 		webResource = client.getJerseyClient().resource(BASE_URI + "/job");
-		for (WSConf wsconf : WSConf.values()) { 
-			URL testConfigURL = this.getClass().getResource(wsconf.getPath());
-			configFile.put(wsconf, new File(testConfigURL.getFile()));
-			configString.put(wsconf, IOUtils.toString(testConfigURL.openStream()));
-		}
-		ClientResponse resp = webResource.post(ClientResponse.class, configString.get(WSConf.DEMO_JOB));
+//		log.info(configString.get(OmnomTestResources.DEMO_JOB));
+		ClientResponse resp = webResource.post(ClientResponse.class, configString.get(OmnomTestResources.DEMO_JOB));
+//		log.info(resp.getEntity(String.class));
 		assertEquals(201, resp.getStatus());
 		globalJob = resp.getLocation();
 	}
@@ -72,62 +57,211 @@ public class JobServiceITCase {
 
 	@Test
 	public void testNewJob() {
-		ClientResponse resp = webResource.post(ClientResponse.class, configString.get(WSConf.DEMO_JOB));
+		ClientResponse resp = webResource.post(ClientResponse.class, configString.get(OmnomTestResources.DEMO_JOB));
 		assertEquals(201, resp.getStatus());
 	}
 
 	@Test
 	public void testGetJobStatus() throws URISyntaxException {
-		URI statusURI = new URI(globalJob.toString() + "/status");
-		WebResource wr = client.getJerseyClient().resource(statusURI);
+		WebResource wr = client.getJerseyClient().resource(globalJob).path("status");
 		ClientResponse resp = wr.get(ClientResponse.class);
 		assertEquals("NOT_STARTED", resp.getEntity(String.class));
 	}
 
 	@Test
 	public void testUpdateJobStatus() throws URISyntaxException {
-		URI statusURI = new URI(globalJob.toString() + "/status");
-		WebResource wr = client.getJerseyClient().resource(statusURI);
-		String newStatus = "STARTED";
-		ClientResponse resp1 = wr.put(ClientResponse.class, newStatus);
-		assertEquals(201, resp1.getStatus());
-		ClientResponse resp2 = wr.get(ClientResponse.class);
-		assertEquals(newStatus, resp2.getEntity(String.class));
+		WebResource wr = client.getJerseyClient().resource(globalJob).path("status");
+		{
+			String newStatus = "STARTED";
+			ClientResponse resp1 = wr.put(ClientResponse.class, newStatus);
+			assertEquals(201, resp1.getStatus());
+			ClientResponse resp2 = wr.get(ClientResponse.class);
+			assertEquals(newStatus, resp2.getEntity(String.class));
+		}
+		{
+			String badStatus = "";
+			ClientResponse resp1 = wr.put(ClientResponse.class, badStatus);
+			assertEquals(400, resp1.getStatus());
+			assertEquals(ErrorMsg.NO_JOB_STATUS.getMessage(), resp1.getEntity(String.class));
+		}
+		{
+			String badStatus = "XYZZY";
+			ClientResponse resp1 = wr.put(ClientResponse.class, badStatus);
+			assertEquals(400, resp1.getStatus());
+			assertEquals("XYZZY: " + ErrorMsg.INVALID_JOB_STATUS.getMessage(), resp1.getEntity(String.class));
+		}
 	}
 
-//	@Test
-//	public void testAddLogEntryAsRDF() {
-//		fail("Not yet implemented");
-//	}
+	@Test
+	public void testAddLogEntryAsRDF() throws URISyntaxException {
+//		URI logURI = new URI(globalJob.toString() + "/log");
+		ClientResponse resp = client.getJerseyClient()
+				.resource(globalJob)
+				.path("log")
+				.entity(configString.get(OmnomTestResources.DEMO_LOG))
+				.type("text/turtle")
+				.post(ClientResponse.class);
+		assertEquals(201, resp.getStatus());
+		URI logLoc = resp.getLocation();
+		
+		GrafeoImpl g = new GrafeoImpl(globalJob);
+		assertTrue(g.containsStatementPattern(logLoc.toString(), "omnom:hasLogMessage", g.literal("I'ma log message in RDF")));
+		
+		ClientResponse respBad = client.getJerseyClient()
+				.resource(globalJob)
+				.path("log")
+				.entity(configString.get(OmnomTestResources.DEMO_LOG_WITH_URI))
+				.type("text/turtle")
+				.post(ClientResponse.class);
+		assertEquals(400, respBad.getStatus());
+		assertEquals(ErrorMsg.NO_TOP_BLANK_NODE.getMessage(), respBad.getEntity(String.class));
+	}
 
 	@Test
 	public void testAddLogEntryAsText() throws URISyntaxException {
-		URI statusURI = new URI(globalJob.toString() + "/log");
-		WebResource wr = client.getJerseyClient().resource(statusURI);
-		ClientResponse resp = wr.post(ClientResponse.class, "FOO BAR");
+//		URI logURI = new URI(globalJob.toString() + "/log");
+		ClientResponse resp = client.getJerseyClient()
+				.resource(globalJob)
+				.path("log")
+				.type("text/plain")
+				.post(ClientResponse.class, "FOO BAR");
 		assertEquals(201, resp.getStatus());
+		URI logLoc = resp.getLocation();
 		
-		URI jobURI = new URI(globalJob.toString());
-		WebResource wrJob = client.getJerseyClient().resource(jobURI);
-		InputStream respJob = wrJob.get(InputStream.class);
-		GrafeoImpl g = new GrafeoImpl(respJob);
-		log.info(g.getTurtle());
-		assertTrue(g.containsStatementPattern(null, "omnom:hasLogMessage", g.literal("FOO BAR")));
+		GrafeoImpl g = new GrafeoImpl(globalJob);
+		assertTrue(g.containsStatementPattern(logLoc.toString(), "omnom:hasLogMessage", g.literal("FOO BAR")));
+	}
+	@Test
+	public void testAddLogEntryAsTextAndParse() throws URISyntaxException {
+		for (String level: logLevels) {
+			ClientResponse jobResp = client.getJerseyClient()
+					.resource(BASE_URI)
+					.path("job")
+					.post(ClientResponse.class, configString.get(OmnomTestResources.DEMO_JOB));
+			assertEquals(201, jobResp.getStatus());
+			URI jobLoc = jobResp.getLocation();
+			ClientResponse logResp = client.getJerseyClient()
+					.resource(jobLoc)
+					.path("log")
+					.type("text/plain")
+					.post(ClientResponse.class, level + ": FOO");
+			assertEquals(201, logResp.getStatus());
+			URI logLoc = logResp.getLocation();
+			GrafeoImpl g = new GrafeoImpl(jobLoc);
+			assertTrue(g.containsStatementPattern(jobLoc.toString(), "omnom:hasLogEntry", logLoc.toString()));
+			log.info(g.getTurtle());
+			assertTrue(g.containsStatementPattern(logLoc.toString(), "omnom:hasLogMessage", g.literal("FOO")));
+			assertTrue(g.containsStatementPattern(logLoc.toString(), "omnom:hasLogLevel", g.literal(level)));
+		}
 	}
 
-//	@Test
-//	public void testListLogEntries() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	public void testListLogEntriesAsLogFile() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	public void testListLogEntriesAsLogFileFromJob() {
-//		fail("Not yet implemented");
-//	}
+	@Test
+	public void testListLogEntries() {
+		ClientResponse jobResp = client.getJerseyClient()
+				.resource(BASE_URI)
+				.path("job")
+				.post(ClientResponse.class, configString.get(OmnomTestResources.DEMO_JOB));
+		assertEquals(201, jobResp.getStatus());
+		URI jobLoc = jobResp.getLocation();
+		
+		for (String level: logLevels) {
+			for (int i = 0; i < 2; i++) {
+				ClientResponse logResp = client.getJerseyClient()
+					.resource(jobLoc)
+					.path("log")
+					.type("text/plain")
+					.post(ClientResponse.class, level + ": FOO");
+				assertEquals(201, logResp.getStatus());
+			}
+		}
+		{
+			GrafeoImpl g = new GrafeoImpl(jobLoc);
+			assertEquals("There should be 10 messages total",
+					10,
+					g.listResourceStatements(jobLoc.toString(), "omnom:hasLogEntry", null).size());
+		}
+		{
+			 InputStream logNT = client.getJerseyClient()
+					.resource(jobLoc)
+					.path("log")
+					.queryParam("minLevel", "INFO")
+					.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+					.get(InputStream.class);
+			GrafeoImpl g = new GrafeoImpl(logNT);
+			assertEquals("6 of them are larger than INFO.",
+					6,
+					g.listResourceStatements(null, "rdf:type", "omnom:LogEntry").size());
+		}
+		{
+			 InputStream logNT = client.getJerseyClient()
+					.resource(jobLoc)
+					.path("log")
+					.queryParam("minLevel", "INFO")
+					.queryParam("maxLevel", "WARN")
+					.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+					.get(InputStream.class);
+			GrafeoImpl g = new GrafeoImpl(logNT);
+			assertEquals("4 of them are between INFO and WARN",
+					4,
+					g.listResourceStatements(null, "rdf:type", "omnom:LogEntry").size());
+		}
+		{
+			 InputStream logNT = client.getJerseyClient()
+					.resource(jobLoc)
+					.path("log")
+					.queryParam("maxLevel", "DEBUG")
+					.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+					.get(InputStream.class);
+			GrafeoImpl g = new GrafeoImpl(logNT);
+			assertEquals("4 of them are smaller than INFO.",
+					4,
+					g.listResourceStatements(null, "rdf:type", "omnom:LogEntry").size());
+		}
+	}
+
+	@Test
+	public void testListLogEntriesAsLogFile() {
+		ClientResponse jobResp = client.getJerseyClient()
+				.resource(BASE_URI)
+				.path("job")
+				.post(ClientResponse.class, configString.get(OmnomTestResources.DEMO_JOB));
+		assertEquals(201, jobResp.getStatus());
+		URI jobLoc = jobResp.getLocation();
+		for (int i = 0; i < 10; i++) {
+			ClientResponse logResp = client.getJerseyClient()
+					.resource(jobLoc)
+					.path("log")
+					.type("text/plain")
+					.post(ClientResponse.class, "FOO");
+			assertEquals(201, logResp.getStatus());
+		}
+		String logStr = client.getJerseyClient()
+				.resource(jobLoc)
+				.path("log")
+				.accept("text/x-log")
+				.get(String.class);
+		String[] lines = logStr.split("\r\n|\r|\n");
+		assertEquals("Log should be 10 lines long", 10, lines.length);
+	}
+	
+	@Test
+	public void testListLogEntriesAsLogFileFromJob() {
+		ClientResponse jobResp = client.getJerseyClient()
+				.resource(BASE_URI)
+				.path("job")
+				.post(ClientResponse.class, configString.get(OmnomTestResources.DEMO_JOB));
+		assertEquals(201, jobResp.getStatus());
+		URI jobLoc = jobResp.getLocation();
+		String logStr = client.getJerseyClient()
+				.resource(jobLoc)
+				.path("log")
+				.accept("text/x-log")
+				.get(String.class);
+		String logStrFromJob = client.getJerseyClient()
+				.resource(jobLoc)
+				.accept("text/x-log")
+				.get(String.class);
+		assertEquals("GET CT text/xlog on the job should yield the same", logStr, logStrFromJob);
+	}
 
 }
