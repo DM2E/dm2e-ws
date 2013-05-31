@@ -1,6 +1,7 @@
 package eu.dm2e.ws.services;
 
 import java.io.File;
+import java.net.URI;
 import java.util.logging.Logger;
 
 import javax.ws.rs.core.MediaType;
@@ -75,6 +76,23 @@ public class Client {
     }
 //    public HttpResponse postRDF(String postTo, Grafeo g, Map<String,String> headers) {
 //    }
+    
+    public WebResource getConfigWebResource() {
+    	return this.resource(Config.getString("dm2e.service.config.base_uri"));
+    }
+    public WebResource getFileWebResource() {
+    	return this.resource(Config.getString("dm2e.service.file.base_uri"));
+    }
+    public WebResource getJobWebResource() {
+    	return this.resource(Config.getString("dm2e.service.job.base_uri"));
+    }
+    
+    public WebResource resource(String URI) {
+    	return this.jerseyClient.resource(URI);
+    }
+    public WebResource resource(URI URI) {
+    	return this.resource(URI.toString());
+    }
 
     /*******************
      * GETTERS/SETTERS

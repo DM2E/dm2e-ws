@@ -1,5 +1,10 @@
 package eu.dm2e.ws.services.demo;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.InputStream;
 import java.net.URI;
 import java.util.logging.Logger;
 
@@ -7,10 +12,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
 
+import eu.dm2e.ws.OmnomTestCase;
+import eu.dm2e.ws.OmnomTestResources;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
@@ -25,35 +30,68 @@ import eu.dm2e.ws.model.JobStatusConstants;
  *
  * Author: Kai Eckert, Konstantin Baierer
  */
-public class DemoServiceITCase {
+public class DemoServiceITCase extends OmnomTestCase {
 
     Logger log = Logger.getLogger(getClass().getName());
-
-    private Client client;
+    
+    String SERVICE_URI;
 
     @Before
-    public void setUp()
-            throws Exception {
-        client = new Client();
+    public void setUp() throws Exception {
+    	SERVICE_URI = URI_BASE + "service/demo";
     }
 
     @After
     public void tearDown() {
     }
+    
+    @Test
+    public void testDescription() {
+    	
+    	log.info(SERVICE_URI);
+    	Grafeo g = new GrafeoImpl(client.getJerseyClient()
+    			.resource(SERVICE_URI)
+    			.accept("text/turtle")
+    			.get(InputStream.class));
+    	log.info(g.getTurtle());
+    	assertTrue(g.containsStatementPattern(SERVICE_URI, "rdf:type", "omnom:Webservice"));
+    	assertTrue(g.containsStatementPattern(SERVICE_URI, "omnom:inputParam", SERVICE_URI + "/param/sleeptime"));
+    	assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/sleeptime", "rdf:type", "omnom:Parameter"));
+    }
+    
+    @Test
+    public void testPut() {
+    	ClientResponse confResp = client
+    			.getConfigWebResource()
+    			.type("text/turtle")
+    			.post(ClientResponse.class, configFile.get(OmnomTestResources.DEMO_SERVICE_WORKING));
+    	assertEquals(201, confResp.getStatus());
+    	URI confLoc = confResp.getLocation();
+    	assertNotNull(confLoc);
+    	ClientResponse serviceResp = client
+    			.resource(SERVICE_URI)
+    			.put(ClientResponse.class, confLoc.toString());
+    	assertEquals(202, serviceResp.getStatus());
+    }
 
+//    @Ignore("Refactor this")
     @Test
     public void testDemo() {
-        // fail("Not yet implemented");
-        String URI_BASE = "http://localhost:9998";
-        WebResource webResource = client.resource(URI_BASE + "/service/demo");
+    	
+        WebservicePojo ws = new WebservicePojo();
+        ws.loadFromURI(SERVICE_URI);
         WebserviceConfigPojo config = new WebserviceConfigPojo();
-        WebservicePojo ws = new WebservicePojo(webResource.getURI());
         config.setWebservice(ws);
-//        config.getParameterAssignments().add(ws.getParamByName("sleeptime").createAssignment("2"));
         config.addParameterAssignment("sleeptime", "2");
+        
         log.info("Configuration created for Test: " + config.getTurtle());
-        ClientResponse response = webResource.post(ClientResponse.class, config.getTurtle());
+        
+        ClientResponse response = client
+        		.resource(SERVICE_URI)
+        		.type("text/turtle")
+        		.post(ClientResponse.class, config.getTurtle());
         log.info("JOB STARTED WITH RESPONSE: " + response.getStatus() + " / Location: " + response.getLocation() + " / Content: " + response.getEntity(String.class));
+        assertEquals(202, response.getStatus());
         URI joburi = response.getLocation();
         try {
             Thread.sleep(1000);

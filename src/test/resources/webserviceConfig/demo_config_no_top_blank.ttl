@@ -22,19 +22,19 @@
 @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
 @prefix cc:    <http://creativecommons.org/ns#> .
 
-<http://localhost:9998/service/newdemo>
+<http://localhost:9998/service/demo>
         a                 omnom:Webservice ;
-        omnom:inputParam  <http://localhost:9998/service/newdemo/param/sleeptime> .
+        omnom:inputParam  <http://localhost:9998/service/demo/param/sleeptime> .
 
-<http://localhost:9998/service/newdemo/param/sleeptime>
+<http://localhost:9998/service/demo/param/sleeptime>
         a                 omnom:Parameter ;
         omnom:isRequired  false ;
-        omnom:webservice  <http://localhost:9998/service/newdemo> ;
+        omnom:webservice  <http://localhost:9998/service/demo> ;
         dc:title          "sleeptime"^^xsd:string .
 
 []
   omnom:assignment     [ a                     omnom:ParameterAssignment ;
-                         omnom:forParam        <http://localhost:9998/service/newdemo/param/sleeptime> ;
+                         omnom:forParam        <http://localhost:9998/service/demo/param/sleeptime> ;
                          omnom:parameterValue  "10"^^xsd:string
                        ] ;
-  omnom:hasWebservice  <http://localhost:9998/service/newdemo> .
+  omnom:hasWebservice  <http://localhost:9998/service/demo> .

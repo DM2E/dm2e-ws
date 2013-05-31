@@ -13,7 +13,8 @@ import eu.dm2e.ws.services.Client;
 
 public class OmnomTestCase {
 	protected Logger log = Logger.getLogger(getClass().getName());
-	protected Client client;
+	protected Client client = new Client();
+	protected String URI_BASE = "http://localhost:9998/";
 	protected Map<OmnomTestResources, String> configString = new HashMap<>();
 	protected Map<OmnomTestResources, File> configFile = new HashMap<>();;
 	
