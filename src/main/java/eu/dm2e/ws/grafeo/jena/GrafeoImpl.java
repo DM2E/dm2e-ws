@@ -181,7 +181,12 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         applyNamespaces(model);
     }
 
-    @Override
+    public GrafeoImpl(URI uri) {
+        this(ModelFactory.createDefaultModel());
+        this.load(uri.toString());
+    }
+
+	@Override
     public void readHeuristically(String contentStr) {
         InputStream content = new ByteArrayInputStream(contentStr.getBytes());
         readHeuristically(content);
@@ -900,7 +905,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		if (p != null)
 			pP = this.model.getProperty(expand(p));
 		if (o != null) 
-			oO = this.model.getResource(expand(s));
+			oO = this.model.getResource(expand(o));
 		StmtIterator iter = this.model.listStatements(sS, pP, oO);
 		Set<GStatement> matchingStmts = new HashSet<>();
 		while (iter.hasNext()) {
