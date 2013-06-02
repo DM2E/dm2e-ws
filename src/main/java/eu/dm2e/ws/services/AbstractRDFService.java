@@ -4,6 +4,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import eu.dm2e.ws.Config;
+import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
@@ -30,21 +31,28 @@ import java.util.logging.Logger;
  * TODO @GET /{id}/param/{param} 303 -> /{id}
  *
  */
-@Produces({ MediaType.TEXT_HTML, MediaType.TEXT_PLAIN, "application/rdf+xml",
-		"application/x-turtle", "text/turtle", "text/rdf+n3" })
-@Consumes({ MediaType.TEXT_PLAIN, "application/rdf+xml",
-		"application/x-turtle", "text/turtle", "text/rdf+n3",
-		MediaType.MULTIPART_FORM_DATA })
+@Produces({ 
+	DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+	DM2E_MediaType.APPLICATION_RDF_XML,
+	DM2E_MediaType.APPLICATION_X_TURTLE,
+	DM2E_MediaType.TEXT_PLAIN,
+	DM2E_MediaType.TEXT_RDF_N3,
+	DM2E_MediaType.TEXT_TURTLE,
+	MediaType.TEXT_HTML,
+	})
+@Consumes({ 
+	DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+	DM2E_MediaType.APPLICATION_RDF_XML,
+	DM2E_MediaType.APPLICATION_X_TURTLE,
+	DM2E_MediaType.TEXT_PLAIN,
+	DM2E_MediaType.TEXT_RDF_N3,
+	DM2E_MediaType.TEXT_TURTLE,
+	MediaType.MULTIPART_FORM_DATA 
+	})
 public abstract class AbstractRDFService {
 
 	protected Logger log = Logger.getLogger(getClass().getName());
 	
-	public static final String PLAIN = MediaType.TEXT_PLAIN;
-	public static final String XML = "application/rdf+xml";
-	public static final String TTL_A = "application/x-turtle";
-	public static final String TTL_T = "text/turtle";
-	public static final String N3 = "text/rdf+n3";
-	public static final String RDF_TRIPLES = "application/rdf-triples";
 	protected static String[] allowedSchemes = { "http", "https", "file", "ftp" };
 	protected static final UrlValidator urlValidator = new UrlValidator(allowedSchemes,
 		UrlValidator.ALLOW_ALL_SCHEMES + UrlValidator.ALLOW_LOCAL_URLS
@@ -70,10 +78,10 @@ public abstract class AbstractRDFService {
 		return throwServiceError(e.toString() + "\n" + ExceptionUtils.getStackTrace(e), 400);
 	}
 	protected Response throwServiceError(ErrorMsg err) {
-		return throwServiceError(err.getMessage());
+		return throwServiceError(err.toString());
 	}
 	protected Response throwServiceError(String badString, ErrorMsg err) {
-		return throwServiceError(badString + ": " + err.getMessage());
+		return throwServiceError(badString + ": " + err.toString());
 	}
 	
 	protected URI getUriForString(String uriStr) throws URISyntaxException {
@@ -225,19 +233,19 @@ public abstract class AbstractRDFService {
 	protected AbstractRDFService() {
 		this.supportedVariants = Variant
 				.mediaTypes(
-						MediaType.valueOf(PLAIN),
-						MediaType.valueOf(XML),
-						MediaType.valueOf(TTL_A),
-						MediaType.valueOf(TTL_T),
-						MediaType.valueOf(N3),
-						MediaType.valueOf(RDF_TRIPLES)
+						MediaType.valueOf(DM2E_MediaType.APPLICATION_RDF_TRIPLES),
+						MediaType.valueOf(DM2E_MediaType.APPLICATION_RDF_XML),
+						MediaType.valueOf(DM2E_MediaType.APPLICATION_X_TURTLE),
+						MediaType.valueOf(DM2E_MediaType.TEXT_PLAIN),
+						MediaType.valueOf(DM2E_MediaType.TEXT_RDF_N3),
+						MediaType.valueOf(DM2E_MediaType.TEXT_TURTLE)
 						).add().build();
-		mediaType2Language.put(MediaType.valueOf(PLAIN), "N-TRIPLE");
-		mediaType2Language.put(MediaType.valueOf(XML), "RDF/XML");
-		mediaType2Language.put(MediaType.valueOf(TTL_A), "TURTLE");
-		mediaType2Language.put(MediaType.valueOf(TTL_T), "TURTLE");
-		mediaType2Language.put(MediaType.valueOf(N3), "N3");
-		mediaType2Language.put(MediaType.valueOf(RDF_TRIPLES), "N-TRIPLE");
+		mediaType2Language.put(MediaType.valueOf(DM2E_MediaType.APPLICATION_RDF_TRIPLES), "N-TRIPLE");
+		mediaType2Language.put(MediaType.valueOf(DM2E_MediaType.APPLICATION_RDF_XML), "RDF/XML");
+		mediaType2Language.put(MediaType.valueOf(DM2E_MediaType.APPLICATION_X_TURTLE), "TURTLE");
+		mediaType2Language.put(MediaType.valueOf(DM2E_MediaType.TEXT_PLAIN), "N-TRIPLE");
+		mediaType2Language.put(MediaType.valueOf(DM2E_MediaType.TEXT_RDF_N3), "N3");
+		mediaType2Language.put(MediaType.valueOf(DM2E_MediaType.TEXT_TURTLE), "TURTLE");
 	}
 
 	protected Response getResponse(Model model) {
