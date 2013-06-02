@@ -7,6 +7,7 @@ import eu.dm2e.ws.grafeo.gom.ObjectMapper;
 import eu.dm2e.ws.grafeo.jena.GResourceImpl;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Set;
@@ -193,7 +194,7 @@ public interface Grafeo {
 
 	void readHeuristically(String content);
 
-	void readHeuristically(InputStream input);
+	void readHeuristically(InputStream input) throws IOException;
 
 	void readHeuristically(File file);
 
