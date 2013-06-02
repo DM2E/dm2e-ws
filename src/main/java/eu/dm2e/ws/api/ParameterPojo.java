@@ -1,9 +1,11 @@
 package eu.dm2e.ws.api;
 
+import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFId;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
 /**
  * This file was created within the DM2E project.
@@ -63,6 +65,21 @@ public class ParameterPojo {
         pa.setParameterValue(value);
         return pa;
     }
+    
+    public void validateParameterInput(String input) throws NumberFormatException {
+    	if (null == getParameterType()) {
+    		return;
+    	}
+    	GrafeoImpl g = new GrafeoImpl();
+    	String type = g.shorten(this.getParameterType());
+    	if (type.equals("xsd:int")) {
+			try {
+				Integer.parseInt(input);
+			} catch (NumberFormatException e) {
+				throw e;
+			}
+    	}
+    }
 	
 	/******************
 	 * GETTERS/SETTERS
@@ -87,7 +104,10 @@ public class ParameterPojo {
 //	public void setParameterValue(String parameterValue) { this.parameterValue = parameterValue; }
 
 	public String getParameterType() { return parameterType; }
-	public void setParameterType(String parameterType) { this.parameterType = parameterType; }
+	public void setParameterType(String parameterType) { 
+		Grafeo g = new GrafeoImpl();
+		this.parameterType = g.expand(parameterType); 
+	}
 
 
 }
