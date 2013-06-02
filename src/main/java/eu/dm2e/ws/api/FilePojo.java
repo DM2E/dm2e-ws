@@ -41,10 +41,10 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 	private JobPojo generatorJob;
 	
 	@RDFProperty("omnom:fileRetrievalURI")
-	private URI fileRetrievalURI;
+	private String fileRetrievalURI;
 
 	@RDFProperty("omnom:fileEditURI")
-	private URI fileEditURI;
+	private String fileEditURI;
 
 //	public static FilePojo readFilePojo(Grafeo g) {
 //		GResource blank = g.findTopBlank();
@@ -107,28 +107,11 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 	public long getFileSize() { return fileSize; }
 	public void setFileSize(long fileSize) { this.fileSize = fileSize; }
 
-	public URI getFileRetrievalURI() { return fileRetrievalURI; }
+	public String getFileRetrievalURI() { return fileRetrievalURI; }
+	public void setFileRetrievalURI(String fileRetrievalURI) { this.fileRetrievalURI = fileRetrievalURI; }
 
-	public void setFileRetrievalURI(URI fileRetrievalURI) { this.fileRetrievalURI = fileRetrievalURI; }
-	public void setFileRetrievalURI(String fileRetrievalURIString) {
-		try {
-			this.fileRetrievalURI = new URI(fileRetrievalURIString);
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public URI getFileEditURI() { return fileEditURI; }
-	public void setFileEditURI(URI fileEditURI) { this.fileEditURI = fileEditURI; }
-	public void setFileEditURI(String fileEditURIString) {
-		try {
-			this.fileEditURI = new URI(fileEditURIString);
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	public String getFileEditURI() { return fileEditURI; }
+	public void setFileEditURI(String fileEditURI) { this.fileEditURI = fileEditURI; }
 
 	public String getId() { return id; }
 	public void setId(String id) { this.id = id; }
