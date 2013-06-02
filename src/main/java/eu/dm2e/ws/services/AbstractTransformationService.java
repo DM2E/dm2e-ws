@@ -18,9 +18,13 @@ import com.sun.jersey.multipart.FormDataMultiPart;
 
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.api.ParameterAssignmentPojo;
+import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
+import eu.dm2e.ws.api.WebservicePojo;
 
 /**
  * TODO document
@@ -56,6 +60,24 @@ public abstract class AbstractTransformationService extends AbstractRDFService i
 			wsConf.loadFromURI(configURI, 1);
 		} catch (Exception e) {
 			return throwServiceError(e);
+		}
+		
+		/*
+		 * Validate the config against the webservice description
+		 */
+		WebservicePojo ws = getWebServicePojo();
+		for (ParameterPojo param : ws.getInputParams()) {
+			if (param.getIsRequired() && null == wsConf.getParameterAssignmentForParam(param.getId())) {
+				return throwServiceError(param.getId(), ErrorMsg.REQUIRED_PARAM_MISSING);
+			}
+			ParameterAssignmentPojo ass = wsConf.getParameterAssignmentForParam(param.getId());
+			if (null != ass) {
+				try {
+					param.validateParameterInput(ass.getParameterValue());
+				} catch (NumberFormatException e) {
+					return throwServiceError(ass.getParameterValue(), ErrorMsg.ILLEGAL_PARAMETER_VALUE);
+				}
+			}
 		}
 
         /*
