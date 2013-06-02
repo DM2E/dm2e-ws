@@ -1,8 +1,7 @@
 package eu.dm2e.ws.services.demo;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static org.junit.matchers.JUnitMatchers.*;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -14,6 +13,7 @@ import org.junit.Test;
 
 import com.sun.jersey.api.client.ClientResponse;
 
+import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
 import eu.dm2e.ws.api.JobPojo;
@@ -57,21 +57,38 @@ public class DemoServiceITCase extends OmnomTestCase {
     	assertTrue(g.containsStatementPattern(SERVICE_URI, "rdf:type", "omnom:Webservice"));
     	assertTrue(g.containsStatementPattern(SERVICE_URI, "omnom:inputParam", SERVICE_URI + "/param/sleeptime"));
     	assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/sleeptime", "rdf:type", "omnom:Parameter"));
+    	assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/sleeptime", "omnom:parameterType", g.literal(g.expand("xsd:int"))));
     }
     
     @Test
     public void testPut() {
-    	ClientResponse confResp = client
-    			.getConfigWebResource()
-    			.type("text/turtle")
-    			.post(ClientResponse.class, configFile.get(OmnomTestResources.DEMO_SERVICE_WORKING));
-    	assertEquals(201, confResp.getStatus());
-    	URI confLoc = confResp.getLocation();
-    	assertNotNull(confLoc);
-    	ClientResponse serviceResp = client
-    			.resource(SERVICE_URI)
-    			.put(ClientResponse.class, confLoc.toString());
-    	assertEquals(202, serviceResp.getStatus());
+    	{
+    		ClientResponse confResp = client
+    				.getConfigWebResource()
+    				.type("text/turtle")
+    				.post(ClientResponse.class, configFile.get(OmnomTestResources.DEMO_SERVICE_WORKING));
+    		assertEquals(201, confResp.getStatus());
+    		URI confLoc = confResp.getLocation();
+    		assertNotNull(confLoc);
+    		ClientResponse serviceResp = client
+    				.resource(SERVICE_URI)
+    				.put(ClientResponse.class, confLoc.toString());
+    		assertEquals(202, serviceResp.getStatus());
+    	}
+    }
+    
+    @Test
+    public void testPostIllegal() {
+    	{
+	    	ClientResponse confResp = client
+	    			.resource(SERVICE_URI)
+	    			.type("text/turtle")
+	    			.post(ClientResponse.class, configFile.get(OmnomTestResources.DEMO_SERVICE_ILLEGAL_PARAMETER));
+	    	String confRespStr = confResp.getEntity(String.class);
+	    	log.info(confRespStr);
+	    	assertEquals(400, confResp.getStatus());
+	    	assertThat(confRespStr, containsString(ErrorMsg.ILLEGAL_PARAMETER_VALUE.toString()));
+    	}
     }
 
 //    @Ignore("Refactor this")

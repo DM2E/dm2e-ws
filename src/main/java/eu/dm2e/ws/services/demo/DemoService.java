@@ -1,5 +1,7 @@
 package eu.dm2e.ws.services.demo;
 
+import eu.dm2e.ws.ErrorMsg;
+import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.model.JobStatusConstants;
 import eu.dm2e.ws.services.AbstractTransformationService;
@@ -17,7 +19,11 @@ import javax.ws.rs.Path;
 public class DemoService extends AbstractTransformationService {
 
     public DemoService() {
-        getWebServicePojo().addInputParameter("sleeptime");
+        ParameterPojo sleeptimeParam = getWebServicePojo().addInputParameter("sleeptime");
+        sleeptimeParam.setParameterType("xsd:int");
+        sleeptimeParam.setIsRequired(true);
+        ParameterPojo countdownPhraseParam = getWebServicePojo().addInputParameter("countdownPhrase");
+        countdownPhraseParam.setIsRequired(false);
     }
 
     @Override
@@ -28,12 +34,16 @@ public class DemoService extends AbstractTransformationService {
 
         int sleepTime = 0;
         jobPojo.debug(wsConf.getParameterValueByName("sleeptime"));
+        jobPojo.debug(wsConf.getParameterValueByName("countdownPhrase"));
 
         try {
             sleepTime = Integer.parseInt(wsConf.getParameterValueByName("sleeptime"));
         } catch(Exception e) {
-            jobPojo.warn("Exception occured!: " + e);
+            jobPojo.warn(wsConf.getParameterValueByName("sleeptime") + " " + ErrorMsg.ILLEGAL_PARAMETER_VALUE.toString() + " " + e);
         }
+        String countdownPhrase = (null == wsConf.getParameterValueByName("countdownPhrase"))
+        		? "bottles of beer on the wall."
+        		: wsConf.getParameterValueByName("countdownPhrase");
 
         jobPojo.debug("DemoWorker will sleep for " + sleepTime + " seconds.");
         jobPojo.setStarted();
@@ -41,7 +51,8 @@ public class DemoService extends AbstractTransformationService {
         // snooze
         try {
             for (int i=0 ; i < sleepTime ; i++) {
-                jobPojo.debug("Still Sleeping for " + (sleepTime - i) + " seconds.");
+				jobPojo.info((sleepTime - i) + " " + countdownPhrase);
+//                jobPojo.trace("Still Sleeping for " + (sleepTime - i) + " seconds.");
                 Thread.sleep(1000);
             }
         } catch (InterruptedException e) {
