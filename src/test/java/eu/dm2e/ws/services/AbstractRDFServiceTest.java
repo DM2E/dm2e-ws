@@ -64,7 +64,7 @@ public class AbstractRDFServiceTest extends OmnomTestCase{
 	public void testThrowServiceErrorErrorMsg() {
 		Response resp = mockService.throwServiceError(ErrorMsg.BAD_RDF);
 		assertEquals(400, resp.getStatus());
-		assertEquals(ErrorMsg.BAD_RDF.getMessage(), resp.getEntity());
+		assertEquals(ErrorMsg.BAD_RDF.toString(), resp.getEntity());
 	}
 
 	@Test
@@ -72,7 +72,7 @@ public class AbstractRDFServiceTest extends OmnomTestCase{
 		String badString = "SNOOZING";
 		Response resp = mockService.throwServiceError(badString, ErrorMsg.INVALID_LOG_LEVEL);
 		assertEquals(400, resp.getStatus());
-		assertEquals(badString + ": " + ErrorMsg.INVALID_LOG_LEVEL.getMessage(), resp.getEntity());
+		assertEquals(badString + ": " + ErrorMsg.INVALID_LOG_LEVEL.toString(), resp.getEntity());
 	}
 
 	@Test
