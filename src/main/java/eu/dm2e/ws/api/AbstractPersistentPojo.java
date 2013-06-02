@@ -81,6 +81,14 @@ public abstract class AbstractPersistentPojo<T> {
 		this.loadFromURI(id, 0);
 	}
 	
+	public void loadFromURI(URI id) {
+		this.loadFromURI(id.toString(), 0);
+	}
+	
+	public void loadFromURI(URI id, int expansionSteps) {
+		this.loadFromURI(id.toString(), expansionSteps);
+	}
+	
 	public void loadFromURI(String id, int expansionSteps) {
 		this.setId(id);
         Grafeo g = new GrafeoImpl();
