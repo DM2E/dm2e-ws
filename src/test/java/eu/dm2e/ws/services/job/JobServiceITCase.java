@@ -82,13 +82,13 @@ public class JobServiceITCase extends OmnomTestCase {
 			String badStatus = "";
 			ClientResponse resp1 = wr.put(ClientResponse.class, badStatus);
 			assertEquals(400, resp1.getStatus());
-			assertEquals(ErrorMsg.NO_JOB_STATUS.getMessage(), resp1.getEntity(String.class));
+			assertEquals(ErrorMsg.NO_JOB_STATUS.toString(), resp1.getEntity(String.class));
 		}
 		{
 			String badStatus = "XYZZY";
 			ClientResponse resp1 = wr.put(ClientResponse.class, badStatus);
 			assertEquals(400, resp1.getStatus());
-			assertEquals("XYZZY: " + ErrorMsg.INVALID_JOB_STATUS.getMessage(), resp1.getEntity(String.class));
+			assertEquals("XYZZY: " + ErrorMsg.INVALID_JOB_STATUS.toString(), resp1.getEntity(String.class));
 		}
 	}
 
@@ -114,7 +114,7 @@ public class JobServiceITCase extends OmnomTestCase {
 				.type("text/turtle")
 				.post(ClientResponse.class);
 		assertEquals(400, respBad.getStatus());
-		assertEquals(ErrorMsg.NO_TOP_BLANK_NODE.getMessage(), respBad.getEntity(String.class));
+		assertEquals(ErrorMsg.NO_TOP_BLANK_NODE.toString(), respBad.getEntity(String.class));
 	}
 
 	@Test

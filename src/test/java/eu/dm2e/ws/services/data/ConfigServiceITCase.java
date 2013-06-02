@@ -46,7 +46,7 @@ public class ConfigServiceITCase extends OmnomTestCase{
 	
 	@Test
 	public void testPostNoBlank() {
-		ClientResponse resp = webResource.post(ClientResponse.class, configString.get(OmnomTestResources.DEMO_SERVICE_BROKEN1));
+		ClientResponse resp = webResource.post(ClientResponse.class, configString.get(OmnomTestResources.DEMO_SERVICE_NO_TOP_BLANK));
 		assertEquals(400, resp.getStatus());
 		String respStr = resp.getEntity(String.class);
 		assertThat(respStr, containsString("No suitable top blank node."));
