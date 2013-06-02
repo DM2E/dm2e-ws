@@ -8,3 +8,5 @@ dm2e-ws.iml
 .classpath
 files/
 catalog-v001.xml
+src/main/resources/logging.properties
+*.BAK
