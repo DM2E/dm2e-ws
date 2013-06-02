@@ -66,12 +66,12 @@ public class GResourceImpl extends GValueImpl implements GResource {
 
     @Override
     public GValue get(String uri) {
-        log.info("Check for property: " + uri);
+        log.fine("Check for property: " + uri);
         uri = grafeo.expand(uri);
         Statement st = resource.getProperty(getGrafeoImpl(grafeo).model.createProperty(uri));
         if (st==null) return null;
         RDFNode value = st.getObject();
-        log.info("Found value: " + value.toString());
+        log.fine("Found value: " + value.toString());
         if (value.isResource()) return new GResourceImpl(grafeo, value.asResource());
         if (value.isLiteral()) return new GLiteralImpl(grafeo, value.asLiteral());
         throw new RuntimeException("Not a literal or a resource value: " + getUri() + " -> " + uri);

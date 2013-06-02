@@ -78,31 +78,31 @@ public abstract class GValueImpl extends JenaImpl implements GValue {
         if (isLiteral()) {
             String toParse = value.asLiteral().getLexicalForm();
             if (T.equals(long.class) || T.equals(Long.class)) {
-                log.info("Found long.");
+                log.fine("Found long.");
                 result = (T) new Long(Long.parseLong(toParse));
             } else if (T.equals(int.class) || T.equals(Integer.class)) {
-                log.info("Found int.");
+                log.fine("Found int.");
                 result = (T) new Integer(Integer.parseInt(toParse));
             } else if (T.equals(float.class) || T.equals(Float.class)) {
-                log.info("Found float.");
+                log.fine("Found float.");
                 result = (T) new Float(Float.parseFloat(toParse));
             } else if (T.equals(double.class) || T.equals(Double.class)) {
-                log.info("Found double.");
+                log.fine("Found double.");
                 result = (T) new Double(Double.parseDouble(toParse));
             } else if (T.equals(boolean.class) || T.equals(Boolean.class)) {
-                log.info("Found boolean.");
+                log.fine("Found boolean.");
                 result = (T) Boolean.valueOf(Boolean.parseBoolean(toParse));
             } else if (T.equals(String.class)) {
-                log.info("Found String.");
+                log.fine("Found String.");
                 result = (T) toParse;
             } else if (T.equals(Date.class)) {
-                log.info("Found Date.");
+                log.fine("Found Date.");
                 result = (T) DatatypeConverter.parseDateTime(toParse).getTime();
             } else if (T.equals(Calendar.class)) {
-                log.info("Found Calendar.");
+                log.fine("Found Calendar.");
                 result = (T) DatatypeConverter.parseDateTime(toParse);
             } else if (T.equals(URI.class)) {
-                log.info("Found URI.");
+                log.fine("Found URI.");
                 try {
 					result = (T) new URI(toParse);
 				} catch (URISyntaxException e) {
@@ -110,7 +110,7 @@ public abstract class GValueImpl extends JenaImpl implements GValue {
 				}
             }
         } else {
-            log.info("Found Resource.");
+            log.fine("Found Resource.");
             result = grafeo.getObjectMapper().getObject(T, resource());
         }
         return result;

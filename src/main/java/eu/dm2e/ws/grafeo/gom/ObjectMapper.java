@@ -121,7 +121,7 @@ public class ObjectMapper {
                         listItemResource.set("co:next", nextlistItemResource);
                     }
                     addObject(listItem);
-                    log.info("" + i);
+                    log.fine("" + i);
                 }
                 // literal
             } else {
@@ -143,7 +143,7 @@ public class ObjectMapper {
 
         // Cache
         if (objectCache.containsKey(uri)) {
-            log.info("Cache hit!");
+            log.fine("Cache hit!");
             return (T) objectCache.get(uri);
         }
         log.info("Creating object for URI: " + uri);
@@ -169,7 +169,7 @@ public class ObjectMapper {
 
                 // if it's a Set type
                 if (field.getType().isAssignableFrom(java.util.Set.class)) {
-                    log.info(field.getName() + " is a SET.");
+                    log.fine(field.getName() + " is a SET.");
                     ParameterizedType subtype = (ParameterizedType) field.getGenericType();
                     Class<?> subtypeClass = (Class<?>) subtype.getActualTypeArguments()[0];
                     Set propSet = new HashSet();
@@ -180,7 +180,7 @@ public class ObjectMapper {
                         if (thisValue.isLiteral()) {
                             Object thisValueTyped = thisValue.getTypedValue(subtypeClass);
                             propSet.add(thisValueTyped);
-                            log.info("Added literal value: " + thisValue.toString());
+                            log.fine("Added literal value: " + thisValue.toString());
                         }
 
                         // or resources
@@ -188,7 +188,7 @@ public class ObjectMapper {
                             // TODO infinite recursion on doubly-linked resources? Is that fixed by caching?
                             Object nestedObject = getObject(subtypeClass, (GResource) thisValue);
                             propSet.add(nestedObject);
-                            log.info("Added resource value: " + thisValue.resource().getUri());
+                            log.fine("Added resource value: " + thisValue.resource().getUri());
                         }
                     }
 
@@ -202,7 +202,7 @@ public class ObjectMapper {
 
                 // List type
                 else if (field.getType().isAssignableFrom(java.util.List.class)) {
-                    log.info(field.getName() + " is a LIST.");
+                    log.fine(field.getName() + " is a LIST.");
                     ParameterizedType subtype = (ParameterizedType) field.getGenericType();
                     Class<?> subtypeClass = (Class<?>) subtype.getActualTypeArguments()[0];
                     int listSize = (Integer) ((null == res.get("co:size"))
@@ -235,7 +235,7 @@ public class ObjectMapper {
 
                 // One-value property
                 else {
-                    log.info(field.getName() + " is a boring " + field.getType());
+                    log.fine(field.getName() + " is a boring " + field.getType());
                     try {
                         GValue propValue = res.get(prop);
                         log.fine("" + prop + " : " + propValue);
@@ -300,7 +300,7 @@ public class ObjectMapper {
         }  else {
             uri = grafeo.expand(res.getUri());
         }
-        log.info("Class: " +T);
+        log.fine("Class: " +T);
         T result = getSingleObject(T, res, uri);
         setAnnotatedNamespaces(result);
         return result;
