@@ -35,5 +35,8 @@ public final class Config {
 		}
 		return conf;
 	}
-
+	
+	public static String ENDPOINT_QUERY = getString("dm2e.ws.sparql_endpoint");
+	public static String ENDPOINT_UPDATE = getString("dm2e.ws.sparql_endpoint_statements");
+	
 }
