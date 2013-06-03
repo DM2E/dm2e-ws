@@ -1,9 +1,14 @@
 package eu.dm2e.ws.services.file;
 
-import static org.junit.Assert.*;
-import static org.junit.matchers.JUnitMatchers.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.matchers.JUnitMatchers.containsString;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
@@ -97,7 +102,7 @@ public class NewFileServiceITCase extends OmnomTestCase {
 	}
 
 	@Test
-	public void testPutFileAndOrMetadata() {
+	public void testPutFileAndOrMetadata() throws IOException {
 		FilePojo origFP = new FilePojo();
 		origFP.setOriginalName("Foo");
 		origFP.setMd5("123");
@@ -211,7 +216,7 @@ public class NewFileServiceITCase extends OmnomTestCase {
 	}
 //
 	@Test
-	public void testGetFile() throws URISyntaxException {
+	public void testGetFile() throws URISyntaxException, IOException {
 		Set<OmnomTestResources> exampleResources = new HashSet<>();
 		exampleResources.add(OmnomTestResources.ASCII_NOISE);
 		exampleResources.add(OmnomTestResources.DEMO_JOB);
@@ -242,7 +247,7 @@ public class NewFileServiceITCase extends OmnomTestCase {
 		}
 	}
 	@Test
-	public void testDeleteFile() {
+	public void testDeleteFile() throws IOException {
 		OmnomTestResources res = OmnomTestResources.ASCII_NOISE;
 		String fileUri = client.publishFile(configFile.get(res), new FilePojo());
 		{
@@ -268,7 +273,7 @@ public class NewFileServiceITCase extends OmnomTestCase {
 	}
 	
 	@Test
-	public void testUpdateStatements() {
+	public void testUpdateStatements() throws IOException {
 		OmnomTestResources res = OmnomTestResources.ASCII_NOISE;
 		FilePojo origFp = new FilePojo();
 		origFp.setOriginalName("foo_bar.baz");

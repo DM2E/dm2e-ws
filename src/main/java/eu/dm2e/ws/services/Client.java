@@ -1,10 +1,15 @@
 package eu.dm2e.ws.services;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.logging.Logger;
 
 import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.io.IOUtils;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -28,52 +33,108 @@ public class Client {
     private com.sun.jersey.api.client.Client jerseyClient = new com.sun.jersey.api.client.Client();
     private Logger log = Logger.getLogger(getClass().getName());
     
-
-    public String publishFile(File file, FilePojo meta) {
-        WebResource fileResource = getFileWebResource();
-        FormDataMultiPart form = new FormDataMultiPart();
-        // add file part
-        MediaType fileType = MediaType.APPLICATION_OCTET_STREAM_TYPE;
-        FormDataBodyPart fileFDBP = new FormDataBodyPart("file", file, fileType);
-        form.bodyPart(fileFDBP);
-
-        // add metadata part
-        FilePojo fileDesc = meta;
-        // fileDesc.setGeneratorJob(jobPojo);
-        MediaType n3_type = MediaType.valueOf(DM2E_MediaType.TEXT_RDF_N3);
-        FormDataBodyPart metaFDBP = new FormDataBodyPart("meta", fileDesc.getNTriples(), n3_type);
-        form.bodyPart(metaFDBP);
-
-        // build the response stub
-        WebResource.Builder builder = fileResource
+    public String publishFile(String file) {
+    	return this.publishFile(file, (String)null);
+    }
+    public String publishFile(String is, Grafeo metadata) {
+		return this.publishFile(is, metadata.getNTriples());
+    }
+    public String publishFile(String is, FilePojo metadata) {
+		return this.publishFile(is, metadata.getNTriples());
+    }
+    
+    public String publishFile(InputStream is) throws IOException {
+		return this.publishFile(IOUtils.toString(is));
+    }
+    public String publishFile(InputStream is, String metadata) throws IOException {
+		return this.publishFile(IOUtils.toString(is), metadata);
+    }
+    public String publishFile(InputStream is, Grafeo metadata) throws IOException {
+		return this.publishFile(IOUtils.toString(is), metadata.getNTriples());
+    }
+    public String publishFile(InputStream is, FilePojo metadata) throws IOException {
+		return this.publishFile(IOUtils.toString(is), metadata.getNTriples());
+    }
+    
+    public String publishFile(File file) throws IOException {
+    	FileInputStream fis = new FileInputStream(file);
+		return this.publishFile(IOUtils.toString(fis));
+    }
+    public String publishFile(File file, String metadata) throws IOException {
+    	FileInputStream fis = new FileInputStream(file);
+		return this.publishFile(IOUtils.toString(fis), metadata);
+    }
+    public String publishFile(File file, Grafeo metadata) throws IOException {
+    	FileInputStream fis = new FileInputStream(file);
+		return this.publishFile(IOUtils.toString(fis), metadata.getNTriples());
+    }
+    public String publishFile(File file, FilePojo metadata) throws IOException {
+    	FileInputStream fis = new FileInputStream(file);
+		return this.publishFile(IOUtils.toString(fis), metadata.getNTriples());
+    }
+    
+    public String publishFile(String file, String metadata) {
+    	WebResource fileResource = getFileWebResource();
+    	FormDataMultiPart fdmp = createFileFormDataMultiPart(metadata, file);
+        ClientResponse resp = fileResource
                 .type(MediaType.MULTIPART_FORM_DATA)
                 .accept(DM2E_MediaType.TEXT_TURTLE)
-                .entity(form);
-
-        // Post the file to the file service
-        // jobPojo.info("Posting result to the file service.");
-        ClientResponse resp = builder.post(ClientResponse.class);
+                .entity(fdmp)
+                .post(ClientResponse.class);
         if (resp.getStatus() >= 400) {
-            // jobPojo.fatal("File storage failed: " + resp.getEntity(String.class));
-            // jobPojo.setFailed();
             throw new RuntimeException("File storage failed with status " + resp.getStatus() + ": " + resp.getEntity(String.class));
         }
-        String fileLocation = resp.getLocation().toString();
-        if (fileLocation == null) {
-            // jobPojo.warn("File Service didn't respond with a Location header.");
-            throw new RuntimeException("We didn't get a location header, ooumph! Status " + resp.getStatus() + ": " + resp.getEntity(String.class));
+        if (null == resp.getLocation()) {
+            throw new RuntimeException("File storage failed with status " + resp.getStatus() + ": " + resp.getEntity(String.class));
         }
-        // jobPojo.info("File stored at: " + fileLocation);
-//        try {
-//            fileDesc.setFileRetrievalURI(fileLocation);
-//            fileDesc.publish();
-//        } catch(Exception e) {
-//            // jobPojo.fatal(e);
-//            throw new RuntimeException("Error publishing file metadata: " + e, e);
-//        }
-        log.info("File stored, URI: " + fileLocation);
-        return fileLocation;
+        return resp.getLocation().toString();
     }
+
+//    public String publishFile(File file, FilePojo meta) {
+//        WebResource fileResource = getFileWebResource();
+//        FormDataMultiPart form = new FormDataMultiPart();
+//        // add file part
+//        MediaType fileType = MediaType.APPLICATION_OCTET_STREAM_TYPE;
+//        FormDataBodyPart fileFDBP = new FormDataBodyPart("file", file, fileType);
+//        form.bodyPart(fileFDBP);
+//
+//        // add metadata part
+//        FilePojo fileDesc = meta;
+//        // fileDesc.setGeneratorJob(jobPojo);
+//        MediaType n3_type = MediaType.valueOf(DM2E_MediaType.TEXT_RDF_N3);
+//        FormDataBodyPart metaFDBP = new FormDataBodyPart("meta", fileDesc.getNTriples(), n3_type);
+//        form.bodyPart(metaFDBP);
+//
+//        // build the response stub
+//        WebResource.Builder builder = fileResource
+//                .type(MediaType.MULTIPART_FORM_DATA)
+//                .accept(DM2E_MediaType.TEXT_TURTLE)
+//                .entity(form);
+//
+//        // Post the file to the file service
+//        // jobPojo.info("Posting result to the file service.");
+//        ClientResponse resp = builder.post(ClientResponse.class);
+//        if (resp.getStatus() >= 400) {
+//            // jobPojo.fatal("File storage failed: " + resp.getEntity(String.class));
+//            // jobPojo.setFailed();
+//            throw new RuntimeException("File storage failed with status " + resp.getStatus() + ": " + resp.getEntity(String.class));
+//        }
+//        String fileLocation = resp.getLocation().toString();
+//        if (fileLocation == null) {
+//            // jobPojo.warn("File Service didn't respond with a Location header.");
+//            throw new RuntimeException("We didn't get a location header, ooumph! Status " + resp.getStatus() + ": " + resp.getEntity(String.class));
+//        }
+//        // jobPojo.info("File stored at: " + fileLocation);
+////        try {
+////            fileDesc.setFileRetrievalURI(fileLocation);
+////            fileDesc.publish();
+////        } catch(Exception e) {
+////            // jobPojo.fatal(e);
+////            throw new RuntimeException("Error publishing file metadata: " + e, e);
+////        }
+//        log.info("File stored, URI: " + fileLocation);
+//        return fileLocation;
+//    }
 	public FormDataMultiPart createFileFormDataMultiPart(String metaStr, String content) {
 		FormDataMultiPart fdmp = new FormDataMultiPart();
 		if (null == metaStr) {

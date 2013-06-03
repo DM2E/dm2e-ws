@@ -13,6 +13,7 @@ import javax.xml.transform.stream.StreamSource;
 import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.services.AbstractTransformationService;
+import eu.dm2e.ws.services.Client;
 
 @Path("/service/xslt")
 public class XsltService extends AbstractTransformationService {
@@ -24,10 +25,12 @@ public class XsltService extends AbstractTransformationService {
 		ParameterPojo xsltInParam = ws.addInputParameter("xsltInParam");
 		xsltInParam.setTitle("XSLT input");
 		xsltInParam.setIsRequired(true);
+		xsltInParam.setParameterType("xsd:anyURI");
 
 		ParameterPojo xmlInParam = ws.addInputParameter("xmlInParam");
 		xmlInParam.setTitle("XML input");
 		xmlInParam.setIsRequired(true);
+		xmlInParam.setParameterType("xsd:anyURI");
 
 		ParameterPojo xmlOutParam = ws.addOutputParameter("xmlOutParam");
 		xmlOutParam.setTitle("XML output");
@@ -40,7 +43,7 @@ public class XsltService extends AbstractTransformationService {
 
 	@Override
 	public void run() {
-		log.warning("FOO");
+		log.warning("Starting to handle XSLT transformation job");
 		jobPojo.debug("Starting to handle XSLT transformation job");
 		String xmlUrl, xsltUrl;
 		try {
