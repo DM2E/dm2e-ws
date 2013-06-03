@@ -1,7 +1,8 @@
 package eu.dm2e.ws.api;
 
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
-import eu.dm2e.ws.services.xslt.XsltServiceTest;
+import eu.dm2e.ws.services.xslt.XsltService;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -55,7 +56,7 @@ public class WebservicePojoTest {
 	
 	@Test
 	public void testRunXsltService() throws URISyntaxException {
-		WebservicePojo ws = XsltServiceTest.getWebService();
+		WebservicePojo ws = new XsltService().getWebServicePojo();
 		WebserviceConfigPojo wsconf = new WebserviceConfigPojo();
 		GrafeoImpl g = new GrafeoImpl();
 		

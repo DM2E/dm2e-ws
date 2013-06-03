@@ -1,13 +1,21 @@
 package eu.dm2e.ws.services.workflow;
 
-import eu.dm2e.ws.api.*;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
-import eu.dm2e.ws.services.publish.PublishServiceTest;
-import eu.dm2e.ws.services.xslt.XsltServiceTest;
+import java.util.logging.Logger;
+
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.logging.Logger;
+import eu.dm2e.ws.api.ParameterPojo;
+import eu.dm2e.ws.api.ParameterSlotAssignmentPojo;
+import eu.dm2e.ws.api.ParameterSlotPojo;
+import eu.dm2e.ws.api.WebservicePojo;
+import eu.dm2e.ws.api.WorkflowJobPojo;
+import eu.dm2e.ws.api.WorkflowPojo;
+import eu.dm2e.ws.api.WorkflowPositionPojo;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.services.publish.PublishServiceTest;
+import eu.dm2e.ws.services.xslt.XsltService;
+import eu.dm2e.ws.services.xslt.XsltServiceITCase;
 
 public class WorkflowTest {
 
@@ -25,8 +33,8 @@ public class WorkflowTest {
 
 		
 		ParameterPojo xml_in, xslt_in, endpoint, graph;
-		xslt_in = XsltServiceTest.getWebService().getParamByName("xsltInParam"); 
-		xml_in  = XsltServiceTest.getWebService().getParamByName("xmlInParam"); 
+		xslt_in = new XsltService().getWebServicePojo().getParamByName("xsltInParam"); 
+		xml_in  = new XsltService().getWebServicePojo().getParamByName("xmlInParam"); 
 		endpoint = PublishServiceTest.getWebService().getParamByName("targetEndpointParam"); 
 		graph  = PublishServiceTest.getWebService().getParamByName("targetGraphParam"); 
 		ParameterSlotPojo xml_in_slot, xslt_in_slot, endpoint_slot, graph_slot;
@@ -78,7 +86,7 @@ public class WorkflowTest {
 
 		// WebServices
 		// -----------
-		WebservicePojo ws_xslt = XsltServiceTest.getWebService();
+		WebservicePojo ws_xslt = XsltServiceITCase.getWebService();
 		WebservicePojo ws_publish = PublishServiceTest.getWebService();
 
 		// Positions

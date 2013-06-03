@@ -4,12 +4,12 @@ import java.io.StringWriter;
 import java.net.URL;
 
 import javax.ws.rs.Path;
-import javax.ws.rs.core.MediaType;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.services.AbstractTransformationService;
@@ -100,7 +100,9 @@ public class XsltService extends AbstractTransformationService {
 			return;
 		}
 		
-		String fileLocation = this.storeAsFile(xslResultStr, MediaType.APPLICATION_XML);
+		FilePojo fp = new FilePojo();
+		fp.setGeneratorJob(jobPojo);
+		String fileLocation = new Client().publishFile(xslResultStr, fp);
 
 		jobPojo.info("Store result URI on the job (" + fileLocation + ").");
 		jobPojo.addOutputParameterAssignment("xmlOutParam", fileLocation);
