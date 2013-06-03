@@ -10,3 +10,4 @@ files/
 catalog-v001.xml
 src/main/resources/logging.properties
 *.BAK
+testconfig
