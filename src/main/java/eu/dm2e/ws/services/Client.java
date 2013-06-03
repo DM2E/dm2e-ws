@@ -7,9 +7,11 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.logging.Logger;
 
+import javax.management.RuntimeErrorException;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.NotImplementedException;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -19,6 +21,7 @@ import com.sun.jersey.multipart.FormDataMultiPart;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.api.SerializablePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 
 /**
@@ -32,6 +35,61 @@ public class Client {
 
     private com.sun.jersey.api.client.Client jerseyClient = new com.sun.jersey.api.client.Client();
     private Logger log = Logger.getLogger(getClass().getName());
+    
+    public ClientResponse putPojoToService(SerializablePojo pojo, String wr) {
+    	return this.putPojoToService(pojo, this.resource(wr));
+    }
+    public ClientResponse putPojoToService(SerializablePojo pojo, WebResource wr) {
+    	if (null == pojo.getId()) {
+    		throw new RuntimeException("Can't PUT a Pojo without id.");
+    	}
+	    return wr
+	    		.type(DM2E_MediaType.TEXT_PLAIN)
+				.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+				.entity(pojo.getId())
+				.put(ClientResponse.class);	
+    }
+    
+    public ClientResponse postPojoToService(SerializablePojo pojo, String wr) {
+    	return this.postPojoToService(pojo, this.resource(wr));
+    }
+    public ClientResponse postPojoToService(SerializablePojo pojo, WebResource wr) {
+		    return wr.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+				.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+				.entity(pojo.getNTriples())
+				.post(ClientResponse.class);	
+    }
+    
+    public String publishPojoToConfigService(SerializablePojo pojo, WebResource configWR) {
+		ClientResponse resp;
+		if (null == pojo.getId()) {
+			 resp = this.postPojoToService(pojo, configWR); 
+		} else {
+			if (pojo.getId().startsWith(configWR.getURI().toString())) {
+				 resp = resource(pojo.getId())
+					.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+					.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+					.entity(pojo.getNTriples())
+					.put(ClientResponse.class);
+			} else {
+				throw new NotImplementedException("Putting a config to a non-local web service isn't implemented yet.");
+			}
+		}
+		if (resp.getStatus() >= 400) {
+			throw new RuntimeException("Failed to publish config: " + resp.getEntity(String.class));
+		}
+		if (null == resp.getLocation()) {
+			throw new RuntimeException(configWR.toString() +  " did not return a location. Body was " + resp.getEntity(String.class));
+		}
+		pojo.setId(resp.getLocation().toString());
+		return resp.getLocation().toString();
+    }
+    public String publishPojoToConfigService(SerializablePojo pojo, String serviceBase) {
+    	return this.publishPojoToConfigService(pojo, this.resource(serviceBase));
+    }
+    public String publishPojoToConfigService(SerializablePojo pojo) {
+    	return this.publishPojoToConfigService(pojo, this.getConfigWebResource());
+    }
     
     public String publishFile(String file) {
     	return this.publishFile(file, (String)null);
@@ -90,51 +148,6 @@ public class Client {
         return resp.getLocation().toString();
     }
 
-//    public String publishFile(File file, FilePojo meta) {
-//        WebResource fileResource = getFileWebResource();
-//        FormDataMultiPart form = new FormDataMultiPart();
-//        // add file part
-//        MediaType fileType = MediaType.APPLICATION_OCTET_STREAM_TYPE;
-//        FormDataBodyPart fileFDBP = new FormDataBodyPart("file", file, fileType);
-//        form.bodyPart(fileFDBP);
-//
-//        // add metadata part
-//        FilePojo fileDesc = meta;
-//        // fileDesc.setGeneratorJob(jobPojo);
-//        MediaType n3_type = MediaType.valueOf(DM2E_MediaType.TEXT_RDF_N3);
-//        FormDataBodyPart metaFDBP = new FormDataBodyPart("meta", fileDesc.getNTriples(), n3_type);
-//        form.bodyPart(metaFDBP);
-//
-//        // build the response stub
-//        WebResource.Builder builder = fileResource
-//                .type(MediaType.MULTIPART_FORM_DATA)
-//                .accept(DM2E_MediaType.TEXT_TURTLE)
-//                .entity(form);
-//
-//        // Post the file to the file service
-//        // jobPojo.info("Posting result to the file service.");
-//        ClientResponse resp = builder.post(ClientResponse.class);
-//        if (resp.getStatus() >= 400) {
-//            // jobPojo.fatal("File storage failed: " + resp.getEntity(String.class));
-//            // jobPojo.setFailed();
-//            throw new RuntimeException("File storage failed with status " + resp.getStatus() + ": " + resp.getEntity(String.class));
-//        }
-//        String fileLocation = resp.getLocation().toString();
-//        if (fileLocation == null) {
-//            // jobPojo.warn("File Service didn't respond with a Location header.");
-//            throw new RuntimeException("We didn't get a location header, ooumph! Status " + resp.getStatus() + ": " + resp.getEntity(String.class));
-//        }
-//        // jobPojo.info("File stored at: " + fileLocation);
-////        try {
-////            fileDesc.setFileRetrievalURI(fileLocation);
-////            fileDesc.publish();
-////        } catch(Exception e) {
-////            // jobPojo.fatal(e);
-////            throw new RuntimeException("Error publishing file metadata: " + e, e);
-////        }
-//        log.info("File stored, URI: " + fileLocation);
-//        return fileLocation;
-//    }
 	public FormDataMultiPart createFileFormDataMultiPart(String metaStr, String content) {
 		FormDataMultiPart fdmp = new FormDataMultiPart();
 		if (null == metaStr) {
@@ -160,8 +173,6 @@ public class Client {
 	public FormDataMultiPart createFileFormDataMultiPart(Grafeo meta, String content) {
 		return createFileFormDataMultiPart(meta.getNTriples(), content);
 	}
-//    public HttpResponse postRDF(String postTo, Grafeo g, Map<String,String> headers) {
-//    }
     
     public WebResource getConfigWebResource() {
     	return this.resource(Config.getString("dm2e.service.config.base_uri"));

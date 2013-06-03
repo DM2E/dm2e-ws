@@ -4,23 +4,20 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 import org.apache.commons.beanutils.BeanUtils;
+
+import com.sun.jersey.api.client.WebResource;
 
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.services.Client;
 
-public abstract class AbstractPersistentPojo<T> {
+public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
 	
-    Logger log = Logger.getLogger(getClass().getName());
-//	public static getClass {
-//		return T;
-//	}
-	abstract String getId();
-	abstract void setId(String id);
+	protected Client client = new Client();
 	
 	public URI getIdAsURI() {
 		URI uri = null;
@@ -104,16 +101,25 @@ public abstract class AbstractPersistentPojo<T> {
             throw new RuntimeException("An exception occurred: " + e, e);
         }
     }
+	
+	public void publishToService(String serviceUri) {
+		this.client.publishPojoToConfigService(this, serviceUri);
+	}
+	public void publishToService(WebResource wr) {
+		this.client.publishPojoToConfigService(this, wr);
+	}
+	public void publishToService() {
+		this.client.publishPojoToConfigService(this);
+	}
 
-
-	public void publish(String endPoint, String graph) {
+	public void publishToEndpoint(String endPoint, String graph) {
         log.info("Writing to endpoint: " + endPoint + " / Graph: " + graph);
 		Grafeo g = new GrafeoImpl();
 		g.getObjectMapper().addObject(this);
 		g.emptyGraph(endPoint, graph);
 		g.writeToEndpoint(endPoint, graph);
 	}
-	public void publish(String endPoint) {
+	public void publishToEndpoint(String endPoint) {
 		if (null == this.getId()) {
 			String prefix;
 			try {
@@ -124,27 +130,11 @@ public abstract class AbstractPersistentPojo<T> {
 			String newURI = prefix+UUID.randomUUID().toString();
 			this.setId(newURI);
 		}
-		this.publish(endPoint, this.getId());
+		this.publishToEndpoint(endPoint, this.getId());
 	}
-	public void publish() {
+	public void publishToEndpoint() {
 		String endPoint = Config.getString("dm2e.ws.sparql_endpoint_statements");
-		this.publish(endPoint);
-	}
-	
-	public Grafeo getGrafeo() {
-		GrafeoImpl g = new GrafeoImpl();
-		g.getObjectMapper().addObject(this);
-		return g;
-	}
-	
-	public String getTurtle() {
-		return getGrafeo().getTurtle();
-	}
-	public String getNTriples() {
-		return getGrafeo().getNTriples();
-	}
-	public String getCanonicalNTriples() {
-		return getGrafeo().getCanonicalNTriples();
+		this.publishToEndpoint(endPoint);
 	}
 	
 }
