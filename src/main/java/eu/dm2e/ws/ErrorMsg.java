@@ -23,6 +23,8 @@ public enum ErrorMsg {
 	REQUIRED_PARAM_MISSING("Required input parameter is missing.")
 	,
 	ILLEGAL_PARAMETER_VALUE("Bad Value for this parameter.")
+	,
+	NOT_FOUND("Resource not found.")
 	;
 	
 	private String message;
