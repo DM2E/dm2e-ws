@@ -1,17 +1,34 @@
 package eu.dm2e.ws.api;
 
-import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import java.util.logging.Logger;
+
+import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.logging.Logger;
+import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
 public class WebserviceConfigPojoTest {
 	
 	private Logger log = Logger.getLogger(getClass().getName());
 	
+	
+	@Test 
+	public void testGetParameterAssignmentForParam() {
+		WebservicePojo wsDesc = new WebservicePojo();
+		wsDesc.setId("http://quux.bork/ws1/");
+		ParameterPojo fooParam = wsDesc.addInputParameter("foo");
+		fooParam.setIsRequired(true);
+		
+		WebserviceConfigPojo wsConf = new WebserviceConfigPojo();
+		wsConf.setId("http://quux.bork/config/1");
+		wsConf.setWebservice(wsDesc);
+		wsConf.addParameterAssignment("foo", "bar");
+		wsConf.validateConfig();
+		
+	}
 
-
+	@Ignore
 	@Test
 	public void testSerialization() {
         log.info("TEST: Config serislization");

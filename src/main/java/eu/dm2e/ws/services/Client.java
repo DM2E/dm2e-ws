@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.logging.Logger;
 
-import javax.management.RuntimeErrorException;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.io.IOUtils;
@@ -65,18 +64,25 @@ public class Client {
 		if (null == pojo.getId()) {
 			 resp = this.postPojoToService(pojo, configWR); 
 		} else {
+//			resp = null;
 			if (pojo.getId().startsWith(configWR.getURI().toString())) {
 				 resp = resource(pojo.getId())
-					.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
-					.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
-					.entity(pojo.getNTriples())
+//					.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+//					.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+//					.entity(pojo.getNTriples())
 					.put(ClientResponse.class);
 			} else {
 				throw new NotImplementedException("Putting a config to a non-local web service isn't implemented yet.");
 			}
 		}
 		if (resp.getStatus() >= 400) {
-			throw new RuntimeException("Failed to publish config: " + resp.getEntity(String.class));
+			throw new RuntimeException("Failed to publish config <"
+					+ pojo.getId()
+					+ "> :"
+					+ resp.getStatus() 
+					+ ":" 
+					+ resp.getEntity(String.class)
+					);
 		}
 		if (null == resp.getLocation()) {
 			throw new RuntimeException(configWR.toString() +  " did not return a location. Body was " + resp.getEntity(String.class));

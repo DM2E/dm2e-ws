@@ -3,6 +3,7 @@ package eu.dm2e.ws.services.workflow;
 import java.util.logging.Logger;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import eu.dm2e.ws.api.ParameterPojo;
@@ -15,7 +16,6 @@ import eu.dm2e.ws.api.WorkflowPositionPojo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.publish.PublishServiceTest;
 import eu.dm2e.ws.services.xslt.XsltService;
-import eu.dm2e.ws.services.xslt.XsltServiceITCase;
 
 public class WorkflowTest {
 
@@ -27,6 +27,7 @@ public class WorkflowTest {
 		Assert.assertTrue(true);
 	}
 
+	@Ignore("TODO")
 	@Test
 	public void testWorkflowJon() {
 		WorkflowPojo wf = getWorkflow();
@@ -86,7 +87,7 @@ public class WorkflowTest {
 
 		// WebServices
 		// -----------
-		WebservicePojo ws_xslt = XsltServiceITCase.getWebService();
+		WebservicePojo ws_xslt = new XsltService().getWebServicePojo();
 		WebservicePojo ws_publish = PublishServiceTest.getWebService();
 
 		// Positions

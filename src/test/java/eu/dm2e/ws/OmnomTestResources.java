@@ -11,6 +11,8 @@ public enum OmnomTestResources {
 	, MINIMAL_FILE("/file/empty_file.ttl")
 	, MINIMAL_FILE_WITH_URI("/file/uri_file.ttl")
 	, ILLEGAL_EMPTY_FILE("/file/illegal_file.ttl")
+	, XML_DTA_GRIMM("/provider-examples/dta/grimm_meistergesang_1811.TEI-P5.xml")
+	, XSLT_KBA_BBAW_TO_EDM("/mappings/xslt/KBA_BBAW_TO_EDM.xsl")
 	;
 	
 	final String path;

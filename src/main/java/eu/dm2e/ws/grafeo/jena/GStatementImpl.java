@@ -51,8 +51,8 @@ public class GStatementImpl extends JenaImpl implements GStatement {
     	jenaSubject = jenaStmt.getSubject();
     	jenaPredicate = jenaStmt.getPredicate();
     	jenaObject = jenaStmt.getObject();
-    	this.subject = new GResourceImpl(grafeo, jenaSubject.asResource().getURI());
-    	this.predicate = new GResourceImpl(grafeo, jenaPredicate.asResource().getURI());
+    	this.subject = new GResourceImpl(grafeo, jenaSubject.asResource());
+    	this.predicate = new GResourceImpl(grafeo, jenaPredicate.asResource());
     	if (jenaObject.isLiteral()) {
     		this.literal = true;
     		this.literalValue = new GLiteralImpl(grafeo, jenaObject.asLiteral());

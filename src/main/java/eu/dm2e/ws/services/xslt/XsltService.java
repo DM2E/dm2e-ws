@@ -17,26 +17,30 @@ import eu.dm2e.ws.services.Client;
 
 @Path("/service/xslt")
 public class XsltService extends AbstractTransformationService {
+	
+	public static final String XML_IN_PARAM_NAME = "xmlInput";
+	public static final String XSLT_IN_PARAM_NAME = "xslInput";
+	public static final String XML_OUT_PARAM_NAME = "xmlOutput";
 
 	@Override
 	public WebservicePojo getWebServicePojo() {
 		WebservicePojo ws = super.getWebServicePojo();
 
-		ParameterPojo xsltInParam = ws.addInputParameter("xsltInParam");
+		ParameterPojo xsltInParam = ws.addInputParameter(XSLT_IN_PARAM_NAME);
 		xsltInParam.setTitle("XSLT input");
 		xsltInParam.setIsRequired(true);
 		xsltInParam.setParameterType("xsd:anyURI");
 
-		ParameterPojo xmlInParam = ws.addInputParameter("xmlInParam");
+		ParameterPojo xmlInParam = ws.addInputParameter(XML_IN_PARAM_NAME);
 		xmlInParam.setTitle("XML input");
 		xmlInParam.setIsRequired(true);
 		xmlInParam.setParameterType("xsd:anyURI");
 
-		ParameterPojo xmlOutParam = ws.addOutputParameter("xmlOutParam");
+		ParameterPojo xmlOutParam = ws.addOutputParameter(XML_OUT_PARAM_NAME);
 		xmlOutParam.setTitle("XML output");
 		
-		ParameterPojo fileServiceParam = ws.addInputParameter("fileServiceParam");
-		fileServiceParam.setIsRequired(false);
+//		ParameterPojo fileServiceParam = ws.addInputParameter("fileServiceParam");
+//		fileServiceParam.setIsRequired(false);
 		
 		return ws;
 	}
@@ -48,8 +52,8 @@ public class XsltService extends AbstractTransformationService {
 		String xmlUrl, xsltUrl;
 		try {
 			// TODO this should be refactored to a validation routine in the JobPojo
-			xmlUrl = jobPojo.getWebserviceConfig().getParameterValueByName("xmlInParam");
-			xsltUrl = jobPojo.getWebserviceConfig().getParameterValueByName("xsltInParam");
+			xmlUrl = jobPojo.getWebserviceConfig().getParameterValueByName(XML_IN_PARAM_NAME);
+			xsltUrl = jobPojo.getWebserviceConfig().getParameterValueByName(XSLT_IN_PARAM_NAME);
 			if (null == xmlUrl) {
 				throw new NullPointerException("xmlUrl is null");
 			}
@@ -105,8 +109,8 @@ public class XsltService extends AbstractTransformationService {
 		String fileLocation = new Client().publishFile(xslResultStr, fp);
 
 		jobPojo.info("Store result URI on the job (" + fileLocation + ").");
-		jobPojo.addOutputParameterAssignment("xmlOutParam", fileLocation);
-		jobPojo.publish();
+		jobPojo.addOutputParameterAssignment(XML_OUT_PARAM_NAME, fileLocation);
+		jobPojo.publishToEndpoint();
 
 		// Update job status
 		jobPojo.info("XSLT Transformation complete.");

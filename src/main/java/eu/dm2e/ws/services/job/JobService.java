@@ -135,7 +135,7 @@ public class JobService extends AbstractRDFService {
 		JobPojo jobPojo = new JobPojo();
 		jobPojo.loadFromURI(resourceUriStr);
 		jobPojo.setStatus(newStatus);
-		jobPojo.publish();
+		jobPojo.publishToEndpoint();
 		return Response.created(getRequestUriWithoutQuery()).build();
 	}
 
@@ -186,7 +186,7 @@ public class JobService extends AbstractRDFService {
 			}
 		}
 		LogEntryPojo entry = jobPojo.addLogEntry(logString, logLevel.toString());
-		jobPojo.publish();
+		jobPojo.publishToEndpoint();
 		URI entryURI;
 		try {
 			entryURI = new URI(entry.getId());

@@ -1,15 +1,20 @@
 package eu.dm2e.ws.api;
 
-import eu.dm2e.ws.grafeo.annotations.*;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import eu.dm2e.ws.ErrorMsg;
+import eu.dm2e.ws.grafeo.annotations.Namespaces;
+import eu.dm2e.ws.grafeo.annotations.RDFClass;
+import eu.dm2e.ws.grafeo.annotations.RDFId;
+import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
+import eu.dm2e.ws.grafeo.annotations.RDFProperty;
+
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/"})
 @RDFClass("omnom:WebServiceConfig")
 //@RDFInstancePrefix("http://data.dm2e.eu/config/")
-@RDFInstancePrefix("http://localhost:9998/data/configurations/")
+@RDFInstancePrefix("http://localhost:9998/config/")
 public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfigPojo>{
 	
 	@RDFId
@@ -18,7 +23,7 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
 	@RDFProperty("omnom:assignment")
 	private Set<ParameterAssignmentPojo> parameterAssignments = new HashSet<>();
 	
-	@RDFProperty("omnom:hasWebService")
+	@RDFProperty("omnom:webservice")
 	private WebservicePojo webservice;
 	
 	/*********************
@@ -30,7 +35,9 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
         for (ParameterAssignmentPojo ass : this.getParameterAssignments()) {
 			try { 
 //				log.warning("" + ass.getForParam().getId());
-				if (ass.getForParam().getId().matches(".*" + paramName + "$")
+				if (ass.getForParam().getId().equals(paramName)
+					||
+					ass.getForParam().getId().matches(".*" + paramName + "$")
 					||
 					ass.getForParam().getLabel().equals(paramName)
 					){
@@ -46,6 +53,15 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
 	}
 	public void addParameterAssignment(String paramName, String paramValue) {
 		log.info("adding parameter assignment");
+		
+		WebservicePojo ws = this.getWebservice();
+		if (null == ws) {
+			throw new RuntimeException("WebserviceConfig contains no webservice. Can't introspect parameters.");
+		}
+		if (null == this.getId()) {
+			throw new RuntimeException("WebserviceConfig has no ID, can't generate URI.");
+		}
+		
 		ParameterPojo param = this.getWebservice().getParamByName(paramName);
 		if (null == param) {
 			throw new RuntimeException("Webservice contains no such parameter: " + paramName);
@@ -62,6 +78,29 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
     	}
         log.info("No value found for: " + needle);
     	return null;
+    }
+    
+    public void validateConfig() {
+		/*
+		 * Validate the config against the webservice description
+		 */
+		WebservicePojo ws = getWebservice();
+		if (null == ws) {
+			throw new RuntimeException("Can't validate without webservice description:\n" + this.getTurtle());
+		}
+		for (ParameterPojo param : ws.getInputParams()) {
+			if (param.getIsRequired() && null == this.getParameterAssignmentForParam(param.getId())) {
+				throw new RuntimeException(param.getId() + ": " + ErrorMsg.REQUIRED_PARAM_MISSING.toString());
+			}
+			ParameterAssignmentPojo ass = this.getParameterAssignmentForParam(param.getId());
+			if (null != ass) {
+				try {
+					param.validateParameterInput(ass.getParameterValue());
+				} catch (NumberFormatException e) {
+					throw new RuntimeException(ass.getParameterValue() + ": " + ErrorMsg.ILLEGAL_PARAMETER_VALUE.toString());
+				}
+			}
+		}
     }
     
 	/*********************

@@ -2,11 +2,13 @@ package eu.dm2e.ws.services.config;
 
 import java.io.File;
 import java.net.URI;
-import java.util.Date;
+import java.net.URISyntaxException;
+import java.util.UUID;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
@@ -14,6 +16,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import eu.dm2e.ws.Config;
+import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.GResource;
@@ -61,34 +65,89 @@ public class ConfigService extends AbstractRDFService {
         return getResponse(g);
     }
 
-
-    @POST
+    @PUT
     @Consumes(MediaType.WILDCARD)
-    public Response postConfig(File input) {
-        log.info("Config posted.");
-        // TODO use Exception to return proper HTTP response if input can not be parsed as RDF
-        // TODO BUG this fails if newlines aren't correctly transmitted
-        log.severe(input.toString());
+    @Path("{id}")
+    public Response putConfig(File input) {
+    	URI uri = getRequestUriWithoutQuery();
+        log.info("PUT config to " + uri);
         Grafeo g;
         try {
         	g = new GrafeoImpl(input);
         } catch (Throwable t) {
-        	log.severe("Could not parse input.");
-        	return Response.status(400).entity("Bad RDF syntax.").build();
+        	log.severe(ErrorMsg.BAD_RDF.toString());
+        	return throwServiceError(ErrorMsg.BAD_RDF);
         }
-        log.severe(g.getTurtle());
-        GResource blank = g.findTopBlank("omnom:WebServiceConfig");
-        if (blank == null) {
-        	log.severe("Could not find a suitable top blank node.");
-        	return Response.status(400).entity("No suitable top blank node.").build();
+        log.info("Looking for top blank node.");
+        GResource res = g.findTopBlank("omnom:WebServiceConfig");
+        if (null == res)  {
+        	res = g.resource(uri);
         }
-        log.severe("Top blank node: "+blank);
-        String uri = uriInfo.getRequestUri() + "/" + new Date().getTime();
-        blank.rename(uri);
-        g.skolemnizeSequential(uri, "omnom:assignment", "assignment");
-//        g.addTriple(uri,"rdf:type","http://example.org/classes/Configuration");
-        g.writeToEndpoint(NS.ENDPOINT_STATEMENTS , uri);
-        return Response.created(URI.create(uri)).entity(getResponseEntity(g)).build();
+        else {
+        	res.rename(uri.toString());
+        }
+//        if (g.listAnonStatements(null, "omnom:assignment").size() > 0) {
+        log.warning("Skolemnizing ...");
+        g.skolemnizeSequential(uri.toString(), "omnom:assignment", "assignment");
+        log.warning("DONE Skolemnizing ...");
+//        }
+//        WebserviceConfigPojo pojo = g.getObjectMapper().getObject(WebserviceConfigPojo.class, uri);
+//        if (null == pojo) {
+//        	return throwServiceError(ErrorMsg.NOT_FOUND, 404);
+//        }
+//        else {
+//        	throwServiceError(pojo.getTurtle());
+//        }
+        g.emptyGraph(Config.ENDPOINT_UPDATE, uri.toString());
+        g.writeToEndpoint(Config.ENDPOINT_UPDATE, uri.toString());
+        return Response.created(uri).entity(getResponseEntity(g)).build();
+    }
+
+	@POST
+    @Consumes(MediaType.WILDCARD)
+    public Response postConfig(File input) {
+        log.info("POST config.");
+//        // TODO BUG this fails if newlines aren't correctly transmitted
+        
+    	String uriStr = getRequestUriWithoutQuery().normalize().toString() + "/" + UUID.randomUUID().toString();
+    	log.info("Posting the config to " + uriStr);
+    	URI uri = null;
+    	try {
+    		uri = getUriForString(uriStr);
+    	} catch (URISyntaxException e1) {
+    		return throwServiceError("Couldn't generate URI");
+    	}
+        Grafeo g;
+        try {
+        	g = new GrafeoImpl(input);
+        } catch (Throwable t) {
+        	log.severe(ErrorMsg.BAD_RDF.toString());
+        	return throwServiceError(ErrorMsg.BAD_RDF);
+        }
+        log.info("Parsed RDF.");
+        GResource res = g.findTopBlank("omnom:WebServiceConfig");
+        if (null == res)  {
+        	return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE);
+        }
+        res.rename(uriStr);
+        log.info("Renamed top blank node.");
+//        if (g.listAnonStatements(null, "omnom:assignment").size() > 0) {
+        	g.skolemnizeSequential(uriStr, "omnom:assignment", "assignment");
+//        }
+        log.info("Skolemnized assignments");
+//        WebserviceConfigPojo pojo = g.getObjectMapper().getObject(WebserviceConfigPojo.class, uriStr);
+//        if (null == pojo) {
+//        	return throwServiceError(ErrorMsg.NOT_FOUND, 404);
+//        }
+//        else {
+//        	throwServiceError(pojo.getTurtle());
+//        }
+//        pojo.publishToEndpoint(Config.ENDPOINT_UPDATE, uriStr);
+        g.emptyGraph(Config.ENDPOINT_UPDATE, uriStr);
+        log.info("Emptied graph");
+        g.writeToEndpoint(Config.ENDPOINT_UPDATE, uriStr);
+        log.info("Written data to endpoint.");
+        return Response.created(uri).entity(getResponseEntity(g)).build();
     }
  
     

@@ -8,7 +8,7 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 @RDFClass("omnom:WorkflowPosition")
 public class WorkflowPositionPojo {
 	
-	@RDFProperty("omnom:hasWebService")
+	@RDFProperty("omnom:webservice")
 	private WebservicePojo webService;
 	
 	@RDFProperty("omnom:belongsToWorkflow")

@@ -68,6 +68,9 @@ public abstract class AbstractRDFService {
 	@Context 
 	protected HttpHeaders headers;
 	
+    protected Response throwServiceError(ErrorMsg msg, int status) {
+    	return this.throwServiceError(msg.toString(), status);
+	}
 	protected Response throwServiceError(String msg, int status) {
 		return Response.status(status).entity(msg).build();
 	}

@@ -36,7 +36,8 @@ public class WorkflowPojo extends WebservicePojo {
     				continue;
     			}
 		    	log.info("" + thisSlot.getForParam().getId());
-    			if (thisSlot.getForParam().getId().equals(param.getId())
+    			if (thisSlot.getForParam() != null
+    					&& thisSlot.getForParam().getId().equals(param.getId())
     					&& thisSlot.getForPosition() == pos) {
     				return thisSlot;
     			}

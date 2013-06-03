@@ -272,6 +272,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         			continue;
         		}
 				try {
+					log.info("Trying to load resource " + gres.getUri());
 					this.load(gres.getUri(), 0);
 				} catch (Throwable t) {
 					log.info("Failed to load resource " + gres.getUri() +".");
@@ -894,7 +895,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		Resource sS = null;
 		Property pP = null;
 		RDFNode oO = null;
-		if (s !=null)
+		if (s != null)
 			sS = this.model.getResource(expand(s));
 		if (p != null)
 			pP = this.model.getProperty(expand(p));

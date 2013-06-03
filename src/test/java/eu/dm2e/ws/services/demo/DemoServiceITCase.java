@@ -1,7 +1,10 @@
 package eu.dm2e.ws.services.demo;
 
-import static org.junit.Assert.*;
-import static org.junit.matchers.JUnitMatchers.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.matchers.JUnitMatchers.containsString;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -9,10 +12,12 @@ import java.util.logging.Logger;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.sun.jersey.api.client.ClientResponse;
 
+import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
@@ -68,15 +73,23 @@ public class DemoServiceITCase extends OmnomTestCase {
     				.type("text/turtle")
     				.post(ClientResponse.class, configFile.get(OmnomTestResources.DEMO_SERVICE_WORKING));
     		assertEquals(201, confResp.getStatus());
+    		log.info("POST finished successfully.");
     		URI confLoc = confResp.getLocation();
     		assertNotNull(confLoc);
+    		log.info("POST returned " + confLoc);
+    		log.info("Beginning PUT");
     		ClientResponse serviceResp = client
     				.resource(SERVICE_URI)
+    				.type(DM2E_MediaType.TEXT_PLAIN)
     				.put(ClientResponse.class, confLoc.toString());
+    		log.info("PUT finished");
+    		String serviceRespStr = serviceResp.getEntity(String.class);
+    		System.out.println(serviceRespStr);
     		assertEquals(202, serviceResp.getStatus());
     	}
     }
     
+    @Ignore("TODO")
     @Test
     public void testPostIllegal() {
     	{
@@ -91,7 +104,7 @@ public class DemoServiceITCase extends OmnomTestCase {
     	}
     }
 
-//    @Ignore("Refactor this")
+    @Ignore("Refactor this")
     @Test
     public void testDemo() {
     	
@@ -99,14 +112,17 @@ public class DemoServiceITCase extends OmnomTestCase {
         ws.loadFromURI(SERVICE_URI);
         WebserviceConfigPojo config = new WebserviceConfigPojo();
         config.setWebservice(ws);
+//        config.setId(SERVICE_URI + "/" + )
+        client.publishPojoToConfigService(config);
         config.addParameterAssignment("sleeptime", "2");
+        client.publishPojoToConfigService(config);
         
         log.info("Configuration created for Test: " + config.getTurtle());
         
         ClientResponse response = client
         		.resource(SERVICE_URI)
-        		.type("text/turtle")
-        		.post(ClientResponse.class, config.getTurtle());
+        		.type(DM2E_MediaType.TEXT_PLAIN)
+        		.put(ClientResponse.class, config.getId());
         log.info("JOB STARTED WITH RESPONSE: " + response.getStatus() + " / Location: " + response.getLocation() + " / Content: " + response.getEntity(String.class));
         assertEquals(202, response.getStatus());
         URI joburi = response.getLocation();

@@ -26,7 +26,7 @@ public class OmnomTestCase {
 				configFile.put(res, new File(testConfigURL.getFile()));
 				configString.put(res, IOUtils.toString(testConfigURL.openStream()));
 			} catch (Exception e) {
-				org.junit.Assert.fail(res + e.toString());
+				org.junit.Assert.fail(res + " not found: " + e.toString());
 			}
 		}
 	}

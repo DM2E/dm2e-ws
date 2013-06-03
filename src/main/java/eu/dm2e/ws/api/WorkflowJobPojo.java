@@ -15,7 +15,7 @@ public class WorkflowJobPojo extends JobPojo {
 	@RDFProperty("omnom:hasSlotAssignment")
 	private Set<ParameterSlotAssignmentPojo> slotAssignments = new HashSet<>();
 	
-    @RDFProperty("omnom:hasWebService")
+    @RDFProperty("omnom:webservice")
     private WebservicePojo webService;
 
 	public Set<ParameterSlotAssignmentPojo> getSlotAssignments() { return slotAssignments; }
