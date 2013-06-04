@@ -245,23 +245,16 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     public void load(String uri, int expansionSteps) {
         log.fine("Load data from URI: " + uri);
         uri = expand(uri);
-        try {
-        	// NOTE: read(String uri) does content-negotiation - sort of
-            this.model.read(uri);
-            log.info("Content read.");
-        } catch (Throwable t) {
-            try {
-                this.model.read(uri, null, "RDF/XML");
-                log.info("Content read, found RDF/XML.");
-            } catch (Throwable t2) {
-                // TODO Throw proper exception that is converted to a proper
-                // HTTP response in DataService
-                log.severe("Could not parse URI content: " + t2.getMessage());
-                t.printStackTrace();
-                t2.printStackTrace();
-                throw new RuntimeException("Could not parse uri content: " + uri, t2);
-            }
-        }
+		try {
+			// NOTE: read(String uri) does content-negotiation - sort of
+			this.model.read(uri);
+			log.info("Content read by content neogtiation.");
+		} catch (Throwable t2) {
+			// TODO Throw proper exception that is converted to a proper
+			// HTTP response in DataService
+			log.severe("Could not parse URI content: " + t2.getMessage());
+			throw new RuntimeException("Could not parse uri content: " + uri, t2);
+		}
         // Expand the graph by recursively loading additional resources
         Set<GResource> resourceCache = new HashSet<GResource>();
         for ( ; expansionSteps > 0 ; expansionSteps--) {
