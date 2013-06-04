@@ -123,7 +123,13 @@ public class ObjectMapper {
                     addObject(listItem);
                     log.fine("" + i);
                 }
-                // literal
+
+            // a URI is used, which is usually done to reference resources that are not mapped or
+            // for resources that are mapped but should not get instantiated immediately or the
+            // full serialization is not desired.
+            } else if (value instanceof URI){
+                result.set(property, grafeo.resource((URI) value));
+            // literal
             } else {
                 result.set(property, grafeo.literal(value));
             }

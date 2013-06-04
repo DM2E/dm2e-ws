@@ -2,6 +2,8 @@ package eu.dm2e.ws.grafeo.jena;
 
 import com.hp.hpl.jena.query.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class SparqlSelect {
@@ -9,18 +11,22 @@ public class SparqlSelect {
 	private Logger log = Logger.getLogger(getClass().getName());
 	
 	private String graph, endpoint, selectClause, orderBy, limit, whereClause;
+    private Map<String,String> prefixes = new HashMap<>();
 
 	public static class Builder {
 		private String graph, endpoint, selectClause, orderBy, limit, whereClause;
+        private Map<String,String> prefixes = new HashMap<>();
 		
 		public Builder graph(String s)  	{ this.graph = s; return this; }
 		public Builder endpoint(String s) 	{ this.endpoint = s; return this; }
 		public Builder orderBy(String s) 	{ this.orderBy = s; return this; }
 		public Builder limit(String s) 		{ this.limit = s; return this; }
 		public Builder select(String s) 	{ this.selectClause = s; return this; }
-		public Builder where(String s) 		{ this.whereClause = s; return this; }
-		
-		public SparqlSelect build() { return new SparqlSelect(this); } 
+        public Builder where(String s) 		{ this.whereClause = s; return this; }
+        public Builder prefixes(Map<String,String> prefixes) 		{ this.prefixes.putAll(prefixes); return this; }
+        public Builder prefix(String prefix, String value) 		{ this.prefixes.put(prefix, value); return this; }
+
+        public SparqlSelect build() { return new SparqlSelect(this); }
 	}
 
 	public SparqlSelect(Builder builder) {
@@ -32,11 +38,18 @@ public class SparqlSelect {
 		this.limit = builder.limit;
 		this.whereClause = builder.whereClause;
 		this.selectClause = builder.selectClause;
+        this.prefixes = builder.prefixes;
 	}
 	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
+        if (!prefixes.keySet().isEmpty()) {
+            for (String prefix:prefixes.keySet()) {
+                sb.append("PREFIX ").append(prefix).append(": <").append(prefixes.get(prefix)).append(">\n");
+            }
+            sb.append("\n");
+        }
 		sb.append(String.format("SELECT %s", selectClause));
 		sb.append(" WHERE { ");
 

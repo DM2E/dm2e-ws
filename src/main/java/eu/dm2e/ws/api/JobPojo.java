@@ -65,11 +65,11 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
     public void warn(String message)  { log.warning("Job " + getId() +": " + message); this.addLogEntry(message, LogLevel.WARN.toString());  this.publishToEndpoint();}
     public void fatal(String message) { log.severe("Job " + getId() +": " + message);  this.addLogEntry(message, LogLevel.FATAL.toString()); this.publishToEndpoint();}
     
-    public void trace(Exception e) { String msg = this.exceptionToString(e); this.trace(msg); }
-    public void debug(Exception e) { String msg = this.exceptionToString(e); this.debug(msg); }
-    public void fatal(Exception e) { String msg = this.exceptionToString(e); this.fatal(msg); }
+    public void trace(Throwable e) { String msg = this.exceptionToString(e); this.trace(msg); }
+    public void debug(Throwable e) { String msg = this.exceptionToString(e); this.debug(msg); }
+    public void fatal(Throwable e) { String msg = this.exceptionToString(e); this.fatal(msg); }
     
-    private String exceptionToString(Exception e) {
+    private String exceptionToString(Throwable e) {
     	StringBuilder messageSB = new StringBuilder();
     	messageSB.append(ExceptionUtils.getStackTrace(e));
     	return messageSB.toString();

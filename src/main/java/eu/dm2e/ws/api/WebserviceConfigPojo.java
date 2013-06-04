@@ -1,15 +1,11 @@
 package eu.dm2e.ws.api;
 
+import eu.dm2e.ws.ErrorMsg;
+import eu.dm2e.ws.grafeo.annotations.*;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-
-import eu.dm2e.ws.ErrorMsg;
-import eu.dm2e.ws.grafeo.annotations.Namespaces;
-import eu.dm2e.ws.grafeo.annotations.RDFClass;
-import eu.dm2e.ws.grafeo.annotations.RDFId;
-import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
-import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/"})
 @RDFClass("omnom:WebServiceConfig")
@@ -58,7 +54,9 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
 		if (null == ws) {
 			throw new RuntimeException("WebserviceConfig contains no webservice. Can't introspect parameters.");
 		}
-		if (null == this.getId()) {
+
+        // TODO: Why do we need a URI here, I created assignments successfully with blank nodes... (Kai)
+        if (null == this.getId()) {
 			throw new RuntimeException("WebserviceConfig has no ID, can't generate URI.");
 		}
 		
