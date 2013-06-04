@@ -13,6 +13,7 @@ public enum OmnomTestResources {
 	, ILLEGAL_EMPTY_FILE("/file/illegal_file.ttl")
 	, XML_DTA_GRIMM("/provider-examples/dta/grimm_meistergesang_1811.TEI-P5.xml")
 	, XSLT_KBA_BBAW_TO_EDM("/mappings/xslt/KBA_BBAW_TO_EDM.xsl")
+	, TEI2EDM_20130129("/mappings/xslt-zip/TEI2EDM_xslt_20130129.zip")
 	;
 	
 	final String path;
