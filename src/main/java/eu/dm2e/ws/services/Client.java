@@ -69,7 +69,7 @@ public class Client {
 				 resp = resource(pojo.getId())
 //					.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
 //					.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
-//					.entity(pojo.getNTriples())
+					.entity(pojo.getNTriples())
 					.put(ClientResponse.class);
 			} else {
 				throw new NotImplementedException("Putting a config to a non-local web service isn't implemented yet.");
