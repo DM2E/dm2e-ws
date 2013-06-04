@@ -38,10 +38,14 @@ public class ConfigService extends AbstractRDFService {
     @GET
     @Path("{id}")
     public Response getConfig(@Context UriInfo uriInfo, @PathParam("id") String id) {
-        log.info("Configuration requested: " + uriInfo.getRequestUri());
+    	String uriStr = getRequestUriWithoutQuery().toString();
+        log.info("Configuration requested: " + uriStr);
         Grafeo g = new GrafeoImpl();
-        // @TODO should proabably use getRequestUriWithoutQuery().toString() here
-        g.readFromEndpoint(NS.ENDPOINT, uriInfo.getRequestUri().toString());
+        try {
+	        g.readFromEndpoint(NS.ENDPOINT, uriStr);
+        } catch (RuntimeException e) {
+        	return throwServiceError(uriStr, ErrorMsg.NOT_FOUND, 404);
+        }
         return getResponse(g);
     }
     
@@ -53,8 +57,9 @@ public class ConfigService extends AbstractRDFService {
      		@PathParam("assId") String assId
     		) {
         log.info("Assignment " + assId + " of configuration requested: " + uriInfo.getRequestUri());
+        String uri = getRequestUriWithoutQuery().toString().replaceAll("/assignment/[^/]*", "");
 
-        return Response.seeOther(getRequestUriWithoutQuery()).build();
+        return Response.status(303).location(URI.create(uri)).build();
     }
     
     @GET
