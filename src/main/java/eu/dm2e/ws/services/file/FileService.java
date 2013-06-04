@@ -225,7 +225,7 @@ public class FileService extends AbstractRDFService {
 		
 		// if file data: store file at location
 		if (! filePartIsEmpty) {
-			InputStream fileInStream = filePart.getValueAs(InputStream.class);
+			InputStream fileInStream = filePart.getEntityAs(InputStream.class);
 			try {
 				filePojo = storeAndDescribeFile(fileInStream, g, uri);
 				filePojo.setFileStatus(FileStatus.AVAILABLE.toString());
@@ -370,7 +370,7 @@ public class FileService extends AbstractRDFService {
 		if (! filePartIsEmpty) { 
 			try {
                 log.info("We start to read the file...");
-				InputStream fileInStream = filePart.getValueAs(InputStream.class);
+				InputStream fileInStream = filePart.getEntityAs(InputStream.class);
 				// store and describe file
 				FilePojo newFilePojo = storeAndDescribeFile(fileInStream, g, uri);
 				PojoUtils.copyProperties(filePojo, newFilePojo);

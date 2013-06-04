@@ -3,6 +3,8 @@ package eu.dm2e.ws.services.file;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.InputStream;
+
 import javax.ws.rs.core.MediaType;
 
 import org.junit.After;
@@ -15,6 +17,7 @@ import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
 
 import eu.dm2e.ws.OmnomTestCase;
+import eu.dm2e.ws.OmnomTestResources;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
@@ -62,5 +65,13 @@ public class FileServiceITCase extends OmnomTestCase {
         }
 
 	}
-
+	@Test
+	public void testBinaryFile() {
+		FormDataMultiPart fdmp = this.client.createFileFormDataMultiPart("", configFile.get(OmnomTestResources.TEI2EDM_20130129));
+		String uri = client.publishFile(fdmp);
+		assertNotNull(uri);
+		log.info("File stored as: " + uri);
+		String resp = client.resource(uri).get(String.class);
+		assertEquals(configString.get(OmnomTestResources.TEI2EDM_20130129), resp);
+	}
 }

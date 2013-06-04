@@ -20,6 +20,7 @@ import com.sun.jersey.multipart.FormDataMultiPart;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.SerializablePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 
@@ -59,15 +60,17 @@ public class Client {
 				.post(ClientResponse.class);	
     }
     
-    public String publishPojoToConfigService(SerializablePojo pojo, WebResource configWR) {
+    public String publishPojo(SerializablePojo pojo, WebResource configWR) {
 		ClientResponse resp;
+		String method = "POST";
 		if (null == pojo.getId()) {
 			 resp = this.postPojoToService(pojo, configWR); 
 		} else {
+			method = "PUT";
 //			resp = null;
 			if (pojo.getId().startsWith(configWR.getURI().toString())) {
 				 resp = resource(pojo.getId())
-//					.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+					.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
 //					.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
 					.entity(pojo.getNTriples())
 					.put(ClientResponse.class);
@@ -76,7 +79,7 @@ public class Client {
 			}
 		}
 		if (resp.getStatus() >= 400) {
-			throw new RuntimeException("Failed to publish config <"
+			throw new RuntimeException(method + ": Failed to publish pojo <"
 					+ pojo.getId()
 					+ "> :"
 					+ resp.getStatus() 
@@ -90,11 +93,14 @@ public class Client {
 		pojo.setId(resp.getLocation().toString());
 		return resp.getLocation().toString();
     }
-    public String publishPojoToConfigService(SerializablePojo pojo, String serviceBase) {
-    	return this.publishPojoToConfigService(pojo, this.resource(serviceBase));
+    public String publishPojo(SerializablePojo pojo, String serviceURI) {
+    	return this.publishPojo(pojo, this.resource(serviceURI));
+    }
+    public String publishPojoToJobService(SerializablePojo pojo) {
+    	return this.publishPojo(pojo, this.getJobWebResource());
     }
     public String publishPojoToConfigService(SerializablePojo pojo) {
-    	return this.publishPojoToConfigService(pojo, this.getConfigWebResource());
+    	return this.publishPojo(pojo, this.getConfigWebResource());
     }
     
     public String publishFile(String file) {
@@ -120,17 +126,17 @@ public class Client {
 		return this.publishFile(IOUtils.toString(is), metadata.getNTriples());
     }
     
-    public String publishFile(File file) throws IOException {
-    	FileInputStream fis = new FileInputStream(file);
-		return this.publishFile(IOUtils.toString(fis));
+    public String publishFile(File file) {
+    	FormDataMultiPart fdmp = createFileFormDataMultiPart(null, file);
+    	return this.publishFile(fdmp);
     }
-    public String publishFile(File file, String metadata) throws IOException {
-    	FileInputStream fis = new FileInputStream(file);
-		return this.publishFile(IOUtils.toString(fis), metadata);
+    public String publishFile(File file, String metadata) {
+    	FormDataMultiPart fdmp = createFileFormDataMultiPart(metadata, file);
+    	return this.publishFile(fdmp);
     }
-    public String publishFile(File file, Grafeo metadata) throws IOException {
-    	FileInputStream fis = new FileInputStream(file);
-		return this.publishFile(IOUtils.toString(fis), metadata.getNTriples());
+    public String publishFile(File file, Grafeo metadata) {
+    	FormDataMultiPart fdmp = createFileFormDataMultiPart(metadata.getNTriples(), file);
+    	return this.publishFile(fdmp);
     }
     public String publishFile(File file, FilePojo metadata) throws IOException {
     	FileInputStream fis = new FileInputStream(file);
@@ -138,9 +144,11 @@ public class Client {
     }
     
     public String publishFile(String file, String metadata) {
-    	WebResource fileResource = getFileWebResource();
     	FormDataMultiPart fdmp = createFileFormDataMultiPart(metadata, file);
-        ClientResponse resp = fileResource
+    	return this.publishFile(fdmp);
+    }
+    public String publishFile(FormDataMultiPart fdmp) {
+        ClientResponse resp = getFileWebResource()
                 .type(MediaType.MULTIPART_FORM_DATA)
                 .accept(DM2E_MediaType.TEXT_TURTLE)
                 .entity(fdmp)
@@ -153,6 +161,25 @@ public class Client {
         }
         return resp.getLocation().toString();
     }
+	public FormDataMultiPart createFileFormDataMultiPart(String metaStr, File content) {
+		FormDataMultiPart fdmp = new FormDataMultiPart();
+		if (null == metaStr) {
+			metaStr = "";
+		}
+		FormDataBodyPart fdm_meta = new FormDataBodyPart(
+				"meta", 
+				metaStr,
+				new MediaType("application", "rdf-triples"));
+		fdmp.bodyPart(fdm_meta);
+		if (null != content) {
+			FormDataBodyPart fdm_file = new FormDataBodyPart(
+				"file",
+				content,
+				MediaType.APPLICATION_OCTET_STREAM_TYPE);
+			fdmp.bodyPart(fdm_file);
+		}
+		return fdmp;
+	}
 
 	public FormDataMultiPart createFileFormDataMultiPart(String metaStr, String content) {
 		FormDataMultiPart fdmp = new FormDataMultiPart();

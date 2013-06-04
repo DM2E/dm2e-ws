@@ -86,7 +86,7 @@ public class NewFileServiceITCase extends OmnomTestCase {
 		}
 		// Neither metadata nor file data
 		{
-			FormDataMultiPart fdmp = client.createFileFormDataMultiPart((String)null, null);
+			FormDataMultiPart fdmp = client.createFileFormDataMultiPart((String)null, (String)null);
 			ClientResponse resp = client.getFileWebResource()
 				.path("empty")
 				.entity(fdmp)
@@ -154,7 +154,7 @@ public class NewFileServiceITCase extends OmnomTestCase {
 	public void testUploadFile() {
 		// Neither metadata nor file data
 		{
-			FormDataMultiPart fdmp = client.createFileFormDataMultiPart((String)null, null);
+			FormDataMultiPart fdmp = client.createFileFormDataMultiPart((String)null, (String)null);
 			ClientResponse resp = client.getFileWebResource()
 				.entity(fdmp)
 				.type(MediaType.MULTIPART_FORM_DATA)
@@ -204,7 +204,7 @@ public class NewFileServiceITCase extends OmnomTestCase {
 		// bogus RDF metadata
 		{
 			String asciiNoise = configString.get(OmnomTestResources.ASCII_NOISE);
-			FormDataMultiPart fdmp = client.createFileFormDataMultiPart(asciiNoise, null);
+			FormDataMultiPart fdmp = client.createFileFormDataMultiPart(asciiNoise, (String)null);
 			ClientResponse resp = client.getFileWebResource()
 				.entity(fdmp)
 				.type(MediaType.MULTIPART_FORM_DATA)
