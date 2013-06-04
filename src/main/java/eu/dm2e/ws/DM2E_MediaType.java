@@ -44,6 +44,8 @@ public class DM2E_MediaType {
 			TEXT_RDF_N3 = "text/rdf+n3",
 			// TURTLE
 			TEXT_TURTLE = "text/turtle";
+	public static final String TEXT_X_LOG = "text/x-log";
+	public static final MediaType TEXT_LOG_TYPE = new MediaType("text", "x-log");
 	private static final String[] rdfMediaTypes = {
 		APPLICATION_RDF_TRIPLES,
 		APPLICATION_RDF_XML,
