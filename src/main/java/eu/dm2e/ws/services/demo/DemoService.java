@@ -63,6 +63,6 @@ public class DemoService extends AbstractTransformationService {
 
         jobPojo.debug("DemoWorker is finished now.");
         jobPojo.setStatus(JobStatusConstants.FINISHED);
-        jobPojo.publishToEndpoint();
+        client.publishPojoToJobService(jobPojo);
     }
 }

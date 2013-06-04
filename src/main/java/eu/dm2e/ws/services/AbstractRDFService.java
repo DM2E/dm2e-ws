@@ -52,6 +52,10 @@ import java.util.logging.Logger;
 public abstract class AbstractRDFService {
 
 	protected Logger log = Logger.getLogger(getClass().getName());
+	/**
+	 * Creating Jersey API clients is relatively expensive so we do it once per Service statically
+	 */
+	protected static Client client = new Client();
 	
 	protected static String[] allowedSchemes = { "http", "https", "file", "ftp" };
 	protected static final UrlValidator urlValidator = new UrlValidator(allowedSchemes,
@@ -85,6 +89,9 @@ public abstract class AbstractRDFService {
 	}
 	protected Response throwServiceError(String badString, ErrorMsg err) {
 		return throwServiceError(badString + ": " + err.toString());
+	}
+	protected Response throwServiceError(String badString, ErrorMsg err, int status) {
+		return throwServiceError(badString + ": " + err.toString(), status);
 	}
 	
 	protected URI getUriForString(String uriStr) throws URISyntaxException {

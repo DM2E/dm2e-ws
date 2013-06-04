@@ -23,9 +23,8 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
 		URI uri = null;
 		try {
 			uri = new URI(getId());
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (NullPointerException | URISyntaxException e) {
+			throw new RuntimeException("Id '" + getId() + "'cannot be casted to URI: " + e);
 		}
 		return uri;
 	}
@@ -103,38 +102,38 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
     }
 	
 	public void publishToService(String serviceUri) {
-		this.client.publishPojoToConfigService(this, serviceUri);
+		this.client.publishPojo(this, serviceUri);
 	}
 	public void publishToService(WebResource wr) {
-		this.client.publishPojoToConfigService(this, wr);
+		this.client.publishPojo(this, wr);
 	}
 	public void publishToService() {
 		this.client.publishPojoToConfigService(this);
 	}
 
-	public void publishToEndpoint(String endPoint, String graph) {
-        log.info("Writing to endpoint: " + endPoint + " / Graph: " + graph);
-		Grafeo g = new GrafeoImpl();
-		g.getObjectMapper().addObject(this);
-		g.emptyGraph(endPoint, graph);
-		g.writeToEndpoint(endPoint, graph);
-	}
-	public void publishToEndpoint(String endPoint) {
-		if (null == this.getId()) {
-			String prefix;
-			try {
-				prefix = this.getClass().getAnnotation(RDFInstancePrefix.class).value();
-			} catch (NullPointerException e) {
-				prefix = "http://data.dm2e.eu/THIS_CLASS_SHOULD_HAVE_A_RDFINSTANCEPREFIX/";
-			}
-			String newURI = prefix+UUID.randomUUID().toString();
-			this.setId(newURI);
-		}
-		this.publishToEndpoint(endPoint, this.getId());
-	}
-	public void publishToEndpoint() {
-		String endPoint = Config.getString("dm2e.ws.sparql_endpoint_statements");
-		this.publishToEndpoint(endPoint);
-	}
+//	public void publishToEndpoint(String endPoint, String graph) {
+//        log.info("Writing to endpoint: " + endPoint + " / Graph: " + graph);
+//		Grafeo g = new GrafeoImpl();
+//		g.getObjectMapper().addObject(this);
+//		g.emptyGraph(endPoint, graph);
+//		g.writeToEndpoint(endPoint, graph);
+//	}
+//	public void publishToEndpoint(String endPoint) {
+//		if (null == this.getId()) {
+//			String prefix;
+//			try {
+//				prefix = this.getClass().getAnnotation(RDFInstancePrefix.class).value();
+//			} catch (NullPointerException e) {
+//				prefix = "http://data.dm2e.eu/THIS_CLASS_SHOULD_HAVE_A_RDFINSTANCEPREFIX/";
+//			}
+//			String newURI = prefix+UUID.randomUUID().toString();
+//			this.setId(newURI);
+//		}
+//		this.publishToEndpoint(endPoint, this.getId());
+//	}
+//	public void publishToEndpoint() {
+//		String endPoint = Config.getString("dm2e.ws.sparql_endpoint_statements");
+//		this.publishToEndpoint(endPoint);
+//	}
 	
 }

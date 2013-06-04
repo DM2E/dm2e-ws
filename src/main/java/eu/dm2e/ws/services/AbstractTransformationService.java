@@ -9,7 +9,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.WebResource.Builder;
@@ -18,13 +17,9 @@ import com.sun.jersey.multipart.FormDataMultiPart;
 
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.JobPojo;
-import eu.dm2e.ws.api.ParameterAssignmentPojo;
-import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
-import eu.dm2e.ws.api.WebservicePojo;
 
 /**
  * TODO document
@@ -36,10 +31,6 @@ public abstract class AbstractTransformationService extends AbstractRDFService i
      */
     protected JobPojo jobPojo;
     
-	/**
-	 * Creating Jersey API clients is relatively expensive so we do it once per Service statically
-	 */
-	protected static Client jerseyClient = new Client();
 	
 	protected static final String FILE_SERVICE_URI = Config.getString("dm2e.service.file.base_uri");
 
@@ -75,7 +66,7 @@ public abstract class AbstractTransformationService extends AbstractRDFService i
         JobPojo job = new JobPojo();
         job.setWebService(wsConf.getWebservice());
         job.setWebserviceConfig(wsConf);
-        job.publishToEndpoint();
+        client.publishPojoToJobService(job);
 
         /*
          * Let the asynchronous worker handle the job
@@ -123,7 +114,7 @@ public abstract class AbstractTransformationService extends AbstractRDFService i
 //        	return throwServiceError("Invalid RDF string passed as configuration.");
 //        }
 //        conf.publish();
-    	WebResource webResource = jerseyClient.resource("http://localhost:9998/config");
+    	WebResource webResource = client.resource("http://localhost:9998/config");
     	ClientResponse resp = webResource.post(ClientResponse.class, rdfString);
     	if (null == resp.getLocation()) {
     		log.severe("Invalid RDF string posted as configuration.");
@@ -133,7 +124,7 @@ public abstract class AbstractTransformationService extends AbstractRDFService i
     }
     
     protected String storeAsFile(String fileData, String mediaTypeStr) {
-		WebResource fileResource = jerseyClient.resource(FILE_SERVICE_URI);
+		WebResource fileResource = client.resource(FILE_SERVICE_URI);
 	    jobPojo.trace("Building file service multipart envelope.");
 		FormDataMultiPart form = new FormDataMultiPart();
 
@@ -172,7 +163,7 @@ public abstract class AbstractTransformationService extends AbstractRDFService i
 		jobPojo.info("File stored at: " + fileLocation);
 		try {
 			fileDesc.setFileRetrievalURI(fileLocation);
-			fileDesc.publishToEndpoint();
+			client.publishPojo(fileDesc, client.getFileWebResource());
 		} catch(Exception e) {
 			jobPojo.fatal(e);
 		}

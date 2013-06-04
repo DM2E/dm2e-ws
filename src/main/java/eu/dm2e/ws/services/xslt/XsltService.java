@@ -110,7 +110,7 @@ public class XsltService extends AbstractTransformationService {
 
 		jobPojo.info("Store result URI on the job (" + fileLocation + ").");
 		jobPojo.addOutputParameterAssignment(XML_OUT_PARAM_NAME, fileLocation);
-		jobPojo.publishToEndpoint();
+		client.publishPojoToJobService(jobPojo);
 
 		// Update job status
 		jobPojo.info("XSLT Transformation complete.");

@@ -20,12 +20,16 @@ import java.util.UUID;
 @RDFInstancePrefix("http://localhost:9998/job/")
 public class JobPojo extends AbstractPersistentPojo<JobPojo>{
 	
+	public static final String PROP_LOG_ENTRY = "omnom:hasLogEntry";
+
+	public static final String PROP_JOB_STATUS = "omnom:status";
+	
 //	Logger log = Logger.getLogger(getClass().getName());
 	
     @RDFId
     private String id;
     
-    @RDFProperty("omnom:status")
+    @RDFProperty(PROP_JOB_STATUS)
     private String status = JobStatusConstants.NOT_STARTED.toString();
     
     // TODO the job probably doesn't even need a webservice reference since it's in the conf already
@@ -35,7 +39,7 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
     @RDFProperty("omnom:webserviceConfig")
     private WebserviceConfigPojo webserviceConfig;
     
-    @RDFProperty("omnom:hasLogEntry")
+    @RDFProperty(PROP_LOG_ENTRY)
     private Set<LogEntryPojo> logEntries = new HashSet<>();
     
     @RDFProperty("omnom:hasOutputParam")
@@ -59,11 +63,11 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
     	this.logEntries.add(entry);
     	return entry;
     }
-    public void trace(String message) { log.info("Job " + getId() +": " + message);    this.addLogEntry(message, LogLevel.TRACE.toString()); this.publishToEndpoint();}
-    public void debug(String message) { log.info("Job " + getId() +": " + message);    this.addLogEntry(message, LogLevel.DEBUG.toString()); this.publishToEndpoint();}
-    public void info(String message)  { log.info("Job " + getId() +": " + message);    this.addLogEntry(message, LogLevel.INFO.toString());  this.publishToEndpoint();}
-    public void warn(String message)  { log.warning("Job " + getId() +": " + message); this.addLogEntry(message, LogLevel.WARN.toString());  this.publishToEndpoint();}
-    public void fatal(String message) { log.severe("Job " + getId() +": " + message);  this.addLogEntry(message, LogLevel.FATAL.toString()); this.publishToEndpoint();}
+    public void trace(String message) { log.info("Job " + getId() +": " + message);    this.addLogEntry(message, LogLevel.TRACE.toString()); this.publishToService();}
+    public void debug(String message) { log.info("Job " + getId() +": " + message);    this.addLogEntry(message, LogLevel.DEBUG.toString()); this.publishToService();}
+    public void info(String message)  { log.info("Job " + getId() +": " + message);    this.addLogEntry(message, LogLevel.INFO.toString());  this.publishToService();}
+    public void warn(String message)  { log.warning("Job " + getId() +": " + message); this.addLogEntry(message, LogLevel.WARN.toString());  this.publishToService();}
+    public void fatal(String message) { log.severe("Job " + getId() +": " + message);  this.addLogEntry(message, LogLevel.FATAL.toString()); this.publishToService();}
     
     public void trace(Exception e) { String msg = this.exceptionToString(e); this.trace(msg); }
     public void debug(Exception e) { String msg = this.exceptionToString(e); this.debug(msg); }
@@ -156,7 +160,7 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
     	ass.setForParam(this.webService.getParamByName(forParam));
     	ass.setParameterValue(value);
     	this.outputParameters.add(ass);
-    	this.publishToEndpoint();
+    	this.publishToService();
     	// TODO update to triplestore
     }
 
@@ -199,17 +203,17 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
 	public void setStarted() {
 		this.trace("Status change: " + this.getStatus() + " => " + JobStatusConstants.STARTED);
 		this.setStatus(JobStatusConstants.STARTED.toString()); 
-		this.publishToEndpoint();
+		this.publishToService();
 	}
 	public void setFinished() {
 		this.trace("Status change: " + this.getStatus() + " => " + JobStatusConstants.FINISHED);
 		this.setStatus(JobStatusConstants.FINISHED.toString()); 
-		this.publishToEndpoint();
+		this.publishToService();
 	}
 	public void setFailed() {
 		this.trace("Status change: " + this.getStatus() + " => " + JobStatusConstants.FAILED);
 		this.setStatus(JobStatusConstants.FAILED.toString()); 
-		this.publishToEndpoint();
+		this.publishToService();
 	}
 	
 	public boolean isFinished() { return this.status.equals(JobStatusConstants.FINISHED.toString()); }
@@ -237,5 +241,10 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
 	
 	public Set<ParameterAssignmentPojo> getOutputParameters() { return outputParameters; }
 	public void setOutputParameters(Set<ParameterAssignmentPojo> outputParameters) { this.outputParameters = outputParameters; }
+	
+	@Override
+	public void publishToService() {
+		super.publishToService(this.client.getJobWebResource());
+	}
 
 }
