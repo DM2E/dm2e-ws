@@ -79,7 +79,7 @@ public class GResourceImpl extends GValueImpl implements GResource {
     
     @Override
     public Set<GValue> getAll(String uri) {
-        log.info("Check for all values for property: " + uri);
+        log.fine("Check for all values for property: " + uri);
         uri = grafeo.expand(uri);
         Set<GValue> propSet = new HashSet<>();
         StmtIterator st = resource.listProperties(getGrafeoImpl(grafeo).model.createProperty(uri));
@@ -88,17 +88,17 @@ public class GResourceImpl extends GValueImpl implements GResource {
         	RDFNode thisValue = stmt.getObject();
         	if (thisValue.isResource()) {
         		propSet.add(new GResourceImpl(grafeo, thisValue.asResource()));
-                log.info("Found resource value: " + thisValue.asResource().getURI());
+                log.fine("Found resource value: " + thisValue.asResource().getURI());
         	}
         	else if (thisValue.isLiteral()) {
         		propSet.add(new GLiteralImpl(grafeo, thisValue.asLiteral()));
-                log.info("Found literal value: " + thisValue.asLiteral().getValue());
+                log.fine("Found literal value: " + thisValue.asLiteral().getValue());
             }
         	else {
         		throw new RuntimeException("Not a literal or a resource value: " + getUri() + " -> " + uri);
         	}
         }
-        log.info("Returning number of values: " + propSet.size());
+        log.fine("Returning number of values: " + propSet.size());
 		return propSet;
     }
 

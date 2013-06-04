@@ -146,13 +146,13 @@ public class ObjectMapper {
             log.fine("Cache hit!");
             return (T) objectCache.get(uri);
         }
-        log.info("Creating object for URI: " + uri);
+        log.fine("Creating object for URI: " + uri);
 
         // instantiate the class
         try {
             result = (T) T.newInstance();
             objectCache.put(uri, result);
-            log.info("Added to cache, uri: " + uri);
+            log.fine("Added to cache, uri: " + uri);
         } catch (InstantiationException | IllegalAccessException | SecurityException e) {
             throw new RuntimeException("An exception occurred: " + e, e);
         }
