@@ -209,7 +209,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
                 this.model.read(IOUtils.toInputStream(contentStr), null, "RDF/XML");
             } catch (Throwable t2) {
                 // TODO Throw proper exception that is converted to a proper HTTP response in DataService
-                throw new RuntimeException("Could not parse input either as N3 or RDF/XML: " + contentStr, t2);
+                throw new RuntimeException("Could not parse input either as N3 or RDF/XML: " + contentStr + "\n" + t + "\n" + t2);
             }
         }
     }
