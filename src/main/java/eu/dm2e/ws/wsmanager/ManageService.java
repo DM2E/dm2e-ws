@@ -1,13 +1,11 @@
 package eu.dm2e.ws.wsmanager;
 
 import java.io.IOException;
-import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -31,6 +29,10 @@ import com.sun.jersey.api.container.grizzly2.GrizzlyWebContainerFactory;
  */
 @Path("/manage")
 public class ManageService {
+	
+	private static final int FUSEKI_PORT = 9997;
+	private static final int MANAGE_PORT = 9990;
+	private static final int OMNOM_PORT = 9998;
 
     private static HttpServer httpServer;
     private static HttpServer manageServer;
@@ -46,10 +48,7 @@ public class ManageService {
     }
 
 
-    public static URI getBaseURI() {
-        return UriBuilder.fromUri("http://localhost:9998/").build();
-    }
-    public static void startServer() throws BindException {
+    public static void startServer() {
         final Map<String, String> initParams = new HashMap<>();
         final Map<String, String> initParams2 = new HashMap<>();
 
@@ -58,8 +57,8 @@ public class ManageService {
 
         System.out.println("Starting grizzly2...");
         try {
-            manageServer = GrizzlyWebContainerFactory.create(UriBuilder.fromUri("http://localhost:9990/").build(), initParams2);
-            httpServer =  GrizzlyWebContainerFactory.create(getBaseURI(), initParams);
+            manageServer = GrizzlyWebContainerFactory.create(UriBuilder.fromUri("http://localhost:" + MANAGE_PORT + "/").build(), initParams2);
+            httpServer =  GrizzlyWebContainerFactory.create(UriBuilder.fromUri("http://localhost:" + OMNOM_PORT +"/").build(), initParams);
         } catch (IOException e) {
             throw new RuntimeException("An exception occurred: " + e, e);
         }
@@ -85,33 +84,37 @@ public class ManageService {
         sparqlServer = server;
 
     }
+    
+    private static boolean isPortInUse(int port) {
+    	ServerSocket socket;
+		try {
+			socket = new ServerSocket(port);
+			try {
+				socket.close();
+			} catch (Exception e) {
+				// do nothing
+			}
+		} catch (Exception e) {
+			return true;
+		}
+		return false;
+    }
 
     public static void startAll() {
     	
-    	Logger log = Logger.getLogger(ManageService.class.getName());
-		try {
-			if (httpServer == null) startServer();
-		} catch (Throwable t) {
-			log.warning("Server is already started. " + t);
-		}
-		ServerSocket socket = null;
-		if (null ==sparqlServer) {
-			try {
-				socket = new ServerSocket(9997);
-				try {
-					socket.close();
-				} catch (Exception e) { 
-				} finally { startFuseki(); }
-			} catch (Exception e) {
-				log.warning("Fuseki is already started." + e);
-			}
+//    	Logger log = Logger.getLogger(ManageService.class.getName());
+		if (null == httpServer && ! isPortInUse(OMNOM_PORT)) {
+			startServer();
+	    }
+		if (null == sparqlServer && ! isPortInUse(FUSEKI_PORT)) {
+			startFuseki();
 	    }
     }
 
     public static void stopAll() {
 
         Client client = new Client();
-        String response = client.resource("http://localhost:9990/manage/stop").get(String.class);
+        String response = client.resource("http://localhost:" + MANAGE_PORT + "/manage/stop").get(String.class);
         System.out.println("Stopped all servers. Last response: " + response);
     }
 }
