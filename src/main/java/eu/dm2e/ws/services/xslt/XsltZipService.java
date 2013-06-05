@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
 import java.nio.file.Files;
-import java.util.logging.Logger;
 
 import javax.ws.rs.Path;
 import javax.xml.transform.Transformer;
@@ -26,7 +25,6 @@ import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.xerces.impl.XMLScanner;
 import org.grep4j.core.model.Profile;
 import org.grep4j.core.model.ProfileBuilder;
 import org.grep4j.core.result.GrepResult;

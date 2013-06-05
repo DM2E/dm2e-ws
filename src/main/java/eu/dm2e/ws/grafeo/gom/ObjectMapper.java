@@ -63,7 +63,7 @@ public class ObjectMapper {
             if (!field.isAnnotationPresent(RDFProperty.class)) {
                 continue;
             }
-            log.fine("Field: " + field.getName());
+            log.finest("Field: " + field.getName());
             String property = field.getAnnotation(RDFProperty.class).value();
             Object value;
             try {
@@ -123,7 +123,13 @@ public class ObjectMapper {
                     addObject(listItem);
                     log.fine("" + i);
                 }
-                // literal
+
+            // a URI is used, which is usually done to reference resources that are not mapped or
+            // for resources that are mapped but should not get instantiated immediately or the
+            // full serialization is not desired.
+            } else if (value instanceof URI){
+                result.set(property, grafeo.resource((URI) value));
+            // literal
             } else {
                 result.set(property, grafeo.literal(value));
             }
@@ -159,7 +165,11 @@ public class ObjectMapper {
 
         // iterate fields in the class definition
         for (Field field : result.getClass().getDeclaredFields()) {
-            log.fine("Field: " + field.getName());
+        	// Skip synthetic fileds, such as those added by JaCoCo at runtime
+            if (field.isSynthetic()) {
+            	continue;
+            }
+            log.finest("Field: " + field.getName());
 
             // if it's a RDF property field
             if (field.isAnnotationPresent(RDFProperty.class)) {
@@ -188,7 +198,7 @@ public class ObjectMapper {
                             // TODO infinite recursion on doubly-linked resources? Is that fixed by caching?
                             Object nestedObject = getObject(subtypeClass, (GResource) thisValue);
                             propSet.add(nestedObject);
-                            log.fine("Added resource value: " + thisValue.resource().getUri());
+                            log.fine("Added resource value: " + thisValue.resource());
                         }
                     }
 
@@ -238,10 +248,10 @@ public class ObjectMapper {
                     log.fine(field.getName() + " is a boring " + field.getType());
                     try {
                         GValue propValue = res.get(prop);
-                        log.fine("" + prop + " : " + propValue);
-                        if (null==propValue) {
+                        if (null == propValue) {
                             continue;
                         }
+                        log.fine("Property " + prop + " : " + propValue);
                         PropertyUtils.setProperty(result, field.getName(), propValue.getTypedValue(field.getType()));
                     } catch (InvocationTargetException | NoSuchMethodException  | IllegalAccessException e) {
                         throw new RuntimeException("An exception occurred: " + e, e);
@@ -315,7 +325,11 @@ public class ObjectMapper {
         String uri = null;
 
         for (Field field : object.getClass().getDeclaredFields()) {
-            log.fine("Field: " + field.getName());
+        	// Skip synthetic fileds, such as those added by JaCoCo at runtime
+            if (field.isSynthetic()) {
+            	continue;
+            }
+            log.finest("Field: " + field.getName());
             if (field.isAnnotationPresent(RDFId.class)) {
                 try {
                     Object id = PropertyUtils.getProperty(object, field.getName());

@@ -52,8 +52,13 @@ public abstract class GValueImpl extends JenaImpl implements GValue {
 
     @Override
     public String toString() {
-        if (value.isLiteral()) return value.asLiteral().getLexicalForm();
-        return value.asResource().getURI();
+        if (value.isLiteral()) {
+        	return value.asLiteral().getLexicalForm();
+        } else if (value.isURIResource()) { 
+	        return value.asResource().getURI();
+        } else {
+        	return value.asResource().getId().toString();
+        }
     }
 
     @Override

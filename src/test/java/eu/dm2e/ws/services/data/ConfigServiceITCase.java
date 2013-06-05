@@ -36,7 +36,7 @@ public class ConfigServiceITCase extends OmnomTestCase{
 	public void setUp() throws Exception {
 		client = new Client();
 		webResource = client.getJerseyClient().resource(BASE_URI + "/config");
-	}
+    }
 	
 	@Test
 	public void testPostBadSyntax() {

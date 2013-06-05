@@ -44,7 +44,7 @@ public class NewFileServiceITCase extends OmnomTestCase {
 	public void testFileService() {
 		FileService fs = new FileService();
 		assertNotNull(fs);
-	}
+    }
 
 	@Test
 	public void testPostEmptyFile() {

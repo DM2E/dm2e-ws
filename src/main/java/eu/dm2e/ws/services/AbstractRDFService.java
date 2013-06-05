@@ -331,9 +331,9 @@ public abstract class AbstractRDFService {
     protected URI appendPath(URI uri, String path) {
         String query = uri.getQuery();
         String u = uri.toString();
-        log.info("Query: " + query);
+        log.fine("URI: " + u);
         if (query!=null) {
-            log.info("URI: " + u);
+            log.fine("Query: " + query);
             u = u.replace("?" + query,"");
         }
         if (!u.endsWith("/") && !path.startsWith("/")) u = u + "/";

@@ -1,21 +1,26 @@
 package eu.dm2e.ws.wsmanager;
 
-import com.hp.hpl.jena.sparql.core.DatasetGraphFactory;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.container.grizzly2.GrizzlyWebContainerFactory;
+import java.io.IOException;
+import java.net.BindException;
+import java.net.ServerSocket;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.UriBuilder;
+
 import org.apache.jena.fuseki.server.DatasetRef;
 import org.apache.jena.fuseki.server.SPARQLServer;
 import org.apache.jena.fuseki.server.ServerConfig;
 import org.glassfish.grizzly.http.server.HttpServer;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.UriBuilder;
-import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import com.hp.hpl.jena.sparql.core.DatasetGraphFactory;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.container.grizzly2.GrizzlyWebContainerFactory;
 
 /**
  * This file was created within the DM2E project.
@@ -44,7 +49,7 @@ public class ManageService {
     public static URI getBaseURI() {
         return UriBuilder.fromUri("http://localhost:9998/").build();
     }
-    public static void startServer() {
+    public static void startServer() throws BindException {
         final Map<String, String> initParams = new HashMap<>();
         final Map<String, String> initParams2 = new HashMap<>();
 
@@ -82,8 +87,25 @@ public class ManageService {
     }
 
     public static void startAll() {
-        startServer();
-        startFuseki();
+    	
+    	Logger log = Logger.getLogger(ManageService.class.getName());
+		try {
+			if (httpServer == null) startServer();
+		} catch (Throwable t) {
+			log.warning("Server is already started. " + t);
+		}
+		ServerSocket socket = null;
+		if (null ==sparqlServer) {
+			try {
+				socket = new ServerSocket(9997);
+				try {
+					socket.close();
+				} catch (Exception e) { 
+				} finally { startFuseki(); }
+			} catch (Exception e) {
+				log.warning("Fuseki is already started." + e);
+			}
+	    }
     }
 
     public static void stopAll() {

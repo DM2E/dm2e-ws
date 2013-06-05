@@ -3,8 +3,6 @@ package eu.dm2e.ws.services.file;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.InputStream;
-
 import javax.ws.rs.core.MediaType;
 
 import org.junit.After;
@@ -24,12 +22,12 @@ import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
 public class FileServiceITCase extends OmnomTestCase {
 	
-	private String SERVICE_URI = URI_BASE + "/file";
+	private String SERVICE_URI;
 
     @Before
-	public void setUp()
-			throws Exception {
-	}
+	public void setUp() throws Exception {
+    	SERVICE_URI  = URI_BASE + "/file";
+    }
 
 	@After
 	public void tearDown() {

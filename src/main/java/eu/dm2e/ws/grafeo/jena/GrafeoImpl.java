@@ -1,59 +1,26 @@
 package eu.dm2e.ws.grafeo.jena;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.logging.Logger;
-
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.AnonId;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.NodeIterator;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.ResIterator;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.query.*;
+import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.update.UpdateExecutionFactory;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateProcessor;
 import com.hp.hpl.jena.update.UpdateRequest;
-
-import eu.dm2e.ws.grafeo.GLiteral;
-import eu.dm2e.ws.grafeo.GResource;
-import eu.dm2e.ws.grafeo.GStatement;
-import eu.dm2e.ws.grafeo.GValue;
-import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.SkolemnizationMethod;
+import eu.dm2e.ws.grafeo.*;
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFId;
 import eu.dm2e.ws.grafeo.gom.ObjectMapper;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+
+import java.io.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
+import java.util.logging.Logger;
 
 
 
@@ -245,16 +212,37 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     public void load(String uri, int expansionSteps) {
         log.fine("Load data from URI: " + uri);
         uri = expand(uri);
-		try {
-			// NOTE: read(String uri) does content-negotiation - sort of
-			this.model.read(uri);
-			log.info("Content read by content neogtiation.");
-		} catch (Throwable t2) {
-			// TODO Throw proper exception that is converted to a proper
-			// HTTP response in DataService
-			log.severe("Could not parse URI content: " + t2.getMessage());
-			throw new RuntimeException("Could not parse uri content: " + uri, t2);
-		}
+        int count = 3;
+        boolean success = false;
+        // Workaround, if just published content is not yet ready (and against other web problems)
+        while (count > 0 && !success) {
+            try {
+                // NOTE: read(String uri) does content-negotiation - sort of
+                this.model.read(uri);
+                log.info("Content read.");
+                success = true;
+            } catch (Throwable t) {
+                try {
+                    this.model.read(uri, null, "RDF/XML");
+                    log.info("Content read, found RDF/XML.");
+                    success = true;
+                } catch (Throwable t2) {
+                    // TODO Throw proper exception that is converted to a proper
+                    // HTTP response in DataService
+                    log.severe("Could not parse URI content: " + t2.getMessage());
+                    t.printStackTrace();
+                    t2.printStackTrace();
+                    throw new RuntimeException("Could not parse uri content: " + uri, t2);
+                }
+            }
+            count--;
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                throw new RuntimeException("An exception occurred: " + e, e);
+            }
+        }
+        if (!success) throw new RuntimeException("After 3 tries I still couldn't make sense from this URI: " + uri);
         // Expand the graph by recursively loading additional resources
         Set<GResource> resourceCache = new HashSet<GResource>();
         for ( ; expansionSteps > 0 ; expansionSteps--) {
@@ -513,11 +501,32 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         sb.append("} . }");
         Query query = QueryFactory.create(sb.toString());
         log.finest("Query: " + sb.toString());
-        QueryExecution exec = QueryExecutionFactory.createServiceRequest(
-                endpoint, query);
+
         long sizeBefore = size();
-        exec.execConstruct(model);
-        long stmtsAdded = size() - sizeBefore;
+        long stmtsAdded = 0;
+
+        boolean success = false;
+        int count = 5;
+        // Workaround to avoid the empty graph sirectly after a publish and other bad things that happen in the web.
+        while (count>0 && !success) {
+            QueryExecution exec = QueryExecutionFactory.createServiceRequest(
+                    endpoint, query);
+            exec.execConstruct(model);
+            stmtsAdded = size() - sizeBefore;
+            if (stmtsAdded > 0) {
+                success = true;
+
+            } else {
+                count--;
+                log.info("No statements found, I try again... Count: " + count);
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException("An exception occurred: " + e, e);
+                }
+            }
+            exec.close();
+        }
         if (stmtsAdded == 0) {
         	throw new RuntimeException("Graph contained no statements: " + graph);
         }
@@ -591,17 +600,18 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 
     @Override
     public void writeToEndpoint(String endpoint, String graph) {
+        log.info("Write to endpoint: " + endpoint + " / Graph: " + graph);
         StringBuilder sb = new StringBuilder("CREATE SILENT GRAPH <");
         sb.append(graph);
         sb.append(">");
-        log.finest("Query 1: " + sb.toString());
+        log.info("Query 1: " + sb.toString());
         UpdateRequest update = UpdateFactory.create(sb.toString());
         sb = new StringBuilder("INSERT DATA { GRAPH <");
         sb.append(graph);
         sb.append("> {");
         sb.append(getNTriples());
         sb.append("}}");
-        log.finest("Query 2: " + sb.toString());
+        log.info("Query 2: " + sb.toString());
         update.add(sb.toString());
         UpdateProcessor exec = UpdateExecutionFactory.createRemoteForm(update,
                 endpoint);
@@ -640,7 +650,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         model.write(sw, "N-TRIPLE");
         String[] lines = sw.toString().split("\n");
         Arrays.sort(lines);
-        return StringUtils.join(lines,"\n");
+        return StringUtils.join(lines, "\n");
     }
     
     @Override

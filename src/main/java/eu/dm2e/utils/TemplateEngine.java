@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
-import org.junit.Test;
 
 /**
  * This engine renders a subset of the syntax of the Mustache template system.
@@ -71,10 +69,10 @@ public class TemplateEngine {
 		System.out.println(outStr);
 	}
 	
-	@Test
-	public void testTemplateEngine() {
-		String tplStr = "X{{ foo }}X";
-		String outStr = TemplateEngine.render(tplStr, "foo", "bar");
-		Assert.assertEquals("XbarX", outStr);
-	}
+//	@Test
+//	public void testTemplateEngine() {
+//		String tplStr = "X{{ foo }}X";
+//		String outStr = TemplateEngine.render(tplStr, "foo", "bar");
+//		Assert.assertEquals("XbarX", outStr);
+//	}
 }

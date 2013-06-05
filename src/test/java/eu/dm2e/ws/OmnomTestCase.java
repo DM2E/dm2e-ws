@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.BeforeClass;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -17,6 +18,7 @@ import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.Client;
+import eu.dm2e.ws.wsmanager.ManageService;
 
 public class OmnomTestCase {
 	protected Logger log = Logger.getLogger(getClass().getName());
@@ -37,6 +39,11 @@ public class OmnomTestCase {
 				org.junit.Assert.fail(res + " not found: " + e.toString());
 			}
 		}
+	}
+	
+	@BeforeClass
+	public static void setUpClass() {
+        ManageService.startAll();
 	}
 	
 	/**

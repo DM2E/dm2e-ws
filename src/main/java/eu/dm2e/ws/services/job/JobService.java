@@ -1,26 +1,5 @@
 package eu.dm2e.ws.services.job;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Date;
-import java.util.Set;
-import java.util.UUID;
-import java.util.logging.Logger;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.apache.commons.io.IOUtils;
-
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
@@ -35,6 +14,18 @@ import eu.dm2e.ws.grafeo.jena.SparqlUpdate;
 import eu.dm2e.ws.model.JobStatusConstants;
 import eu.dm2e.ws.model.LogLevel;
 import eu.dm2e.ws.services.AbstractRDFService;
+import org.apache.commons.io.IOUtils;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Date;
+import java.util.Set;
+import java.util.UUID;
+import java.util.logging.Logger;
 
 //import java.util.ArrayList;
 // TODO @GET /{id}/result with JSON
@@ -55,33 +46,33 @@ public class JobService extends AbstractRDFService {
 		return ws;
 	}
 
-	@GET
-	@Path("/{resourceID}")
-	@Consumes(MediaType.WILDCARD)
-	public Response getJob(@PathParam("resourceID") String resourceID) {
-		log.info("Access to job: " + resourceID);
-		String uriStr = uriInfo.getRequestUri().toString();
-		Grafeo g = new GrafeoImpl();
-		log.info("Reading job from endpoint " + ENDPOINT_QUERY);
-		try {
-			g.readFromEndpoint(ENDPOINT_QUERY, uriStr);
-		} catch (Exception e1) {
-			// if we couldn't read the job, try again once in a second
-			try { Thread.sleep(1000); } catch (InterruptedException e) { }
-			try { g.readFromEndpoint(ENDPOINT_QUERY, uriStr);
-			} catch (Exception e) {
-				return throwServiceError(e);
-			}
-		}
-		JobPojo job = g.getObjectMapper().getObject(JobPojo.class, uriStr);
-		String jobStatus = job.getStatus();
+    @GET
+    @Path("/{resourceID}")
+    @Consumes(MediaType.WILDCARD)
+    public Response getJob(@PathParam("resourceID") String resourceID) {
+        log.info("Access to job: " + resourceID);
+        String uriStr = uriInfo.getRequestUri().toString();
+        Grafeo g = new GrafeoImpl();
+        log.info("Reading job from endpoint " + ENDPOINT_QUERY);
+        try {
+            g.readFromEndpoint(ENDPOINT_QUERY, uriStr);
+        } catch (Exception e1) {
+            // if we couldn't read the job, try again once in a second
+            try { Thread.sleep(1000); } catch (InterruptedException e) { }
+            try { g.readFromEndpoint(ENDPOINT_QUERY, uriStr);
+            } catch (Exception e) {
+                return throwServiceError(e);
+            }
+        }
+        JobPojo job = g.getObjectMapper().getObject(JobPojo.class, uriStr);
+        String jobStatus = job.getStatus();
         log.info("Job status: " + jobStatus);
         try {
-			return Response.ok().entity(getResponseEntity(job.getGrafeo())).build();
+            return Response.ok().entity(getResponseEntity(job.getGrafeo())).build();
         } catch (NullPointerException e) {
-			return Response.notAcceptable(supportedVariants).build();
+            return Response.notAcceptable(supportedVariants).build();
         }
-	}
+    }
 
 	@POST
 	@Consumes(MediaType.WILDCARD)

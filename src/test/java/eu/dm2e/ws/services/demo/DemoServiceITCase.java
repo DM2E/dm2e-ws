@@ -1,22 +1,6 @@
 package eu.dm2e.ws.services.demo;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.matchers.JUnitMatchers.containsString;
-
-import java.io.InputStream;
-import java.net.URI;
-import java.util.logging.Logger;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
 import com.sun.jersey.api.client.ClientResponse;
-
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.OmnomTestCase;
@@ -27,6 +11,19 @@ import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.model.JobStatusConstants;
+import eu.dm2e.ws.wsmanager.ManageService;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import java.io.InputStream;
+import java.net.URI;
+import java.util.logging.Logger;
+
+import static org.junit.Assert.*;
+import static org.junit.matchers.JUnitMatchers.containsString;
 
 /**
  * This file was created within the DM2E project.
@@ -44,12 +41,9 @@ public class DemoServiceITCase extends OmnomTestCase {
     @Before
     public void setUp() throws Exception {
     	SERVICE_URI = URI_BASE + "service/demo";
+        ManageService.startAll();
     }
 
-    @After
-    public void tearDown() {
-    }
-    
     @Test
     public void testDescription() {
     	

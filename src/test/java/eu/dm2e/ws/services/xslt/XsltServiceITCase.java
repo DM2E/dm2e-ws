@@ -37,7 +37,7 @@ public class XsltServiceITCase extends OmnomTestCase {
 
 	@Before
     public void setUp() throws Exception {
-    	SERVICE_URI = URI_BASE + "service/xslt";
+        SERVICE_URI = URI_BASE + "service/xslt";
     	SERVICE_POJO = new XsltService().getWebServicePojo();
     }
 	

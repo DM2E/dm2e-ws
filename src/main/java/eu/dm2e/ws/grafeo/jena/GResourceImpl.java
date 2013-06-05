@@ -88,11 +88,11 @@ public class GResourceImpl extends GValueImpl implements GResource {
         	RDFNode thisValue = stmt.getObject();
         	if (thisValue.isResource()) {
         		propSet.add(new GResourceImpl(grafeo, thisValue.asResource()));
-                log.fine("Found resource value: " + thisValue.asResource().getURI());
+                log.fine("Found resource value: " + thisValue);
         	}
         	else if (thisValue.isLiteral()) {
         		propSet.add(new GLiteralImpl(grafeo, thisValue.asLiteral()));
-                log.fine("Found literal value: " + thisValue.asLiteral().getValue());
+                log.fine("Found literal value: " + thisValue);
             }
         	else {
         		throw new RuntimeException("Not a literal or a resource value: " + getUri() + " -> " + uri);

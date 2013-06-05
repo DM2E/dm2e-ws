@@ -31,7 +31,8 @@ public class JobServiceITCase extends OmnomTestCase {
 
 	@Before
 	public void setUp() throws Exception {
-		client = new Client();
+
+        client = new Client();
 		webResource = client.getJerseyClient().resource(BASE_URI + "/job");
 //		log.info(configString.get(OmnomTestResources.DEMO_JOB));
 		ClientResponse resp = webResource.post(ClientResponse.class, configString.get(OmnomTestResources.DEMO_JOB));

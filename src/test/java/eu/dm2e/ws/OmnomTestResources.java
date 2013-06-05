@@ -16,7 +16,8 @@ public enum OmnomTestResources {
 	, TEI2EDM_20130129("/mappings/xslt-zip/TEI2EDM_xslt_20130129.zip")
 	, TEI2DM2E_20130605("/mappings/xslt-zip/TEI2DM2E_xslt_20130605.zip")
 	, TEMPLATE_BLANK_XSLTZIP("/webserviceConfig/xslt_zip_config.ttl.mustache")
-	;
+    , PUBLISH_RDF("/publish/to-publish-test1.rdf")
+    ;
 	
 	final String path;
 	OmnomTestResources(String path) { this.path = path; }
