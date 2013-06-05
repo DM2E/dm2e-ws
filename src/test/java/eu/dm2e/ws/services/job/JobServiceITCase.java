@@ -17,6 +17,7 @@ import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
+import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.Client;
@@ -74,6 +75,7 @@ public class JobServiceITCase extends OmnomTestCase {
 		{
 			String newStatus = "STARTED";
 			ClientResponse resp1 = wr.put(ClientResponse.class, newStatus);
+			log.info("Status response: " + resp1);
 			assertEquals(201, resp1.getStatus());
 			ClientResponse resp2 = wr.get(ClientResponse.class);
 			assertEquals(newStatus, resp2.getEntity(String.class));
@@ -227,20 +229,22 @@ public class JobServiceITCase extends OmnomTestCase {
 				.post(ClientResponse.class, configString.get(OmnomTestResources.DEMO_JOB));
 		assertEquals(201, jobResp.getStatus());
 		URI jobLoc = jobResp.getLocation();
+		log.info("JOB URI: " + jobLoc);
 		for (int i = 0; i < 10; i++) {
 			ClientResponse logResp = client.getJerseyClient()
 					.resource(jobLoc)
 					.path("log")
-					.type("text/plain")
+					.type(DM2E_MediaType.TEXT_PLAIN)
 					.post(ClientResponse.class, "FOO");
+			log.info("Log post response: " + logResp);
 			assertEquals(201, logResp.getStatus());
 		}
-		String logStr = client.getJerseyClient()
-				.resource(jobLoc)
+		String logStr = client.resource(jobLoc)
 				.path("log")
-				.accept("text/x-log")
+				.accept(DM2E_MediaType.TEXT_X_LOG)
 				.get(String.class);
 		String[] lines = logStr.split("\r\n|\r|\n");
+		log.info("Log: " + logStr);
 		assertEquals("Log should be 10 lines long", 10, lines.length);
 	}
 	
@@ -262,6 +266,14 @@ public class JobServiceITCase extends OmnomTestCase {
 				.accept("text/x-log")
 				.get(String.class);
 		assertEquals("GET CT text/xlog on the job should yield the same", logStr, logStrFromJob);
+	}
+	
+	@Test
+	public void testPojoPublish() {
+		JobPojo job = new JobPojo();
+		log.info(job.getId());
+		job.setFinished();
+		log.info(job.getId());
 	}
 
 }

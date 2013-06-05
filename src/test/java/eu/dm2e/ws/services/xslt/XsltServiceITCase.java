@@ -79,7 +79,7 @@ public class XsltServiceITCase extends OmnomTestCase {
     	tC.setWebservice(SERVICE_POJO);
     	tC.addParameterAssignment(XsltService.XML_IN_PARAM_NAME, xmlUri);
     	tC.addParameterAssignment(XsltService.XSLT_IN_PARAM_NAME, xsltUri);
-    	tC.publishToEndpoint();
+    	tC.publishToService();
     	
     	ClientResponse resp = client.putPojoToService(tC, SERVICE_URI);
     	log.info(tC.getTurtle());
