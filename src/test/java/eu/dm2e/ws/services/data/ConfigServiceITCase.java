@@ -1,21 +1,8 @@
 // <<<<<<< HEAD
 package eu.dm2e.ws.services.data;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.matchers.JUnitMatchers.containsString;
-
-import java.io.File;
-import java.util.logging.Logger;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.OmnomTestCase;
@@ -23,6 +10,15 @@ import eu.dm2e.ws.OmnomTestResources;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.Client;
+import eu.dm2e.ws.wsmanager.ManageService;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.File;
+import java.util.logging.Logger;
+
+import static org.junit.Assert.*;
+import static org.junit.matchers.JUnitMatchers.containsString;
 
 public class ConfigServiceITCase extends OmnomTestCase{
 
@@ -36,7 +32,9 @@ public class ConfigServiceITCase extends OmnomTestCase{
 	public void setUp() throws Exception {
 		client = new Client();
 		webResource = client.getJerseyClient().resource(BASE_URI + "/config");
-	}
+        ManageService.startAll();
+
+    }
 	
 	@Test
 	public void testPostBadSyntax() {

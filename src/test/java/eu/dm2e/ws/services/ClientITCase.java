@@ -1,9 +1,17 @@
 package eu.dm2e.ws.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+import eu.dm2e.ws.Config;
+import eu.dm2e.ws.OmnomTestCase;
+import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.wsmanager.ManageService;
+import org.apache.commons.io.IOUtils;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -11,19 +19,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-
-import eu.dm2e.ws.Config;
-import eu.dm2e.ws.OmnomTestCase;
-import eu.dm2e.ws.api.FilePojo;
-import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import static org.junit.Assert.*;
 
 public class ClientITCase extends OmnomTestCase {
 	
@@ -49,7 +45,9 @@ public class ClientITCase extends OmnomTestCase {
 
 	@Before
 	public void setUp() throws Exception {
-		client = new Client();
+        ManageService.startAll();
+
+        client = new Client();
 		FILE_POJO.setOriginalName(ORIGINAL_NAME);
 		TEMP_FILE = File.createTempFile("omnom_test", "txt");
 		IOUtils.copy(IOUtils.toInputStream(FILE_CONTENTS), new FileOutputStream(TEMP_FILE));

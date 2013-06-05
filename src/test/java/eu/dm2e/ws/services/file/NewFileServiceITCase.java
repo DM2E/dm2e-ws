@@ -1,27 +1,7 @@
 package eu.dm2e.ws.services.file;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.matchers.JUnitMatchers.containsString;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.ws.rs.core.MediaType;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.multipart.FormDataMultiPart;
-
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.OmnomTestCase;
@@ -29,6 +9,20 @@ import eu.dm2e.ws.OmnomTestResources;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.wsmanager.ManageService;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.ws.rs.core.MediaType;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+import static org.junit.matchers.JUnitMatchers.containsString;
 
 public class NewFileServiceITCase extends OmnomTestCase {
 	
@@ -44,7 +38,9 @@ public class NewFileServiceITCase extends OmnomTestCase {
 	public void testFileService() {
 		FileService fs = new FileService();
 		assertNotNull(fs);
-	}
+        ManageService.startAll();
+
+    }
 
 	@Test
 	public void testPostEmptyFile() {

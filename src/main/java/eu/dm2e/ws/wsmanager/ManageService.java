@@ -82,8 +82,8 @@ public class ManageService {
     }
 
     public static void startAll() {
-        startServer();
-        startFuseki();
+        if (httpServer==null) startServer();
+        if (sparqlServer==null) startFuseki();
     }
 
     public static void stopAll() {

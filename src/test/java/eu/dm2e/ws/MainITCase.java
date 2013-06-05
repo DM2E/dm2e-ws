@@ -21,7 +21,9 @@ public class MainITCase extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        
+        ManageService.startAll();
+
+
         //start the Grizzly2 web container 
         // httpServer = Main.startServer();
 

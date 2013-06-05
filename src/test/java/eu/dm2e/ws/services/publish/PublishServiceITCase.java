@@ -10,6 +10,7 @@ import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.model.JobStatusConstants;
+import eu.dm2e.ws.wsmanager.ManageService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +37,8 @@ public class PublishServiceITCase extends OmnomTestCase {
 
     @Before
     public void setUp() throws Exception {
+        ManageService.startAll();
+
         SERVICE_URI = URI_BASE + "publish";
     }
 

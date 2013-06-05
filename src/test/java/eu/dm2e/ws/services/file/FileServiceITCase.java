@@ -1,23 +1,22 @@
 package eu.dm2e.ws.services.file;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import javax.ws.rs.core.MediaType;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
-
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.wsmanager.ManageService;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.ws.rs.core.MediaType;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class FileServiceITCase extends OmnomTestCase {
 	
@@ -26,7 +25,9 @@ public class FileServiceITCase extends OmnomTestCase {
     @Before
 	public void setUp()
 			throws Exception {
-	}
+        ManageService.startAll();
+
+    }
 
 	@After
 	public void tearDown() {

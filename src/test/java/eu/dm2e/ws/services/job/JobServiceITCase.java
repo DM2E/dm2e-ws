@@ -1,18 +1,7 @@
 package eu.dm2e.ws.services.job;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.OmnomTestCase;
@@ -20,6 +9,16 @@ import eu.dm2e.ws.OmnomTestResources;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.Client;
+import eu.dm2e.ws.wsmanager.ManageService;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class JobServiceITCase extends OmnomTestCase {
 	private static final String BASE_URI = "http://localhost:9998";
@@ -30,7 +29,9 @@ public class JobServiceITCase extends OmnomTestCase {
 
 	@Before
 	public void setUp() throws Exception {
-		client = new Client();
+        ManageService.startAll();
+
+        client = new Client();
 		webResource = client.getJerseyClient().resource(BASE_URI + "/job");
 //		log.info(configString.get(OmnomTestResources.DEMO_JOB));
 		ClientResponse resp = webResource.post(ClientResponse.class, configString.get(OmnomTestResources.DEMO_JOB));

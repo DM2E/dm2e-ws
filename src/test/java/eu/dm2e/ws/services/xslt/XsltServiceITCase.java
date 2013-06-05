@@ -1,23 +1,6 @@
 package eu.dm2e.ws.services.xslt;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
 import com.sun.jersey.api.client.ClientResponse;
-
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
 import eu.dm2e.ws.api.JobPojo;
@@ -25,6 +8,17 @@ import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.wsmanager.ManageService;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 /**
  * @author kb
@@ -37,7 +31,9 @@ public class XsltServiceITCase extends OmnomTestCase {
 
 	@Before
     public void setUp() throws Exception {
-    	SERVICE_URI = URI_BASE + "service/xslt";
+        ManageService.startAll();
+
+        SERVICE_URI = URI_BASE + "service/xslt";
     	SERVICE_POJO = new XsltService().getWebServicePojo();
     }
 	
