@@ -4,10 +4,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.commons.beanutils.BeanUtils;
-
 import com.sun.jersey.api.client.WebResource;
 
+import eu.dm2e.utils.PojoUtils;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.Client;
@@ -93,20 +92,21 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
 		}
 		T theNewPojo = g.getObjectMapper().getObject(this.getClass(), this.getId());
         try {
-            BeanUtils.copyProperties(this, theNewPojo);
+            PojoUtils.copyProperties(this, theNewPojo);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("An exception occurred: " + e, e);
         }
     }
 	
-	public void publishToService(String serviceUri) {
-		this.client.publishPojo(this, serviceUri);
+	public String publishToService(WebResource wr) {
+		String loc = this.client.publishPojo(this, wr);
+		return loc;
 	}
-	public void publishToService(WebResource wr) {
-		this.client.publishPojo(this, wr);
+	public String publishToService(String serviceUri) {
+		return this.publishToService(client.resource(serviceUri));
 	}
-	public void publishToService() {
-		this.client.publishPojoToConfigService(this);
+	public String publishToService() {
+		return this.publishToService(client.getConfigWebResource());
 	}
 
 //	public void publishToEndpoint(String endPoint, String graph) {
