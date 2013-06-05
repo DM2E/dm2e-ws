@@ -1,6 +1,7 @@
 package eu.dm2e.ws;
 
 import java.io.File;
+import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,6 +9,13 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
 
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+
+import eu.dm2e.utils.TemplateEngine;
+import eu.dm2e.ws.api.WebserviceConfigPojo;
+import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.Client;
 
 public class OmnomTestCase {
@@ -30,4 +38,23 @@ public class OmnomTestCase {
 			}
 		}
 	}
+	
+	/**
+	 * @param templ
+	 * @param templMap
+	 * @param webResource
+	 * @param class1
+	 * @return
+	 */
+	protected WebserviceConfigPojo renderAndLoadPojo(String templ, Map<String, String> templMap, WebResource webResource, Class<WebserviceConfigPojo> class1) {
+		String templStr = TemplateEngine.render(templ, templMap);
+		ClientResponse resp1 = webResource
+				.type(DM2E_MediaType.TEXT_TURTLE)
+				.post(ClientResponse.class,
+				templStr);
+		URI loc = resp1.getLocation();
+		Grafeo g = new GrafeoImpl(resp1.getEntityInputStream());
+		return g.getObjectMapper().getObject(class1, loc);
+	}
+
 }
