@@ -81,7 +81,7 @@ public class ConfigService extends AbstractRDFService {
         	g = new GrafeoImpl(input);
         } catch (Throwable t) {
         	log.severe(ErrorMsg.BAD_RDF.toString());
-        	return throwServiceError(ErrorMsg.BAD_RDF);
+        	return throwServiceError(ErrorMsg.BAD_RDF, t);
         }
         log.info("Looking for top blank node.");
         GResource res = g.findTopBlank("omnom:WebServiceConfig");
@@ -112,7 +112,7 @@ public class ConfigService extends AbstractRDFService {
     @Consumes(MediaType.WILDCARD)
     public Response postConfig(File input) {
         log.info("POST config.");
-//        // TODO BUG this fails if newlines aren't correctly transmitted
+//        // TODO BUG this fails if newlines aren't correctly transmitted due to line-wide comments in turtle
         
     	String uriStr = getRequestUriWithoutQuery().normalize().toString() + "/" + UUID.randomUUID().toString();
     	log.info("Posting the config to " + uriStr);
@@ -127,12 +127,12 @@ public class ConfigService extends AbstractRDFService {
         	g = new GrafeoImpl(input);
         } catch (Throwable t) {
         	log.severe(ErrorMsg.BAD_RDF.toString());
-        	return throwServiceError(ErrorMsg.BAD_RDF);
+        	return throwServiceError(ErrorMsg.BAD_RDF, t);
         }
-        log.info("Parsed RDF.");
+        log.fine("Parsed config RDF.");
         GResource res = g.findTopBlank("omnom:WebServiceConfig");
         if (null == res)  {
-        	return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE);
+        	return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE + ": " + g.getTurtle());
         }
         res.rename(uriStr);
         log.info("Renamed top blank node.");
@@ -154,7 +154,7 @@ public class ConfigService extends AbstractRDFService {
         log.info("Written data to endpoint.");
         return Response.created(uri).entity(getResponseEntity(g)).build();
     }
- 
+
     
 
 }

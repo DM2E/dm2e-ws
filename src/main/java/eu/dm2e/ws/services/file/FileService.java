@@ -488,7 +488,11 @@ public class FileService extends AbstractRDFService {
 
 		// create model from graph at uri
 		GrafeoImpl g = new GrafeoImpl();
-		g.readFromEndpoint(STORAGE_ENDPOINT, uri);
+		try {
+			g.readFromEndpoint(STORAGE_ENDPOINT, uri);
+		} catch (RuntimeException t) {
+			return throwServiceError(ErrorMsg.BAD_RDF, t);
+		}
 
 		// Unless the URI is prefixed with the URI prefix the @POST methods uses
 		// i.e. if the URI is external, do a redirect

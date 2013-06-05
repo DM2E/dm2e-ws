@@ -16,6 +16,7 @@ import org.apache.commons.validator.routines.UrlValidator;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -75,6 +76,13 @@ public abstract class AbstractRDFService {
     protected Response throwServiceError(ErrorMsg msg, int status) {
     	return this.throwServiceError(msg.toString(), status);
 	}
+	protected Response throwServiceError(ErrorMsg badRdf, Throwable t) {
+		String errStr = badRdf.toString();
+		Response resp = this.throwServiceError(new RuntimeException(t));
+		errStr = resp.getEntity() + ": " + errStr;
+		return this.throwServiceError(errStr);
+	}
+ 
 	protected Response throwServiceError(String msg, int status) {
 		return Response.status(status).entity(msg).build();
 	}
