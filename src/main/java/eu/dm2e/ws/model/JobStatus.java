@@ -11,7 +11,7 @@ package eu.dm2e.ws.model;
  * @author kb
  *
  */
-public enum JobStatusConstants {
+public enum JobStatus {
 	NOT_STARTED,
 	STARTED,
 	WAITING,

@@ -10,7 +10,7 @@ import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
-import eu.dm2e.ws.model.JobStatusConstants;
+import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.wsmanager.ManageService;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -129,7 +129,7 @@ public class DemoServiceITCase extends OmnomTestCase {
         JobPojo job = g.getObjectMapper().getObject(JobPojo.class, joburi.toString());
         String status =  job.getStatus();
         log.info("Status after 1 seconds: " + status);
-        assert(status.equals(JobStatusConstants.STARTED.name()));
+        assert(status.equals(JobStatus.STARTED.name()));
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
@@ -139,7 +139,7 @@ public class DemoServiceITCase extends OmnomTestCase {
         job = g.getObjectMapper().getObject(JobPojo.class, joburi.toString());
         status =  job.getStatus();
         log.info("Status after 4 seconds: " + status);
-        assert(status.equals(JobStatusConstants.FINISHED.name()));
+        assert(status.equals(JobStatus.FINISHED.name()));
 
     }
 

@@ -16,7 +16,7 @@ import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
-import eu.dm2e.ws.model.JobStatusConstants;
+import eu.dm2e.ws.model.JobStatus;
 
 public class XsltZipServiceITCase extends OmnomTestCase {
 	
@@ -79,9 +79,9 @@ public class XsltZipServiceITCase extends OmnomTestCase {
 		for (
 				jobPojo.loadFromURI(resp.getLocation())
 			;
-				! jobPojo.getStatus().equals(JobStatusConstants.FINISHED.toString())
+				! jobPojo.getStatus().equals(JobStatus.FINISHED.toString())
 				&&
-				! jobPojo.getStatus().equals(JobStatusConstants.FAILED.toString())
+				! jobPojo.getStatus().equals(JobStatus.FAILED.toString())
 			;
 				jobPojo.loadFromURI(resp.getLocation())) {
 			log.info(jobPojo.toLogString());

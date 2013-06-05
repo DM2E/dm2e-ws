@@ -33,7 +33,7 @@ import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.jena.SparqlUpdate;
-import eu.dm2e.ws.model.JobStatusConstants;
+import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.model.LogLevel;
 import eu.dm2e.ws.services.AbstractRDFService;
 
@@ -212,12 +212,12 @@ public class JobService extends AbstractRDFService {
 	@Consumes(MediaType.WILDCARD)
 	public Response updateJobStatus(@PathParam("id") String id, String newStatusStr) {
 		
-		JobStatusConstants newStatus;
+		JobStatus newStatus;
 		// validate if this is a valid status
 		if (null == newStatusStr || "".equals(newStatusStr))
 			return throwServiceError(ErrorMsg.NO_JOB_STATUS);
 		try {
-			newStatus = Enum.valueOf(JobStatusConstants.class, newStatusStr);
+			newStatus = Enum.valueOf(JobStatus.class, newStatusStr);
 		} catch (IllegalArgumentException e) {
 			return throwServiceError(newStatusStr, ErrorMsg.INVALID_JOB_STATUS);
 		}

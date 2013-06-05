@@ -21,7 +21,7 @@ import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFId;
 import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
-import eu.dm2e.ws.model.JobStatusConstants;
+import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.model.LogLevel;
 
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/",
@@ -216,28 +216,28 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
 	/**
 	 * Updating status
 	 */
-	public void setStatus(JobStatusConstants status) {
+	public void setStatus(JobStatus status) {
 		setStatus(status.toString());
 	}
 	public void setStarted() {
-		this.trace("Status change: " + this.getStatus() + " => " + JobStatusConstants.STARTED);
-		this.setStatus(JobStatusConstants.STARTED.toString()); 
+		this.trace("Status change: " + this.getStatus() + " => " + JobStatus.STARTED);
+		this.setStatus(JobStatus.STARTED.toString()); 
 		publishJobStatus(status);
 	}
 	public void setFinished() {
-		this.trace("Status change: " + this.getStatus() + " => " + JobStatusConstants.FINISHED);
-		this.setStatus(JobStatusConstants.FINISHED.toString()); 
+		this.trace("Status change: " + this.getStatus() + " => " + JobStatus.FINISHED);
+		this.setStatus(JobStatus.FINISHED.toString()); 
 		publishJobStatus(status);
 	}
 	public void setFailed() {
-		this.trace("Status change: " + this.getStatus() + " => " + JobStatusConstants.FAILED);
-		this.setStatus(JobStatusConstants.FAILED.toString()); 
+		this.trace("Status change: " + this.getStatus() + " => " + JobStatus.FAILED);
+		this.setStatus(JobStatus.FAILED.toString()); 
 		publishJobStatus(status);
 	}
 	
-	public boolean isFinished() { return this.getStatus().equals(JobStatusConstants.FINISHED.toString()); }
-	public boolean isFailed() { return this.getStatus().equals(JobStatusConstants.FAILED.toString()); }
-	public boolean isStarted() { return ! this.getStatus().equals(JobStatusConstants.NOT_STARTED.toString()); }
+	public boolean isFinished() { return this.getStatus().equals(JobStatus.FINISHED.toString()); }
+	public boolean isFailed() { return this.getStatus().equals(JobStatus.FAILED.toString()); }
+	public boolean isStarted() { return ! this.getStatus().equals(JobStatus.NOT_STARTED.toString()); }
 	
 	@Override
 	public String publishToService() {
@@ -284,7 +284,7 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
 	
 	public String getStatus() {
 		if (null != status) return status;
-		return JobStatusConstants.NOT_STARTED.toString();
+		return JobStatus.NOT_STARTED.toString();
 	}
 	public void setStatus(String status) { this.status = status; }
 

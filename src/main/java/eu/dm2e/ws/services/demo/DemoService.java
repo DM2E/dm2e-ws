@@ -3,7 +3,7 @@ package eu.dm2e.ws.services.demo;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
-import eu.dm2e.ws.model.JobStatusConstants;
+import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.services.AbstractTransformationService;
 
 import javax.ws.rs.Path;
@@ -56,13 +56,13 @@ public class DemoService extends AbstractTransformationService {
                 Thread.sleep(1000);
             }
         } catch (InterruptedException e) {
-            jobPojo.setStatus(JobStatusConstants.FAILED);
+            jobPojo.setStatus(JobStatus.FAILED);
             jobPojo.fatal(e.toString());
             return;
         }
 
         jobPojo.debug("DemoWorker is finished now.");
-        jobPojo.setStatus(JobStatusConstants.FINISHED);
+        jobPojo.setStatus(JobStatus.FINISHED);
         client.publishPojoToJobService(jobPojo);
     }
 }

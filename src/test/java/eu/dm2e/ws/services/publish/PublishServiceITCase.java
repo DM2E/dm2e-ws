@@ -22,7 +22,7 @@ import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
-import eu.dm2e.ws.model.JobStatusConstants;
+import eu.dm2e.ws.model.JobStatus;
 
 /**
  * This file was created within the DM2E project.
@@ -128,7 +128,7 @@ public class PublishServiceITCase extends OmnomTestCase {
              * CHECK IF JOB IS FINISHED
              */
             log.info("Status: " + job.getStatus());
-            assertEquals(JobStatusConstants.FINISHED.name(), job.getStatus());
+            assertEquals(JobStatus.FINISHED.name(), job.getStatus());
 
         } catch (Exception e) {
         	log.info("" + e);
@@ -168,9 +168,9 @@ public class PublishServiceITCase extends OmnomTestCase {
              * WAIT FOR JOB TO BE FINISHED
              */
 
-            String status = JobStatusConstants.NOT_STARTED.name();
+            String status = JobStatus.NOT_STARTED.name();
             JobPojo job = null;
-            while (status.equals(JobStatusConstants.NOT_STARTED.name()) || status.equals(JobStatusConstants.STARTED.name())) {
+            while (status.equals(JobStatus.NOT_STARTED.name()) || status.equals(JobStatus.STARTED.name())) {
                 Grafeo g = new GrafeoImpl(joburi.toString());
                 job = g.getObjectMapper().getObject(JobPojo.class, joburi.toString());
                 status = job.getStatus();
@@ -187,7 +187,7 @@ public class PublishServiceITCase extends OmnomTestCase {
              * CHECK IF JOB IS FINISHED
              */
             log.info("Status: " + status);
-            assert (status.equals(JobStatusConstants.FINISHED.name()));
+            assert (status.equals(JobStatus.FINISHED.name()));
 
         } catch (Exception e) {
             throw new RuntimeException("An exception occurred: " + e, e);
