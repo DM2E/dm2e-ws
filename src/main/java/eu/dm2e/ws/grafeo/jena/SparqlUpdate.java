@@ -1,11 +1,12 @@
 package eu.dm2e.ws.grafeo.jena;
 
+import java.util.Map.Entry;
+import java.util.logging.Logger;
+
 import com.hp.hpl.jena.update.UpdateExecutionFactory;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateProcessor;
 import com.hp.hpl.jena.update.UpdateRequest;
-
-import java.util.logging.Logger;
 
 public class SparqlUpdate {
 	
@@ -49,6 +50,9 @@ public class SparqlUpdate {
 			throw new IllegalArgumentException("Must set endpoint to perform query.");
         log.info("Modify query: " + toString());
         UpdateRequest update = UpdateFactory.create();
+        for (Entry<String, String> namespaceMapping : new GrafeoImpl().namespaces.entrySet()) {
+        	update.setPrefix(namespaceMapping.getKey(), namespaceMapping.getValue());
+        }
         update.add(toString());
         UpdateProcessor exec = UpdateExecutionFactory.createRemoteForm(update, endpoint);
         exec.execute();
