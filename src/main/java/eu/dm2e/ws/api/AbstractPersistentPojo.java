@@ -3,15 +3,12 @@ package eu.dm2e.ws.api;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.UUID;
 
 import org.apache.commons.beanutils.BeanUtils;
 
 import com.sun.jersey.api.client.WebResource;
 
-import eu.dm2e.ws.Config;
 import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.Client;
 
@@ -91,7 +88,8 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
         try {
 			g.load(this.getId(), expansionSteps);
 		} catch (Exception e1) {
-			throw new RuntimeException(e1);
+			log.warning("Failed to initialize Pojo from URI: " + e1);
+			return;
 		}
 		T theNewPojo = g.getObjectMapper().getObject(this.getClass(), this.getId());
         try {

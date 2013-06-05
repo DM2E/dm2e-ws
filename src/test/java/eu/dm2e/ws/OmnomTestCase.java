@@ -43,6 +43,7 @@ public class OmnomTestCase {
 	
 	@BeforeClass
 	public static void setUpClass() {
+        System.setProperty("http.keepAlive", "false");
         ManageService.startAll();
 	}
 	

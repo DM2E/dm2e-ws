@@ -33,8 +33,8 @@ import eu.dm2e.ws.grafeo.Grafeo;
  */
 public class Client {
 
-    private com.sun.jersey.api.client.Client jerseyClient = new com.sun.jersey.api.client.Client();
-    private Logger log = Logger.getLogger(getClass().getName());
+    private com.sun.jersey.api.client.Client jerseyClient = null;
+//    private Logger log = Logger.getLogger(getClass().getName());
     
     public ClientResponse putPojoToService(SerializablePojo pojo, String wr) {
     	return this.putPojoToService(pojo, this.resource(wr));
@@ -218,7 +218,7 @@ public class Client {
     }
     
     public WebResource resource(String URI) {
-    	return this.jerseyClient.resource(URI);
+    	return this.getJerseyClient().resource(URI);
     }
     public WebResource resource(URI URI) {
     	return this.resource(URI.toString());
@@ -227,7 +227,12 @@ public class Client {
     /*******************
      * GETTERS/SETTERS
      ********************/
-	public com.sun.jersey.api.client.Client getJerseyClient() { return jerseyClient; }
+	public com.sun.jersey.api.client.Client getJerseyClient() {
+    	if (null == this.jerseyClient) { 
+    		 this.setJerseyClient(new com.sun.jersey.api.client.Client());
+    	}
+		return this.jerseyClient;
+	}
 	public void setJerseyClient(com.sun.jersey.api.client.Client jerseyClient) { this.jerseyClient = jerseyClient; }
 
 }
