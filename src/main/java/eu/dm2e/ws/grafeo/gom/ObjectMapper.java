@@ -243,7 +243,7 @@ public class ObjectMapper {
 
                 }
 
-                // One-value property
+                // Literal property
                 else {
                     log.fine(field.getName() + " is a boring " + field.getType());
                     try {

@@ -222,22 +222,12 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
                 log.info("Content read.");
                 success = true;
             } catch (Throwable t) {
-                try {
-                    this.model.read(uri, null, "RDF/XML");
-                    log.info("Content read, found RDF/XML.");
-                    success = true;
-                } catch (Throwable t2) {
-                    // TODO Throw proper exception that is converted to a proper
-                    // HTTP response in DataService
-                    log.severe("Could not parse URI content: " + t2.getMessage());
-                    t.printStackTrace();
-                    t2.printStackTrace();
-                    throw new RuntimeException("Could not parse uri content: " + uri, t2);
-                }
+                    log.severe("Could not parse URI content: " + t.getMessage());
+                    throw new RuntimeException("Could not parse uri content: " + uri + " : " + t.getMessage());
             }
             count--;
             try {
-                Thread.sleep(300);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 throw new RuntimeException("An exception occurred: " + e, e);
             }
@@ -280,9 +270,10 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
             } catch (Throwable t2) {
                 // TODO Throw proper exception that is converted to a proper
                 // HTTP response in DataService
-                log.severe("Could not parse URI content: " + t2.getMessage());
-                throw new RuntimeException("Could not parse uri content: "
-                        + uri, t2);
+                log.warning("Could not parse URI content: " + t2.getMessage());
+                throw new RuntimeException("Could not parse URI content: " + uri + "\n"
+                		+"N3 Parser croaked: " + t.getMessage()
+                		+"\nRDFXML parser croaked: " + t2.getMessage());
             }
         }
     }
