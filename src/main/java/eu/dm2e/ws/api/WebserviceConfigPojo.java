@@ -55,17 +55,16 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
 			throw new RuntimeException("WebserviceConfig contains no webservice. Can't introspect parameters.");
 		}
 
-        // TODO: Why do we need a URI here, I created assignments successfully with blank nodes... (Kai)
-        if (null == this.getId()) {
-			throw new RuntimeException("WebserviceConfig has no ID, can't generate URI.");
-		}
-		
 		ParameterPojo param = this.getWebservice().getParamByName(paramName);
 		if (null == param) {
 			throw new RuntimeException("Webservice contains no such parameter: " + paramName);
 		}
 		ParameterAssignmentPojo ass = param.createAssignment(paramValue);
-		ass.setId(this.getId() + "/assignment/" + UUID.randomUUID().toString());
+        // TODO: Why do we need a URI here, I created assignments successfully with blank nodes... (Kai)
+        if (null != this.getId()) {
+			ass.setId(this.getId() + "/assignment/" + UUID.randomUUID().toString());
+			this.publishToService();
+        }
 		this.getParameterAssignments().add(ass);
 	}
 	

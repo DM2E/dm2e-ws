@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.logging.Logger;
 
 import javax.ws.rs.core.MediaType;
 
@@ -20,7 +19,6 @@ import com.sun.jersey.multipart.FormDataMultiPart;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.api.FilePojo;
-import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.SerializablePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 

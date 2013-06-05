@@ -21,14 +21,13 @@ public class WebserviceConfigPojoTest {
 		fooParam.setIsRequired(true);
 		
 		WebserviceConfigPojo wsConf = new WebserviceConfigPojo();
-		wsConf.setId("http://quux.bork/config/1");
+//		wsConf.setId("http://quux.bork/config/1");
 		wsConf.setWebservice(wsDesc);
 		wsConf.addParameterAssignment("foo", "bar");
 		wsConf.validateConfig();
-		
 	}
 
-	@Ignore
+//	@Ignore
 	@Test
 	public void testSerialization() {
         log.info("TEST: Config serislization");

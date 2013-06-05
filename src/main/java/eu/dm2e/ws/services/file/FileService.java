@@ -424,7 +424,6 @@ public class FileService extends AbstractRDFService {
             return getFileMetaDataByUri(uri);
 		} else {
             log.info("FILE will be sent");
-
             return getFileDataByUri(uri);
 		}
 	}

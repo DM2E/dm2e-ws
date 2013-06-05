@@ -1,6 +1,8 @@
 package eu.dm2e.ws.services.publish;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -81,14 +83,14 @@ public class PublishServiceITCase extends OmnomTestCase {
 
 
             config.setWebservice(ws);
-            config.publishToService();
             config.addParameterAssignment("to-publish", xmlUri);
             config.addParameterAssignment("dataset-id", "test-dataset");
             config.addParameterAssignment("label", "Test-Dataset (from Integration Test)");
             config.addParameterAssignment("comment", "This can safely be deleted.");
+            config.publishToService();
             // config.addParameterAssignment("endpoint-update", "http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest/statements");
             // config.addParameterAssignment("endpoint-select", "http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest");
-            config.publishToService();
+//            config.publishToService();
 
             log.info("Configuration created for Test: " + config.getTurtle());
 
@@ -98,32 +100,38 @@ public class PublishServiceITCase extends OmnomTestCase {
                     .put(ClientResponse.class, config.getId());
             log.info("JOB STARTED WITH RESPONSE: " + response.getStatus() + " / Location: " + response.getLocation() + " / Content: " + response.getEntity(String.class));
             URI joburi = response.getLocation();
+            
            /**
              * WAIT FOR JOB TO BE FINISHED
              */
-
-            String status = JobStatusConstants.NOT_STARTED.name();
-            JobPojo job = null;
-            while (status.equals(JobStatusConstants.NOT_STARTED.name()) || status.equals(JobStatusConstants.STARTED.name())) {
-                Grafeo g = new GrafeoImpl(joburi.toString());
-                job = g.getObjectMapper().getObject(JobPojo.class, joburi.toString());
-                status = job.getStatus();
-                log.info("Check for status: " + status);
-                log.info("JOB SO FAR: " + job.getTurtle());
+            long i = 0 ,
+	             maxTries = 100,
+	             sleeptime = 1500;
+            JobPojo job = new JobPojo(joburi);
+			do {
+            	if (i++ >= maxTries) {
+            		fail("Publishing took more than" + (maxTries * sleeptime / 1000) + " seconds.");
+            		break;
+            	}
+            	
+                log.info("Check for status: " + job.getStatus());
+                log.info("Loop [# " + i + "] JOB SO FAR: " + job.getTurtle());
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(sleeptime);
                 } catch (InterruptedException e) {
                     throw new RuntimeException("An exception occurred: " + e, e);
                 }
-            }
+                job.loadFromURI(joburi);
+            } while ( ! (job.isFinished() || job.isFailed()) );
 
             /**
              * CHECK IF JOB IS FINISHED
              */
-            log.info("Status: " + status);
-            assert (status.equals(JobStatusConstants.FINISHED.name()));
+            log.info("Status: " + job.getStatus());
+            assertEquals(JobStatusConstants.FINISHED.name(), job.getStatus());
 
         } catch (Exception e) {
+        	log.info("" + e);
             throw new RuntimeException("An exception occurred: " + e, e);
         }
     }

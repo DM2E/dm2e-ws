@@ -66,7 +66,8 @@ public abstract class AbstractTransformationService extends AbstractRDFService i
         JobPojo job = new JobPojo();
         job.setWebService(wsConf.getWebservice());
         job.setWebserviceConfig(wsConf);
-        client.publishPojoToJobService(job);
+        job.addLogEntry("JobPojo constructed by AbstractTransformationService", "TRACE");
+        job.publishToService();
 
         /*
          * Let the asynchronous worker handle the job
