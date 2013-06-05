@@ -1,11 +1,33 @@
 package eu.dm2e.ws.services.job;
 
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Date;
+import java.util.Set;
+import java.util.UUID;
+import java.util.logging.Logger;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.apache.commons.io.IOUtils;
+
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.LogEntryPojo;
+import eu.dm2e.ws.api.ParameterAssignmentPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -14,18 +36,6 @@ import eu.dm2e.ws.grafeo.jena.SparqlUpdate;
 import eu.dm2e.ws.model.JobStatusConstants;
 import eu.dm2e.ws.model.LogLevel;
 import eu.dm2e.ws.services.AbstractRDFService;
-import org.apache.commons.io.IOUtils;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Date;
-import java.util.Set;
-import java.util.UUID;
-import java.util.logging.Logger;
 
 //import java.util.ArrayList;
 // TODO @GET /{id}/result with JSON
@@ -86,20 +96,71 @@ public class JobService extends AbstractRDFService {
 		} catch (Exception e) {
 			return throwServiceError(ErrorMsg.BAD_RDF);
 		}
-		GResource blank = inputGrafeo.findTopBlank();
+		GResource blank = inputGrafeo.findTopBlank("omnom:Job");
 		if (blank == null) {
 			return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE);
 		}
-		String id = UUID.randomUUID().toString();
-		String uri = getWebServicePojo().getId() + "/" + id;
+		String uri = getWebServicePojo().getId() + "/" + UUID.randomUUID().toString();;
 		log.warning("Instantiating Job POJO " + uri);
 		JobPojo jobPojo = inputGrafeo.getObjectMapper().getObject(JobPojo.class, blank);
 		jobPojo.setId(uri);
+		
+		for (LogEntryPojo entry : jobPojo.getLogEntries()) {
+			if (null == entry.getId()) {
+				entry.setId(uri + "/log/" + UUID.randomUUID().toString());
+			}
+		}
+		for (ParameterAssignmentPojo ass : jobPojo.getOutputParameters()) {
+			if (null == ass.getId()) {
+				ass.setId(uri + "/assignment/" + UUID.randomUUID().toString());
+			}
+		}
+		
 		Grafeo outputGrafeo = new GrafeoImpl();
 		outputGrafeo.getObjectMapper().addObject(jobPojo);
 		outputGrafeo.writeToEndpoint(NS.ENDPOINT_STATEMENTS, uri);
 		return Response.created(URI.create(uri)).entity(getResponseEntity(jobPojo.getGrafeo())).build();
 	}
+	
+	@POST
+	@Consumes(MediaType.WILDCARD)
+	@Path("/{id}/assignment")
+	public Response postAssignment(File bodyAsFile) {
+		Grafeo inputGrafeo;
+		try {
+			inputGrafeo = new GrafeoImpl(bodyAsFile);
+		} catch (Exception e) {
+			return throwServiceError(ErrorMsg.BAD_RDF);
+		}
+		GResource blank = inputGrafeo.findTopBlank("omnom:ParameterAssignment");
+		if (blank == null) {
+			return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE);
+		}
+		String jobUri = getRequestUriWithoutQuery().toString().replaceAll("/assignment$", "");
+		String assUri = getRequestUriWithoutQuery() + "/" + UUID.randomUUID().toString();;
+		ParameterAssignmentPojo ass = inputGrafeo.getObjectMapper().getObject(ParameterAssignmentPojo.class, blank);
+		ass.setId(assUri);
+		
+		Grafeo outputGrafeo = new GrafeoImpl();
+		outputGrafeo.getObjectMapper().addObject(ass);
+		outputGrafeo.addTriple(jobUri, JobPojo.PROP_OUTPUT_ASSIGNMENT, assUri);
+		SparqlUpdate sparul = new SparqlUpdate.Builder()
+				.delete("?s ?p ?o.")
+				.insert(outputGrafeo.getNTriples())
+				.graph(jobUri)
+				.endpoint(ENDPOINT_UPDATE)
+				.build();
+		sparul.execute();
+		return Response.created(URI.create(assUri)).entity(getResponseEntity(ass.getGrafeo())).build();
+	}
+    @GET
+    @Path("{id}/assignment/{assId}")
+    public Response getAssignment( @PathParam("id") String id, @PathParam("assId") String assId) {
+        log.info("Output Assignment " + assId + " of job requested: " + uriInfo.getRequestUri());
+        String uri = getRequestUriWithoutQuery().toString().replaceAll("/assignment/[^/]*", "");
+
+        return Response.status(303).location(URI.create(uri)).build();
+    }
 	
 	@PUT
 	@Path("/{resourceID}")
@@ -168,6 +229,7 @@ public class JobService extends AbstractRDFService {
 			.endpoint(ENDPOINT_UPDATE)
 			.graph(jobUri)
 			.build();
+		log.info("Updating status with query: " + sparul);
 		sparul.execute();
 		
 		return Response.created(getRequestUriWithoutQuery()).build();
@@ -191,7 +253,6 @@ public class JobService extends AbstractRDFService {
 		} catch (URISyntaxException e) {
 			return throwServiceError(e);
 		}
-		log.info(logRdfStr);
 		Grafeo gEntry = new GrafeoImpl(IOUtils.toInputStream(logRdfStr));
 		GResource blank = gEntry.findTopBlank();
 		if (null == blank) {
@@ -199,6 +260,7 @@ public class JobService extends AbstractRDFService {
 		}
 		blank.rename(entryUri.toString());
 		gEntry.addTriple(jobUri, JobPojo.PROP_LOG_ENTRY, entryUri.toString());
+		log.info(gEntry.getNTriples());
 		gEntry.writeToEndpoint(ENDPOINT_UPDATE, jobUri);
 		return Response.created(entryUri).build();
 	}

@@ -8,7 +8,7 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/"})
 @RDFClass("omnom:ParameterAssignment")
-public class ParameterAssignmentPojo {
+public class ParameterAssignmentPojo  extends SerializablePojo {
 
 	@RDFId
 	private String id;

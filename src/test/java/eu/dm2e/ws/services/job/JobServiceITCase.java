@@ -1,6 +1,10 @@
 package eu.dm2e.ws.services.job;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
@@ -18,9 +22,11 @@ import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
 import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.api.ParameterAssignmentPojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.Client;
+import eu.dm2e.ws.services.publish.PublishService;
 
 public class JobServiceITCase extends OmnomTestCase {
 	private static final String BASE_URI = "http://localhost:9998";
@@ -272,9 +278,59 @@ public class JobServiceITCase extends OmnomTestCase {
 	@Test
 	public void testPojoPublish() {
 		JobPojo job = new JobPojo();
-		log.info(job.getId());
-		job.setFinished();
-		log.info(job.getId());
+		{
+			assertThat(job.getId(), is(nullValue()));
+			job.info("FOO");
+			job.debug("FOO");
+			job.trace("FOO");
+			job.warn("FOO");
+			job.fatal("FOO");
+			assertThat(job.getId(), is(nullValue()));
+			job.setStarted();
+			job.setFailed();
+			job.setFinished();
+			assertThat(job.getId(), is(nullValue()));
+			job.publishToService();
+			assertThat(job.getId(), not(nullValue()));
+		}
+		{
+			job.setFailed();
+			String getJobNT = client.resource(job.getId()).get(String.class);
+			GrafeoImpl getjobGrafeo = new GrafeoImpl(getJobNT, true);
+			log.info(getjobGrafeo.getTurtle());
+			JobPojo getjob = getjobGrafeo.getObjectMapper().getObject(JobPojo.class, job.getId());
+			assertEquals("FAILED", getjob.getStatus());
+			client.resource(job.getId()).path("status").entity("FINISHED").put();
+			getjob.loadFromURI(job.getId().toString());
+			assertEquals("FINISHED", getjob.getStatus());
+		}
+		
+		{
+			job = new JobPojo();
+			try {
+				job.addOutputParameterAssignment("label", "bar");
+			} catch (Exception e) {
+				assertTrue("This should fail because of missing webservice.", true);
+			}
+			
+			job.setWebService(new PublishService().getWebServicePojo());
+			
+			ParameterAssignmentPojo ass = job.addOutputParameterAssignment("label", "bar");
+			assertTrue("This should succeed.", true);
+			
+			assertThat(ass.getId(), is(nullValue()));
+			assertTrue("There are blank nodes for the job and the assignments", job.getGrafeo().listBlankObjects().size() > 0);
+			job.publishToService();
+			assertTrue("No more blank nodes after publishing", job.getGrafeo().listBlankObjects().size() == 0);
+			
+			ParameterAssignmentPojo ass1 = job.getOutputParameters().iterator().next();
+			assertThat("Assignment has a URI", ass1.getId(), not(nullValue()));
+			ParameterAssignmentPojo ass2 = job.getParameterAssignmentForParam("label");
+			assertEquals("There should one assignment", ass1.getId(), ass2.getId());
+		}
+		
+//		log.info(job.getId());
+//		job.publishToService();
 	}
 
 }

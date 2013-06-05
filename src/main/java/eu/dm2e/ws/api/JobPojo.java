@@ -1,10 +1,7 @@
 package eu.dm2e.ws.api;
 
-import eu.dm2e.ws.grafeo.annotations.*;
-import eu.dm2e.ws.model.JobStatusConstants;
-import eu.dm2e.ws.model.LogLevel;
-import org.apache.commons.lang.exception.ExceptionUtils;
-
+import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,7 +9,20 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
+
+import org.apache.commons.lang.exception.ExceptionUtils;
+
+import com.sun.jersey.api.client.ClientResponse;
+
+import eu.dm2e.utils.PojoUtils;
+import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.grafeo.annotations.Namespaces;
+import eu.dm2e.ws.grafeo.annotations.RDFClass;
+import eu.dm2e.ws.grafeo.annotations.RDFId;
+import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
+import eu.dm2e.ws.grafeo.annotations.RDFProperty;
+import eu.dm2e.ws.model.JobStatusConstants;
+import eu.dm2e.ws.model.LogLevel;
 
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/",
 			 "dc", "http://purl.org/dc/elements/1.1/"})
@@ -21,8 +31,10 @@ import java.util.UUID;
 public class JobPojo extends AbstractPersistentPojo<JobPojo>{
 	
 	public static final String PROP_LOG_ENTRY = "omnom:hasLogEntry";
-
 	public static final String PROP_JOB_STATUS = "omnom:status";
+	public static final String PROP_OUTPUT_ASSIGNMENT = "omnom:assignment";
+	public static final String PROP_WEBSERVICE = "omnom:webservice";
+	public static final String PROP_WEBSERVICE_CONFIG = "omnom:webserviceConfig";
 	
 //	Logger log = Logger.getLogger(getClass().getName());
 	
@@ -30,44 +42,48 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
     private String id;
     
     @RDFProperty(PROP_JOB_STATUS)
-    private String status = JobStatusConstants.NOT_STARTED.toString();
+    private String status;
     
     // TODO the job probably doesn't even need a webservice reference since it's in the conf already
-    @RDFProperty("omnom:webservice")
+    @RDFProperty(PROP_WEBSERVICE)
     private WebservicePojo webService;
 
-    @RDFProperty("omnom:webserviceConfig")
+    @RDFProperty(PROP_WEBSERVICE_CONFIG)
     private WebserviceConfigPojo webserviceConfig;
     
     @RDFProperty(PROP_LOG_ENTRY)
     private Set<LogEntryPojo> logEntries = new HashSet<>();
     
-    @RDFProperty("omnom:hasOutputParam")
+    @RDFProperty(PROP_OUTPUT_ASSIGNMENT)
     private Set<ParameterAssignmentPojo> outputParameters= new HashSet<>();
     
+    public JobPojo() { 
+    	// move along nothing to see here
+    }
     
-    /**
+    public JobPojo(URI joburi) {
+    	this.loadFromURI(joburi);
+	}
+	/**
      * LOGGING
      */
     public void addLogEntry(LogEntryPojo entry) {
-    	entry.setId(getId() + "/log/" + UUID.randomUUID().toString());
     	this.logEntries.add(entry);
-    	// TODO update to triplestore
+    	publishLogEntry(entry);
     }
     public LogEntryPojo addLogEntry(String message, String level) {
     	LogEntryPojo entry = new LogEntryPojo();
-    	entry.setId(getId() + "/log/" + UUID.randomUUID().toString());
     	entry.setMessage(message);
     	entry.setLevel(level);
     	entry.setTimestamp(new Date());
-    	this.logEntries.add(entry);
+    	addLogEntry(entry);
     	return entry;
     }
-    public void trace(String message) { log.info("Job " + getId() +": " + message);    this.addLogEntry(message, LogLevel.TRACE.toString()); this.publishToService();}
-    public void debug(String message) { log.info("Job " + getId() +": " + message);    this.addLogEntry(message, LogLevel.DEBUG.toString()); this.publishToService();}
-    public void info(String message)  { log.info("Job " + getId() +": " + message);    this.addLogEntry(message, LogLevel.INFO.toString());  this.publishToService();}
-    public void warn(String message)  { log.warning("Job " + getId() +": " + message); this.addLogEntry(message, LogLevel.WARN.toString());  this.publishToService();}
-    public void fatal(String message) { log.severe("Job " + getId() +": " + message);  this.addLogEntry(message, LogLevel.FATAL.toString()); this.publishToService();}
+    public void trace(String message) { log.info("Job " + getId() +": " + message);    this.addLogEntry(message, LogLevel.TRACE.toString()); }
+    public void debug(String message) { log.info("Job " + getId() +": " + message);    this.addLogEntry(message, LogLevel.DEBUG.toString()); }
+    public void info(String message)  { log.info("Job " + getId() +": " + message);    this.addLogEntry(message, LogLevel.INFO.toString());  }
+    public void warn(String message)  { log.warning("Job " + getId() +": " + message); this.addLogEntry(message, LogLevel.WARN.toString());  }
+    public void fatal(String message) { log.severe("Job " + getId() +": " + message);  this.addLogEntry(message, LogLevel.FATAL.toString()); }
     
     public void trace(Throwable e) { String msg = this.exceptionToString(e); this.trace(msg); }
     public void debug(Throwable e) { String msg = this.exceptionToString(e); this.debug(msg); }
@@ -152,16 +168,24 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
      */
     public void addOutputParameterAssignment(ParameterAssignmentPojo ass) {
     	this.outputParameters.add(ass);
-    	// TODO update to triplestore
+    	if (null != this.getId()) {
+    		client
+    			.resource(getId())
+    			.path("assignment")
+    			.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+    			.entity(ass.getNTriples())
+    			.post();
+    	}
     }
-    public void addOutputParameterAssignment(String forParam, String value) {
+    public ParameterAssignmentPojo addOutputParameterAssignment(String forParam, String value) {
+    	if (null == this.getWebService()) {
+    		throw new RuntimeException("Job needs webservice.");
+    	}
     	ParameterAssignmentPojo ass = new ParameterAssignmentPojo();
-    	// TODO ParameterPojo for forParam can be deduced by the job's web service
     	ass.setForParam(this.webService.getParamByName(forParam));
     	ass.setParameterValue(value);
     	this.outputParameters.add(ass);
-    	this.publishToService();
-    	// TODO update to triplestore
+    	return ass;
     }
 
     public ParameterAssignmentPojo getParameterAssignmentForParam(String paramName) {
@@ -188,37 +212,68 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
         log.info("No value found for: " + needle);
         return null;
     }
-
-    /**
-     * Publish the job
-     */
-//    	// TODO implement publish to triplestore
-//    public void publish() {
-//    }
-
+    
 	/**
 	 * Updating status
 	 */
-	public void setStatus(JobStatusConstants status) { this.status = status.toString(); }
+	public void setStatus(JobStatusConstants status) {
+		setStatus(status.toString());
+	}
 	public void setStarted() {
 		this.trace("Status change: " + this.getStatus() + " => " + JobStatusConstants.STARTED);
 		this.setStatus(JobStatusConstants.STARTED.toString()); 
-		this.publishToService();
+		publishJobStatus(status);
 	}
 	public void setFinished() {
 		this.trace("Status change: " + this.getStatus() + " => " + JobStatusConstants.FINISHED);
 		this.setStatus(JobStatusConstants.FINISHED.toString()); 
-		this.publishToService();
+		publishJobStatus(status);
 	}
 	public void setFailed() {
 		this.trace("Status change: " + this.getStatus() + " => " + JobStatusConstants.FAILED);
 		this.setStatus(JobStatusConstants.FAILED.toString()); 
-		this.publishToService();
+		publishJobStatus(status);
 	}
 	
-	public boolean isFinished() { return this.status.equals(JobStatusConstants.FINISHED.toString()); }
-	public boolean isFailed() { return this.status.equals(JobStatusConstants.FINISHED.toString()); }
-	public boolean isStarted() { return ! this.status.equals(JobStatusConstants.NOT_STARTED.toString()); }
+	public boolean isFinished() { return this.getStatus().equals(JobStatusConstants.FINISHED.toString()); }
+	public boolean isFailed() { return this.getStatus().equals(JobStatusConstants.FAILED.toString()); }
+	public boolean isStarted() { return ! this.getStatus().equals(JobStatusConstants.NOT_STARTED.toString()); }
+	
+	@Override
+	public String publishToService() {
+		String loc = super.publishToService(this.client.getJobWebResource());
+		JobPojo newPojo = new JobPojo();
+		newPojo.loadFromURI(loc);
+		try {
+			PojoUtils.copyProperties(this, newPojo);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			log.severe("Couldn't refresh this pojo with live data: " + e);
+		}
+		return loc;
+	}
+	protected void publishJobStatus(String status) {
+		if (null != this.getId()) {
+			ClientResponse resp = client
+					.resource(this.getId())
+					.path("status")
+					.entity(status)
+					.put(ClientResponse.class);
+			if (resp.getStatus() != 201) {
+				throw new RuntimeException("Couldn update status " + resp);
+			}
+		}
+	}
+	protected void publishLogEntry(LogEntryPojo entry) {
+		if (null != this.getId()) {
+			this.client
+				.resource(this.getId())
+				.path("log")
+				.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+				.entity(entry.getNTriples())
+				.post();
+    	}
+	}
+
 	/*********************
 	 * 
 	 * GETTERS/SETTERS
@@ -227,7 +282,10 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
 	public String getId() { return id; }
 	public void setId(String id) { this.id = id; }
 	
-	public String getStatus() { return status; }
+	public String getStatus() {
+		if (null != status) return status;
+		return JobStatusConstants.NOT_STARTED.toString();
+	}
 	public void setStatus(String status) { this.status = status; }
 
 	public WebservicePojo getWebService() { return webService; }
@@ -242,9 +300,4 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo>{
 	public Set<ParameterAssignmentPojo> getOutputParameters() { return outputParameters; }
 	public void setOutputParameters(Set<ParameterAssignmentPojo> outputParameters) { this.outputParameters = outputParameters; }
 	
-	@Override
-	public void publishToService() {
-		super.publishToService(this.client.getJobWebResource());
-	}
-
 }
