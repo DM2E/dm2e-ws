@@ -14,10 +14,12 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.logging.Level;
 
 import javax.ws.rs.Path;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
@@ -73,107 +75,114 @@ public class XsltZipService extends AbstractTransformationService {
 	@Override
 	public void run() {
 		JobPojo jobPojo = getJobPojo();
-		log.warning("Starting to handle XSLT transformation job");
-		jobPojo.debug("Starting to handle XSLT transformation job");
-		String xsltZipUrl, xmlUrl;
 		try {
-			// TODO this should be refactored to a validation routine in the JobPojo
-			xsltZipUrl = jobPojo.getWebserviceConfig().getParameterValueByName(XSLTZIP_IN_PARAM_NAME);
-			if (null == xsltZipUrl) {
-				throw new NullPointerException("xmlUrl is null");
-			}
-			jobPojo.debug("XML URL: " + xsltZipUrl);
-			xmlUrl = jobPojo.getWebserviceConfig().getParameterValueByName(XML_IN_PARAM_NAME);
-			if (null == xmlUrl) {
-				throw new NullPointerException("xsltUrl is null");
-			}
-			jobPojo.debug("XSL URL: " + xmlUrl);
-		} catch (Exception e) {
-			jobPojo.fatal("Parameter error: " + e);
-			jobPojo.setFailed();
-			return;
-		}
-		jobPojo.info("Preparing transformation");
-		
-		// download and extract zip
-		jobPojo.debug("Downloading XML/ZIP");
-		java.nio.file.Path zipdir = downloadAndExtractZip(xsltZipUrl, jobPojo);
-		jobPojo.debug("Done unzipping XSLTZIP.");
-		
-		jobPojo.debug("Determining root stylesheet.");
-		String rootStyleSheet = grepRootStylesheet(zipdir, jobPojo);
-		jobPojo.debug("Determined root stylesheet: " + rootStyleSheet);
-		
-		
-		// update job status
-		jobPojo.info("Starting transformation");
-		jobPojo.setStarted();
-		TransformerFactory tFactory = TransformerFactory.newInstance();
-		try {
-			jobPojo.debug("Instantiating custom error listener");
-			OmnomErrorListener errL;
+			log.warning("Starting to handle XSLT transformation job");
+			jobPojo.debug("Starting to handle XSLT transformation job");
+			String xsltZipUrl, xmlUrl;
 			try {
-//				errL = new OmnomErrorListener(Logger.getLogger(getClass().getName()));
-				errL = new OmnomErrorListener(jobPojo);
+				// TODO this should be refactored to a validation routine in the JobPojo
+				xsltZipUrl = jobPojo.getWebserviceConfig().getParameterValueByName(XSLTZIP_IN_PARAM_NAME);
+				if (null == xsltZipUrl) {
+					throw new NullPointerException("xmlUrl is null");
+				}
+				jobPojo.debug("XML URL: " + xsltZipUrl);
+				xmlUrl = jobPojo.getWebserviceConfig().getParameterValueByName(XML_IN_PARAM_NAME);
+				if (null == xmlUrl) {
+					throw new NullPointerException("xsltUrl is null");
+				}
+				jobPojo.debug("XSL URL: " + xmlUrl);
 			} catch (Exception e) {
-				jobPojo.fatal(e);
+				jobPojo.fatal("Parameter error: " + e);
 				jobPojo.setFailed();
 				return;
 			}
-			jobPojo.debug("Adding custom error listener");
-			tFactory.setErrorListener(errL);
-			jobPojo.debug("Done Adding custom error listener");
-		} catch (Exception e1) {
-			jobPojo.fatal(e1);
-			jobPojo.setFailed();
-			return;
-		}
-		jobPojo.debug("YAY Done Adding custom error listener");
-		StringWriter xslResultStrWriter = new StringWriter();
-		try {
-			StreamSource xslSource = new StreamSource(new File(rootStyleSheet));
-			xslSource.setSystemId(new File(rootStyleSheet));
-			Transformer transformer = tFactory.newTransformer(xslSource);
-
-			StreamResult xslResult = new StreamResult(xslResultStrWriter);
-
-			StreamSource xmlSource = new StreamSource(new URL(xmlUrl).openStream());
-			transformer.transform(xmlSource, xslResult);
-
-		} catch (Exception e) {
-			jobPojo.fatal("Error during XSLT transformation: " + e);
-			jobPojo.debug(e);
-			jobPojo.setFailed();
-			return;
-		}
-		
-		jobPojo.info("Getting the transformation result as a string.");
-		String xslResultStr = "";
-		try {
-			xslResultStr = xslResultStrWriter.toString();
-			if (xslResultStr.length() == 0) {
-				throw new RuntimeException("No result from the transformation.");
+			jobPojo.info("Preparing transformation");
+			
+			// download and extract zip
+			jobPojo.debug("Downloading XML/ZIP");
+			java.nio.file.Path zipdir = downloadAndExtractZip(xsltZipUrl, jobPojo);
+			jobPojo.debug("Done unzipping XSLTZIP.");
+			
+			jobPojo.debug("Determining root stylesheet.");
+			String rootStyleSheet = grepRootStylesheet(zipdir, jobPojo);
+			jobPojo.debug("Determined root stylesheet: " + rootStyleSheet);
+			
+			
+			// update job status
+			jobPojo.info("Starting transformation");
+			jobPojo.setStarted();
+			TransformerFactory tFactory = TransformerFactory.newInstance();
+			try {
+				jobPojo.debug("Instantiating custom error listener");
+				OmnomErrorListener errL;
+				try {
+//				errL = new OmnomErrorListener(Logger.getLogger(getClass().getName()));
+					errL = new OmnomErrorListener(jobPojo);
+				} catch (Exception e) {
+					jobPojo.fatal(e);
+					jobPojo.setFailed();
+					return;
+				}
+				jobPojo.debug("Adding custom error listener");
+				tFactory.setErrorListener(errL);
+				jobPojo.debug("Done Adding custom error listener");
+			} catch (Exception e1) {
+				jobPojo.fatal(e1);
+				jobPojo.setFailed();
+				return;
 			}
-			else if (xslResultStr.equals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")) {
-				jobPojo.warn("XSLT transformation yielded in empty XML file.");
+			jobPojo.debug("YAY Done Adding custom error listener");
+			StringWriter xslResultStrWriter = new StringWriter();
+			try {
+				StreamSource xslSource = new StreamSource(new File(rootStyleSheet));
+				xslSource.setSystemId(new File(rootStyleSheet));
+				Transformer transformer = tFactory.newTransformer(xslSource);
+
+				StreamResult xslResult = new StreamResult(xslResultStrWriter);
+
+				StreamSource xmlSource = new StreamSource(new URL(xmlUrl).openStream());
+				transformer.transform(xmlSource, xslResult);
+
+			} catch (Exception e) {
+				jobPojo.fatal("Error during XSLT transformation: " + e);
+				jobPojo.debug(e);
+				jobPojo.setFailed();
+				return;
 			}
-		} catch (Exception e) {
-			jobPojo.debug(e);
-			jobPojo.setFailed();
-			return;
-		}
-		
-		FilePojo fp = new FilePojo();
-		fp.setGeneratorJob(jobPojo);
-		String fileLocation = new Client().publishFile(xslResultStr, fp);
+			
+			jobPojo.info("Getting the transformation result as a string.");
+			String xslResultStr = "";
+			try {
+				xslResultStr = xslResultStrWriter.toString();
+				if (xslResultStr.length() == 0) {
+					throw new RuntimeException("No result from the transformation.");
+				}
+				else if (xslResultStr.equals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")) {
+					jobPojo.warn("XSLT transformation yielded in empty XML file.");
+				}
+			} catch (Exception e) {
+				jobPojo.debug(e);
+				jobPojo.setFailed();
+				return;
+			}
+			
+			FilePojo fp = new FilePojo();
+			fp.setGeneratorJob(jobPojo);
+			String fileLocation = new Client().publishFile(xslResultStr, fp);
 
-		jobPojo.info("Store result URI on the job (" + fileLocation + ").");
-		jobPojo.addOutputParameterAssignment(XML_OUT_PARAM_NAME, fileLocation);
-		client.publishPojoToJobService(jobPojo);
+			jobPojo.info("Store result URI on the job (" + fileLocation + ").");
+			jobPojo.addOutputParameterAssignment(XML_OUT_PARAM_NAME, fileLocation);
+			client.publishPojoToJobService(jobPojo);
 
-		// Update job status
-		jobPojo.info("XSLT Transformation complete.");
-		jobPojo.setFinished();
+			// Update job status
+			jobPojo.info("XSLT Transformation complete.");
+			jobPojo.setFinished();
+        } catch (Throwable t) {
+            log.log(Level.SEVERE, "Exception during publishing: " + t, t);
+            jobPojo.fatal(t);
+            jobPojo.setFailed();
+            throw t;
+        }
 	}
 
 	/**
