@@ -3,15 +3,15 @@ package eu.dm2e.ws.services;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public enum TransformationExecutorService {
+public enum WorkerExecutorSingleton {
 	INSTANCE;
 
 	private ExecutorService executor;
-	private TransformationExecutorService() {
+	private WorkerExecutorSingleton() {
 		executor = Executors.newCachedThreadPool();
 	}
 			
-	public void handleJob(AbstractTransformationService runner) {
+	public void handleJob(Runnable runner) {
 		executor.submit(runner);
     }
 

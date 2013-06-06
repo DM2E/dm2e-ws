@@ -11,13 +11,8 @@ import javax.ws.rs.core.Response;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.WebResource.Builder;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataMultiPart;
 
 import eu.dm2e.ws.Config;
-import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 
@@ -30,14 +25,12 @@ public abstract class AbstractTransformationService extends AbstractRDFService i
      * The JobPojo object for the worker part of the service (to be used in the run() method)
      */
     protected JobPojo jobPojo;
-    
-	
-	protected static final String FILE_SERVICE_URI = Config.getString("dm2e.service.file.base_uri");
+
+    protected static final String FILE_SERVICE_URI = Config.getString("dm2e.service.file.base_uri");
 
     public void setJobPojo(JobPojo jobPojo) {
         this.jobPojo = jobPojo;
     }
-    
 
     @PUT
     @Consumes(MediaType.TEXT_PLAIN)
@@ -53,6 +46,9 @@ public abstract class AbstractTransformationService extends AbstractRDFService i
 			return throwServiceError(e);
 		}
 		
+		/*		
+		 * Validate the configuration
+		 */
 		try {
 			wsConf.validateConfig();
 		} catch (Exception e) {
@@ -76,7 +72,7 @@ public abstract class AbstractTransformationService extends AbstractRDFService i
             AbstractTransformationService instance = getClass().newInstance();
             Method method = getClass().getMethod("setJobPojo",JobPojo.class);
             method.invoke(instance, job);
-            TransformationExecutorService.INSTANCE.handleJob(instance);
+            WorkerExecutorSingleton.INSTANCE.handleJob(instance);
         } catch (NoSuchMethodException e) {
         	return throwServiceError(e);
         } catch (InvocationTargetException e) {
@@ -122,53 +118,6 @@ public abstract class AbstractTransformationService extends AbstractRDFService i
     		return throwServiceError(resp.getEntity(String.class));
     	}
         return this.startService(resp.getLocation().toString());
-    }
-    
-    protected String storeAsFile(String fileData, String mediaTypeStr) {
-		WebResource fileResource = client.resource(FILE_SERVICE_URI);
-	    jobPojo.trace("Building file service multipart envelope.");
-		FormDataMultiPart form = new FormDataMultiPart();
-
-		// add file part
-		MediaType fileType = MediaType.valueOf(mediaTypeStr);
-		FormDataBodyPart fileFDBP = new FormDataBodyPart("file", fileData, fileType);
-		form.bodyPart(fileFDBP);
-
-		// add metadata part
-		FilePojo fileDesc = new FilePojo();
-		fileDesc.setGeneratorJob(jobPojo);
-		fileDesc.setMediaType(fileType.toString());
-		MediaType n3_type = MediaType.valueOf(DM2E_MediaType.TEXT_RDF_N3);
-		FormDataBodyPart metaFDBP = new FormDataBodyPart("meta", fileDesc.getNTriples(), n3_type);
-		form.bodyPart(metaFDBP);
-
-		// build the response stub
-		Builder builder = fileResource
-				.type(MediaType.MULTIPART_FORM_DATA)
-				.accept(DM2E_MediaType.TEXT_TURTLE)
-				.entity(form);
-		
-		// Post the file to the file service
-		jobPojo.info("Posting result to the file service.");
-		ClientResponse resp = builder.post(ClientResponse.class);
-		if (resp.getStatus() >= 400) {
-			jobPojo.fatal("File storage failed: " + resp.getEntity(String.class));
-			jobPojo.setFailed();
-			return null;
-		}
-		String fileLocation = resp.getLocation().toString();
-		if (fileLocation == null) {
-			jobPojo.warn("File Service didn't respond with a Location header.");
-			return null;
-		}
-		jobPojo.info("File stored at: " + fileLocation);
-		try {
-			fileDesc.setFileRetrievalURI(fileLocation);
-			client.publishPojo(fileDesc, client.getFileWebResource());
-		} catch(Exception e) {
-			jobPojo.fatal(e);
-		}
-		return fileLocation;
     }
 
 }
