@@ -1,4 +1,4 @@
-package eu.dm2e.ws.services.job;
+package eu.dm2e.ws.services;
 
 import java.io.File;
 import java.net.URI;
@@ -32,7 +32,6 @@ import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.jena.SparqlUpdate;
 import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.model.LogLevel;
-import eu.dm2e.ws.services.AbstractRDFService;
 
 public abstract class AbstractJobService extends AbstractRDFService {
 
@@ -40,21 +39,106 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		super();
 	}
 
-	public abstract Response putJob(@PathParam("resourceID") String resourceID, File bodyAsFile);
+	public abstract Response putJob(Grafeo inputGrafeo, String uriStr);
+	public abstract Response postJob(Grafeo inputGrafeo, String uriStr);
+	public abstract Response getJob(String uri);
+	
+	@PUT
+	@Path("/{resourceID}")
+	@Consumes({
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML,
+		DM2E_MediaType.APPLICATION_X_TURTLE,
+		DM2E_MediaType.TEXT_PLAIN,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.TEXT_TURTLE
+	})
+	@Produces({
+		MediaType.WILDCARD
+	})
+	public Response putJobHandler(@PathParam("resourceID") String resourceID, File bodyAsFile) {
+		log.info("Access to job: " + resourceID);
+		String uriStr = uriInfo.getRequestUri().toString();
+		Grafeo inputGrafeo;
+		try {
+			inputGrafeo = new GrafeoImpl(bodyAsFile);
+		} catch (Exception e) {
+			return throwServiceError(ErrorMsg.BAD_RDF);
+		}
+		return this.putJob(inputGrafeo, uriStr);
+	}
 
-	public abstract Response postJob(File bodyAsFile);
+	@POST
+	@Consumes({
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML,
+		DM2E_MediaType.APPLICATION_X_TURTLE,
+		DM2E_MediaType.TEXT_PLAIN,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.TEXT_TURTLE
+	})
+	@Produces({
+		MediaType.WILDCARD
+	})
+	public Response postJob(File bodyAsFile) {
+		log.info("Config posted.");
+		Grafeo inputGrafeo;
+		try {
+			inputGrafeo = new GrafeoImpl(bodyAsFile);
+		} catch (Exception e) {
+			return throwServiceError(ErrorMsg.BAD_RDF);
+		}
+		GResource blank = inputGrafeo.findTopBlank("omnom:Job");
+		if (blank == null) {
+			return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE);
+		}
+		String uriStr = getWebServicePojo().getId() + "/" + UUID.randomUUID().toString();;
+		blank.rename(uriStr);
+		return this.postJob(inputGrafeo, uriStr);
+	}
 
-	public abstract Response getJob(@PathParam("resourceID") String resourceID);
-
+	
+	@GET
+	@Path("/{resourceId}")
+	@Produces({
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML,
+		DM2E_MediaType.APPLICATION_X_TURTLE,
+		DM2E_MediaType.TEXT_PLAIN,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.TEXT_TURTLE
+	})
+	public Response getJobHandler(@PathParam("resourceID") String resourceID) {
+        log.info("Access to job: " + resourceID);
+        String uriStr = uriInfo.getRequestUri().toString();
+        return this.getJob(uriStr);
+    }
+	
+	
+	/**
+	 * Get the job status as a string.
+	 * @param id
+	 * @return
+	 */
 	@GET
 	@Path("/{id}/status")
 	public Response getJobStatus(@PathParam("id") String id) {
 		String resourceUriStr = getRequestUriWithoutQuery().toString().replaceAll("/status$", "");
 		AbstractJobPojo jobPojo = new JobPojo();
-		jobPojo.loadFromURI(resourceUriStr);
-		return Response.ok(jobPojo.getStatus()).build();
+		try {
+			jobPojo.loadFromURI(resourceUriStr);
+			return Response.ok(jobPojo.getStatus()).build();
+		} catch (Exception e) {
+			return throwServiceError(e);
+		}
 	}
 
+	/**
+	 * Set the job status by string.
+	 * @param id
+	 * @param newStatusStr
+	 * @return
+	 */
 	@PUT
 	@Path("/{id}/status")
 	@Consumes(MediaType.WILDCARD)
