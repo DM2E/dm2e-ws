@@ -14,6 +14,8 @@ import com.sun.jersey.api.client.WebResource;
 
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
+import eu.dm2e.ws.services.AbstractAsynchronousRDFService;
+import eu.dm2e.ws.services.WorkerExecutorSingleton;
 
 /**
  * TODO document
@@ -25,7 +27,7 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
 	 */
 	private JobPojo jobPojo;
 	public JobPojo getJobPojo() {return this.jobPojo; };
-	public  void setJobPojo(JobPojo jobPojo) {};
+	public void setJobPojo(JobPojo jobPojo) { this.jobPojo = jobPojo; };
 
 
     @Override
@@ -69,6 +71,7 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
             AbstractTransformationService instance = getClass().newInstance();
             Method method = getClass().getMethod("setJobPojo",JobPojo.class);
             method.invoke(instance, job);
+            log.info("Job is before instantiation :" + job);
             WorkerExecutorSingleton.INSTANCE.handleJob(instance);
         } catch (NoSuchMethodException e) {
         	return throwServiceError(e);
@@ -78,6 +81,9 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
         	return throwServiceError(e);
         } catch (IllegalAccessException e) {
         	return throwServiceError(e);
+        } catch (Exception e) {
+        	return throwServiceError(e);
+        	
         }
 
         /*

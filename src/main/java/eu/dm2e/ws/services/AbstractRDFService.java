@@ -6,6 +6,7 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
+import eu.dm2e.ws.api.ConfigPojo;
 import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
@@ -167,11 +168,19 @@ public abstract class AbstractRDFService {
      * @return
      */
     @GET
+	@Consumes({
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML,
+		DM2E_MediaType.APPLICATION_X_TURTLE,
+		DM2E_MediaType.TEXT_PLAIN,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.TEXT_TURTLE
+	})
     public Response getBase(@Context UriInfo uriInfo)  {
         URI uri = appendPath(uriInfo.getRequestUri(),"describe");
         return Response.seeOther(uri).build();
-
     }
+    
 //    @GET
 //    @Path("{id}/nested/{nestedId}")
 //    public Response getConfigAssignment(
@@ -218,16 +227,17 @@ public abstract class AbstractRDFService {
     }
 	
 	
-	@PUT
-	@Path("validate")
-	public Response validateConfigRequest(String configUriStr) {
-		try {
-			validateServiceInput(configUriStr);
-		} catch (Exception e) {
-			return throwServiceError(e);
-		}
-		return Response.noContent().build();
-	}
+// TODO    
+//	@PUT
+//	@Path("validate")
+//	public Response validateConfigRequest(String configUriStr) {
+//		try {
+//			validateServiceInput(configUriStr);
+//		} catch (Exception e) {
+//			return throwServiceError(e);
+//		}
+//		return Response.noContent().build();
+//	}
 	
 	protected Grafeo getGrafeoForUriWithContentNegotiation(String uriStr) throws IOException, URISyntaxException {
 		return getGrafeoForUriWithContentNegotiation(getUriForString(uriStr));
@@ -310,23 +320,24 @@ public abstract class AbstractRDFService {
 	}
 	
 
-	protected void validateServiceInput(String configUriStr) throws Exception {
-		Grafeo inputGrafeo = new GrafeoImpl();
-		inputGrafeo.load(configUriStr);
-		if (inputGrafeo.isEmpty()) {
-			throw new Exception("config model is empty.");
-		}
-		WebservicePojo wsDesc = this.getWebServicePojo();
-		for (ParameterPojo param : wsDesc.getInputParams()) {
-			if (param.getIsRequired()) {
-				if (! inputGrafeo.containsStatementPattern("?s", "omnom:forParam", param.getId())) {
-					log.severe(configUriStr + " does not contain '?s omnom:forParam " + param.getId());
-					throw new RuntimeException(configUriStr + " does not contain '?s omnom:forParam " + param.getId());
-				}
-			}
-		}
-
-	}
+// TODO
+//	protected void validateServiceInput(String configUriStr) throws Exception {
+//		Grafeo inputGrafeo = new GrafeoImpl();
+//		inputGrafeo.load(configUriStr);
+//		if (inputGrafeo.isEmpty()) {
+//			throw new Exception("config model is empty.");
+//		}
+//		WebservicePojo wsDesc = this.getWebServicePojo();
+//		for (ParameterPojo param : wsDesc.getInputParams()) {
+//			if (param.getIsRequired()) {
+//				if (! inputGrafeo.containsStatementPattern("?s", "omnom:forParam", param.getId())) {
+//					log.severe(configUriStr + " does not contain '?s omnom:forParam " + param.getId());
+//					throw new RuntimeException(configUriStr + " does not contain '?s omnom:forParam " + param.getId());
+//				}
+//			}
+//		}
+//
+//	}
 
     protected URI appendPath(URI uri, String path) {
         String query = uri.getQuery();
@@ -366,19 +377,6 @@ public abstract class AbstractRDFService {
 			model.write(output, mediaType2Language.get(this.mediaType));
 		}
 	}
-
-	protected WebserviceConfigPojo resolveWebServiceConfigPojo(String configURI) {
-		// TODO Auto-generated method stub
-		Grafeo g = new GrafeoImpl();
-		g.readFromEndpoint(Config.getString("dm2e.ws.sparql_endpoint_statements"), configURI);
-		try {
-			return g.getObjectMapper().getObject(WebserviceConfigPojo.class, configURI);
-		} catch (Exception e) {
-			log.warning(e.toString());
-		}
-		return null;
-	}
-
 
     protected class HTMLOutput implements StreamingOutput {
         Logger log = Logger.getLogger(getClass().getName());

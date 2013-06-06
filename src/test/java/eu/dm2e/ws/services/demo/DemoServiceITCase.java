@@ -5,6 +5,7 @@ import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
+import eu.dm2e.ws.api.AbstractJobPojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
@@ -60,7 +61,7 @@ public class DemoServiceITCase extends OmnomTestCase {
     }
     
     @Test
-    public void testPut() {
+    public void testPut() throws InterruptedException {
     	{
     		ClientResponse confResp = client
     				.getConfigWebResource()
@@ -76,14 +77,17 @@ public class DemoServiceITCase extends OmnomTestCase {
     				.resource(SERVICE_URI)
     				.type(DM2E_MediaType.TEXT_PLAIN)
     				.put(ClientResponse.class, confLoc.toString());
-    		log.info("PUT finished");
-    		String serviceRespStr = serviceResp.getEntity(String.class);
-    		System.out.println(serviceRespStr);
     		assertEquals(202, serviceResp.getStatus());
+    		log.info("PUT finished");
+    		log.info("Beginning GET");
+    		URI jobLoc = serviceResp.getLocation();
+    		JobPojo job = new JobPojo(jobLoc);
+    		assertNotNull(job.getId());
+    		log.info(job.getTurtle());
     	}
     }
     
-    @Ignore("TODO")
+//    @Ignore("TODO")
     @Test
     public void testPostIllegal() {
     	{
@@ -126,7 +130,7 @@ public class DemoServiceITCase extends OmnomTestCase {
             throw new RuntimeException("An exception occurred: " + e, e);
         }
         Grafeo g = new GrafeoImpl(joburi.toString());
-        JobPojo job = g.getObjectMapper().getObject(JobPojo.class, joburi.toString());
+        AbstractJobPojo job = g.getObjectMapper().getObject(JobPojo.class, joburi.toString());
         String status =  job.getStatus();
         log.info("Status after 1 seconds: " + status);
         assert(status.equals(JobStatus.STARTED.name()));
