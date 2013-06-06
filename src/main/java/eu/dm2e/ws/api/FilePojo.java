@@ -1,8 +1,5 @@
 package eu.dm2e.ws.api;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFId;
@@ -38,7 +35,7 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 	private long fileSize;
 	
 	@RDFProperty("omnom:generatedBy")
-	private AbstractJobPojo generatorJob;
+	private JobPojo generatorJob;
 	
 	@RDFProperty("omnom:fileRetrievalURI")
 	private String fileRetrievalURI;
@@ -119,6 +116,6 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 	public String getFileStatus() { return fileStatus; }
 	public void setFileStatus(String fileStatus) { this.fileStatus = fileStatus; }
 	
-	public AbstractJobPojo getGeneratorJob() { return generatorJob; }
-	public void setGeneratorJob(AbstractJobPojo generatorJob) { this.generatorJob = generatorJob; }
+	public JobPojo getGeneratorJob() { return generatorJob; }
+	public void setGeneratorJob(JobPojo generatorJob) { this.generatorJob = generatorJob; }
 }
