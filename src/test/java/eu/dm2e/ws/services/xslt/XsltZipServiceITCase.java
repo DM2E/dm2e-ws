@@ -88,6 +88,8 @@ public class XsltZipServiceITCase extends OmnomTestCase {
 			Thread.sleep(2000);
 			;
 		}
+		log.info(jobPojo.toLogString());
+		assertEquals("FINISHED", jobPojo.getStatus());
 	}
 
 }

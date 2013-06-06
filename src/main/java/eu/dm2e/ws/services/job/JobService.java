@@ -8,17 +8,14 @@ import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
-import eu.dm2e.ws.api.AbstractJobPojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.ParameterAssignmentPojo;
 import eu.dm2e.ws.api.WebservicePojo;
@@ -26,16 +23,20 @@ import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.jena.SparqlUpdate;
+import eu.dm2e.ws.services.AbstractJobService;
 
-//import java.util.ArrayList;
 // TODO @GET /{id}/result with JSON
 
+/**
+ * NOTE: Don't use any Jersey annotations in the overridden methods. JSR-311 specifies
+ * that a single annotation hides all inerited annotations.
+ * 
+ * @author kb
+ *
+ */
 @Path("/job")
 public class JobService extends AbstractJobService {
 	
-	private static String ENDPOINT_QUERY = Config.getString("dm2e.ws.sparql_endpoint");
-	static String ENDPOINT_UPDATE = Config.getString("dm2e.ws.sparql_endpoint_statements");
-
 	Logger log = Logger.getLogger(getClass().getName());
 	
 	@Override
@@ -45,68 +46,74 @@ public class JobService extends AbstractJobService {
 //		ws.setId("http://localhost:9998/job");
 		return ws;
 	}
-
-    @Override
-	@GET
-    @Path("/{resourceID}")
-    @Consumes(MediaType.WILDCARD)
-    public Response getJob(@PathParam("resourceID") String resourceID) {
-        log.info("Access to job: " + resourceID);
-        String uriStr = uriInfo.getRequestUri().toString();
+	
+	@Override
+	public Response getJob(String uriStr) {
+		
         Grafeo g = new GrafeoImpl();
-        log.info("Reading job from endpoint " + ENDPOINT_QUERY);
+        log.info("Reading job from endpoint " + Config.ENDPOINT_QUERY);
         try {
-            g.readFromEndpoint(ENDPOINT_QUERY, uriStr);
+            g.readFromEndpoint(Config.ENDPOINT_QUERY, uriStr);
         } catch (Exception e1) {
             // if we couldn't read the job, try again once in a second
             try { Thread.sleep(1000); } catch (InterruptedException e) { }
-            try { g.readFromEndpoint(ENDPOINT_QUERY, uriStr);
+            try { g.readFromEndpoint(Config.ENDPOINT_QUERY, uriStr);
             } catch (Exception e) {
                 return throwServiceError(e);
             }
         }
-        AbstractJobPojo job = g.getObjectMapper().getObject(JobPojo.class, uriStr);
-        String jobStatus = job.getStatus();
-        log.info("Job status: " + jobStatus);
-        try {
-            return Response.ok().entity(getResponseEntity(job.getGrafeo())).build();
-        } catch (NullPointerException e) {
-            return Response.notAcceptable(supportedVariants).build();
-        }
-    }
+//        try {
+//            return Response.ok().entity(getResponseEntity(job.getGrafeo())).build();
+//        } catch (NullPointerException e) {
+//            return Response.notAcceptable(supportedVariants).build();
+//        }
+        return Response.ok().entity(getResponseEntity(g)).build();
+//        AbstractJobPojo job = g.getObjectMapper().getObject(JobPojo.class, uriStr);
+	}
+	
 
 	@Override
-	@POST
-	@Consumes(MediaType.WILDCARD)
-	public Response postJob(File bodyAsFile) {
-		log.info("Config posted.");
-		// TODO use Exception to return proper HTTP response if input can not be
-		// parsed as RDF
-		Grafeo inputGrafeo;
-		try {
-			inputGrafeo = new GrafeoImpl(bodyAsFile);
-		} catch (Exception e) {
-			return throwServiceError(ErrorMsg.BAD_RDF);
-		}
-		GResource blank = inputGrafeo.findTopBlank("omnom:Job");
-		if (blank == null) {
-			return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE);
-		}
-		String uri = getWebServicePojo().getId() + "/" + UUID.randomUUID().toString();;
+	public Response postJob(Grafeo inputGrafeo, String uriStr) {
 		
 		log.fine("Skolemnizing");
-		blank.rename(uri);
-		inputGrafeo.skolemnizeUUID(uri, JobPojo.PROP_OUTPUT_ASSIGNMENT, "assignment");
-		inputGrafeo.skolemnizeUUID(uri, JobPojo.PROP_LOG_ENTRY, "log");
+		inputGrafeo.skolemnizeUUID(uriStr, JobPojo.PROP_OUTPUT_ASSIGNMENT, "assignment");
+		inputGrafeo.skolemnizeUUID(uriStr, JobPojo.PROP_LOG_ENTRY, "log");
 		
-		log.warning("Instantiating Job POJO " + uri);
-		JobPojo jobPojo = inputGrafeo.getObjectMapper().getObject(JobPojo.class, uri);
-		jobPojo.setId(uri);
+		log.warning("Instantiating Job POJO " + uriStr);
+		JobPojo jobPojo = inputGrafeo.getObjectMapper().getObject(JobPojo.class, uriStr);
+		jobPojo.setId(uriStr);
 		
 		Grafeo outputGrafeo = new GrafeoImpl();
 		outputGrafeo.getObjectMapper().addObject(jobPojo);
-		outputGrafeo.writeToEndpoint(NS.ENDPOINT_STATEMENTS, uri);
-		return Response.created(URI.create(uri)).entity(getResponseEntity(jobPojo.getGrafeo())).build();
+		outputGrafeo.writeToEndpoint(NS.ENDPOINT_STATEMENTS, uriStr);
+		return Response.created(URI.create(uriStr)).entity(getResponseEntity(jobPojo.getGrafeo())).build();
+	}
+	
+	@Override
+	public Response putJob(Grafeo inputGrafeo, String uriStr) {
+		log.fine("Skolemnizing");
+		GResource blank = inputGrafeo.findTopBlank("omnom:Job");
+		if (blank != null) {
+			blank.rename(uriStr);
+		}
+		inputGrafeo.skolemnizeUUID(uriStr, JobPojo.PROP_LOG_ENTRY, "log");
+		inputGrafeo.skolemnizeUUID(uriStr, JobPojo.PROP_OUTPUT_ASSIGNMENT, "assignment");
+		
+		log.warning("Instantiating Job POJO " + uriStr);
+		JobPojo jobPojo = inputGrafeo.getObjectMapper().getObject(JobPojo.class, uriStr);
+		jobPojo.setId(uriStr);
+		
+		log.fine("Building output.");
+		Grafeo outputGrafeo = new GrafeoImpl();
+		outputGrafeo.getObjectMapper().addObject(jobPojo);
+		SparqlUpdate sparul = new SparqlUpdate.Builder()
+				.delete("?s ?p ?o.")
+				.insert(outputGrafeo.getNTriples())
+				.graph(uriStr)
+				.endpoint(Config.ENDPOINT_UPDATE)
+				.build();
+		sparul.execute();
+		return Response.created(URI.create(uriStr)).entity(getResponseEntity(jobPojo.getGrafeo())).build();
 	}
 	
 	@POST
@@ -135,7 +142,7 @@ public class JobService extends AbstractJobService {
 				.delete("?s ?p ?o.")
 				.insert(outputGrafeo.getNTriples())
 				.graph(jobUri)
-				.endpoint(ENDPOINT_UPDATE)
+				.endpoint(Config.ENDPOINT_UPDATE)
 				.build();
 		sparul.execute();
 		return Response.created(URI.create(assUri)).entity(getResponseEntity(ass.getGrafeo())).build();
@@ -148,43 +155,4 @@ public class JobService extends AbstractJobService {
 
         return Response.status(303).location(URI.create(uri)).build();
     }
-	
-	@Override
-	@PUT
-	@Path("/{resourceID}")
-	@Consumes(MediaType.WILDCARD)
-	public Response putJob(@PathParam("resourceID") String resourceID, File bodyAsFile) {
-		log.info("Access to job: " + resourceID);
-		String uriStr = uriInfo.getRequestUri().toString();
-		Grafeo inputGrafeo;
-		try {
-			inputGrafeo = new GrafeoImpl(bodyAsFile);
-		} catch (Exception e) {
-			return throwServiceError(ErrorMsg.BAD_RDF);
-		}
-		
-		log.fine("Skolemnizing");
-		GResource blank = inputGrafeo.findTopBlank("omnom:Job");
-		if (blank != null) {
-			blank.rename(uriStr);
-		}
-		inputGrafeo.skolemnizeUUID(uriStr, JobPojo.PROP_LOG_ENTRY, "log");
-		inputGrafeo.skolemnizeUUID(uriStr, JobPojo.PROP_OUTPUT_ASSIGNMENT, "assignment");
-		
-		log.warning("Instantiating Job POJO " + uriStr);
-		JobPojo jobPojo = inputGrafeo.getObjectMapper().getObject(JobPojo.class, uriStr);
-		jobPojo.setId(uriStr);
-		
-		log.fine("Building output.");
-		Grafeo outputGrafeo = new GrafeoImpl();
-		outputGrafeo.getObjectMapper().addObject(jobPojo);
-		SparqlUpdate sparul = new SparqlUpdate.Builder()
-				.delete("?s ?p ?o.")
-				.insert(outputGrafeo.getNTriples())
-				.graph(uriStr)
-				.endpoint(ENDPOINT_UPDATE)
-				.build();
-		sparul.execute();
-		return Response.created(URI.create(uriStr)).entity(getResponseEntity(jobPojo.getGrafeo())).build();
-	}
 }

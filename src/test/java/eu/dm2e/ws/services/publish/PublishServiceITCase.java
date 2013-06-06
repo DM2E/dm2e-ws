@@ -17,6 +17,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
+import eu.dm2e.ws.api.AbstractJobPojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
@@ -107,7 +108,7 @@ public class PublishServiceITCase extends OmnomTestCase {
             long i = 0 ,
 	             maxTries = 100,
 	             sleeptime = 1500;
-            JobPojo job = new JobPojo(joburi);
+            AbstractJobPojo job = new JobPojo(joburi);
 			do {
             	if (i++ >= maxTries) {
             		fail("Publishing took more than" + (maxTries * sleeptime / 1000) + " seconds.");
@@ -169,7 +170,7 @@ public class PublishServiceITCase extends OmnomTestCase {
              */
 
             String status = JobStatus.NOT_STARTED.name();
-            JobPojo job = null;
+            AbstractJobPojo job = null;
             while (status.equals(JobStatus.NOT_STARTED.name()) || status.equals(JobStatus.STARTED.name())) {
                 Grafeo g = new GrafeoImpl(joburi.toString());
                 job = g.getObjectMapper().getObject(JobPojo.class, joburi.toString());
