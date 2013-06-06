@@ -355,11 +355,16 @@ public class FileService extends AbstractRDFService {
 				uriRes.rename(uri.toString());
 			}
 			
+			FilePojo f;
+			try {
+				f = g.getObjectMapper().getObject(FilePojo.class, uriRes);
+			} catch (Exception e) {
+				return throwServiceError(e);
+			}
 			// if the file part is null, make sure that a
 			// dm2e:file_retrieval_uri is provided in meta
-			FilePojo f = g.getObjectMapper().getObject(FilePojo.class, uriRes);
 			if (filePartIsEmpty && null == f.getFileRetrievalURI()) {
-				log.severe(g.getCanonicalNTriples());
+				log.severe(ErrorMsg.NO_FILE_RETRIEVAL_URI + f.getId());
 				return throwServiceError(f.getTurtle(), ErrorMsg.NO_FILE_RETRIEVAL_URI);
 			}
 		}
