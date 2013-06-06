@@ -21,6 +21,7 @@ import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
+import eu.dm2e.ws.api.AbstractJobPojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.ParameterAssignmentPojo;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -298,7 +299,7 @@ public class JobServiceITCase extends OmnomTestCase {
 			String getJobNT = client.resource(job.getId()).get(String.class);
 			GrafeoImpl getjobGrafeo = new GrafeoImpl(getJobNT, true);
 			log.info(getjobGrafeo.getTurtle());
-			JobPojo getjob = getjobGrafeo.getObjectMapper().getObject(JobPojo.class, job.getId());
+			AbstractJobPojo getjob = getjobGrafeo.getObjectMapper().getObject(JobPojo.class, job.getId());
 			assertEquals("FAILED", getjob.getStatus());
 			client.resource(job.getId()).path("status").entity("FINISHED").put();
 			getjob.loadFromURI(job.getId().toString());
@@ -321,6 +322,7 @@ public class JobServiceITCase extends OmnomTestCase {
 			assertThat(ass.getId(), is(nullValue()));
 			assertTrue("There are blank nodes for the job and the assignments", job.getGrafeo().listBlankObjects().size() > 0);
 			job.publishToService();
+			log.info(job.getTurtle());
 			assertTrue("No more blank nodes after publishing", job.getGrafeo().listBlankObjects().size() == 0);
 			
 			ParameterAssignmentPojo ass1 = job.getOutputParameters().iterator().next();

@@ -38,7 +38,7 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 	private long fileSize;
 	
 	@RDFProperty("omnom:generatedBy")
-	private JobPojo generatorJob;
+	private AbstractJobPojo generatorJob;
 	
 	@RDFProperty("omnom:fileRetrievalURI")
 	private String fileRetrievalURI;
@@ -119,6 +119,6 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 	public String getFileStatus() { return fileStatus; }
 	public void setFileStatus(String fileStatus) { this.fileStatus = fileStatus; }
 	
-	public JobPojo getGeneratorJob() { return generatorJob; }
-	public void setGeneratorJob(JobPojo generatorJob) { this.generatorJob = generatorJob; }
+	public AbstractJobPojo getGeneratorJob() { return generatorJob; }
+	public void setGeneratorJob(AbstractJobPojo generatorJob) { this.generatorJob = generatorJob; }
 }
