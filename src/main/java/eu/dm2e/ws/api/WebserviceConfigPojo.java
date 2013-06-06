@@ -11,7 +11,7 @@ import java.util.UUID;
 @RDFClass("omnom:WebServiceConfig")
 //@RDFInstancePrefix("http://data.dm2e.eu/config/")
 @RDFInstancePrefix("http://localhost:9998/config/")
-public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfigPojo>{
+public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfigPojo> implements ConfigPojo {
 	
 	@RDFId
 	private String id;
@@ -77,7 +77,11 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
     	return null;
     }
     
-    public void validateConfig() {
+    /* (non-Javadoc)
+	 * @see eu.dm2e.ws.api.ConfigPojo#validateConfig()
+	 */
+    @Override
+	public void validateConfig() {
 		/*
 		 * Validate the config against the webservice description
 		 */
