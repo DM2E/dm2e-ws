@@ -32,6 +32,7 @@ import org.grep4j.core.result.GrepResults;
 
 import com.sun.jersey.api.client.ClientResponse;
 
+import eu.dm2e.ws.api.AbstractJobPojo;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.ParameterPojo;
@@ -71,6 +72,7 @@ public class XsltZipService extends AbstractTransformationService {
 
 	@Override
 	public void run() {
+		JobPojo jobPojo = getJobPojo();
 		log.warning("Starting to handle XSLT transformation job");
 		jobPojo.debug("Starting to handle XSLT transformation job");
 		String xsltZipUrl, xmlUrl;

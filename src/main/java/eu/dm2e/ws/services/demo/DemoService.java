@@ -1,12 +1,13 @@
 package eu.dm2e.ws.services.demo;
 
+import javax.ws.rs.Path;
+
 import eu.dm2e.ws.ErrorMsg;
+import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.services.AbstractTransformationService;
-
-import javax.ws.rs.Path;
 
 /**
  * This file was created within the DM2E project.
@@ -17,7 +18,7 @@ import javax.ws.rs.Path;
  */
 @Path("/service/demo")
 public class DemoService extends AbstractTransformationService {
-
+	
     public DemoService() {
         ParameterPojo sleeptimeParam = getWebServicePojo().addInputParameter("sleeptime");
         sleeptimeParam.setParameterType("xsd:int");
@@ -28,6 +29,7 @@ public class DemoService extends AbstractTransformationService {
 
     @Override
     public void run() {
+    	JobPojo jobPojo = getJobPojo();
         jobPojo.debug("DemoWorker starts to run now.");
         WebserviceConfigPojo wsConf = jobPojo.getWebserviceConfig();
         jobPojo.debug("wsConf: " + wsConf);
@@ -65,4 +67,6 @@ public class DemoService extends AbstractTransformationService {
         jobPojo.setStatus(JobStatus.FINISHED);
         client.publishPojoToJobService(jobPojo);
     }
+
+
 }

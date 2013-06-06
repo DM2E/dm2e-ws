@@ -2,6 +2,7 @@ package eu.dm2e.ws.services.publish;
 
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.VersionedDatasetPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
@@ -39,6 +40,7 @@ public class PublishService extends AbstractTransformationService {
 
     @Override
     public void run() {
+    	JobPojo jobPojo = getJobPojo();
         try {
             WebserviceConfigPojo wsConf = jobPojo.getWebserviceConfig();
             jobPojo.debug("wsConf: " + wsConf);

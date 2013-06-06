@@ -10,6 +10,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.services.AbstractTransformationService;
@@ -47,6 +48,7 @@ public class XsltService extends AbstractTransformationService {
 
 	@Override
 	public void run() {
+		JobPojo jobPojo = getJobPojo();
 		log.warning("Starting to handle XSLT transformation job");
 		jobPojo.debug("Starting to handle XSLT transformation job");
 		String xmlUrl, xsltUrl;

@@ -12,27 +12,24 @@ import javax.ws.rs.core.Response;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 
-import eu.dm2e.ws.Config;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 
 /**
  * TODO document
  */
-public abstract class AbstractTransformationService extends AbstractRDFService implements Runnable {
+public abstract class AbstractTransformationService extends AbstractAsynchronousRDFService {
 	
-    /**
-     * The JobPojo object for the worker part of the service (to be used in the run() method)
-     */
-    protected JobPojo jobPojo;
+	/**
+	 * The JobPojo object for the worker part of the service (to be used in the run() method)
+	 */
+	private JobPojo jobPojo;
+	public JobPojo getJobPojo() {return this.jobPojo; };
+	public  void setJobPojo(JobPojo jobPojo) {};
 
-    protected static final String FILE_SERVICE_URI = Config.getString("dm2e.service.file.base_uri");
 
-    public void setJobPojo(JobPojo jobPojo) {
-        this.jobPojo = jobPojo;
-    }
-
-    @PUT
+    @Override
+	@PUT
     @Consumes(MediaType.TEXT_PLAIN)
     public Response startService(String configURI) {
 
@@ -93,24 +90,10 @@ public abstract class AbstractTransformationService extends AbstractRDFService i
                 .build();
     }
 
-    /**
-     * Convenience method that accepts a configuration, publishes it
-     * directly to the ConfigurationService and then calls the TransformationService
-     * with the persistent URI.
-     *
-     * Only to be used for development, not for production!
-     *
-     * @param rdfString
-     * @return
-     */
-    @POST
+    @Override
+	@POST
     @Consumes(MediaType.WILDCARD)
     public Response postConfig(String rdfString) {
-//        WebserviceConfigPojo conf = new WebserviceConfigPojo().constructFromRdfString(rdfString);
-//        if (null == conf) {
-//        	return throwServiceError("Invalid RDF string passed as configuration.");
-//        }
-//        conf.publish();
     	WebResource webResource = client.resource("http://localhost:9998/config");
     	ClientResponse resp = webResource.post(ClientResponse.class, rdfString);
     	if (null == resp.getLocation()) {
