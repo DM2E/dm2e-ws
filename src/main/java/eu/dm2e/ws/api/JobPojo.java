@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFId;
@@ -18,20 +19,16 @@ import eu.dm2e.ws.model.JobStatus;
 @RDFInstancePrefix("http://localhost:9998/job/")
 public class JobPojo extends AbstractJobPojo{
 	
-	public static final String PROP_OUTPUT_ASSIGNMENT = "omnom:assignment";
-	public static final String PROP_WEBSERVICE = "omnom:webservice";
-	public static final String PROP_WEBSERVICE_CONFIG = "omnom:webserviceConfig";
-	
 //	Logger log = Logger.getLogger(getClass().getName());
     
     // TODO the job probably doesn't even need a webservice reference since it's in the conf already
-    @RDFProperty(PROP_WEBSERVICE)
+    @RDFProperty(NS.OMNOM.PROP_WEBSERVICE)
     private WebservicePojo webService;
 
-    @RDFProperty(PROP_WEBSERVICE_CONFIG)
+    @RDFProperty(NS.OMNOM.PROP_WEBSERVICE_CONFIG)
     private WebserviceConfigPojo webserviceConfig;
     
-    @RDFProperty(PROP_OUTPUT_ASSIGNMENT) Set<ParameterAssignmentPojo> outputParameters= new HashSet<>();
+    @RDFProperty(NS.OMNOM.PROP_OUTPUT_ASSIGNMENT) Set<ParameterAssignmentPojo> outputParameters= new HashSet<>();
     
     public JobPojo() { 
     	// move along nothing to see here
@@ -107,14 +104,14 @@ public class JobPojo extends AbstractJobPojo{
 	public String getId() { return id; }
 	public void setId(String id) { this.id = id; }
 
-    @RDFProperty(PROP_JOB_STATUS) String status;
+    @RDFProperty(NS.OMNOM.PROP_JOB_STATUS) String status;
 	public String getStatus() {
 		if (null != status) return status;
 		return JobStatus.NOT_STARTED.toString();
 	}
 	public void setStatus(String status) { this.status = status; }
 
-    @RDFProperty(PROP_LOG_ENTRY) Set<LogEntryPojo> logEntries = new HashSet<>();
+    @RDFProperty(NS.OMNOM.PROP_LOG_ENTRY) Set<LogEntryPojo> logEntries = new HashSet<>();
 	public Set<LogEntryPojo> getLogEntries() { return logEntries; }
 	public void setLogEntries(Set<LogEntryPojo> logEntries) { this.logEntries = logEntries; }
 	

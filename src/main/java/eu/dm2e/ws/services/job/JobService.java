@@ -76,8 +76,8 @@ public class JobService extends AbstractJobService {
 	public Response postJob(Grafeo inputGrafeo, String uriStr) {
 		
 		log.fine("Skolemnizing");
-		inputGrafeo.skolemnizeUUID(uriStr, JobPojo.PROP_OUTPUT_ASSIGNMENT, "assignment");
-		inputGrafeo.skolemnizeUUID(uriStr, JobPojo.PROP_LOG_ENTRY, "log");
+		inputGrafeo.skolemnizeUUID(uriStr, NS.OMNOM.PROP_OUTPUT_ASSIGNMENT, "assignment");
+		inputGrafeo.skolemnizeUUID(uriStr, NS.OMNOM.PROP_LOG_ENTRY, "log");
 		
 		log.warning("Instantiating Job POJO " + uriStr);
 		JobPojo jobPojo = inputGrafeo.getObjectMapper().getObject(JobPojo.class, uriStr);
@@ -96,8 +96,8 @@ public class JobService extends AbstractJobService {
 		if (blank != null) {
 			blank.rename(uriStr);
 		}
-		inputGrafeo.skolemnizeUUID(uriStr, JobPojo.PROP_LOG_ENTRY, "log");
-		inputGrafeo.skolemnizeUUID(uriStr, JobPojo.PROP_OUTPUT_ASSIGNMENT, "assignment");
+		inputGrafeo.skolemnizeUUID(uriStr, NS.OMNOM.PROP_LOG_ENTRY, "log");
+		inputGrafeo.skolemnizeUUID(uriStr, NS.OMNOM.PROP_OUTPUT_ASSIGNMENT, "assignment");
 		
 		log.warning("Instantiating Job POJO " + uriStr);
 		JobPojo jobPojo = inputGrafeo.getObjectMapper().getObject(JobPojo.class, uriStr);
@@ -137,7 +137,7 @@ public class JobService extends AbstractJobService {
 		
 		Grafeo outputGrafeo = new GrafeoImpl();
 		outputGrafeo.getObjectMapper().addObject(ass);
-		outputGrafeo.addTriple(jobUri, JobPojo.PROP_OUTPUT_ASSIGNMENT, assUri);
+		outputGrafeo.addTriple(jobUri, NS.OMNOM.PROP_OUTPUT_ASSIGNMENT, assUri);
 		SparqlUpdate sparul = new SparqlUpdate.Builder()
 				.delete("?s ?p ?o.")
 				.insert(outputGrafeo.getNTriples())

@@ -23,6 +23,7 @@ import org.apache.commons.io.IOUtils;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.AbstractJobPojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.LogEntryPojo;
@@ -156,8 +157,8 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		
 		String jobUri = getRequestUriWithoutQuery().toString().replaceAll("/status$", "");
 		SparqlUpdate sparul = new SparqlUpdate.Builder()
-			.delete("?s " + AbstractJobPojo.PROP_JOB_STATUS + " ?p")
-			.insert("<" + jobUri + "> " + AbstractJobPojo.PROP_JOB_STATUS + " \"" + newStatus.toString() + "\"")
+			.delete("?s " + NS.OMNOM.PROP_JOB_STATUS + " ?p")
+			.insert("<" + jobUri + "> " + NS.OMNOM.PROP_JOB_STATUS + " \"" + newStatus.toString() + "\"")
 			.endpoint(Config.ENDPOINT_UPDATE)
 			.graph(jobUri)
 			.build();
@@ -189,7 +190,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 			return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE);
 		}
 		blank.rename(entryUri.toString());
-		gEntry.addTriple(jobUri, AbstractJobPojo.PROP_LOG_ENTRY, entryUri.toString());
+		gEntry.addTriple(jobUri, NS.OMNOM.PROP_LOG_ENTRY, entryUri.toString());
 		log.info(gEntry.getNTriples());
 		gEntry.writeToEndpoint(Config.ENDPOINT_UPDATE, jobUri);
 		return Response.created(entryUri).build();
@@ -219,7 +220,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		entry.setLevel(logLevel);
 		entry.setTimestamp(new Date());
 		Grafeo outG = entry.getGrafeo();
-		outG.addTriple(jobUri, AbstractJobPojo.PROP_LOG_ENTRY, entry.getId());
+		outG.addTriple(jobUri, NS.OMNOM.PROP_LOG_ENTRY, entry.getId());
 		outG.writeToEndpoint(Config.ENDPOINT_UPDATE, jobUri);
 		return Response.created(entry.getIdAsURI()).build();
 	}

@@ -1,23 +1,5 @@
 package eu.dm2e.ws.services;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import eu.dm2e.ws.Config;
-import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.ErrorMsg;
-import eu.dm2e.ws.api.ConfigPojo;
-import eu.dm2e.ws.api.ParameterPojo;
-import eu.dm2e.ws.api.WebserviceConfigPojo;
-import eu.dm2e.ws.api.WebservicePojo;
-import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.validator.routines.UrlValidator;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,8 +8,41 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Logger;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Variant;
+
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.validator.routines.UrlValidator;
+
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+
+import eu.dm2e.ws.Config;
+import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.ErrorMsg;
+import eu.dm2e.ws.api.WebservicePojo;
+import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
 /**
  * TODO @GET /{id}/param/{param} 303 -> /{id}

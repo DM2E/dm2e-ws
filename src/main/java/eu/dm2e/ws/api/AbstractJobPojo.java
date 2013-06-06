@@ -20,9 +20,6 @@ import eu.dm2e.ws.model.LogLevel;
 
 public abstract class AbstractJobPojo extends AbstractPersistentPojo<JobPojo> {
 	
-	public static final String PROP_LOG_ENTRY = "omnom:hasLogEntry";
-	public static final String PROP_JOB_STATUS = "omnom:status";
-
 	public AbstractJobPojo() {
 		super();
 	}
