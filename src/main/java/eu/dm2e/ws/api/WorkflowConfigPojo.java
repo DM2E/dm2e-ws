@@ -13,16 +13,11 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/"})
 @RDFClass("omnom:Workflow")
-public class WorkflowPojo extends WebservicePojo {
+public class WorkflowConfigPojo implements ConfigPojo {
 	
-    @RDFId(prefix="http://data.dm2e.eu/data/workflow/")
-    private String id;
-	
-    @RDFProperty("omnom:hasPosition")
-	private List<WorkflowPositionPojo> positions = new ArrayList<>();
-    
-    @RDFProperty("omnom:hasParameterSlot")
-    private Set<ParameterSlotPojo> parameterSlots = new HashSet<>();
+	public static final String PROP_HAS_POSITION = "omnom:hasPosition";
+	public static final String PROP_PARAMETER_SLOT = "omnom:parameterSlot";
+	Logger log = Logger.getLogger(getClass().getName());
     
     // TODO this is not perfect, there could be several slots for the same position and the same parameter
     public ParameterSlotPojo getSlotForPositionIndexAndParam(int index, ParameterPojo param) {
@@ -58,11 +53,16 @@ public class WorkflowPojo extends WebservicePojo {
 //		}
 //		outstr.append("}{");
 		for (WorkflowPositionPojo slot : getPositions()) {
-			outstr.append(slot.getWebService().getId());
+			outstr.append(slot.getWebServicConfige().getWebservice().getId());
 			outstr.append(" => ");
 		}
 		outstr.append("]");
 		return outstr.toString();
+	}
+
+	@Override
+	public void validateConfig() {
+		log.warning("validateConfig UNIMPLEMENTED HERE");
 	}
     
     /*********************
@@ -70,13 +70,16 @@ public class WorkflowPojo extends WebservicePojo {
      ********************/
 
 	// inherited
-//	public String getId() { return id; }
-//	public void setId(String id) { this.id = id; }
-
+    @RDFId()
+    private String id;
+	
+    @RDFProperty(PROP_HAS_POSITION) private List<WorkflowPositionPojo> positions = new ArrayList<>();
 	public List<WorkflowPositionPojo> getPositions() { return positions; }
 	public void setPositions(List<WorkflowPositionPojo> positions) { this.positions = positions; }
-
+    
+    @RDFProperty(PROP_PARAMETER_SLOT) private Set<ParameterSlotPojo> parameterSlots = new HashSet<>();
 	public Set<ParameterSlotPojo> getParameterSlots() { return parameterSlots; }
 	public void setParameterSlots(Set<ParameterSlotPojo> parameterSlots) { this.parameterSlots = parameterSlots; }
 
+	
 }
