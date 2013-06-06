@@ -1,16 +1,12 @@
 package eu.dm2e.ws.api;
 
+import eu.dm2e.ws.ErrorMsg;
+import eu.dm2e.ws.NS;
+import eu.dm2e.ws.grafeo.annotations.*;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-
-import eu.dm2e.ws.ErrorMsg;
-import eu.dm2e.ws.NS;
-import eu.dm2e.ws.grafeo.annotations.Namespaces;
-import eu.dm2e.ws.grafeo.annotations.RDFClass;
-import eu.dm2e.ws.grafeo.annotations.RDFId;
-import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
-import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/"})
 @RDFClass("omnom:WebServiceConfig")
@@ -21,10 +17,10 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
 	@RDFId
 	private String id;
 	
-	@RDFProperty("omnom:slotAssignment")
-	private Set<ParameterSlotAssignmentPojo> slotAssignments = new HashSet<>();
+	@RDFProperty(NS.OMNOM.PROP_OUTPUT_ASSIGNMENT)
+	private Set<ParameterAssignmentPojo> parameterAssignments = new HashSet<>();
 	
-	@RDFProperty(NS.OMNOM.PROP_JOB_STATUS)
+	@RDFProperty(NS.OMNOM.PROP_WEBSERVICE)
 	private WebservicePojo webservice;
 	
 	/*********************

@@ -48,27 +48,12 @@ public class JobService extends AbstractJobService {
 	}
 	
 	@Override
-	public Response getJob(String uriStr) {
-		
-        Grafeo g = new GrafeoImpl();
-        log.info("Reading job from endpoint " + Config.ENDPOINT_QUERY);
+	public Response getJob(Grafeo g, String uriStr) {
         try {
-            g.readFromEndpoint(Config.ENDPOINT_QUERY, uriStr);
-        } catch (Exception e1) {
-            // if we couldn't read the job, try again once in a second
-            try { Thread.sleep(1000); } catch (InterruptedException e) { }
-            try { g.readFromEndpoint(Config.ENDPOINT_QUERY, uriStr);
-            } catch (Exception e) {
-                return throwServiceError(e);
-            }
+            return Response.ok().entity(getResponseEntity(g)).build();
+        } catch (NullPointerException e) {
+            return Response.notAcceptable(supportedVariants).build();
         }
-//        try {
-//            return Response.ok().entity(getResponseEntity(job.getGrafeo())).build();
-//        } catch (NullPointerException e) {
-//            return Response.notAcceptable(supportedVariants).build();
-//        }
-        return Response.ok().entity(getResponseEntity(g)).build();
-//        AbstractJobPojo job = g.getObjectMapper().getObject(JobPojo.class, uriStr);
 	}
 	
 

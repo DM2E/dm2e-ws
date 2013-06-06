@@ -42,7 +42,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 
 	public abstract Response putJob(Grafeo inputGrafeo, String uriStr);
 	public abstract Response postJob(Grafeo inputGrafeo, String uriStr);
-	public abstract Response getJob(String uri);
+	public abstract Response getJob(Grafeo g, String uri);
 	
 	@PUT
 	@Path("/{resourceID}")
@@ -112,7 +112,19 @@ public abstract class AbstractJobService extends AbstractRDFService {
 	public Response getJobHandler(@PathParam("resourceID") String resourceID) {
         log.info("Access to job: " + resourceID);
         String uriStr = uriInfo.getRequestUri().toString();
-        return this.getJob(uriStr);
+        Grafeo g = new GrafeoImpl();
+        log.info("Reading job from endpoint " + Config.ENDPOINT_QUERY);
+        try {
+            g.readFromEndpoint(Config.ENDPOINT_QUERY, uriStr);
+        } catch (Exception e1) {
+            // if we couldn't read the job, try again once in a second
+            try { Thread.sleep(1000); } catch (InterruptedException e) { }
+            try { g.readFromEndpoint(Config.ENDPOINT_QUERY, uriStr);
+            } catch (Exception e) {
+                return throwServiceError(e);
+            }
+        }
+        return this.getJob(g, uriStr);
     }
 	
 	
