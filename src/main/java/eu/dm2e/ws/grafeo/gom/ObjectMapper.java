@@ -160,7 +160,7 @@ public class ObjectMapper {
             objectCache.put(uri, result);
             log.fine("Added to cache, uri: " + uri);
         } catch (InstantiationException | IllegalAccessException | SecurityException e) {
-            throw new RuntimeException("An exception occurred: " + e, e);
+            throw new RuntimeException("An exception occurred with class " + T + e, e);
         }
 
         // iterate fields in the class definition
