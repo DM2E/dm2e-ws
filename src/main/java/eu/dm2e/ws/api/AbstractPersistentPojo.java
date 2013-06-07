@@ -99,6 +99,7 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
     }
 	
 	public String publishToService(WebResource wr) {
+		log.info("Publishing myself (pojo) to " + wr.getURI());
 		String loc = this.client.publishPojo(this, wr);
 		return loc;
 	}

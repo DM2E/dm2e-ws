@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.logging.Logger;
 
 import javax.ws.rs.core.MediaType;
 
@@ -30,6 +31,8 @@ import eu.dm2e.ws.grafeo.Grafeo;
  * Author: Kai Eckert, Konstantin Baierer
  */
 public class Client {
+	
+	Logger log = Logger.getLogger(getClass().getName());
 
     private com.sun.jersey.api.client.Client jerseyClient = null;
 //    private Logger log = Logger.getLogger(getClass().getName());
@@ -62,10 +65,11 @@ public class Client {
 		ClientResponse resp;
 		String method = "POST";
 		if (null == pojo.getId()) {
-			 resp = this.postPojoToService(pojo, configWR); 
+			log.warning(method + "ing pojo to service " + configWR.getURI() + ": " + pojo.getTurtle());
+			resp = this.postPojoToService(pojo, configWR);
 		} else {
 			method = "PUT";
-//			resp = null;
+			log.info(method + "ing pojo to service " + configWR.getURI());
 			if (pojo.getId().startsWith(configWR.getURI().toString())) {
 				 resp = resource(pojo.getId())
 					.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)

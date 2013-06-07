@@ -81,20 +81,21 @@ public abstract class AbstractJobService extends AbstractRDFService {
 	@Produces({
 		MediaType.WILDCARD
 	})
-	public Response postJob(File bodyAsFile) {
-		log.info("Config posted.");
+	public Response postJobHandler(String bodyAsString) {
+		log.info("Job posted: " + bodyAsString);
 		Grafeo inputGrafeo;
 		try {
-			inputGrafeo = new GrafeoImpl(bodyAsFile);
+			inputGrafeo = new GrafeoImpl(bodyAsString, true);
 		} catch (Exception e) {
 			return throwServiceError(ErrorMsg.BAD_RDF);
 		}
 		GResource blank = inputGrafeo.findTopBlank("omnom:Job");
 		if (blank == null) {
-			return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE);
+			return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE + inputGrafeo.getTurtle());
 		}
 		String uriStr = getWebServicePojo().getId() + "/" + UUID.randomUUID().toString();;
 		blank.rename(uriStr);
+		log.info(inputGrafeo.getNTriples());
 		return this.postJob(inputGrafeo, uriStr);
 	}
 

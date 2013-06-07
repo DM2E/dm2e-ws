@@ -1,17 +1,17 @@
 package eu.dm2e.ws.api;
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
+import eu.dm2e.utils.PojoUtils;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
-import eu.dm2e.ws.grafeo.annotations.RDFId;
 import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
-import eu.dm2e.ws.model.JobStatus;
 
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/",
 			 "dc", "http://purl.org/dc/elements/1.1/"})
@@ -20,15 +20,6 @@ import eu.dm2e.ws.model.JobStatus;
 public class JobPojo extends AbstractJobPojo{
 	
 //	Logger log = Logger.getLogger(getClass().getName());
-    
-    // TODO the job probably doesn't even need a webservice reference since it's in the conf already
-    @RDFProperty(NS.OMNOM.PROP_WEBSERVICE)
-    private WebservicePojo webService;
-
-    @RDFProperty(NS.OMNOM.PROP_WEBSERVICE_CONFIG)
-    private WebserviceConfigPojo webserviceConfig;
-    
-    @RDFProperty(NS.OMNOM.PROP_OUTPUT_ASSIGNMENT) Set<ParameterAssignmentPojo> outputParameters= new HashSet<>();
     
     public JobPojo() { 
     	// move along nothing to see here
@@ -56,7 +47,7 @@ public class JobPojo extends AbstractJobPojo{
     		throw new RuntimeException("Job needs webservice.");
     	}
     	ParameterAssignmentPojo ass = new ParameterAssignmentPojo();
-    	ass.setForParam(this.webService.getParamByName(forParam));
+    	ass.setForParam(this.getWebService().getParamByName(forParam));
     	ass.setParameterValue(value);
     	this.outputParameters.add(ass);
     	return ass;
@@ -87,37 +78,38 @@ public class JobPojo extends AbstractJobPojo{
         return null;
     }
     
-	public WebservicePojo getWebService() { return webService; }
-	public void setWebService(WebservicePojo webService) { this.webService = webService; }
-	
+	@Override
+	public String publishToService() {
+		String loc = this.publishToService(this.client.getJobWebResource());
+		JobPojo newPojo = new JobPojo();
+		newPojo.loadFromURI(loc);
+		try {
+			PojoUtils.copyProperties(this, newPojo);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			log.severe("Couldn't refresh this pojo with live data: " + e);
+		}
+		log.info(newPojo.getTurtle());
+		return loc;
+	}
+    
+	/**
+	 * GETTERS/SETTERS (non-javadoc)
+	 * 
+	 * @see AbstractJobPojo for more
+	 */
+
+    @RDFProperty(NS.OMNOM.PROP_WEBSERVICE_CONFIG)
+    private WebserviceConfigPojo webserviceConfig;
 	public WebserviceConfigPojo getWebserviceConfig() { return webserviceConfig; }
 	public void setWebserviceConfig(WebserviceConfigPojo webserviceConfig) { this.webserviceConfig = webserviceConfig; }
 	
+    @RDFProperty(NS.OMNOM.PROP_OUTPUT_ASSIGNMENT)
+    Set<ParameterAssignmentPojo> outputParameters= new HashSet<>();
 	public Set<ParameterAssignmentPojo> getOutputParameters() { return outputParameters; }
 	public void setOutputParameters(Set<ParameterAssignmentPojo> outputParameters) { this.outputParameters = outputParameters; }
-	
-	/*
-	 * from AbstractJobPojo
-	 */
-	
-    @RDFId String id;
-	public String getId() { return id; }
-	public void setId(String id) { this.id = id; }
 
-    @RDFProperty(NS.OMNOM.PROP_JOB_STATUS) String status;
-	public String getStatus() {
-		if (null != status) return status;
-		return JobStatus.NOT_STARTED.toString();
-	}
-	public void setStatus(String status) { this.status = status; }
-
-    @RDFProperty(NS.OMNOM.PROP_LOG_ENTRY) Set<LogEntryPojo> logEntries = new HashSet<>();
-	public Set<LogEntryPojo> getLogEntries() { return logEntries; }
-	public void setLogEntries(Set<LogEntryPojo> logEntries) { this.logEntries = logEntries; }
-	
-	@RDFProperty("omnom:hasSlotAssignment")
-	private Set<ParameterSlotAssignmentPojo> slotAssignments = new HashSet<>();
-
-	public Set<ParameterSlotAssignmentPojo> getSlotAssignments() { return slotAssignments; }
-	public void setSlotAssignments(Set<ParameterSlotAssignmentPojo> slotAssignments) { this.slotAssignments = slotAssignments; }
+//	@RDFProperty("omnom:hasSlotAssignment")
+//	private Set<ParameterSlotAssignmentPojo> slotAssignments = new HashSet<>();
+//	public Set<ParameterSlotAssignmentPojo> getSlotAssignments() { return slotAssignments; }
+//	public void setSlotAssignments(Set<ParameterSlotAssignmentPojo> slotAssignments) { this.slotAssignments = slotAssignments; }
 }

@@ -1,6 +1,5 @@
 package eu.dm2e.ws.api;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -13,8 +12,10 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 
 import com.sun.jersey.api.client.ClientResponse;
 
-import eu.dm2e.utils.PojoUtils;
 import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.NS;
+import eu.dm2e.ws.grafeo.annotations.RDFId;
+import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.model.LogLevel;
 
@@ -154,18 +155,6 @@ public abstract class AbstractJobPojo extends AbstractPersistentPojo<JobPojo> {
 
 	public boolean isStarted() { return ! this.getStatus().equals(JobStatus.NOT_STARTED.toString()); }
 
-	@Override
-	public String publishToService() {
-		String loc = this.publishToService(this.client.getJobWebResource());
-		JobPojo newPojo = new JobPojo();
-		newPojo.loadFromURI(loc);
-		try {
-			PojoUtils.copyProperties(this, newPojo);
-		} catch (IllegalAccessException | InvocationTargetException e) {
-			log.severe("Couldn't refresh this pojo with live data: " + e);
-		}
-		return loc;
-	}
 
 	protected void publishJobStatus(String status) {
 		if (null != this.getId()) {
@@ -200,14 +189,23 @@ public abstract class AbstractJobPojo extends AbstractPersistentPojo<JobPojo> {
 	 * 
 	 *********************/
 	
-	abstract public String getId();
-	abstract public void setId(String id);
+    @RDFProperty(NS.OMNOM.PROP_JOB_STATUS)
+    String status;
+	public String getStatus() {
+		if (null != status) return status;
+		return JobStatus.NOT_STARTED.toString();
+	}
+	public void setStatus(String status) { this.status = status; }
 
-	public abstract String getStatus();
-	public abstract void setStatus(String status);
-
-	public abstract Set<LogEntryPojo> getLogEntries();
-	public abstract void setLogEntries(Set<LogEntryPojo> logEntries);
-
+    @RDFProperty(NS.OMNOM.PROP_WEBSERVICE)
+    private WebservicePojo webService;
+	public WebservicePojo getWebService() { return webService; }
+	public void setWebService(WebservicePojo webService) { this.webService = webService; }
+	
+    @RDFProperty(NS.OMNOM.PROP_LOG_ENTRY) 
+    Set<LogEntryPojo> logEntries = new HashSet<>();
+	public Set<LogEntryPojo> getLogEntries() { return logEntries; }
+	public void setLogEntries(Set<LogEntryPojo> logEntries) { this.logEntries = logEntries; }
+	
 
 }

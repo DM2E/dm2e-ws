@@ -66,7 +66,9 @@ public class JobService extends AbstractJobService {
 		
 		log.warning("Instantiating Job POJO " + uriStr);
 		JobPojo jobPojo = inputGrafeo.getObjectMapper().getObject(JobPojo.class, uriStr);
+		log.info(inputGrafeo.getTurtle());
 		jobPojo.setId(uriStr);
+		log.info(jobPojo.getTurtle());
 		
 		Grafeo outputGrafeo = new GrafeoImpl();
 		outputGrafeo.getObjectMapper().addObject(jobPojo);
