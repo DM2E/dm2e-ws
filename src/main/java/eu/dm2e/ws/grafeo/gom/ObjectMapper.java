@@ -59,7 +59,7 @@ public class ObjectMapper {
         String type = object.getClass().getAnnotation(RDFClass.class).value();
         log.fine("Type: " + type);
         result.set("rdf:type", grafeo.resource(type));
-        for (Field field : object.getClass().getDeclaredFields()) {
+        for (Field field : getAllFields(object.getClass())) {
             if (!field.isAnnotationPresent(RDFProperty.class)) {
                 continue;
             }
@@ -164,7 +164,7 @@ public class ObjectMapper {
         }
 
         // iterate fields in the class definition
-        for (Field field : result.getClass().getDeclaredFields()) {
+        for (Field field : getAllFields(result.getClass())) {
         	// Skip synthetic fileds, such as those added by JaCoCo at runtime
             if (field.isSynthetic()) {
             	continue;
@@ -324,7 +324,7 @@ public class ObjectMapper {
     protected GResource getGResource(Object object) {
         String uri = null;
 
-        for (Field field : object.getClass().getDeclaredFields()) {
+        for (Field field : getAllFields(object.getClass())) {
         	// Skip synthetic fileds, such as those added by JaCoCo at runtime
             if (field.isSynthetic()) {
             	continue;
@@ -362,5 +362,26 @@ public class ObjectMapper {
             }
         }
 
+    }
+    
+    /**
+     * Lists fields of this class and it's superclasses
+     * @param type
+     * @return
+     */
+    private static List<Field> getAllFields(Class<?> type) {
+    	return getAllFields(null, type);
+    }
+    private static List<Field> getAllFields(List<Field> fields, Class<?> type) {
+    	if (fields == null) {
+    		fields = new ArrayList<Field>();
+    	}
+    	fields.addAll(Arrays.asList(type.getDeclaredFields()));
+
+        if (type.getSuperclass() != null) {
+            fields = getAllFields(fields, type.getSuperclass());
+        }
+
+        return fields;
     }
 }

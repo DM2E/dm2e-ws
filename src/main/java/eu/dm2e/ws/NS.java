@@ -9,6 +9,12 @@ public final class NS {
 		public static final String PROP_OUTPUT_ASSIGNMENT = "omnom:assignment";
 		public static final String PROP_WEBSERVICE = "omnom:webservice";
 		public static final String PROP_WEBSERVICE_CONFIG = "omnom:webserviceConfig";
+		
+		public static final String PROP_HAS_POSITION = "omnom:hasPosition";
+		public static final String PROP_PARAMETER_SLOT = "omnom:parameterSlot";
+		public static final String PROP_SLOT_ASSIGNMENT = "omnom:slotAssignment";
+		
+		public static final String CLASS_WORKFLOW_JOB = "omnom:WorkflowJob";
 	}
 	
 	public static final String
