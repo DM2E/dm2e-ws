@@ -1,5 +1,6 @@
 package eu.dm2e.ws.api;
 
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFId;
@@ -10,25 +11,17 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 @RDFClass("omnom:ParameterAssignment")
 public class ParameterAssignmentPojo  extends SerializablePojo {
 
-	@RDFId
-	private String id;
-	
-	@RDFProperty("omnom:forParam")
-	private ParameterPojo forParam;
-	
-	@RDFProperty("omnom:parameterValue")
-	private String parameterValue;
-	
 	/******************
 	 * GETTERS/SETTERS
 	 *****************/
-
-	public String getId() { return id; }
-	public void setId(String id) { this.id = id; }
 	
+	@RDFProperty(NS.OMNOM.PROP_FOR_PARAM)
+	private ParameterPojo forParam;
 	public ParameterPojo getForParam() { return forParam; }
 	public void setForParam(ParameterPojo forParam) { this.forParam = forParam; }
 	
+	@RDFProperty(NS.OMNOM.PROP_PARAMETER_VALUE)
+	private String parameterValue;
 	public String getParameterValue() { return parameterValue; }
 	public void setParameterValue(String parameterValue) { this.parameterValue = parameterValue; }
 	
