@@ -1,5 +1,21 @@
 package eu.dm2e.ws.grafeo.gom;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import org.apache.commons.beanutils.PropertyUtils;
+
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.GValue;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -7,14 +23,6 @@ import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFId;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
-import org.apache.commons.beanutils.PropertyUtils;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
-import java.net.URI;
-import java.util.*;
-import java.util.logging.Logger;
 
 /**
  * The object mapper contains all functionality for the serialization and deserialization
@@ -58,7 +66,7 @@ public class ObjectMapper {
         log.fine("Subject: " + result);
         String type = object.getClass().getAnnotation(RDFClass.class).value();
         log.fine("Type: " + type);
-        result.set("rdf:type", grafeo.resource(type));
+        result.set(NS.RDF.PROP_TYPE, grafeo.resource(type));
         for (Field field : getAllFields(object.getClass())) {
             if (!field.isAnnotationPresent(RDFProperty.class)) {
                 continue;
@@ -69,7 +77,7 @@ public class ObjectMapper {
             try {
                 value = PropertyUtils.getProperty(object, field.getName());
             } catch (NoSuchMethodException e) {
-                log.severe("No getter/setters for " + field.getName() + " property: " + e);
+                log.severe(object.getClass().getName() +": No getter/setters for " + field.getName() + " property: " + e);
                 continue;
             } catch (InvocationTargetException | IllegalAccessException e) {
                 throw new RuntimeException("An exception occurred: " + e, e);
@@ -95,30 +103,32 @@ public class ObjectMapper {
                     }
                 }
             } else if (value instanceof List) {
-                result.set("rdf:type", grafeo.resource("co:List"));
+                result.set(NS.RDF.PROP_TYPE, grafeo.resource(NS.CO.CLASS_LIST));
                 List valueList = (List) value;
-                result.set("co:size", grafeo.literal(valueList.size()));
+                result.set(NS.CO.PROP_SIZE, grafeo.literal(valueList.size()));
                 for (int i = 0; i < valueList.size(); i++) {
                     Object listItem = valueList.get(i);
+                    String itemProp = field.getAnnotation(RDFProperty.class).value();
                     String itemPrefix = field.getAnnotation(RDFProperty.class).itemPrefix();
                     GResource listItemResource = grafeo.resource(result.getUri() + "/" + itemPrefix
                             + (i + 1));
                     GResource listItemTargetResource = getGResource(listItem);
+                    result.set(itemProp, listItemResource);
                     if (!isAnnotatedObject(listItem)) {
                         continue;
                     }
                     if (i == 0) {
-                        result.set("co:first", listItemResource);
+                        result.set(NS.CO.PROP_FIRST, listItemResource);
                     }
                     if (i == valueList.size() - 1) {
-                        result.set("co:last", listItemResource);
+                        result.set(NS.CO.PROP_LAST, listItemResource);
                     }
-                    listItemResource.set("co:index", grafeo.literal(i + 1));
-                    listItemResource.set("co:itemContent", listItemTargetResource);
+                    listItemResource.set(NS.CO.PROP_INDEX, grafeo.literal(i + 1));
+                    listItemResource.set(NS.CO.PROP_ITEM_CONTENT, listItemTargetResource);
                     if (i < valueList.size() - 1) {
                         GResource nextlistItemResource = grafeo.resource(result.getUri() + "/"
                                 + itemPrefix + (i + 2));
-                        listItemResource.set("co:next", nextlistItemResource);
+                        listItemResource.set(NS.CO.PROP_NEXT, nextlistItemResource);
                     }
                     addObject(listItem);
                     log.fine("" + i);
@@ -215,19 +225,19 @@ public class ObjectMapper {
                     log.fine(field.getName() + " is a LIST.");
                     ParameterizedType subtype = (ParameterizedType) field.getGenericType();
                     Class<?> subtypeClass = (Class<?>) subtype.getActualTypeArguments()[0];
-                    int listSize = (Integer) ((null == res.get("co:size"))
+                    int listSize = (Integer) ((null == res.get(NS.CO.PROP_SIZE))
                             ? 0
-                            : res.get("co:size").getTypedValue(Integer.class));
+                            : res.get(NS.CO.PROP_SIZE).getTypedValue(Integer.class));
                     if (listSize == 0) {
                         continue;
                     }
 
                     ArrayList propArray = new ArrayList();
-                    GValue first = res.get("co:first");
+                    GValue first = res.get(NS.CO.PROP_FIRST);
                     GValue nextValue;
-                    for (nextValue = first; nextValue != null ; nextValue = nextValue.get("co:next")) {
+                    for (nextValue = first; nextValue != null ; nextValue = nextValue.get(NS.CO.PROP_NEXT)) {
                         GResource nextItemRes = nextValue.resource();
-                        GValue itemContentValue = nextItemRes.get("co:itemContent");
+                        GValue itemContentValue = nextItemRes.get(NS.CO.PROP_ITEM_CONTENT);
                         if (null == itemContentValue) {
                             continue;
                         }
