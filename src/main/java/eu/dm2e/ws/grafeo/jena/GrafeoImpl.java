@@ -1,28 +1,63 @@
 package eu.dm2e.ws.grafeo.jena;
 
-import com.hp.hpl.jena.query.*;
-import com.hp.hpl.jena.rdf.model.*;
-import com.hp.hpl.jena.update.UpdateExecutionFactory;
-import com.hp.hpl.jena.update.UpdateFactory;
-import com.hp.hpl.jena.update.UpdateProcessor;
-import com.hp.hpl.jena.update.UpdateRequest;
-import eu.dm2e.ws.grafeo.*;
-import eu.dm2e.ws.grafeo.annotations.Namespaces;
-import eu.dm2e.ws.grafeo.annotations.RDFId;
-import eu.dm2e.ws.grafeo.gom.ObjectMapper;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Logger;
 
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.AnonId;
+import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.ResIterator;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.update.UpdateExecutionFactory;
+import com.hp.hpl.jena.update.UpdateFactory;
+import com.hp.hpl.jena.update.UpdateProcessor;
+import com.hp.hpl.jena.update.UpdateRequest;
+
+import eu.dm2e.ws.grafeo.GLiteral;
+import eu.dm2e.ws.grafeo.GResource;
+import eu.dm2e.ws.grafeo.GStatement;
+import eu.dm2e.ws.grafeo.GValue;
+import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.grafeo.SkolemnizationMethod;
+import eu.dm2e.ws.grafeo.annotations.Namespaces;
+import eu.dm2e.ws.grafeo.annotations.RDFId;
+import eu.dm2e.ws.grafeo.gom.ObjectMapper;
 
 public class GrafeoImpl extends JenaImpl implements Grafeo {
 
@@ -933,4 +968,37 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         GrafeoImpl gi = (GrafeoImpl) g;
         return getModel().isIsomorphicWith(gi.getModel());
     }
+    
+    @Override
+	public String visualizeWithGraphviz() throws Exception {
+		BufferedReader inp;
+		BufferedWriter out;
+//		String cmd = "rapper -o dot -i ntriples -I \"http://EXAMPLE/\" - | dot -Tpng -o output.png";
+		String cmd = "./bin/visualize-turtle.sh\n";
+		Process p;
+		try {
+			p = Runtime.getRuntime().exec(cmd);
+//	        System.out.println(System.getProperty("user.dir"));
+			inp = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			out = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
+			out.write(this.getTurtle());
+			out.write("\n");
+			out.flush();
+			out.close();
+		} catch (Exception e) {
+			throw new RuntimeException("Could not execute command for visualizing: " + e);
+		}
+		return "";
+//		String retStr;
+//		try {
+//			retStr = inp.readLine();
+//			inp.close();
+//			if (p.exitValue() != 0) {
+//				throw new RuntimeException("Command exited with value: " + p.exitValue());
+//			}
+//			return retStr;
+//		} catch (IOException e) {
+//			throw new RuntimeException("Could not execute command for visualizing: " + e);
+//		}
+	}
 }

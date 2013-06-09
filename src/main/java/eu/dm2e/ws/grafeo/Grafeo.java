@@ -278,5 +278,7 @@ public interface Grafeo {
 	String shorten(String uri);
 	
     boolean isGraphEquivalent(Grafeo g);
+
+	String visualizeWithGraphviz() throws Exception;
 }
 

@@ -1,6 +1,6 @@
 src/main/resources/dm2e-ws.local.properties
 target
-bin
+# bin
 dm2e-ws.iml
 .idea
 .project
