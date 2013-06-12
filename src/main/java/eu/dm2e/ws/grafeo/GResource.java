@@ -1,5 +1,7 @@
 package eu.dm2e.ws.grafeo;
 
+import java.net.URI;
+
 /**
  * This file was created within the DM2E project.
  * http://dm2e.eu
@@ -9,6 +11,7 @@ package eu.dm2e.ws.grafeo;
  */
 public interface GResource extends GValue {
     void rename(String uri);
+	void rename(URI newUri);
     String getUri();
 
     void set(String uri, GValue value);

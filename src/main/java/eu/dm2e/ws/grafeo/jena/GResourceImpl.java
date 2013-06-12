@@ -9,6 +9,7 @@ import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.GValue;
 import eu.dm2e.ws.grafeo.Grafeo;
 
+import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -52,6 +53,11 @@ public class GResourceImpl extends GValueImpl implements GResource {
     public void rename(String uri) {
         this.resource = ResourceUtils.renameResource(resource, uri);
         this.value = this.resource;
+    }
+    
+    @Override
+    public void rename(URI uri) {
+    	this.rename(uri.toString());
     }
 
     public Resource getResource() {
