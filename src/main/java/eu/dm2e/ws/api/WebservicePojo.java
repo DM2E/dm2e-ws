@@ -111,4 +111,6 @@ public class WebservicePojo extends AbstractPersistentPojo<WebservicePojo> {
 	public Set<ParameterPojo> getOutputParams() { return outputParams; }
 	public void setOutputParams(Set<ParameterPojo> outputParams) { this.outputParams = outputParams; }
 
+
+
 }

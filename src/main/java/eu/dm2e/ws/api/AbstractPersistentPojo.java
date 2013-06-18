@@ -1,15 +1,14 @@
 package eu.dm2e.ws.api;
 
-import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import com.sun.jersey.api.client.WebResource;
-
 import eu.dm2e.utils.PojoUtils;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.Client;
+
+import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
 	
@@ -86,6 +85,7 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
         Grafeo g = new GrafeoImpl();
         try {
 			g.load(this.getId(), expansionSteps);
+            log.fine("Triples loaded from URI " + this.getId() + ": " + g.getTurtle());
 		} catch (Exception e1) {
 			log.warning("Failed to initialize Pojo from URI: " + e1);
 			return;
@@ -133,5 +133,6 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
 //		String endPoint = Config.getString("dm2e.ws.sparql_endpoint_statements");
 //		this.publishToEndpoint(endPoint);
 //	}
-	
+
+
 }

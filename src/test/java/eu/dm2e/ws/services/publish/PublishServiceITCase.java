@@ -1,19 +1,6 @@
 package eu.dm2e.ws.services.publish;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.InputStream;
-import java.net.URI;
-import java.util.logging.Logger;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.sun.jersey.api.client.ClientResponse;
-
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
@@ -23,6 +10,15 @@ import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.model.JobStatus;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.InputStream;
+import java.net.URI;
+import java.util.logging.Logger;
+
+import static org.junit.Assert.*;
 
 /**
  * This file was created within the DM2E project.
@@ -60,6 +56,8 @@ public class PublishServiceITCase extends OmnomTestCase {
         assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/to-publish", "rdf:type", "omnom:Parameter"));
         assertTrue(g.containsStatementPattern(SERVICE_URI, "omnom:inputParam", SERVICE_URI + "/param/dataset-id"));
         assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/dataset-id", "rdf:type", "omnom:Parameter"));
+        assertTrue(g.containsStatementPattern(SERVICE_URI, "omnom:inputParam", SERVICE_URI + "/param/provider-id"));
+        assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/provider-id", "rdf:type", "omnom:Parameter"));
         assertTrue(g.containsStatementPattern(SERVICE_URI, "omnom:inputParam", SERVICE_URI + "/param/endpoint-select"));
         assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/endpoint-select", "rdf:type", "omnom:Parameter"));
         assertTrue(g.containsStatementPattern(SERVICE_URI, "omnom:inputParam", SERVICE_URI + "/param/endpoint-update"));
@@ -72,7 +70,7 @@ public class PublishServiceITCase extends OmnomTestCase {
 
 
     @Test
-    public void testPublish() {
+    public void testPublish1() {
 
         WebservicePojo ws = new WebservicePojo();
         ws.loadFromURI(SERVICE_URI);
@@ -85,12 +83,12 @@ public class PublishServiceITCase extends OmnomTestCase {
             config.setWebservice(ws);
             config.addParameterAssignment("to-publish", xmlUri);
             config.addParameterAssignment("dataset-id", "test-dataset");
-            config.addParameterAssignment("label", "Test-Dataset (from Integration Test)");
-            config.addParameterAssignment("comment", "This can safely be deleted.");
-            config.publishToService();
+            config.addParameterAssignment("provider-id", "dm2edev");
+            config.addParameterAssignment("label", "Test-Dataset (from PublishServiceITCase, Publish1)");
+            config.addParameterAssignment("comment", "This dataset can safely be deleted.");
             // config.addParameterAssignment("endpoint-update", "http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest/statements");
             // config.addParameterAssignment("endpoint-select", "http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest");
-//            config.publishToService();
+            config.publishToService();
 
             log.info("Configuration created for Test: " + config.getTurtle());
 
@@ -147,11 +145,11 @@ public class PublishServiceITCase extends OmnomTestCase {
 
 
             config.setWebservice(ws);
-            config.publishToService();
             config.addParameterAssignment("to-publish", xmlUri);
             config.addParameterAssignment("dataset-id", "test-dataset");
-            config.addParameterAssignment("label", "Test-Dataset (from Integration Test)");
-            config.addParameterAssignment("comment", "This can safely be deleted.");
+            config.addParameterAssignment("provider-id", "dm2edev");
+            config.addParameterAssignment("label", "Test-Dataset (from PublishServiceITCase, Publish2)");
+            config.addParameterAssignment("comment", "This dataset can safely be deleted.");
             // config.addParameterAssignment("endpoint-update", "http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest/statements");
             // config.addParameterAssignment("endpoint-select", "http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest");
             config.publishToService();

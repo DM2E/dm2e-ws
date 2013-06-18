@@ -1,25 +1,18 @@
 package eu.dm2e.ws.services;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+import eu.dm2e.ws.Config;
+import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.api.WebserviceConfigPojo;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.WebResource.Builder;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataMultiPart;
-
-import eu.dm2e.ws.Config;
-import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.api.FilePojo;
-import eu.dm2e.ws.api.JobPojo;
-import eu.dm2e.ws.api.WebserviceConfigPojo;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * TODO document
@@ -46,6 +39,7 @@ public abstract class AbstractTransformationService extends AbstractRDFService i
         /*
          * Resolve configURI to WebserviceConfigPojo
          */
+        log.info("Request to start the service: " + configURI);
         WebserviceConfigPojo wsConf = new WebserviceConfigPojo();
 		try {
 			wsConf.loadFromURI(configURI, 1);
@@ -124,6 +118,9 @@ public abstract class AbstractTransformationService extends AbstractRDFService i
         return this.startService(resp.getLocation().toString());
     }
     
+/*  TODO: NEVER USED. Kontantin, if not needed any more, please remove.
+
+
     protected String storeAsFile(String fileData, String mediaTypeStr) {
 		WebResource fileResource = client.resource(FILE_SERVICE_URI);
 	    jobPojo.trace("Building file service multipart envelope.");
@@ -169,6 +166,6 @@ public abstract class AbstractTransformationService extends AbstractRDFService i
 			jobPojo.fatal(e);
 		}
 		return fileLocation;
-    }
+    }*/
 
 }

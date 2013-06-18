@@ -31,6 +31,7 @@ public class PublishService extends AbstractTransformationService {
         WebservicePojo ws = getWebServicePojo();
         ws.addInputParameter("to-publish").setIsRequired(true);
         ws.addInputParameter("dataset-id").setIsRequired(true);
+        ws.addInputParameter("provider-id").setIsRequired(true);
         ws.addInputParameter("label").setIsRequired(true);
         ws.addInputParameter("comment");
         ws.addInputParameter("endpoint-update");
@@ -45,6 +46,7 @@ public class PublishService extends AbstractTransformationService {
 
             String input = wsConf.getParameterValueByName("to-publish");
             String dataset = wsConf.getParameterValueByName("dataset-id");
+            String provider = wsConf.getParameterValueByName("provider-id");
             String label = wsConf.getParameterValueByName("label");
             String comment = wsConf.getParameterValueByName("comment");
             String endpoint = wsConf.getParameterValueByName("endpoint-update");
@@ -61,7 +63,7 @@ public class PublishService extends AbstractTransformationService {
             jobPojo.setStarted();
 
             String datasetURI = dataset;
-            if (!dataset.startsWith("http")) datasetURI = Config.getString("dm2e.service.publish.graph_prefix") + dataset;
+            if (!dataset.startsWith("http")) datasetURI = Config.getString("dm2e.service.publish.graph_prefix") + provider + "/" + dataset;
 
             String versionedURI = datasetURI;
             if (!versionedURI.endsWith("/")) versionedURI = versionedURI + "/";

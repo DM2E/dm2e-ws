@@ -1,52 +1,46 @@
 package eu.dm2e.ws.services.xslt;
 
-import static org.grep4j.core.Grep4j.constantExpression;
-import static org.grep4j.core.Grep4j.grep;
-import static org.grep4j.core.fluent.Dictionary.on;
-import static org.grep4j.core.fluent.Dictionary.option;
-import static org.grep4j.core.fluent.Dictionary.with;
-import static org.grep4j.core.options.Option.filesMatching;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.net.URL;
-import java.nio.file.Files;
-
-import javax.ws.rs.Path;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
-
-import org.apache.commons.io.IOUtils;
-import org.grep4j.core.model.Profile;
-import org.grep4j.core.model.ProfileBuilder;
-import org.grep4j.core.result.GrepResult;
-import org.grep4j.core.result.GrepResults;
-
 import com.sun.jersey.api.client.ClientResponse;
-
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.services.AbstractTransformationService;
 import eu.dm2e.ws.services.Client;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import org.apache.commons.io.IOUtils;
+import org.grep4j.core.model.Profile;
+import org.grep4j.core.model.ProfileBuilder;
+import org.grep4j.core.result.GrepResult;
+import org.grep4j.core.result.GrepResults;
+
+import javax.ws.rs.Path;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.*;
+import java.net.URL;
+import java.nio.file.Files;
+
+import static org.grep4j.core.Grep4j.constantExpression;
+import static org.grep4j.core.Grep4j.grep;
+import static org.grep4j.core.fluent.Dictionary.*;
+import static org.grep4j.core.options.Option.filesMatching;
 
 @Path("/service/xslt-zip")
 public class XsltZipService extends AbstractTransformationService {
 	
 	public static final String XSLTZIP_IN_PARAM_NAME = "xsltZipInput";
 	public static final String XML_IN_PARAM_NAME = "xmlInput";
-	public static final String XML_OUT_PARAM_NAME = "xmlOutput";
+    public static final String XML_OUT_PARAM_NAME = "xmlOutput";
+    public static final String PROVIDER_ID = "provider-id";
+    public static final String DATASET_ID = "dataset-id";
+    public static final String PROVIDER_ID_PARAM = "provider-id-param";
+    public static final String DATASET_ID_PARAM = "dataset-id-param";
 
-	@Override
+    @Override
 	public WebservicePojo getWebServicePojo() {
 		WebservicePojo ws = super.getWebServicePojo();
 
@@ -60,7 +54,19 @@ public class XsltZipService extends AbstractTransformationService {
 		xmlInParam.setIsRequired(true);
 		xmlInParam.setParameterType("xsd:anyURI");
 
-		ParameterPojo xmlOutParam = ws.addOutputParameter(XML_OUT_PARAM_NAME);
+        ParameterPojo providerId = ws.addInputParameter(PROVIDER_ID);
+        providerId.setTitle("Provider ID");
+
+        ParameterPojo providerIdParam = ws.addInputParameter(PROVIDER_ID_PARAM);
+        providerIdParam.setTitle("Provider ID Parameter used in XSLT");
+
+        ParameterPojo datasetId = ws.addInputParameter(DATASET_ID);
+        datasetId.setTitle("Dataset ID");
+
+        ParameterPojo datasetIdParam = ws.addInputParameter(DATASET_ID_PARAM);
+        datasetIdParam.setTitle("Dataset ID Parameter used in XSLT");
+
+        ParameterPojo xmlOutParam = ws.addOutputParameter(XML_OUT_PARAM_NAME);
 		xmlOutParam.setTitle("XML output");
 		
 //		ParameterPojo fileServiceParam = ws.addInputParameter("fileServiceParam");
@@ -73,7 +79,7 @@ public class XsltZipService extends AbstractTransformationService {
 	public void run() {
 		log.warning("Starting to handle XSLT transformation job");
 		jobPojo.debug("Starting to handle XSLT transformation job");
-		String xsltZipUrl, xmlUrl;
+		String xsltZipUrl, xmlUrl, providerId, datasetId, providerIdParam, datasetIdParam;
 		try {
 			// TODO this should be refactored to a validation routine in the JobPojo
 			xsltZipUrl = jobPojo.getWebserviceConfig().getParameterValueByName(XSLTZIP_IN_PARAM_NAME);
@@ -86,7 +92,15 @@ public class XsltZipService extends AbstractTransformationService {
 				throw new NullPointerException("xsltUrl is null");
 			}
 			jobPojo.debug("XSL URL: " + xmlUrl);
-		} catch (Exception e) {
+            providerId = jobPojo.getWebserviceConfig().getParameterValueByName(PROVIDER_ID);
+            if (providerId==null) providerId = "PROVIDER_NOT_SET";
+            datasetId = jobPojo.getWebserviceConfig().getParameterValueByName(DATASET_ID);
+            if (datasetId==null) providerId = "DATASET_NOT_SET";
+            providerIdParam = jobPojo.getWebserviceConfig().getParameterValueByName(PROVIDER_ID_PARAM);
+            if (providerIdParam==null) providerIdParam = "DATAPROVIDER_ABB";
+            datasetIdParam = jobPojo.getWebserviceConfig().getParameterValueByName(DATASET_ID_PARAM);
+            if (datasetIdParam==null) datasetIdParam = "REPOSITORY_ABB";
+        } catch (Exception e) {
 			jobPojo.fatal("Parameter error: " + e);
 			jobPojo.setFailed();
 			return;
@@ -136,7 +150,9 @@ public class XsltZipService extends AbstractTransformationService {
 			StreamResult xslResult = new StreamResult(xslResultStrWriter);
 
 			StreamSource xmlSource = new StreamSource(new URL(xmlUrl).openStream());
-			transformer.transform(xmlSource, xslResult);
+            transformer.setParameter(datasetIdParam, datasetId);
+            transformer.setParameter(providerIdParam, providerId);
+            transformer.transform(xmlSource, xslResult);
 
 		} catch (Exception e) {
 			jobPojo.fatal("Error during XSLT transformation: " + e);

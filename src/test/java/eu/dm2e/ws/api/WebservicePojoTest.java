@@ -1,8 +1,8 @@
 package eu.dm2e.ws.api;
 
+import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.xslt.XsltService;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -50,9 +50,14 @@ public class WebservicePojoTest {
 		ws.getInputParams().add(xsltInParam);
 		ws.getOutputParams().add(xmlOutParam);
 		GrafeoImpl g = new GrafeoImpl();
-		g.getObjectMapper().addObject(ws);
-		log.info(g.getTurtle());
-	}
+        g.getObjectMapper().addObject(ws);
+        log.info("WS: " + g.getTurtle());
+        WebservicePojo ws2 = g.getObjectMapper().getObject(WebservicePojo.class,"http://data.dm2e.eu/data/services/xslt");
+        Grafeo g2 = new GrafeoImpl();
+        g2.getObjectMapper().addObject(ws2);
+        log.info("WS 2: " + g.getTurtle());
+        assert(g.getTurtle().equals(g2.getTurtle()));
+    }
 	
 	@Test
 	public void testRunXsltService() throws URISyntaxException {
@@ -75,5 +80,6 @@ public class WebservicePojoTest {
 		g.getObjectMapper().addObject(wsconf);
 		log.info(g.getTurtle());
 	}
+
 
 }

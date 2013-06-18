@@ -1,13 +1,6 @@
 package eu.dm2e.ws.api;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import eu.dm2e.ws.grafeo.annotations.Namespaces;
-import eu.dm2e.ws.grafeo.annotations.RDFClass;
-import eu.dm2e.ws.grafeo.annotations.RDFId;
-import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
-import eu.dm2e.ws.grafeo.annotations.RDFProperty;
+import eu.dm2e.ws.grafeo.annotations.*;
 
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/",
 	 "dc", "http://purl.org/dc/elements/1.1/",
@@ -27,7 +20,7 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 	
 	@RDFProperty("dct:format")
 	private String mediaType;
-	
+
 	@RDFProperty("dc:title")
 	private String originalName;
 	
