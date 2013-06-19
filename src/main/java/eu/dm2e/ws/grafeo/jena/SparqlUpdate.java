@@ -1,5 +1,6 @@
 package eu.dm2e.ws.grafeo.jena;
 
+import java.net.URI;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
@@ -7,6 +8,8 @@ import com.hp.hpl.jena.update.UpdateExecutionFactory;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateProcessor;
 import com.hp.hpl.jena.update.UpdateRequest;
+
+import eu.dm2e.ws.grafeo.Grafeo;
 
 public class SparqlUpdate {
 	
@@ -17,13 +20,20 @@ public class SparqlUpdate {
 	public static class Builder {
 		private String graph, endpoint, deleteClause, insertClause, whereClause;
 		
+		public Builder graph(URI s)     	{ this.graph = s.toString(); return this; }
 		public Builder graph(String s)  	{ this.graph = s; return this; }
+		
 		public Builder endpoint(String s) 	{ this.endpoint = s; return this; }
+		
 		public Builder delete(String s) 	{ this.deleteClause = s; return this; }
+		public Builder delete(Grafeo s) 	{ this.deleteClause = s.getNTriples(); return this; }
+		
 		public Builder insert(String s) 	{ this.insertClause = s; return this; }
+		public Builder insert(Grafeo s) 	{ this.insertClause = s.getNTriples(); return this; }
+		
 		public Builder where(String s) 		{ this.whereClause = s; return this; }
 		
-		public SparqlUpdate build() { return new SparqlUpdate(this); } 
+		public SparqlUpdate build() 		{ return new SparqlUpdate(this); } 
 	}
 
 	public SparqlUpdate(Builder builder) {
@@ -40,8 +50,11 @@ public class SparqlUpdate {
 		if (null != graph) 			sb.append(String.format("WITH <%s>", graph));
 		if (null != deleteClause)	sb.append(String.format(" DELETE { %s }", deleteClause));
 		if (null != insertClause) 	sb.append(String.format(" INSERT { %s }", insertClause));
+		
 		if (null != whereClause)	sb.append(String.format(" WHERE { %s }", whereClause));
-		else						sb.append(String.format(" WHERE { %s }", deleteClause));
+		else if (null != deleteClause)	sb.append(String.format(" WHERE { %s }", deleteClause));
+		else sb.append("WHERE {}");
+		
 		return sb.toString();
 	}
 	
