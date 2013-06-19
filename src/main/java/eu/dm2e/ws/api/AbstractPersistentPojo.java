@@ -2,7 +2,6 @@ package eu.dm2e.ws.api;
 
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import com.sun.jersey.api.client.WebResource;
 
@@ -15,15 +14,6 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
 	
 	protected Client client = new Client();
 	
-	public URI getIdAsURI() {
-		URI uri = null;
-		try {
-			uri = new URI(getId());
-		} catch (NullPointerException | URISyntaxException e) {
-			throw new RuntimeException("Id '" + getId() + "'cannot be casted to URI: " + e);
-		}
-		return uri;
-	}
 	
 	// TODO think harder whether this is necessary and how to do skolemnization properly
 	// TODO this should be a static method but it's impossible to determine the runtime static class
@@ -68,7 +58,7 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
 //		}
 //		return theThing;
 //	}
-	
+
 	public void loadFromURI(String id) {
 		this.loadFromURI(id, 0);
 	}
@@ -85,14 +75,20 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
 		this.setId(id);
         Grafeo g = new GrafeoImpl();
         try {
+        	log.info("Loading from " + this.getId());
 			g.load(this.getId(), expansionSteps);
+        	log.info("DONE Loading from " + this.getId());
 		} catch (Exception e1) {
 			log.warning("Failed to initialize Pojo from URI: " + e1);
 			return;
 		}
+        log.info("Instantiating " + this.getClass() + " Pojo from " + this.getId());
 		T theNewPojo = g.getObjectMapper().getObject(this.getClass(), this.getId());
+        log.info("DONE Instantiating " + this.getClass() + " Pojo from " + this.getId());
         try {
+        	log.info("Copying properties from Pojo " + this.getId());
             PojoUtils.copyProperties(this, theNewPojo);
+        	log.info("Copying properties from Pojo " + this.getId());
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("An exception occurred: " + e, e);
         }
@@ -101,13 +97,17 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
 	public String publishToService(WebResource wr) {
 		log.info("Publishing myself (pojo) to " + wr.getURI());
 		String loc = this.client.publishPojo(this, wr);
+		log.info("Done Publishing myself (pojo) to " + wr.getURI());
 		return loc;
 	}
 	public String publishToService(String serviceUri) {
 		return this.publishToService(client.resource(serviceUri));
 	}
 	public String publishToService() {
-		return this.publishToService(client.getConfigWebResource());
+		if (this.getId() == null) {
+			throw new RuntimeException("Must provide service URI to POST to.");
+		}
+		return this.publishToService(this.getId());
 	}
 
 //	public void publishToEndpoint(String endPoint, String graph) {
