@@ -18,6 +18,7 @@ import com.sun.jersey.api.client.WebResource;
 
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -100,15 +101,20 @@ public class ConfigServiceITCase extends OmnomTestCase{
 		
 	}
 	
-	@Test public void testData() {
-        ClientResponse response = webResource.post(ClientResponse.class, "[] <http://purl.org/dc/terms/creator> <http://localhost/kai>; <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://onto.dm2e.eu/omnom/WebServiceConfig> .");
+	@Test
+//	@Ignore("This is *not* a valid webserviceConfig because it omits a reference to the Webservice.")
+	public void testData() {
+        ClientResponse response = webResource.post(ClientResponse.class, "[] <http://purl.org/dc/terms/creator> <http://localhost/kai>; <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://onto.dm2e.eu/omnom/WebserviceConfig> ; <http://onto.dm2e.eu/omnom/webservice> <http://localhost:9998/service/xslt>.");
         Grafeo g = new GrafeoImpl();
-        g.readHeuristically(response.getEntity(String.class));
+        final String confRespStr = response.getEntity(String.class);
+        log.info(confRespStr);
+		g.readHeuristically(confRespStr);
         log.info(g.getTurtle());
         Grafeo g2 = new GrafeoImpl();
         // NOTE: dc:creator isn't in a WebserviceConfigPojo so it will *not* be stored
+        g2.addTriple(response.getLocation().toString(), NS.OMNOM.PROP_WEBSERVICE, g.resource("http://localhost:9998/service/xslt"));
         g2.addTriple(response.getLocation().toString(), "http://purl.org/dc/terms/creator", g.resource("http://localhost/kai"));
-        g2.addTriple(response.getLocation().toString(), "rdf:type", g.resource("omnom:WebServiceConfig"));
+        g2.addTriple(response.getLocation().toString(), "rdf:type", g.resource(NS.OMNOM.CLASS_WEBSERVICE_CONFIG));
         assert(g.isGraphEquivalent(g2));
         assertEquals(g2.getCanonicalNTriples(), g.getCanonicalNTriples());
 

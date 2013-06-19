@@ -15,6 +15,7 @@ import org.junit.Test;
 import com.sun.jersey.api.client.ClientResponse;
 
 import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
 import eu.dm2e.ws.api.AbstractJobPojo;
@@ -51,24 +52,24 @@ public class PublishServiceITCase extends OmnomTestCase {
     public void testDescription() {
 
         log.info(SERVICE_URI);
-        Grafeo g = new GrafeoImpl(client.getJerseyClient()
+        Grafeo g = new GrafeoImpl(client
                 .resource(SERVICE_URI)
                 .accept("text/turtle")
                 .get(InputStream.class));
-        log.info(g.getTurtle());
-        assertTrue(g.containsStatementPattern(SERVICE_URI, "rdf:type", "omnom:Webservice"));
-        assertTrue(g.containsStatementPattern(SERVICE_URI, "omnom:inputParam", SERVICE_URI + "/param/to-publish"));
-        assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/to-publish", "rdf:type", "omnom:Parameter"));
-        assertTrue(g.containsStatementPattern(SERVICE_URI, "omnom:inputParam", SERVICE_URI + "/param/dataset-id"));
-        assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/dataset-id", "rdf:type", "omnom:Parameter"));
-        assertTrue(g.containsStatementPattern(SERVICE_URI, "omnom:inputParam", SERVICE_URI + "/param/endpoint-select"));
-        assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/endpoint-select", "rdf:type", "omnom:Parameter"));
-        assertTrue(g.containsStatementPattern(SERVICE_URI, "omnom:inputParam", SERVICE_URI + "/param/endpoint-update"));
-        assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/endpoint-update", "rdf:type", "omnom:Parameter"));
-        assertTrue(g.containsStatementPattern(SERVICE_URI, "omnom:inputParam", SERVICE_URI + "/param/label"));
-        assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/label", "rdf:type", "omnom:Parameter"));
-        assertTrue(g.containsStatementPattern(SERVICE_URI, "omnom:inputParam", SERVICE_URI + "/param/comment"));
-        assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/comment", "rdf:type", "omnom:Parameter"));
+        log.info(g.getNTriples());
+        assertTrue(g.containsStatementPattern(SERVICE_URI, NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_WEBSERVICE));
+        assertTrue(g.containsStatementPattern(SERVICE_URI, NS.OMNOM.PROP_INPUT_PARAM, SERVICE_URI + "/param/to-publish"));
+        assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/to-publish", NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_PARAMETER));
+        assertTrue(g.containsStatementPattern(SERVICE_URI, NS.OMNOM.PROP_INPUT_PARAM, SERVICE_URI + "/param/dataset-id"));
+        assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/dataset-id", NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_PARAMETER));
+        assertTrue(g.containsStatementPattern(SERVICE_URI, NS.OMNOM.PROP_INPUT_PARAM, SERVICE_URI + "/param/endpoint-select"));
+        assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/endpoint-select", NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_PARAMETER));
+        assertTrue(g.containsStatementPattern(SERVICE_URI, NS.OMNOM.PROP_INPUT_PARAM, SERVICE_URI + "/param/endpoint-update"));
+        assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/endpoint-update", NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_PARAMETER));
+        assertTrue(g.containsStatementPattern(SERVICE_URI, NS.OMNOM.PROP_INPUT_PARAM, SERVICE_URI + "/param/label"));
+        assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/label", NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_PARAMETER));
+        assertTrue(g.containsStatementPattern(SERVICE_URI, NS.OMNOM.PROP_INPUT_PARAM, SERVICE_URI + "/param/comment"));
+        assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/comment", NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_PARAMETER));
     }
 
 
@@ -84,11 +85,11 @@ public class PublishServiceITCase extends OmnomTestCase {
 
 
             config.setWebservice(ws);
-            config.addParameterAssignment("to-publish", xmlUri);
-            config.addParameterAssignment("dataset-id", "test-dataset");
-            config.addParameterAssignment("label", "Test-Dataset (from Integration Test)");
-            config.addParameterAssignment("comment", "This can safely be deleted.");
-            config.publishToService();
+            config.addParameterAssignment(PublishService.PARAM_TO_PUBLISH, xmlUri);
+            config.addParameterAssignment(PublishService.PARAM_DATASET_ID, "test-dataset");
+            config.addParameterAssignment(PublishService.PARAM_LABEL, "Test-Dataset (from Integration Test)");
+            config.addParameterAssignment(PublishService.PARAM_COMMENT, "This can safely be deleted.");
+            config.publishToService(client.getConfigWebResource());
             // config.addParameterAssignment("endpoint-update", "http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest/statements");
             // config.addParameterAssignment("endpoint-select", "http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest");
 //            config.publishToService();
@@ -100,7 +101,10 @@ public class PublishServiceITCase extends OmnomTestCase {
                     .type(DM2E_MediaType.TEXT_PLAIN)
                     .put(ClientResponse.class, config.getId());
             log.info("JOB STARTED WITH RESPONSE: " + response.getStatus() + " / Location: " + response.getLocation() + " / Content: " + response.getEntity(String.class));
+//            if (response.getStatus() > 299) {
+//            }
             URI joburi = response.getLocation();
+            log.severe("Job URI:" + joburi);
             
            /**
              * WAIT FOR JOB TO BE FINISHED
@@ -148,16 +152,15 @@ public class PublishServiceITCase extends OmnomTestCase {
 
 
             config.setWebservice(ws);
-            config.publishToService();
-            config.addParameterAssignment("to-publish", xmlUri);
-            config.addParameterAssignment("dataset-id", "test-dataset");
-            config.addParameterAssignment("label", "Test-Dataset (from Integration Test)");
-            config.addParameterAssignment("comment", "This can safely be deleted.");
+            config.addParameterAssignment(PublishService.PARAM_TO_PUBLISH, xmlUri);
+            config.addParameterAssignment(PublishService.PARAM_DATASET_ID, "test-dataset");
+            config.addParameterAssignment(PublishService.PARAM_LABEL, "Test-Dataset (from Integration Test)");
+            config.addParameterAssignment(PublishService.PARAM_COMMENT, "This can safely be deleted.");
             // config.addParameterAssignment("endpoint-update", "http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest/statements");
             // config.addParameterAssignment("endpoint-select", "http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest");
-            config.publishToService();
-
             log.info("Configuration created for Test: " + config.getTurtle());
+            config.publishToService(client.getConfigWebResource());
+
 
             ClientResponse response = client
                     .resource(SERVICE_URI)

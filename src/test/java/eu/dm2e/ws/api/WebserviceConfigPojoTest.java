@@ -2,7 +2,6 @@ package eu.dm2e.ws.api;
 
 import java.util.logging.Logger;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -14,7 +13,7 @@ public class WebserviceConfigPojoTest {
 	
 	
 	@Test 
-	public void testGetParameterAssignmentForParam() {
+	public void testGetParameterAssignmentForParam() throws Exception {
 		WebservicePojo wsDesc = new WebservicePojo();
 		wsDesc.setId("http://quux.bork/ws1/");
 		ParameterPojo fooParam = wsDesc.addInputParameter("foo");
@@ -24,7 +23,7 @@ public class WebserviceConfigPojoTest {
 //		wsConf.setId("http://quux.bork/config/1");
 		wsConf.setWebservice(wsDesc);
 		wsConf.addParameterAssignment("foo", "bar");
-		wsConf.validateConfig();
+		wsConf.validate();
 	}
 
 //	@Ignore

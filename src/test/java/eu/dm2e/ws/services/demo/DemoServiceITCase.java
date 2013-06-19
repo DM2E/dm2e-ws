@@ -33,6 +33,7 @@ import static org.junit.matchers.JUnitMatchers.containsString;
  *
  * Author: Kai Eckert, Konstantin Baierer
  */
+@SuppressWarnings("unused")
 public class DemoServiceITCase extends OmnomTestCase {
 
     Logger log = Logger.getLogger(getClass().getName());
@@ -49,10 +50,15 @@ public class DemoServiceITCase extends OmnomTestCase {
     public void testDescription() {
     	
     	log.info(SERVICE_URI);
-    	Grafeo g = new GrafeoImpl(client.getJerseyClient()
+    	ClientResponse resp = client.getJerseyClient()
     			.resource(SERVICE_URI)
     			.accept("text/turtle")
-    			.get(InputStream.class));
+    			.get(ClientResponse.class);
+    	String respStr = resp.getEntity(String.class);
+    	log.info(respStr);
+		assertEquals(200, resp.getStatus());
+    	Grafeo g = new GrafeoImpl();
+    	g.readHeuristically(respStr);
     	log.info(g.getTurtle());
     	assertTrue(g.containsStatementPattern(SERVICE_URI, "rdf:type", "omnom:Webservice"));
     	assertTrue(g.containsStatementPattern(SERVICE_URI, "omnom:inputParam", SERVICE_URI + "/param/sleeptime"));
@@ -67,6 +73,8 @@ public class DemoServiceITCase extends OmnomTestCase {
     				.getConfigWebResource()
     				.type("text/turtle")
     				.post(ClientResponse.class, configFile.get(OmnomTestResources.DEMO_SERVICE_WORKING));
+    		String confRespStr = confResp.getEntity(String.class);
+    		log.info("testPut: " + confRespStr);
     		assertEquals(201, confResp.getStatus());
     		log.info("POST finished successfully.");
     		URI confLoc = confResp.getLocation();
@@ -96,7 +104,7 @@ public class DemoServiceITCase extends OmnomTestCase {
 	    			.type("text/turtle")
 	    			.post(ClientResponse.class, configFile.get(OmnomTestResources.DEMO_SERVICE_ILLEGAL_PARAMETER));
 	    	String confRespStr = confResp.getEntity(String.class);
-	    	log.info(confRespStr);
+	    	log.info("testPostIllegal: " + confRespStr);
 	    	assertEquals(400, confResp.getStatus());
 	    	assertThat(confRespStr, containsString(ErrorMsg.ILLEGAL_PARAMETER_VALUE.toString()));
     	}

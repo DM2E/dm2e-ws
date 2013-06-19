@@ -19,6 +19,7 @@ import com.sun.jersey.api.client.WebResource;
 
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
 import eu.dm2e.ws.api.AbstractJobPojo;
@@ -26,6 +27,7 @@ import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.ParameterAssignmentPojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
 import eu.dm2e.ws.services.Client;
 import eu.dm2e.ws.services.demo.DemoService;
 
@@ -56,15 +58,21 @@ public class JobServiceITCase extends OmnomTestCase {
 	public void testGetWebServicePojo() {
 		ClientResponse resp = webResource.get(ClientResponse.class);
 		Grafeo g = new GrafeoImpl(resp.getEntityInputStream());
-		assertEquals(2, g.size());
+		log.info(g.getNTriples());
+		GrafeoAssert.sizeEquals(g, 2);
 	}
 
 	@Test
 	public void testGetJob() {
 		WebResource wr = client.getJerseyClient().resource(globalJob);
 		ClientResponse resp = wr.get(ClientResponse.class);
-		GrafeoImpl g = new GrafeoImpl(resp.getEntityInputStream());
-		assertTrue(g.containsStatementPattern(globalJob.toString(), "omnom:status", g.literal("NOT_STARTED")));
+		Grafeo g = new GrafeoImpl(resp.getEntityInputStream());
+		// TODO wtf? this breaks randomly, returning no results when running the full test suite but not when running just this test case... WTF?
+		try {
+			GrafeoAssert.containsLiteral(g, globalJob, NS.OMNOM.PROP_JOB_STATUS, "NOT_STARTED");
+		} catch (Throwable e) {
+			throw new RuntimeException(g.getTurtle() + e);
+		}
 	}
 
 	@Test
@@ -84,7 +92,7 @@ public class JobServiceITCase extends OmnomTestCase {
 	public void testUpdateJobStatus() throws URISyntaxException {
 		WebResource wr = client.getJerseyClient().resource(globalJob).path("status");
 		{
-			String newStatus = "STARTED";
+//			String newStatus = "STARTED";
 //			ClientResponse resp1 = wr.put(ClientResponse.class, newStatus);
 //			log.info("Status response: " + resp1);
 //			assertEquals(201, resp1.getStatus());
@@ -119,7 +127,7 @@ public class JobServiceITCase extends OmnomTestCase {
 		URI logLoc = resp.getLocation();
 		
 		GrafeoImpl g = new GrafeoImpl(globalJob);
-		assertTrue(g.containsStatementPattern(logLoc.toString(), "omnom:hasLogMessage", g.literal("I'ma log message in RDF")));
+		GrafeoAssert.containsLiteral(g, logLoc, "omnom:hasLogMessage", "I'ma log message in RDF");
 		
 		ClientResponse respBad = client.getJerseyClient()
 				.resource(globalJob)
@@ -143,7 +151,7 @@ public class JobServiceITCase extends OmnomTestCase {
 		URI logLoc = resp.getLocation();
 		
 		GrafeoImpl g = new GrafeoImpl(globalJob);
-		assertTrue(g.containsStatementPattern(logLoc.toString(), "omnom:hasLogMessage", g.literal("FOO BAR")));
+		GrafeoAssert.containsLiteral(g, logLoc, "omnom:hasLogMessage", "FOO BAR");
 	}
 	@Test
 	public void testAddLogEntryAsTextAndParse() throws URISyntaxException {
@@ -162,10 +170,10 @@ public class JobServiceITCase extends OmnomTestCase {
 			assertEquals(201, logResp.getStatus());
 			URI logLoc = logResp.getLocation();
 			GrafeoImpl g = new GrafeoImpl(jobLoc);
-			assertTrue(g.containsStatementPattern(jobLoc.toString(), "omnom:hasLogEntry", logLoc.toString()));
+			GrafeoAssert.containsResource(g, jobLoc, NS.OMNOM.PROP_LOG_ENTRY, logLoc);
 			log.info(g.getTurtle());
-			assertTrue(g.containsStatementPattern(logLoc.toString(), "omnom:hasLogMessage", g.literal("FOO")));
-			assertTrue(g.containsStatementPattern(logLoc.toString(), "omnom:hasLogLevel", g.literal(level)));
+			GrafeoAssert.containsLiteral(g, logLoc, NS.OMNOM.PROP_LOG_MESSAGE, "FOO");
+			GrafeoAssert.containsLiteral(g, logLoc, NS.OMNOM.PROP_LOG_LEVEL, level);
 		}
 	}
 
@@ -190,9 +198,8 @@ public class JobServiceITCase extends OmnomTestCase {
 		}
 		{
 			GrafeoImpl g = new GrafeoImpl(jobLoc);
-			assertEquals("There should be 10 messages total",
-					10,
-					g.listResourceStatements(jobLoc.toString(), "omnom:hasLogEntry", null).size());
+			log.info("There should be 10 messages total");
+			GrafeoAssert.numberOfResourceStatements(g, 10, jobLoc, "omnom:hasLogEntry", null);
 		}
 		{
 			 InputStream logNT = client.getJerseyClient()
@@ -202,9 +209,8 @@ public class JobServiceITCase extends OmnomTestCase {
 					.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
 					.get(InputStream.class);
 			GrafeoImpl g = new GrafeoImpl(logNT);
-			assertEquals("6 of them are larger than INFO.",
-					6,
-					g.listResourceStatements(null, "rdf:type", "omnom:LogEntry").size());
+//			assertEquals("6 of them are larger than INFO.",
+			GrafeoAssert.numberOfResourceStatements(g, 6, null, "rdf:type", "omnom:LogEntry");
 		}
 		{
 			 InputStream logNT = client.getJerseyClient()
@@ -215,9 +221,8 @@ public class JobServiceITCase extends OmnomTestCase {
 					.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
 					.get(InputStream.class);
 			GrafeoImpl g = new GrafeoImpl(logNT);
-			assertEquals("4 of them are between INFO and WARN",
-					4,
-					g.listResourceStatements(null, "rdf:type", "omnom:LogEntry").size());
+			log.info("4 of them are between INFO and WARN");
+			GrafeoAssert.numberOfResourceStatements(g, 4, null, "rdf:type", "omnom:LogEntry");
 		}
 		{
 			 InputStream logNT = client.getJerseyClient()
@@ -227,9 +232,8 @@ public class JobServiceITCase extends OmnomTestCase {
 					.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
 					.get(InputStream.class);
 			GrafeoImpl g = new GrafeoImpl(logNT);
-			assertEquals("4 of them are smaller than INFO.",
-					4,
-					g.listResourceStatements(null, "rdf:type", "omnom:LogEntry").size());
+			log.info("4 of them are smaller than INFO.");
+			GrafeoAssert.numberOfResourceStatements(g, 4, null, "rdf:type", "omnom:LogEntry");
 		}
 	}
 
@@ -286,7 +290,7 @@ public class JobServiceITCase extends OmnomTestCase {
 		job.publishToService();
 		{
 			job.setFailed();
-			String getJobNT = client.resource(job.getId()).get(String.class);
+			String getJobNT = client.resource(job.getId()).accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES).get(String.class);
 			GrafeoImpl getjobGrafeo = new GrafeoImpl(getJobNT, true);
 			log.info(getjobGrafeo.getTurtle());
 			

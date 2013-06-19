@@ -22,6 +22,7 @@ import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
 public class FileServiceITCase extends OmnomTestCase {
 	
+	@SuppressWarnings("unused")
 	private String SERVICE_URI;
 
     @Before
