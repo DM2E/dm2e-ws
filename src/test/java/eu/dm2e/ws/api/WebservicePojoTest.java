@@ -1,13 +1,12 @@
 package eu.dm2e.ws.api;
 
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
-import eu.dm2e.ws.services.xslt.XsltService;
+import java.util.logging.Logger;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import java.net.URISyntaxException;
-import java.util.logging.Logger;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.services.xslt.XsltService;
 
 public class WebservicePojoTest {
 	
@@ -21,27 +20,21 @@ public class WebservicePojoTest {
 	@Before
 	public void setUp() throws Exception {
 		
-		String serviceUri = "http://data.dm2e.eu/data/services/xslt";
+		String serviceUri = "http://localhost:9998/service/xslt";
 		
 		ws = new WebservicePojo();
 		ws.setId(serviceUri);
 		
-		xsltInParam = new ParameterPojo();
+		xsltInParam = ws.addInputParameter(XsltService.PARAM_XSLT_IN);
 		xsltInParam.setTitle("XSLT input");
 		xsltInParam.setIsRequired(true);
-		xsltInParam.setWebservice(ws);
-		xsltInParam.setId(serviceUri + "/xsltInParam");
 		
-		xmlInParam = new ParameterPojo();
+		xmlInParam = ws.addInputParameter(XsltService.PARAM_XML_IN);
 		xmlInParam.setTitle("XML input");
 		xmlInParam.setIsRequired(true); 
-		xmlInParam.setWebservice(ws);
-		xmlInParam.setId(serviceUri + "/xmlInParam");
 		
-		xmlOutParam = new ParameterPojo();
+		xmlOutParam = ws.addInputParameter(XsltService.PARAM_XML_OUT);
 		xmlOutParam.setTitle("XML output");
-		xmlOutParam.setWebservice(ws);
-		xmlOutParam.setId(serviceUri + "/xmlOutParam");
 	}
 
 	@Test
@@ -55,25 +48,27 @@ public class WebservicePojoTest {
 	}
 	
 	@Test
-	public void testRunXsltService() throws URISyntaxException {
+	public void testRunXsltService() throws Exception {
 		WebservicePojo ws = new XsltService().getWebServicePojo();
 		WebserviceConfigPojo wsconf = new WebserviceConfigPojo();
 		GrafeoImpl g = new GrafeoImpl();
 		
-		ParameterAssignmentPojo ass1 = new ParameterAssignmentPojo();
-		ass1.setForParam(xmlInParam);
-		ass1.setParameterValue("http://141.20.126.155/api/file/50c73992e18a91933e00001a/data");
-		
-		ParameterAssignmentPojo ass2 = new ParameterAssignmentPojo();
-		ass2.setForParam(xsltInParam);
-		ass2.setParameterValue("http://141.20.126.155/api/file/50c7266ee18a91933e000003/data");
+//		ParameterAssignmentPojo ass1 = new ParameterAssignmentPojo();
+//		ass1.setForParam(xmlInParam);
+//		ass1.setParameterValue("http://141.20.126.155/api/file/50c73992e18a91933e00001a/data");
+//		
+//		ParameterAssignmentPojo ass2 = new ParameterAssignmentPojo();
+//		ass2.setForParam(xsltInParam);
+//		ass2.setParameterValue("http://141.20.126.155/api/file/50c7266ee18a91933e000003/data");
 		
 		wsconf.setWebservice(ws);
-		wsconf.addParameterAssignment(ass1);
-		wsconf.addParameterAssignment(ass2);
-		
+		wsconf.addParameterAssignment(xmlInParam.getId(), "http://141.20.126.155/api/file/50c73992e18a91933e00001a/data");
+		wsconf.addParameterAssignment(xsltInParam.getId(), "http://141.20.126.155/api/file/50c7266ee18a91933e000003/data");
+		log.info("" + wsconf.getParameterAssignments());
 		g.getObjectMapper().addObject(wsconf);
 		log.info(g.getTurtle());
+		wsconf.validate();
+		
 	}
 
 }
