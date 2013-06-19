@@ -19,6 +19,7 @@ import javax.ws.rs.core.UriInfo;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -42,7 +43,7 @@ public class ConfigService extends AbstractRDFService {
         log.info("Configuration requested: " + uriStr);
         Grafeo g = new GrafeoImpl();
         try {
-	        g.readFromEndpoint(NS.ENDPOINT, uriStr);
+	        g.readFromEndpoint(NS.ENDPOINT_SELECT, uriStr);
         } catch (RuntimeException e) {
         	return throwServiceError(uriStr, ErrorMsg.NOT_FOUND, 404);
         }
@@ -66,7 +67,7 @@ public class ConfigService extends AbstractRDFService {
     @Path("list")
     public Response getConfig(@Context UriInfo uriInfo) {
         Grafeo g = new GrafeoImpl();
-        g.readTriplesFromEndpoint(NS.ENDPOINT, null, "rdf:type", g.resource("http://example.org/classes/Configuration"));
+        g.readTriplesFromEndpoint(NS.ENDPOINT_SELECT, null, NS.RDF.PROP_TYPE, g.resource("http://example.org/classes/Configuration"));
         return getResponse(g);
     }
 
@@ -84,16 +85,15 @@ public class ConfigService extends AbstractRDFService {
         	return throwServiceError(ErrorMsg.BAD_RDF, t);
         }
         log.info("Looking for top blank node.");
-        GResource res = g.findTopBlank("omnom:WebServiceConfig");
+        GResource res = g.findTopBlank(NS.OMNOM.CLASS_WEBSERVICE_CONFIG);
         if (null == res)  {
         	res = g.resource(uri);
         }
         else {
         	res.rename(uri.toString());
         }
-//        if (g.listAnonStatements(null, "omnom:assignment").size() > 0) {
         log.warning("Skolemnizing ...");
-        g.skolemnizeSequential(uri.toString(), "omnom:assignment", "assignment");
+        g.skolemnizeSequential(uri.toString(), NS.OMNOM.PROP_ASSIGNMENT, "assignment");
         log.warning("DONE Skolemnizing ...");
 //        }
 //        WebserviceConfigPojo pojo = g.getObjectMapper().getObject(WebserviceConfigPojo.class, uri);
@@ -130,16 +130,17 @@ public class ConfigService extends AbstractRDFService {
         	return throwServiceError(ErrorMsg.BAD_RDF, t);
         }
         log.fine("Parsed config RDF.");
-        GResource res = g.findTopBlank("omnom:WebServiceConfig");
+        log.info(NS.OMNOM.CLASS_WEBSERVICE_CONFIG);
+        GResource res = g.findTopBlank(NS.OMNOM.CLASS_WEBSERVICE_CONFIG);
         if (null == res)  {
         	return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE + ": " + g.getTurtle());
         }
         res.rename(uriStr);
         log.info("Renamed top blank node.");
-//        if (g.listAnonStatements(null, "omnom:assignment").size() > 0) {
-        	g.skolemnizeSequential(uriStr, "omnom:assignment", "assignment");
+        	g.skolemnizeSequential(uriStr, NS.OMNOM.PROP_ASSIGNMENT, "assignment");
 //        }
         log.info("Skolemnized assignments");
+        
 //        WebserviceConfigPojo pojo = g.getObjectMapper().getObject(WebserviceConfigPojo.class, uriStr);
 //        if (null == pojo) {
 //        	return throwServiceError(ErrorMsg.NOT_FOUND, 404);
@@ -154,6 +155,23 @@ public class ConfigService extends AbstractRDFService {
         log.info("Written data to endpoint.");
         return Response.created(uri).entity(getResponseEntity(g)).build();
     }
+
+	/**
+	 * @param g
+	 * @param res
+	 */
+	@Path("{id}/validate")
+	public Response getValidation() {
+		log.info("Validating");
+        WebserviceConfigPojo confPojo = new WebserviceConfigPojo();
+		confPojo.loadFromURI(getRequestUriWithoutQuery());
+        try {
+			confPojo.validate();
+		} catch (Exception e) {
+			return throwServiceError(e);
+		}
+        return Response.ok().build();
+	}
 
     
 
