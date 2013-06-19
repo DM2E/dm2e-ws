@@ -19,6 +19,7 @@ import com.sun.jersey.multipart.FormDataMultiPart;
 
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.api.AbstractPersistentPojo;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.SerializablePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -61,7 +62,7 @@ public class Client {
 				.post(ClientResponse.class);	
     }
     
-    public String publishPojo(SerializablePojo pojo, WebResource configWR) {
+    public String publishPojo(AbstractPersistentPojo pojo, WebResource configWR) {
 		ClientResponse resp;
 		String method = "POST";
 		if (null == pojo.getId()) {
@@ -90,65 +91,28 @@ public class Client {
 					);
 		}
 		if (null == resp.getLocation()) {
-			throw new RuntimeException(configWR.toString() +  " did not return a location. Body was " + resp.getEntity(String.class));
+			throw new RuntimeException(method +"ing " + configWR.toString() +  " did not return a location. Body was " + resp.getEntity(String.class));
 		}
 		pojo.setId(resp.getLocation().toString());
+		pojo.loadFromURI(pojo.getId());
 		return resp.getLocation().toString();
     }
-    public String publishPojo(SerializablePojo pojo, String serviceURI) {
-    	return this.publishPojo(pojo, this.resource(serviceURI));
-    }
-    public String publishPojoToJobService(SerializablePojo pojo) {
-    	return this.publishPojo(pojo, this.getJobWebResource());
-    }
-    public String publishPojoToConfigService(SerializablePojo pojo) {
-    	return this.publishPojo(pojo, this.getConfigWebResource());
-    }
+    public String publishPojo(AbstractPersistentPojo pojo, String serviceURI) { return this.publishPojo(pojo, this.resource(serviceURI)); }
+    public String publishPojoToJobService(AbstractPersistentPojo pojo) { return this.publishPojo(pojo, this.getJobWebResource()); }
+    public String publishPojoToConfigService(AbstractPersistentPojo pojo) { return this.publishPojo(pojo, this.getConfigWebResource()); }
     
-    public String publishFile(String file) {
-    	return this.publishFile(file, (String)null);
-    }
-    public String publishFile(String is, Grafeo metadata) {
-		return this.publishFile(is, metadata.getNTriples());
-    }
-    public String publishFile(String is, FilePojo metadata) {
-		return this.publishFile(is, metadata.getNTriples());
-    }
-    
-    public String publishFile(InputStream is) throws IOException {
-		return this.publishFile(IOUtils.toString(is));
-    }
-    public String publishFile(InputStream is, String metadata) throws IOException {
-		return this.publishFile(IOUtils.toString(is), metadata);
-    }
-    public String publishFile(InputStream is, Grafeo metadata) throws IOException {
-		return this.publishFile(IOUtils.toString(is), metadata.getNTriples());
-    }
-    public String publishFile(InputStream is, FilePojo metadata) throws IOException {
-		return this.publishFile(IOUtils.toString(is), metadata.getNTriples());
-    }
-    
-    public String publishFile(File file) {
-    	FormDataMultiPart fdmp = createFileFormDataMultiPart(null, file);
-    	return this.publishFile(fdmp);
-    }
-    public String publishFile(File file, String metadata) {
-    	FormDataMultiPart fdmp = createFileFormDataMultiPart(metadata, file);
-    	return this.publishFile(fdmp);
-    }
-    public String publishFile(File file, Grafeo metadata) {
-    	FormDataMultiPart fdmp = createFileFormDataMultiPart(metadata.getNTriples(), file);
-    	return this.publishFile(fdmp);
-    }
-    public String publishFile(File file, FilePojo metadata) throws IOException {
-    	FileInputStream fis = new FileInputStream(file);
-		return this.publishFile(IOUtils.toString(fis), metadata.getNTriples());
-    }
-    
-    public String publishFile(String file, String metadata) {
-    	FormDataMultiPart fdmp = createFileFormDataMultiPart(metadata, file);
-    	return this.publishFile(fdmp);
-    }
+    public String publishFile(String file) { return this.publishFile(file, (String)null); }
+    public String publishFile(String is, Grafeo metadata) { return this.publishFile(is, metadata.getNTriples()); }
+    public String publishFile(String is, FilePojo metadata) { return this.publishFile(is, metadata.getNTriples()); }
+    public String publishFile(InputStream is) throws IOException { return this.publishFile(IOUtils.toString(is)); }
+    public String publishFile(InputStream is, String metadata) throws IOException { return this.publishFile(IOUtils.toString(is), metadata); }
+    public String publishFile(InputStream is, Grafeo metadata) throws IOException { return this.publishFile(IOUtils.toString(is), metadata.getNTriples()); }
+    public String publishFile(InputStream is, FilePojo metadata) throws IOException { return this.publishFile(IOUtils.toString(is), metadata.getNTriples()); }
+    public String publishFile(File file) { FormDataMultiPart fdmp = createFileFormDataMultiPart(null, file); return this.publishFile(fdmp); }
+    public String publishFile(File file, String metadata) { FormDataMultiPart fdmp = createFileFormDataMultiPart(metadata, file); return this.publishFile(fdmp); }
+    public String publishFile(File file, Grafeo metadata) { FormDataMultiPart fdmp = createFileFormDataMultiPart(metadata.getNTriples(), file); return this.publishFile(fdmp); }
+    public String publishFile(File file, FilePojo metadata) throws IOException { FileInputStream fis = new FileInputStream(file); return this.publishFile(IOUtils.toString(fis), metadata.getNTriples()); }
+    public String publishFile(String file, String metadata) { FormDataMultiPart fdmp = createFileFormDataMultiPart(metadata, file); return this.publishFile(fdmp); }
     public String publishFile(FormDataMultiPart fdmp) {
         ClientResponse resp = getFileWebResource()
                 .type(MediaType.MULTIPART_FORM_DATA)
@@ -209,15 +173,10 @@ public class Client {
 		return createFileFormDataMultiPart(meta.getNTriples(), content);
 	}
     
-    public WebResource getConfigWebResource() {
-    	return this.resource(Config.getString("dm2e.service.config.base_uri"));
-    }
-    public WebResource getFileWebResource() {
-    	return this.resource(Config.getString("dm2e.service.file.base_uri"));
-    }
-    public WebResource getJobWebResource() {
-    	return this.resource(Config.getString("dm2e.service.job.base_uri"));
-    }
+    public WebResource getConfigWebResource() { return this.resource(Config.getString("dm2e.service.config.base_uri")); }
+    public WebResource getFileWebResource() { return this.resource(Config.getString("dm2e.service.file.base_uri")); }
+    public WebResource getJobWebResource() { return this.resource(Config.getString("dm2e.service.job.base_uri")); }
+    public WebResource getWorkflowWebResource() { return this.resource(Config.getString("dm2e.service.workflow.base_uri")); }
     
     public WebResource resource(String URI) {
     	return this.getJerseyClient().resource(URI);
