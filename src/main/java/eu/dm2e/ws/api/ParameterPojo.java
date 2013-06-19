@@ -1,9 +1,9 @@
 package eu.dm2e.ws.api;
 
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
-import eu.dm2e.ws.grafeo.annotations.RDFId;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
@@ -14,33 +14,13 @@ import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
  *
  * Author: Kai Eckert, Konstantin Baierer
  */
-@Namespaces({"omnom", "http://onto.dm2e.eu/omnom/",
-			 "skos", "http://www.w3.org/2004/02/skos/core#",
-			 "dc", "http://purl.org/dc/elements/1.1/"})
-@RDFClass("omnom:Parameter")
-public class ParameterPojo {
+@Namespaces({"omnom", NS.OMNOM.BASE, 
+			 "skos", NS.SKOS.BASE,
+			 "dc", NS.DC.BASE
+			 })
+@RDFClass(NS.OMNOM.CLASS_PARAMETER)
+public class ParameterPojo extends SerializablePojo<ParameterPojo>{
 	
-    @RDFId
-    private String id;
-
-    @RDFProperty("dc:title")
-    private String title;
-    
-    @RDFProperty("skos:label")
-    private String label;
-    
-    @RDFProperty("omnom:isRequired")
-    private boolean isRequired;
-	
-//	@RDFProperty("omnom:parameterValue")
-//	private String parameterValue;
-//	
-	@RDFProperty("omnom:parameterType")
-	private String parameterType;
-
-	@RDFProperty("omnom:webservice")
-    private WebservicePojo webservice;
-    
 	/******************
 	 * CONSTRUCTORS
 	 *****************/
@@ -66,13 +46,23 @@ public class ParameterPojo {
         return pa;
     }
     
+    public boolean matchesParameterName(String needle) {
+    	if (null == needle || "".equals(needle)) return false;
+		return (
+				(this.hasId() && this.getId().equals(needle))
+			||
+				(this.hasId() && this.getId().matches(".*" + needle + "$"))
+			||
+				(this.hasLabel() && this.getLabel().equals(needle))
+			);
+    }
+    
     public void validateParameterInput(String input) throws NumberFormatException {
     	if (null == getParameterType()) {
     		return;
     	}
-    	GrafeoImpl g = new GrafeoImpl();
-    	String type = g.shorten(this.getParameterType());
-    	if (type.equals("xsd:int")) {
+    	String type = this.getParameterType();
+    	if (type.equals(NS.XSD.INT)) {
 			try {
 				Integer.parseInt(input);
 			} catch (NumberFormatException e) {
@@ -80,34 +70,37 @@ public class ParameterPojo {
 			}
     	}
     }
-	
+    
 	/******************
 	 * GETTERS/SETTERS
 	 *****************/
 
+	@RDFProperty(NS.OMNOM.PROP_WEBSERVICE)
+    private WebservicePojo webservice;
 	public WebservicePojo getWebservice() { return webservice; }
     public void setWebservice(WebservicePojo webservice) { this.webservice = webservice; }
-
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-
+    
+	@RDFProperty(NS.OMNOM.PROP_WORKFLOW)
+    private WorkflowPojo workflow;
+	public WorkflowPojo getWorkflow() { return workflow; }
+	public void setWorkflow(WorkflowPojo workflow) { this.workflow = workflow; }
+    
+    @RDFProperty(NS.DC.PROP_TITLE)
+    private String title;
     public String getTitle() { return title; }
 	public void setTitle(String title) { this.title = title; }
 
-    public String getLabel() { return label; }
-	public void setLabel(String label) { this.title = label; }
-
+    @RDFProperty(NS.OMNOM.PROP_IS_REQUIRED)
+    private boolean isRequired;
 	public boolean getIsRequired() { return isRequired; }
 	public void setIsRequired(boolean isRequired) { this.isRequired = isRequired; }
-//
-//	public String getParameterValue() { return parameterValue; }
-//	public void setParameterValue(String parameterValue) { this.parameterValue = parameterValue; }
-
+	
+	@RDFProperty(NS.OMNOM.PROP_PARAMETER_TYPE)
+	private String parameterType;
 	public String getParameterType() { return parameterType; }
 	public void setParameterType(String parameterType) { 
 		Grafeo g = new GrafeoImpl();
 		this.parameterType = g.expand(parameterType); 
 	}
-
 
 }
