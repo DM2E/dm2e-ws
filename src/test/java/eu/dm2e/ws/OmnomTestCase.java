@@ -1,10 +1,12 @@
 package eu.dm2e.ws;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
@@ -20,7 +22,7 @@ import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.Client;
 import eu.dm2e.ws.wsmanager.ManageService;
 
-public class OmnomTestCase {
+public class OmnomTestCase extends OmnomUnitTest{
 	protected Logger log = Logger.getLogger(getClass().getName());
 	protected Client client = new Client();
 	protected String URI_BASE = "http://localhost:9998/";
