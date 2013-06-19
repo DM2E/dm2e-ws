@@ -1,5 +1,6 @@
 package eu.dm2e.ws.api;
 
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFId;
@@ -9,80 +10,39 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/",
 	 "dc", "http://purl.org/dc/elements/1.1/",
 	 "dct", "http://purl.org/dc/terms/"})
-@RDFClass("omnom:File")
+@RDFClass(NS.OMNOM.CLASS_FILE)
 @RDFInstancePrefix("http://localhost:9998/file/")
 public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 	
 	@RDFId
 	private String id;
 	
-	@RDFProperty("omnom:fileLocation")
+	@RDFProperty(NS.OMNOM.PROP_FILE_LOCATION)
 	private String fileLocation;
 	
-	@RDFProperty("omnom:fileStatus")
+	@RDFProperty(NS.OMNOM.PROP_FILE_STATUS)
 	private String fileStatus;
 	
-	@RDFProperty("dct:format")
+	@RDFProperty(NS.DCTERMS.PROP_FORMAT)
 	private String mediaType;
 	
-	@RDFProperty("dc:title")
+	@RDFProperty(NS.DC.PROP_TITLE)
 	private String originalName;
 	
-	@RDFProperty("omnom:md5")
+	@RDFProperty(NS.OMNOM.PROP_MD5)
 	private String md5;
 	
-	@RDFProperty("dct:extent")
+	@RDFProperty(NS.DCTERMS.PROP_EXTENT)
 	private long fileSize;
 	
-	@RDFProperty("omnom:generatedBy")
+	@RDFProperty(NS.PROV.PROP_WAS_GENERATED_BY)
 	private JobPojo generatorJob;
 	
-	@RDFProperty("omnom:fileRetrievalURI")
+	@RDFProperty(NS.OMNOM.PROP_FILE_RETRIEVAL_URI)
 	private String fileRetrievalURI;
 
-	@RDFProperty("omnom:fileEditURI")
+	@RDFProperty(NS.OMNOM.PROP_FILE_EDIT_URI)
 	private String fileEditURI;
-
-//	public static FilePojo readFilePojo(Grafeo g) {
-//		GResource blank = g.findTopBlank();
-//		FilePojo filePojo = readFromGrafeo(g, blank);
-//		// TODO rename
-//		return filePojo;
-//	}
-//	
-//	public static FilePojo readFromGrafeo(Grafeo g, String subject) { return readFromGrafeo(g, g.resource(subject)); }
-//	public static FilePojo readFromGrafeo(Grafeo g, URI subject) { return readFromGrafeo(g, g.resource(subject)); }
-//	
-//	public static FilePojo readFromGrafeo(Grafeo g, GResource subject) {
-//		FilePojo filePojo = new FilePojo();
-////		filePojo.setIdURI(subject);
-//		
-//		Object fileLocation = g.firstMatchingObject(subject.toString(), "omnom:fileLocation");
-//		if (null != fileLocation) filePojo.setFileLocation(fileLocation.toString());
-//		
-//		Object mediaType = g.firstMatchingObject(subject.toString(), "dct:format");
-//		if (null != mediaType) filePojo.setMediaType(mediaType.toString());
-//		
-//		Object originalName = g.firstMatchingObject(subject.toString(), "dc:title");
-//		if (null != originalName) filePojo.setOriginalName(originalName.toString());
-//		
-//		Object md5 = g.firstMatchingObject(subject.toString(), "omnom:md5");
-//		if (null != md5) filePojo.setMd5(md5.toString());
-//
-//		Object fileRetrievalURI = g.firstMatchingObject(subject.toString(), "omnom:fileRetrievalURI");
-//		if (null != fileRetrievalURI) filePojo.setFileRetrievalURI(fileRetrievalURI.toString());
-//
-//		Object fileSize = g.firstMatchingObject(subject.toString(), "dct:extent");
-//		if (null != fileSize) filePojo.setFileSize(Long.parseLong(fileSize.toString()));
-//
-//		Object fileEditURI = g.firstMatchingObject(subject.toString(), "omnom:fileEditURI");
-//		if (null != fileEditURI) filePojo.setFileEditURI(fileEditURI.toString());
-//		
-////		if (fileRetrievalURI)
-//		
-//		return filePojo;
-//	}	
-
 	
 	/***************************************************
 	 * 

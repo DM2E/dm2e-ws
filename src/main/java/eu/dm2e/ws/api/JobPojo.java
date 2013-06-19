@@ -15,7 +15,7 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/",
 			 "dc", "http://purl.org/dc/elements/1.1/"})
-@RDFClass("omnom:Job")
+@RDFClass(NS.OMNOM.CLASS_JOB)
 @RDFInstancePrefix("http://localhost:9998/job/")
 public class JobPojo extends AbstractJobPojo{
 	
@@ -103,12 +103,12 @@ public class JobPojo extends AbstractJobPojo{
 	public WebserviceConfigPojo getWebserviceConfig() { return webserviceConfig; }
 	public void setWebserviceConfig(WebserviceConfigPojo webserviceConfig) { this.webserviceConfig = webserviceConfig; }
 	
-    @RDFProperty(NS.OMNOM.PROP_OUTPUT_ASSIGNMENT)
+    @RDFProperty(NS.OMNOM.PROP_ASSIGNMENT)
     Set<ParameterAssignmentPojo> outputParameters= new HashSet<>();
 	public Set<ParameterAssignmentPojo> getOutputParameters() { return outputParameters; }
 	public void setOutputParameters(Set<ParameterAssignmentPojo> outputParameters) { this.outputParameters = outputParameters; }
 
-//	@RDFProperty("omnom:hasSlotAssignment")
+//	@RDFProperty(NS.OMNOM.PROP_SLOT_ASSIGNMENT)
 //	private Set<ParameterSlotAssignmentPojo> slotAssignments = new HashSet<>();
 //	public Set<ParameterSlotAssignmentPojo> getSlotAssignments() { return slotAssignments; }
 //	public void setSlotAssignments(Set<ParameterSlotAssignmentPojo> slotAssignments) { this.slotAssignments = slotAssignments; }

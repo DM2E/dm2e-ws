@@ -1,15 +1,16 @@
 package eu.dm2e.ws.api;
 
-import com.hp.hpl.jena.query.ResultSet;
-import eu.dm2e.ws.grafeo.annotations.Namespaces;
-import eu.dm2e.ws.grafeo.annotations.RDFClass;
-import eu.dm2e.ws.grafeo.annotations.RDFId;
-import eu.dm2e.ws.grafeo.annotations.RDFProperty;
-import eu.dm2e.ws.grafeo.jena.SparqlSelect;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
+
+import com.hp.hpl.jena.query.ResultSet;
+
+import eu.dm2e.ws.NS;
+import eu.dm2e.ws.grafeo.annotations.Namespaces;
+import eu.dm2e.ws.grafeo.annotations.RDFClass;
+import eu.dm2e.ws.grafeo.annotations.RDFProperty;
+import eu.dm2e.ws.grafeo.jena.SparqlSelect;
 
 /**
  * This file was created within the DM2E project.
@@ -26,27 +27,6 @@ import java.util.Date;
         "dm2e", "http://onto.dm2e.eu/schemas/dm2e/1.0/"})
 @RDFClass("void:Dataset")
 public class VersionedDatasetPojo extends AbstractPersistentPojo<VersionedDatasetPojo> {
-
-    @RDFId
-    private String id;
-
-    @RDFProperty("dc:date")
-    private Date timestamp;
-
-    @RDFProperty("prov:specializationOf")
-    private URI datasetID;
-
-    @RDFProperty("prov:wasRevisionOf")
-    private URI priorVersionURI;
-
-    @RDFProperty("prov:wasGeneratedBy")
-    private URI jobURI;
-
-    @RDFProperty("rdfs:label")
-    private String label;
-
-    @RDFProperty("rdfs:comment")
-    private String comment;
 
 
     public URI findLatest(String endpoint) {
@@ -73,61 +53,37 @@ public class VersionedDatasetPojo extends AbstractPersistentPojo<VersionedDatase
         return null;
     }
 
-    public URI getJobURI() {
-        return jobURI;
-    }
 
-    public void setJobURI(URI jobURI) {
-        this.jobURI = jobURI;
-    }
 
-    public String getId() {
-        return id;
-    }
+    @RDFProperty(NS.PROV.PROP_WAS_GENERATED_BY)
+    private URI jobURI;
+    public URI getJobURI() { return jobURI; }
+    public void setJobURI(URI jobURI) { this.jobURI = jobURI; }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+    @RDFProperty(NS.PROV.PROP_SPECIALIZATION_OF)
+    private URI datasetID;
+    public URI getDatasetID() { return datasetID; }
+    public void setDatasetID(URI datasetID) { this.datasetID = datasetID; }
 
-    public URI getDatasetID() {
-        return datasetID;
-    }
+    @RDFProperty(NS.PROV.PROP_WAS_REVISION_OF)
+    private URI priorVersionURI;
+    public URI getPriorVersionURI() { return priorVersionURI; }
+    public void setPriorVersionURI(URI priorVersionURI) { this.priorVersionURI = priorVersionURI; }
 
-    public void setDatasetID(URI datasetID) {
-        this.datasetID = datasetID;
-    }
+    @RDFProperty(NS.DC.PROP_DATE)
+    private Date timestamp;
+    public Date getTimestamp() { return timestamp; }
+    public void setTimestamp(Date timestamp) { this.timestamp = timestamp; }
 
-    public URI getPriorVersionURI() {
-        return priorVersionURI;
-    }
+//    @RDFProperty(NS.RDFS.PROP_LABEL)
+//    private String label;
+//    public String getLabel() { return label; }
+//    public void setLabel(String label) { this.label = label; }
 
-    public void setPriorVersionURI(URI priorVersionURI) {
-        this.priorVersionURI = priorVersionURI;
-    }
-
-    public Date getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
+    @RDFProperty(NS.RDFS.PROP_COMMENT)
+    private String comment;
+    public String getComment() { return comment; }
+    public void setComment(String comment) { this.comment = comment; }
 
 
 }
