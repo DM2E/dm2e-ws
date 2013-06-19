@@ -2,10 +2,10 @@ package eu.dm2e.ws.services.publish;
 
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.IWebservice;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.VersionedDatasetPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
-import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.AbstractTransformationService;
@@ -26,16 +26,24 @@ import java.util.logging.Logger;
  */
 @Path("/publish")
 public class PublishService extends AbstractTransformationService {
-    private Logger log = Logger.getLogger(getClass().getName());
+	
+    public static final String PARAM_ENDPOINT_SELECT = "endpoint-select";
+	public static final String PARAM_ENDPOINT_UPDATE = "endpoint-update";
+	public static final String PARAM_COMMENT = "comment";
+    public static final String PARAM_TO_PUBLISH = "to-publish";
+	public static final String PARAM_LABEL = "label";
+	public static final String PARAM_DATASET_ID = "dataset-id";
 
+	private Logger log = Logger.getLogger(getClass().getName());
+	
     public PublishService() {
-        WebservicePojo ws = getWebServicePojo();
-        ws.addInputParameter("to-publish").setIsRequired(true);
-        ws.addInputParameter("dataset-id").setIsRequired(true);
-        ws.addInputParameter("label").setIsRequired(true);
-        ws.addInputParameter("comment");
-        ws.addInputParameter("endpoint-update");
-        ws.addInputParameter("endpoint-select");
+        IWebservice ws = getWebServicePojo();
+        ws.addInputParameter(PARAM_TO_PUBLISH).setIsRequired(true);
+        ws.addInputParameter(PARAM_DATASET_ID).setIsRequired(true);
+        ws.addInputParameter(PARAM_LABEL).setIsRequired(true);
+        ws.addInputParameter(PARAM_COMMENT);
+        ws.addInputParameter(PARAM_ENDPOINT_UPDATE);
+        ws.addInputParameter(PARAM_ENDPOINT_SELECT);
     }
 
     @Override
@@ -45,14 +53,14 @@ public class PublishService extends AbstractTransformationService {
             WebserviceConfigPojo wsConf = jobPojo.getWebserviceConfig();
             jobPojo.debug("wsConf: " + wsConf);
 
-            String input = wsConf.getParameterValueByName("to-publish");
-            String dataset = wsConf.getParameterValueByName("dataset-id");
-            String label = wsConf.getParameterValueByName("label");
-            String comment = wsConf.getParameterValueByName("comment");
-            String endpoint = wsConf.getParameterValueByName("endpoint-update");
-            String endpointSelect = wsConf.getParameterValueByName("endpoint-select");
-            if (null == endpoint) endpoint = NS.ENDPOINT_STATEMENTS;
-            if (null == endpointSelect) endpointSelect = NS.ENDPOINT;
+            String input = wsConf.getParameterValueByName(PARAM_TO_PUBLISH);
+            String dataset = wsConf.getParameterValueByName(PARAM_DATASET_ID);
+            String label = wsConf.getParameterValueByName(PARAM_LABEL);
+            String comment = wsConf.getParameterValueByName(PARAM_COMMENT);
+            String endpoint = wsConf.getParameterValueByName(PARAM_ENDPOINT_UPDATE);
+            String endpointSelect = wsConf.getParameterValueByName(PARAM_ENDPOINT_SELECT);
+            if (null == endpoint) endpoint = NS.ENDPOINT_UPDATE;
+            if (null == endpointSelect) endpointSelect = NS.ENDPOINT_SELECT;
 
             jobPojo.debug("Input file: " + input);
             jobPojo.debug("Dataset: " + dataset);
