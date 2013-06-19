@@ -21,7 +21,7 @@ import org.junit.Test;
 
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.OmnomTestCase;
-import eu.dm2e.ws.api.WebservicePojo;
+import eu.dm2e.ws.api.IWebservice;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
@@ -104,7 +104,7 @@ public class AbstractRDFServiceTest extends OmnomTestCase{
 
 	@Test
 	public void testGetWebServicePojo() {
-		WebservicePojo ws = mockService.getWebServicePojo();
+		IWebservice ws = mockService.getWebServicePojo();
 		assertNotNull(ws);
 	}
 
@@ -184,6 +184,13 @@ public class AbstractRDFServiceTest extends OmnomTestCase{
 		URI uri = new URI("http://foo.org/bar");
 		URI uri2 = mockService.appendPath(uri, "baz");
 		assertEquals("http://foo.org/bar/baz", uri2.toString());
+	}
+	
+	@Test
+	public void testPopPathSegement()  {
+		URI uri = URI.create("http://foo.org/bar/baz");
+		assertEquals("http://foo.org/bar", mockService.popPath(uri, "baz").toString());
+		assertEquals("http://foo.org/bar", mockService.popPath(uri, null).toString());
 	}
 //
 //	@Test

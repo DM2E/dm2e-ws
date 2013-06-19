@@ -8,7 +8,6 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -221,8 +220,9 @@ public abstract class AbstractRDFService {
 	@Path("/describe")
 	public Response getDescription()  {
         WebservicePojo wsDesc = this.getWebServicePojo();
-//        Grafeo g = new GrafeoImpl();
-//        g.getObjectMapper().addObject(wsDesc);
+        URI wsUri = popPath();
+        wsDesc.setId(wsUri);
+        log.fine(wsDesc.getTerseTurtle());
         return Response.ok().entity(getResponseEntity(wsDesc.getGrafeo())).build();
 	}
     
@@ -331,7 +331,8 @@ public abstract class AbstractRDFService {
 	}
 	
 	protected String createUniqueStr() {
-		return new Date().getTime() + "_" + UUID.randomUUID().toString();
+//		return new Date().getTime() + "_" + UUID.randomUUID().toString();
+		return UUID.randomUUID().toString();
 	}
 	
 
@@ -345,14 +346,19 @@ public abstract class AbstractRDFService {
 //		WebservicePojo wsDesc = this.getWebServicePojo();
 //		for (ParameterPojo param : wsDesc.getInputParams()) {
 //			if (param.getIsRequired()) {
-//				if (! inputGrafeo.containsStatementPattern("?s", "omnom:forParam", param.getId())) {
-//					log.severe(configUriStr + " does not contain '?s omnom:forParam " + param.getId());
+//				if (! inputGrafeo.containsStatementPattern("?s", NS.OMNOM.PROP_FOR_PARAM, param.getId())) {
+//					log.severe(configUriStr + " does not contain '?s NS.OMNOM.PROP_FOR_PARAM " + param.getId());
 //					throw new RuntimeException(configUriStr + " does not contain '?s omnom:forParam " + param.getId());
 //				}
 //			}
 //		}
 //
 //	}
+	
+	protected URI appendPath(String path) {
+		URI uri = uriInfo.getRequestUri();
+		return this.appendPath(uri, path);
+	}
 
     protected URI appendPath(URI uri, String path) {
         String query = uri.getQuery();
@@ -364,6 +370,48 @@ public abstract class AbstractRDFService {
         }
         if (!u.endsWith("/") && !path.startsWith("/")) u = u + "/";
         u = u + path;
+        if (query!=null) {
+            u = u + "?" + query;
+        }
+        log.info("Result: " + u);
+        try {
+            return new URI(u);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("An exception occurred: " + e, e);
+        }
+    }
+    
+	protected URI popPath() {
+		URI uri = uriInfo.getRequestUri();
+		return this.popPath(uri, null);
+	}
+	protected URI popPath(URI uri) {
+		return this.popPath(uri, null);
+	}
+	protected URI popPath(String path) {
+		URI uri = uriInfo.getRequestUri();
+		return this.popPath(uri, path);
+	}
+    protected URI popPath(URI uri, String path) {
+        String query = uri.getQuery();
+        String u = uri.toString();
+        log.fine("URI: " + u);
+        if (query!=null) {
+            log.fine("Query: " + query);
+            u = u.replace("?" + query,"");
+        }
+        if (u.endsWith("/")) {
+        	u.replaceAll("/$", "");
+        }
+        if (path != null) { 
+	        if (! u.endsWith("/" + path)) {
+	        	throw new RuntimeException("URI '" + uri + "' doesn't end in in '/"+ path +"'.");
+	        }
+	        u = u.replaceAll("/" + path + "$", "");
+        }
+        else {
+        	u = u.replaceAll("/[^/]+$", "");
+        }
         if (query!=null) {
             u = u + "?" + query;
         }
