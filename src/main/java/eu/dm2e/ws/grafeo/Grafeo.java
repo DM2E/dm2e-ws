@@ -1,16 +1,18 @@
 package eu.dm2e.ws.grafeo;
 
-import com.hp.hpl.jena.query.ResultSet;
-import eu.dm2e.ws.grafeo.annotations.RDFClass;
-import eu.dm2e.ws.grafeo.annotations.RDFProperty;
-import eu.dm2e.ws.grafeo.gom.ObjectMapper;
-import eu.dm2e.ws.grafeo.jena.GResourceImpl;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Map;
 import java.util.Set;
+
+import com.hp.hpl.jena.query.ResultSet;
+
+import eu.dm2e.ws.grafeo.annotations.RDFClass;
+import eu.dm2e.ws.grafeo.annotations.RDFProperty;
+import eu.dm2e.ws.grafeo.gom.ObjectMapper;
+import eu.dm2e.ws.grafeo.jena.GResourceImpl;
 
 /**
  * The Grafeo API is a simple RDF API. The goal is the minimization of
@@ -20,10 +22,6 @@ import java.util.Set;
  *
  * @author Kai Eckert
  * @author Konstantin Baierer
- *
- */
-/**
- * @author kb
  *
  */
 public interface Grafeo {
@@ -164,11 +162,33 @@ public interface Grafeo {
 
 	void writeToEndpoint(String endpoint, URI graphURI);
 
+	/**
+	 * Returns an NTRIPLES serialization.
+	 * 
+	 * @return NTRIPLES
+	 */
 	String getNTriples();
 
+	/**
+	 * Returns an NTRIPLES serialization, sorted to make comparison easier
+	 * 
+	 * @return Sorted NTRIPLES
+	 */
 	String getCanonicalNTriples();
 
+	/**
+	 * Returns a valid Turtle serialziation.
+	 * 
+	 * @return TURTLE
+	 */
 	String getTurtle();
+
+	/**
+	 * Returns an invalid Turtle serialization without the prefixes (shorter for debugging)
+	 * 
+	 * @return TURTLE without prefixes
+	 */
+	String getTerseTurtle();
 
 	long size();
 
@@ -213,7 +233,13 @@ public interface Grafeo {
 	 */
 	void emptyGraph(String endpoint, String graph);
 
-    Set<GResource> findByClass(String uri);
+	/**
+	 * List all subjects of rdf:type type in the graph.
+	 * 
+	 * @param type
+	 * @return Set of all subjects with type type
+	 */
+    Set<GResource> findByClass(String type);
 
     GResourceImpl createBlank();
 
@@ -280,5 +306,34 @@ public interface Grafeo {
     boolean isGraphEquivalent(Grafeo g);
 
 	String visualizeWithGraphviz() throws Exception;
+
+	/**
+	 * @return Map of namespace prefix mappings
+	 */
+	Map<String, String> getNamespaces();
+
+	/**
+	 * Turns a pattern of s/p/o with o a resource into a SPARQL-compatible pattern.
+	 * 
+	 * @param subject
+	 * @param predicate
+	 * @param object
+	 * @return
+	 */
+	String stringifyResourcePattern(String subject, String predicate, String object);
+
+	/**
+	 * Turns a pattern of s/p/o with o a literal into a SPARQL-compatible pattern.
+	 * 
+	 * @param subject
+	 * @param predicate
+	 * @param object
+	 * @return
+	 */
+	String stringifyLiteralPattern(String subject, String predicate, String object);
+
+	String stringifyLiteralPattern(String subject, String predicate, GLiteral object);
+
+//	Set<GResource> listSubjectsOfType(String type);
 }
 

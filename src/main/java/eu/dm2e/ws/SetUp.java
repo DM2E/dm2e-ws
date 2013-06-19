@@ -2,8 +2,6 @@ package eu.dm2e.ws;
 
 import java.io.IOException;
 
-import eu.dm2e.ws.wsmanager.ManageService;
-
 public class SetUp {
 
 

@@ -2,7 +2,6 @@ package eu.dm2e.ws.wsmanager;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;

@@ -1,12 +1,10 @@
 package eu.dm2e.ws.grafeo.jena;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
@@ -60,6 +58,8 @@ import eu.dm2e.ws.grafeo.annotations.RDFId;
 import eu.dm2e.ws.grafeo.gom.ObjectMapper;
 
 public class GrafeoImpl extends JenaImpl implements Grafeo {
+	
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
     private Logger log = Logger.getLogger(getClass().getName());
     protected Model model;
@@ -159,12 +159,14 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         Property typeProperty = model.createProperty(typePropertyGResource.getUri());
         while (it.hasNext()) {
             Resource res = it.next();
-            if (res.isAnon()) {
-                if (model.listStatements(null, null, res).hasNext())
-                    continue;
-                if (model.listStatements(res, typeProperty, typeObjectResource).hasNext()) {
-	                return new GResourceImpl(this, res);
-                }
+            if (! res.isAnon()) {
+            	continue;
+            }
+            log.info("Checking resource: " + res);
+//            if (model.listStatements(null, null, res).hasNext())
+//            	continue;
+            if (model.listStatements(res, typeProperty, typeObjectResource).hasNext()) {
+            	return new GResourceImpl(this, res);
             }
         }
         return null;
@@ -180,8 +182,8 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         Set<GResource> result = new HashSet<>();
         while (it.hasNext()) {
             Resource res = it.next();
-                if (model.listStatements(null, null, res).hasNext())
-                    continue;
+//                if (model.listStatements(null, null, res).hasNext())
+//                    continue;
                 if (model.listStatements(res, typeProperty, typeObjectResource).hasNext()) {
                     result.add(new GResourceImpl(this, res));
                 }
@@ -519,21 +521,27 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 
     @Override
     public void readFromEndpoint(String endpoint, String graph, int expansionSteps) {
-        StringBuilder sb = new StringBuilder(
-                "CONSTRUCT {?s ?p ?o}  WHERE { GRAPH <");
-        sb.append(graph);
-        sb.append("> {");
-        sb.append("?s ?p ?o");
-        sb.append("} . }");
-        Query query = QueryFactory.create(sb.toString());
-        log.finest("Query: " + sb.toString());
+    	SparqlConstruct sparco = new SparqlConstruct.Builder()
+    		.construct("?s ?p ?o")
+    		.where("?s ?p ?o")
+    		.graph(graph)
+    		.endpoint(endpoint)
+    		.build();
+//        StringBuilder sb = new StringBuilder(
+//                "CONSTRUCT {?s ?p ?o}  WHERE { GRAPH <");
+//        sb.append(graph);
+//        sb.append("> {");
+//        sb.append("?s ?p ?o");
+//        sb.append("} . }");
+        Query query = QueryFactory.create(sparco.toString());
+        log.info("CONSTRUCT Query: " + sparco.toString());
 
         long sizeBefore = size();
         long stmtsAdded = 0;
 
         boolean success = false;
         int count = 5;
-        // Workaround to avoid the empty graph sirectly after a publish and other bad things that happen in the web.
+        // Workaround to avoid the empty graph directly after a publish and other bad things that happen in the web.
         while (count>0 && !success) {
             QueryExecution exec = QueryExecutionFactory.createServiceRequest(
                     endpoint, query);
@@ -627,21 +635,13 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     @Override
     public void writeToEndpoint(String endpoint, String graph) {
         log.info("Write to endpoint: " + endpoint + " / Graph: " + graph);
-        StringBuilder sb = new StringBuilder("CREATE SILENT GRAPH <");
-        sb.append(graph);
-        sb.append(">");
-        log.info("Query 1: " + sb.toString());
-        UpdateRequest update = UpdateFactory.create(sb.toString());
-        sb = new StringBuilder("INSERT DATA { GRAPH <");
-        sb.append(graph);
-        sb.append("> {");
-        sb.append(getNTriples());
-        sb.append("}}");
-        log.info("Query 2: " + sb.toString());
-        update.add(sb.toString());
-        UpdateProcessor exec = UpdateExecutionFactory.createRemoteForm(update,
-                endpoint);
-        exec.execute();
+        SparqlUpdate sparul = new SparqlUpdate.Builder()
+        	.insert(this.getNTriples())
+        	.graph(graph)
+        	.endpoint(endpoint)
+        	.build();
+        log.info("writeToEndpoint Query: " + sparul.toString());
+        sparul.execute();
 
     }
 
@@ -684,6 +684,20 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         StringWriter sw = new StringWriter();
         model.write(sw, "TURTLE");
         return sw.toString();
+    }
+    
+    @Override
+    public String getTerseTurtle() {
+        StringWriter sw = new StringWriter();
+        model.write(sw, "TURTLE");
+        StringBuilder sb = new StringBuilder();
+        for (String line: sw.toString().split(LINE_SEPARATOR)) {
+        	if (! line.matches("\\s*@prefix.*")) {
+	        	sb.append(line);
+	        	sb.append(LINE_SEPARATOR);
+        	}
+        }
+        return sb.toString();
     }
 
     @Override
@@ -971,7 +985,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     
     @Override
 	public String visualizeWithGraphviz() throws Exception {
-		BufferedReader inp;
+//		BufferedReader inp;
 		BufferedWriter out;
 //		String cmd = "rapper -o dot -i ntriples -I \"http://EXAMPLE/\" - | dot -Tpng -o output.png";
 		String cmd = "./bin/visualize-turtle.sh\n";
@@ -979,7 +993,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		try {
 			p = Runtime.getRuntime().exec(cmd);
 //	        System.out.println(System.getProperty("user.dir"));
-			inp = new BufferedReader(new InputStreamReader(p.getInputStream()));
+//			inp = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			out = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
 			out.write(this.getTurtle());
 			out.write("\n");
@@ -1001,4 +1015,46 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 //			throw new RuntimeException("Could not execute command for visualizing: " + e);
 //		}
 	}
+
+    @Override
+	public Map<String, String> getNamespaces() { return namespaces; }
+    
+    // TODO    getConciseBoundingDescription()
+    
+    @Override
+    public String stringifyResourcePattern(String subject, String predicate, String object) {
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("<");
+    	sb.append(subject == null ? "?s" : this.expand(subject));
+    	sb.append("> <");
+    	sb.append(predicate == null ? "?p" : this.expand(predicate));
+    	sb.append("> <");
+    	sb.append(object == null ? "?o" : this.expand(object));
+    	sb.append(">.");
+    	return sb.toString();
+    }
+    @Override
+    public String stringifyLiteralPattern(String subject, String predicate, String object) {
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("<");
+    	sb.append(subject == null ? "?s" : this.expand(subject));
+    	sb.append("> <");
+    	sb.append(predicate == null ? "?p" : this.expand(predicate));
+    	sb.append("> ");
+    	sb.append(object == null ? "?o" : this.literal(object).getTypedValue());
+    	sb.append(". ");
+		return sb.toString();
+    }
+    @Override
+    public String stringifyLiteralPattern(String subject, String predicate, GLiteral object) {
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("<");
+    	sb.append(subject == null ? "?s" : this.expand(subject));
+    	sb.append("> <");
+    	sb.append(predicate == null ? "?p" : this.expand(predicate));
+    	sb.append("> ");
+    	sb.append(object == null ? "?o" : object.getTypedValue());
+    	sb.append(". ");
+		return sb.toString();
+    }
 }
