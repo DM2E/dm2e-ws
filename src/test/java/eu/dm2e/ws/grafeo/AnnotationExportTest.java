@@ -1,24 +1,76 @@
 package eu.dm2e.ws.grafeo;
 
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
-import eu.dm2e.ws.grafeo.test.IntegerPojo;
-import eu.dm2e.ws.grafeo.test.ListPojo;
-import eu.dm2e.ws.grafeo.test.SetPojo;
-import org.junit.Test;
-
-import java.util.logging.Logger;
-
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class AnnotationExportTest {
+import java.util.Arrays;
+import java.util.logging.Logger;
+
+import org.junit.Test;
+
+import eu.dm2e.ws.NS;
+import eu.dm2e.ws.OmnomUnitTest;
+import eu.dm2e.ws.grafeo.jena.GResourceImpl;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
+import eu.dm2e.ws.grafeo.test.IntegerPojo;
+import eu.dm2e.ws.grafeo.test.LiteralList;
+import eu.dm2e.ws.grafeo.test.ResourceListPojo;
+import eu.dm2e.ws.grafeo.test.NestedSetPojo;
+import eu.dm2e.ws.grafeo.test.SetPojo;
+
+public class AnnotationExportTest extends OmnomUnitTest {
 	
 	Logger log = Logger.getLogger(getClass().getName());
 
-//	@Test
-//	public void test() {
-//		fail("Not yet implemented");
-//	}
+	@Test
+	public void testBlankLiteralList() {
+		
+		LiteralList list = new LiteralList();
+		list.getLongList().add(5L);
+		list.getLongList().add(6L);
+		list.getLongList().add(7L);		log.info("Serializing");
+		
+		log.info("Serializing");
+		Grafeo g = new GrafeoImpl();
+		g.getObjectMapper().addObject(list);
+		GrafeoAssert.numberOfResourceStatements(g, 3, null, NS.RDF.PROP_TYPE, NS.CO.CLASS_ITEM);
+		log.info(g.getTerseTurtle());
+		
+		log.info("De-Serializing");
+		GResource topBlank = g.findTopBlank(list.getRDFClass().value());
+		LiteralList listPojo2 = g.getObjectMapper().getObject(LiteralList.class, topBlank);
+		GrafeoAssert.numberOfResourceStatements(listPojo2.getGrafeo(), 3, null, NS.RDF.PROP_TYPE, NS.CO.CLASS_ITEM);
+		log.info(listPojo2.getTerseTurtle());
+		assertThat(list.getLongList(), is(listPojo2.getLongList()));
+		GrafeoAssert.graphsAreEquivalent(list.getGrafeo(), listPojo2.getGrafeo());
+	}
+
+	
+	@Test
+	public void testBlankResourceList() {
+		
+		ResourceListPojo list = new ResourceListPojo();
+		list.getIntegerResourceList().add(new IntegerPojo(5));
+		list.getIntegerResourceList().add(new IntegerPojo(6));
+		list.getIntegerResourceList().add(new IntegerPojo(7));
+		
+		log.info("Serializing");
+		Grafeo g = new GrafeoImpl();
+		g.getObjectMapper().addObject(list);
+		GrafeoAssert.numberOfResourceStatements(g, 3, null, NS.RDF.PROP_TYPE, NS.CO.CLASS_ITEM);
+		log.info(g.getTerseTurtle());
+		
+		log.info("De-Serializing");
+		GResource topBlank = g.findTopBlank(list.getRDFClass().value());
+		ResourceListPojo listPojo2 = g.getObjectMapper().getObject(ResourceListPojo.class, topBlank);
+		GrafeoAssert.numberOfResourceStatements(listPojo2.getGrafeo(), 3, null, NS.RDF.PROP_TYPE, NS.CO.CLASS_ITEM);
+		log.info(listPojo2.getTerseTurtle());
+		assertThat(list.getIntegerResourceList(), is(listPojo2.getIntegerResourceList()));
+		GrafeoAssert.graphsAreEquivalent(list.getGrafeo(), listPojo2.getGrafeo());
+	}
 	
 	@Test
 	public void testSetExport() {
@@ -41,9 +93,9 @@ public class AnnotationExportTest {
 	
 	@Test
 	public void testListExport() {
-		ListPojo pojo = new ListPojo();
+		ResourceListPojo pojo = new ResourceListPojo();
 		String pojo_uri = "http://foo";
-		pojo.setIdURI(pojo_uri);
+		pojo.setId(pojo_uri);
 		pojo.getIntegerResourceList().add(new IntegerPojo("http://item1", 5));
 		pojo.getIntegerResourceList().add(new IntegerPojo("http://item2", 44));
 //		pojo.getIntegerResourceList().add(new IntegerPojo("http://item3", 333));
@@ -80,20 +132,60 @@ public class AnnotationExportTest {
 	@Test
 	public void testListImport() {
 		GrafeoImpl g1 = new GrafeoImpl();
-		GrafeoImpl g2 = new GrafeoImpl();
 		String uri = "http://foo";
 		GResource res = g1.resource(uri);
-		ListPojo pojo = new ListPojo();
-		pojo.setIdURI(uri);
+		ResourceListPojo pojo = new ResourceListPojo();
+		pojo.setId(uri);
 		pojo.getIntegerResourceList().add(new IntegerPojo(uri+"/x1", 1));
 		pojo.getIntegerResourceList().add(new IntegerPojo(uri+"/x2", 2));
 		g1.getObjectMapper().addObject(pojo);
-//		log.info(g1.getCanonicalNTriples());
+		log.info(g1.getTurtle());
 		
-		ListPojo inPojo = g1.getObjectMapper().getObject(ListPojo.class, res);
+		GrafeoImpl g2 = new GrafeoImpl();
+		ResourceListPojo inPojo = g1.getObjectMapper().getObject(ResourceListPojo.class, res);
 		g2.getObjectMapper().addObject(inPojo);
 //		log.warning(g2.getCanonicalNTriples());
-		assertEquals(g1.getCanonicalNTriples(), g2.getCanonicalNTriples());
-		
+		GrafeoAssert.graphsAreEquivalent(g1, g2);
+//		assertEquals(g1.getCanonicalNTriples(), g2.getCanonicalNTriples());
+	}
+	
+	@Test
+	public void testBlankResourceSet() {
+		NestedSetPojo nset = new NestedSetPojo();
+		nset.getNumbers().add(new IntegerPojo(1));
+		nset.getNumbers().add(new IntegerPojo(0));
+		nset.getNumbers().add(new IntegerPojo(8));
+		GrafeoImpl g = new GrafeoImpl();
+		{
+			log.info("Test addSetObject");
+			g.getObjectMapper().addObject(nset);
+			log.info(g.getTerseTurtle());
+			GrafeoAssert.numberOfResourceStatements(g, 3, null, "rdf:type", "omnom:IntegerPojo");
+		}
+		{
+			log.info("Test getSetObject");
+			GResourceImpl blank1 = g.findTopBlank("omnom:NestedSet");
+			NestedSetPojo nset2 = g.getObjectMapper().getObject(NestedSetPojo.class, blank1);
+			log.info("AND BACK: " + nset2.getGrafeo().getTerseTurtle());
+			GrafeoAssert.graphsAreEquivalent(g, nset2.getGrafeo());
+		}
+		{
+			log.info("Verify with hand-made grafeo");
+			GrafeoImpl g2 = new GrafeoImpl();
+			GResource nsetRes = g2.createBlank();
+			GResource itemRes1 = g2.createBlank();
+			GResource itemRes2 = g2.createBlank();
+			GResource itemRes3 = g2.createBlank();
+			
+			nsetRes.set("rdf:type", g2.resource("omnom:NestedSet"));
+			for (GResource itemResN : Arrays.asList(itemRes1, itemRes2, itemRes3) ) {
+				itemResN.set("rdf:type", g.resource("omnom:IntegerPojo"));
+				nsetRes.set("omnom:ze_numbaz", itemResN);
+			}
+			itemRes1.set("omnom:some_number", g.literal(0));
+			itemRes2.set("omnom:some_number", g.literal(1));
+			itemRes3.set("omnom:some_number", g.literal(8));
+			GrafeoAssert.graphsAreEquivalent(g, g2);
+		}
 	}
 }

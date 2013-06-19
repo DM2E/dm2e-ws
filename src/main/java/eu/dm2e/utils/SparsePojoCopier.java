@@ -14,6 +14,9 @@ import org.apache.commons.beanutils.BeanUtilsBean;
  */
 public class SparsePojoCopier extends BeanUtilsBean {
 	
+	/**
+	 * @see org.apache.commons.beanutils.BeanUtilsBean#copyProperty(java.lang.Object, java.lang.String, java.lang.Object)
+	 */
 	@Override
 	public void copyProperty(Object dest, String name, Object value) throws IllegalAccessException, InvocationTargetException {
 		// Don't copy empty properties
