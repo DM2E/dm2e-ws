@@ -14,7 +14,6 @@ import com.sun.jersey.api.client.ClientResponse;
 
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.NS;
-import eu.dm2e.ws.grafeo.annotations.RDFId;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.model.LogLevel;
@@ -198,9 +197,9 @@ public abstract class AbstractJobPojo extends AbstractPersistentPojo<JobPojo> {
 	public void setStatus(String status) { this.status = status; }
 
     @RDFProperty(NS.OMNOM.PROP_WEBSERVICE)
-    private WebservicePojo webService;
-	public WebservicePojo getWebService() { return webService; }
-	public void setWebService(WebservicePojo webService) { this.webService = webService; }
+    private IWebservice webService;
+	public IWebservice getWebService() { return webService; }
+	public void setWebService(IWebservice webService) { this.webService = webService; }
 	
     @RDFProperty(NS.OMNOM.PROP_LOG_ENTRY) 
     Set<LogEntryPojo> logEntries = new HashSet<>();
