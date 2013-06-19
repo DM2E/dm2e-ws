@@ -1,5 +1,7 @@
 package eu.dm2e.ws.api;
 
+import org.apache.xerces.impl.dv.ValidationContext;
+
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
@@ -8,7 +10,7 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
 @Namespaces({"omnom", NS.OMNOM.BASE})
 @RDFClass(NS.OMNOM.CLASS_PARAMETER_CONNECTOR)
-public class ParameterConnectorPojo extends SerializablePojo<ParameterConnectorPojo> {
+public class ParameterConnectorPojo extends SerializablePojo<ParameterConnectorPojo> implements IValidatable{
 	
 	/******************
 	 * GETTERS/SETTERS
@@ -52,7 +54,7 @@ public class ParameterConnectorPojo extends SerializablePojo<ParameterConnectorP
 	
 	// TODO create ErrorMsgs
 	@Override
-	public boolean isValid(ParameterConnectorPojo pojo) {
+	public void validate() {
 		if (! hasFromParam()) {
 			throw new RuntimeException("Missing Param: Every Workflow Connector must source from a param (either Workflow or Position).");
 		}
@@ -62,7 +64,6 @@ public class ParameterConnectorPojo extends SerializablePojo<ParameterConnectorP
 		if ( ! hasFromPosition() && ! hasFromWorkflow() ) {
 			throw new RuntimeException("Missing Workflow/Position: Every Workflow Connector must source from a param (either Workflow or Position).");
 		}
-		return true;
 	}
 	
 }
