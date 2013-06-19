@@ -140,14 +140,14 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 			}
 		}
 
-		log.info("Skolemnizing Position Proxies.");
-		{
-			int positionItemIndex = 0;
-			for (GResource positionItemRes : g.findByClass(NS.CO.CLASS_ITEM)) {
-				positionItemIndex++;
-				positionItemRes.rename(wfUri + "/position-item/" + positionItemIndex);
-			}
-		}
+//		log.info("Skolemnizing Position Proxies.");
+//		{
+//			int positionItemIndex = 0;
+//			for (GResource positionItemRes : g.findByClass(NS.CO.CLASS_ITEM)) {
+//				positionItemIndex++;
+//				positionItemRes.rename(wfUri + "/position-item/" + positionItemIndex);
+//			}
+//		}
 		log.info("Skolemnizing Positions.");
 		{
 			int positionIndex = 0;

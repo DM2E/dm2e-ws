@@ -61,8 +61,8 @@ public class JobService extends AbstractJobService {
 	public Response postJob(Grafeo inputGrafeo, String uriStr) {
 		
 		log.fine("Skolemnizing");
-		inputGrafeo.skolemnizeUUID(uriStr, NS.OMNOM.PROP_ASSIGNMENT, "assignment");
-		inputGrafeo.skolemnizeUUID(uriStr, NS.OMNOM.PROP_LOG_ENTRY, "log");
+		inputGrafeo.skolemizeUUID(uriStr, NS.OMNOM.PROP_ASSIGNMENT, "assignment");
+		inputGrafeo.skolemizeUUID(uriStr, NS.OMNOM.PROP_LOG_ENTRY, "log");
 		
 		log.warning("Instantiating Job POJO " + uriStr);
 		JobPojo jobPojo = inputGrafeo.getObjectMapper().getObject(JobPojo.class, uriStr);
@@ -83,8 +83,8 @@ public class JobService extends AbstractJobService {
 		if (blank != null) {
 			blank.rename(uriStr);
 		}
-		inputGrafeo.skolemnizeUUID(uriStr, NS.OMNOM.PROP_LOG_ENTRY, "log");
-		inputGrafeo.skolemnizeUUID(uriStr, NS.OMNOM.PROP_ASSIGNMENT, "assignment");
+		inputGrafeo.skolemizeUUID(uriStr, NS.OMNOM.PROP_LOG_ENTRY, "log");
+		inputGrafeo.skolemizeUUID(uriStr, NS.OMNOM.PROP_ASSIGNMENT, "assignment");
 		
 		log.warning("Instantiating Job POJO " + uriStr);
 		JobPojo jobPojo = inputGrafeo.getObjectMapper().getObject(JobPojo.class, uriStr);

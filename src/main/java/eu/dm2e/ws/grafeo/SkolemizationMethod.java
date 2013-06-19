@@ -9,7 +9,7 @@ package eu.dm2e.ws.grafeo;
  * @author Konstantin Baierer
  *
  */
-public enum SkolemnizationMethod {
+public enum SkolemizationMethod {
 	RANDOM_UUID,
 	SEQUENTIAL_ID
 }

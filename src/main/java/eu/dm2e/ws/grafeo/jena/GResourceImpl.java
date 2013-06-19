@@ -6,6 +6,7 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.ResourceUtils;
 import eu.dm2e.ws.grafeo.GResource;
+import eu.dm2e.ws.grafeo.GStatement;
 import eu.dm2e.ws.grafeo.GValue;
 import eu.dm2e.ws.grafeo.Grafeo;
 
@@ -22,37 +23,53 @@ import java.util.logging.Logger;
  * Author: Kai Eckert, Konstantin Baierer
  */
 public class GResourceImpl extends GValueImpl implements GResource {
-    private Resource resource;
+    private Resource jenaResource;
     private Logger log = Logger.getLogger(getClass().getName());
 
     public GResourceImpl(Grafeo grafeo, String uri) {
         this.grafeo = grafeo;
         uri = grafeo.expand(uri);
-        this.resource = getGrafeoImpl(grafeo).model.createResource(uri);
-        this.value = this.resource;
+        this.jenaResource = getGrafeoImpl(grafeo).model.createResource(uri);
+        this.value = this.jenaResource;
     }
 
     public GResourceImpl(Grafeo grafeo, Resource resource) {
         this.grafeo = grafeo;
-        this.resource = resource;
+        this.jenaResource = resource;
         this.value = resource;
 
     }
 
     @Override
     public boolean isAnon() {
-        return resource.isAnon();
+        return jenaResource.isAnon();
     }
 
     @Override
     public String getAnonId() {
-        return resource.getId().toString();
+        return jenaResource.getId().toString();
+    }
+    
+    @Override
+    public void rename(GResource res) {
+    	Set<GStatement> withResAsSubject = this.grafeo.listStatements(this, null, null);
+    	for (GStatement stmt : withResAsSubject) {
+    		GStatementImpl newStmt = new GStatementImpl(grafeo, res, stmt.getPredicate(), stmt.getObject());
+    		grafeo.removeTriple(stmt);
+    		grafeo.addTriple(newStmt);
+    	}
+    	Set<GStatement> withResAsObject = this.grafeo.listStatements(null, null, this);
+    	for (GStatement stmt : withResAsObject) {
+    		GStatementImpl newStmt = new GStatementImpl(grafeo, stmt.getSubject(), stmt.getPredicate(), res);
+    		grafeo.removeTriple(stmt);
+    		grafeo.addTriple(newStmt);
+    	}
     }
 
     @Override
     public void rename(String uri) {
-        this.resource = ResourceUtils.renameResource(resource, uri);
-        this.value = this.resource;
+        this.jenaResource = ResourceUtils.renameResource(jenaResource, uri);
+        this.value = this.jenaResource;
     }
     
     @Override
@@ -60,21 +77,21 @@ public class GResourceImpl extends GValueImpl implements GResource {
     	this.rename(uri.toString());
     }
 
-    public Resource getResource() {
-        return resource;
+    public Resource getJenaResource() {
+        return jenaResource;
     }
 
     @Override
     public String getUri() {
 
-        return resource.getURI();
+        return jenaResource.getURI();
     }
 
     @Override
     public GValue get(String uri) {
         log.fine("Check for property: " + uri);
         uri = grafeo.expand(uri);
-        Statement st = resource.getProperty(getGrafeoImpl(grafeo).model.createProperty(uri));
+        Statement st = jenaResource.getProperty(getGrafeoImpl(grafeo).model.createProperty(uri));
         if (st==null) return null;
         RDFNode value = st.getObject();
         log.fine("Found value: " + value.toString());
@@ -88,7 +105,7 @@ public class GResourceImpl extends GValueImpl implements GResource {
         log.fine("Check for all values for property: " + uri);
         uri = grafeo.expand(uri);
         Set<GValue> propSet = new HashSet<>();
-        StmtIterator st = resource.listProperties(getGrafeoImpl(grafeo).model.createProperty(uri));
+        StmtIterator st = jenaResource.listProperties(getGrafeoImpl(grafeo).model.createProperty(uri));
         while (st.hasNext()) {
         	Statement stmt = st.next();
         	RDFNode thisValue = stmt.getObject();

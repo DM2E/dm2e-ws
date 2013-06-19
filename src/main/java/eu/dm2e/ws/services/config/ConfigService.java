@@ -93,7 +93,7 @@ public class ConfigService extends AbstractRDFService {
         	res.rename(uri.toString());
         }
         log.warning("Skolemnizing ...");
-        g.skolemnizeSequential(uri.toString(), NS.OMNOM.PROP_ASSIGNMENT, "assignment");
+        g.skolemizeSequential(uri.toString(), NS.OMNOM.PROP_ASSIGNMENT, "assignment");
         log.warning("DONE Skolemnizing ...");
 //        }
 //        WebserviceConfigPojo pojo = g.getObjectMapper().getObject(WebserviceConfigPojo.class, uri);
@@ -137,7 +137,7 @@ public class ConfigService extends AbstractRDFService {
         }
         res.rename(uriStr);
         log.info("Renamed top blank node.");
-        	g.skolemnizeSequential(uriStr, NS.OMNOM.PROP_ASSIGNMENT, "assignment");
+        	g.skolemizeSequential(uriStr, NS.OMNOM.PROP_ASSIGNMENT, "assignment");
 //        }
         log.info("Skolemnized assignments");
         

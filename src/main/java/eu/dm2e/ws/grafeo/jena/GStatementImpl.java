@@ -97,18 +97,27 @@ public class GStatementImpl extends JenaImpl implements GStatement {
     protected Statement createStatement() {
         if (literal) {
             return getGrafeoImpl(grafeo).getModel().createStatement(
-                    getGResourceImpl(subject).getResource(),
+                    getGResourceImpl(subject).getJenaResource(),
                     getGrafeoImpl(grafeo).getModel().createProperty(predicate.getUri()),
                     getGLiteralImpl(literalValue).getLiteral()
             );
         } else {
             return getGrafeoImpl(grafeo).getModel().createStatement(
-                    getGResourceImpl(subject).getResource(),
+                    getGResourceImpl(subject).getJenaResource(),
                     getGrafeoImpl(grafeo).getModel().createProperty(predicate.getUri()),
-                    getGResourceImpl(resourceValue).getResource());
+                    getGResourceImpl(resourceValue).getJenaResource());
 
         }
     }
+
+
+	@Override
+	public GValue getObject() {
+		if (isLiteral()) {
+			return literalValue;
+		}
+		return resourceValue;
+	}
 
 
 }

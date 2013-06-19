@@ -345,7 +345,7 @@ public class JobServiceITCase extends OmnomTestCase {
 		assertThat(ass.getId(), is(nullValue()));
 		assertTrue("There are blank nodes for the job and the assignments", job
 			.getGrafeo()
-			.listBlankObjects()
+			.listAnonResources()
 			.size() > 0);
 		log.info(job.getTurtle());
 		job.publishToService();
@@ -354,7 +354,7 @@ public class JobServiceITCase extends OmnomTestCase {
 //		log.info(job.getTurtle());
 		assertTrue("No more blank nodes after publishing", job
 			.getGrafeo()
-			.listBlankObjects()
+			.listAnonResources()
 			.size() == 0);
 		
 		log.info(job.getTurtle());

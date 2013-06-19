@@ -52,7 +52,7 @@ import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.GStatement;
 import eu.dm2e.ws.grafeo.GValue;
 import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.SkolemnizationMethod;
+import eu.dm2e.ws.grafeo.SkolemizationMethod;
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFId;
 import eu.dm2e.ws.grafeo.gom.ObjectMapper;
@@ -155,7 +155,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         ResIterator it = model.listSubjects();
         GResourceImpl typeObjectGResource = new GResourceImpl(this, uri);
         GResourceImpl typePropertyGResource = new GResourceImpl(this, "rdf:type");
-        Resource typeObjectResource = typeObjectGResource.getResource();
+        Resource typeObjectResource = typeObjectGResource.getJenaResource();
         Property typeProperty = model.createProperty(typePropertyGResource.getUri());
         while (it.hasNext()) {
             Resource res = it.next();
@@ -177,7 +177,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         ResIterator it = model.listSubjects();
         GResourceImpl typeObjectGResource = new GResourceImpl(this, uri);
         GResourceImpl typePropertyGResource = new GResourceImpl(this, "rdf:type");
-        Resource typeObjectResource = typeObjectGResource.getResource();
+        Resource typeObjectResource = typeObjectGResource.getJenaResource();
         Property typeProperty = model.createProperty(typePropertyGResource.getUri());
         Set<GResource> result = new HashSet<>();
         while (it.hasNext()) {
@@ -275,7 +275,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         for ( ; expansionSteps > 0 ; expansionSteps--) {
         	log.info("Expansion No. " + expansionSteps);
         	log.info("Before expansion: "+ this.size());
-        	for (GResource gres : this.listResourceObjects()) {
+        	for (GResource gres : this.listURIResources()) {
         		if (resourceCache.contains(gres)){
         			continue;
         		}
@@ -339,7 +339,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         for ( ; expansionSteps > 0 ; expansionSteps--) {
             log.info("Expansion No. " + expansionSteps);
             log.info("Before expansion: "+ this.size());
-            for (GResource gres : this.listResourceObjects()) {
+            for (GResource gres : this.listURIResources()) {
                 if (resourceCache.contains(gres)){
                     continue;
                 }
@@ -415,6 +415,13 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     public String shorten(String uri) {
         return model.shortForm(uri);
     }
+	@Override
+	public GStatement addTriple(GStatement stmt) {
+		// TODO this might break on blank nodes
+		GStatementImpl stmtImpl = new GStatementImpl(this, stmt.getSubject(), stmt.getPredicate(), stmt.getObject());
+		this.model.add(stmtImpl.getStatement());
+		return stmtImpl;
+	}
 
     @Override
     public GStatementImpl addTriple(String subject, String predicate,
@@ -572,7 +579,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         	log.info("SCHMExpansion No. " + expansionSteps);
     		log.info("LIVELIVE");
         	log.info("Before expansion: "+ this.size());
-        	for (GResource gres : this.listResourceObjects()) {
+        	for (GResource gres : this.listURIResources()) {
         		if (resourceCache.contains(gres)){
         			continue;
         		}
@@ -868,7 +875,24 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     }
     
     @Override
-    public Set<GResource> listResourceObjects() {
+    public Set<GResource> listResources() {
+    	Set<GResource> resList = new HashSet<>();
+    	NodeIterator iter = this.getModel().listObjects();
+    	while (iter.hasNext()) {
+    		RDFNode node = iter.next();
+    		if (! node.isLiteral()) {
+    			resList.add(this.resource(node.asResource()));
+    		}
+    	}
+    	return resList;
+    }
+    private GResource resource(Resource jenaResource) {
+    	return new GResourceImpl(this, jenaResource);
+    	
+	}
+
+	@Override
+    public Set<GResource> listURIResources() {
     	Set<GResource> resList = new HashSet<>();
     	NodeIterator iter = this.getModel().listObjects();
     	while (iter.hasNext()) {
@@ -880,7 +904,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     	return resList;
     }
     @Override
-    public Set<GResource> listBlankObjects() {
+    public Set<GResource> listAnonResources() {
     	Set<GResource> resList = new HashSet<GResource>();
     	NodeIterator iter = this.getModel().listObjects();
     	while (iter.hasNext()) {
@@ -894,18 +918,24 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     }
     
     @Override
-    public void skolemnizeSequential(String subject, String predicate, String template) {
-    	this.skolemnize(subject, predicate, template, SkolemnizationMethod.SEQUENTIAL_ID);
+    public void skolemizeSequential(String subject, String predicate, String template) {
+    	this.skolemize(subject, predicate, template, SkolemizationMethod.SEQUENTIAL_ID);
     }
     
     @Override
-    public void skolemnizeUUID(String subject, String predicate, String template) {
-    	this.skolemnize(subject, predicate, template, SkolemnizationMethod.RANDOM_UUID);
+    public void skolemizeUUID(String subject, String predicate, String template) {
+    	this.skolemize(subject, predicate, template, SkolemizationMethod.RANDOM_UUID);
     }
     
+    @Override
+    public void unskolemize() {
+    	for (GResource res : this.listResources()) {
+    		res.rename(this.createBlank());
+    	}
+    }
 
 	@Override
-	public void skolemnize(String subject, String predicate, String template, SkolemnizationMethod method) {
+	public void skolemize(String subject, String predicate, String template, SkolemizationMethod method) {
 		subject = expand(subject);
 		predicate = expand(predicate);
 		Set<GResource> anonRes = new HashSet<>();
@@ -917,10 +947,10 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		long i = 1;
 		for (GResource gres : anonRes) {
 			String randomId;
-			if (method.equals(SkolemnizationMethod.RANDOM_UUID)) {
+			if (method.equals(SkolemizationMethod.RANDOM_UUID)) {
 				randomId = UUID.randomUUID().toString();
 			}
-			else if (method.equals(SkolemnizationMethod.SEQUENTIAL_ID)) {
+			else if (method.equals(SkolemizationMethod.SEQUENTIAL_ID)) {
 				randomId = "" + i++;
 			}
 			else {
@@ -929,10 +959,35 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 			gres.rename(subject + "/" + template + "/" + randomId);
 		}
 	}
+	
 	@Override
 	public Set<GStatement> listAnonStatements(String s, String p) {
 		return this.listAnonStatements(s, p, null);
 	}
+	@Override
+	public Set<GStatement> listStatements(GResource s, String p, GValue o) {
+		Resource sS = null;
+		Property pP = null;
+		RDFNode oO = null;
+		if (s != null) {
+			sS = ((GResourceImpl) s.resource()).getJenaResource();
+		}
+		if (p != null) {
+			pP = this.model.getProperty(expand(p));
+		}
+		if (o != null) {
+			oO = ((GResourceImpl) o.resource()).getJenaResource();
+		}
+		StmtIterator iter = this.model.listStatements(sS, pP, oO);
+		Set<GStatement> matchingStmts = new HashSet<>();
+		while (iter.hasNext()) {
+			Statement jenaStmt = iter.next();
+			GStatementImpl stmt = new GStatementImpl(this, jenaStmt);
+			matchingStmts.add(stmt);
+		}
+		return matchingStmts;
+	}
+	
 	@Override
 	public Set<GStatement> listAnonStatements(String s, String p, GResource o) {
 		Resource sS = null;
@@ -984,11 +1039,14 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     }
     
     @Override
-	public String visualizeWithGraphviz() throws Exception {
+	public String visualizeWithGraphviz(String outname) throws Exception {
+    	if (null == outname) {
+    		outname = "output.svg";
+    	}
 //		BufferedReader inp;
 		BufferedWriter out;
 //		String cmd = "rapper -o dot -i ntriples -I \"http://EXAMPLE/\" - | dot -Tpng -o output.png";
-		String cmd = "./bin/visualize-turtle.sh\n";
+		String cmd = "./bin/visualize-turtle.sh " + outname  +" \n";
 		Process p;
 		try {
 			p = Runtime.getRuntime().exec(cmd);
@@ -1057,4 +1115,11 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     	sb.append(". ");
 		return sb.toString();
     }
+
+	@Override
+	public void removeTriple(GStatement stmt) {
+		GStatementImpl stmtImpl = new GStatementImpl(this, stmt.getSubject(), stmt.getPredicate(), stmt.getObject());
+		this.model.remove(stmtImpl.getStatement());
+	}
+
 }

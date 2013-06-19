@@ -24,6 +24,10 @@ import eu.dm2e.ws.grafeo.jena.GResourceImpl;
  * @author Konstantin Baierer
  *
  */
+/**
+ * @author Konstantin Baierer
+ *
+ */
 public interface Grafeo {
 	GResource findTopBlank();
 
@@ -102,6 +106,13 @@ public interface Grafeo {
 	 */
 	String expand(String shorthand);
 
+	/**
+	 * Add a triple to the graph. 
+	 * 
+	 * @param stmt A statement
+	 */
+	GStatement addTriple(GStatement stmt);
+	
 	/**
 	 * Add a triple to the graph. 
 	 * 
@@ -255,39 +266,46 @@ public interface Grafeo {
     ObjectMapper getObjectMapper();
 
 	/**
-	 * Lists all resources that appear as objects of triples in the graph.
+	 * Replace blank nodes that are objects of a triple with URIs.
 	 * 
-	 * @return a Set of GResources
+	 * @param newURI the string to base the naming on.
 	 */
-	Set<GResource> listResourceObjects();
+	void skolemize(String subject, String predicate, String template, SkolemizationMethod method);
+	
+	/**
+	 * Replace blank nodes that are objects of a triple with URIs.
+	 * 
+	 * @param newURI the string to base the naming on.
+	 */
+	void skolemizeUUID(String subject, String predicate, String template);
+	
+	/**
+	 * Replace blank nodes that are objects of a triple with URIs.
+	 * 
+	 * @param newURI the string to base the naming on.
+	 */
+	void skolemizeSequential(String subject, String predicate, String template);
 
 	/**
-	 * Replace blank nodes that are objects of a triple with URIs.
+	 * List all resources in the Grafeo.
 	 * 
-	 * @param newURI the string to base the naming on.
+	 * @return A Set of GResources
 	 */
-	void skolemnize(String subject, String predicate, String template, SkolemnizationMethod method);
-	
-	/**
-	 * Replace blank nodes that are objects of a triple with URIs.
-	 * 
-	 * @param newURI the string to base the naming on.
-	 */
-	void skolemnizeUUID(String subject, String predicate, String template);
-	
-	/**
-	 * Replace blank nodes that are objects of a triple with URIs.
-	 * 
-	 * @param newURI the string to base the naming on.
-	 */
-	void skolemnizeSequential(String subject, String predicate, String template);
+	Set<GResource> listResources();
 
 	/**
 	 * List all blank nodes that appear as objects in triples in the graph.
 	 * 
 	 * @return A Set of GResource representing blank nodes
 	 */
-	Set<GResource> listBlankObjects();
+	Set<GResource> listAnonResources();
+
+	/**
+	 * Lists all resources that appear as objects of triples in the graph.
+	 * 
+	 * @return a Set of GResources
+	 */
+	Set<GResource> listURIResources();
 
 	Set<GStatement> listResourceStatements(String s, String p, String o);
 	
@@ -305,7 +323,7 @@ public interface Grafeo {
 	
     boolean isGraphEquivalent(Grafeo g);
 
-	String visualizeWithGraphviz() throws Exception;
+	String visualizeWithGraphviz(String outname) throws Exception;
 
 	/**
 	 * @return Map of namespace prefix mappings
@@ -333,7 +351,16 @@ public interface Grafeo {
 	String stringifyLiteralPattern(String subject, String predicate, String object);
 
 	String stringifyLiteralPattern(String subject, String predicate, GLiteral object);
+	
+	Set<GStatement> listStatements(GResource subject, String predicate, GValue object);
 
-//	Set<GResource> listSubjectsOfType(String type);
+	void removeTriple(GStatement stmt);
+
+	/**
+	 * Renames every resource to a blank node.
+	 */
+	void unskolemize();
+
+
 }
 

@@ -13,6 +13,8 @@ public interface GStatement {
     GResource getSubject();
 
     GResource getPredicate();
+    
+    GValue getObject();
 
     GLiteral getLiteralValue();
 

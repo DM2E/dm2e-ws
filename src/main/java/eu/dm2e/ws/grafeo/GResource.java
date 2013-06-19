@@ -11,6 +11,7 @@ import java.net.URI;
  */
 public interface GResource extends GValue {
     void rename(String uri);
+    void rename(GResource res);
 	void rename(URI newUri);
     String getUri();
 
