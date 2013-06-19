@@ -1,18 +1,13 @@
 package eu.dm2e.ws.api;
 
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/"})
-@RDFClass("omnom:WorkflowPosition")
-public class WorkflowPositionPojo {
-	
-	@RDFProperty("omnom:webservice")
-	private WebservicePojo webService;
-	
-	@RDFProperty("omnom:belongsToWorkflow")
-	private WorkflowPojo workflow;
+@RDFClass(NS.OMNOM.CLASS_WORKFLOW_POSITION)
+public class WorkflowPositionPojo extends SerializablePojo<WorkflowPositionPojo>{
 	
 
     /*********************
@@ -28,9 +23,19 @@ public class WorkflowPositionPojo {
      * GETTERS/SETTERS
      ********************/
 
-	public WebservicePojo getWebService() { return webService; }
-	public void setWebService(WebservicePojo webService) { this.webService = webService; }
+	/**
+	 *  Configuration of the workflow in this position as provided
+	 */
+	@RDFProperty(NS.OMNOM.PROP_WEBSERVICE_CONFIG)
+	private WebserviceConfigPojo webserviceConfig;
+	public WebserviceConfigPojo getWebserviceConfig() { return this.webserviceConfig; }
+	public void setWebserviceConfig(WebserviceConfigPojo webServiceConfig) { this.webserviceConfig = webServiceConfig; }
 
+	/**
+	 * The workflow this position belongs to
+	 */
+	@RDFProperty(NS.OMNOM.PROP_IN_WORKFLOW)
+	private WorkflowPojo workflow;
 	public WorkflowPojo getWorkflow() { return workflow; }
 	public void setWorkflow(WorkflowPojo workflow) { this.workflow = workflow; }
 
