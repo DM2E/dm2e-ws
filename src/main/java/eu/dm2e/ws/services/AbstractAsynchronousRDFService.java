@@ -6,11 +6,14 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+
 public abstract class AbstractAsynchronousRDFService extends AbstractRDFService implements Runnable {
 
 	@PUT
 	@Consumes(MediaType.TEXT_PLAIN)
-	public abstract Response startService(String configURI);
+	public abstract Response putConfigToService(String configURI);
 
 	/**
 	 * Convenience method that accepts a configuration, publishes it
@@ -24,6 +27,19 @@ public abstract class AbstractAsynchronousRDFService extends AbstractRDFService 
 	 */
 	@POST
 	@Consumes(MediaType.WILDCARD)
-	public abstract Response postConfig(String rdfString);
+	public Response postConfig(String rdfString) {
+		Grafeo g = null;
+		try {
+			g = new GrafeoImpl();
+			g.readHeuristically(rdfString);
+			assert(g != null);
+		}
+		catch (Exception e) {
+			throwServiceError(e);
+		}
+		return this.postGrafeo(g);
+	}
+	
+	abstract public Response postGrafeo(Grafeo g);
 
 }
