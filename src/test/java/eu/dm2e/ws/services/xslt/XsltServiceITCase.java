@@ -73,12 +73,12 @@ public class XsltServiceITCase extends OmnomTestCase {
     	
     	WebserviceConfigPojo tC = new WebserviceConfigPojo();
     	assertThat(tC.getId(), is(nullValue()));
-    	tC.publishToService();
+    	tC.publishToService(client.getConfigWebResource());
     	assertThat(tC.getId(), not(nullValue()));
     	log.info("config uri: " + tC.getId());
     	tC.setWebservice(SERVICE_POJO);
-    	tC.addParameterAssignment(XsltService.XML_IN_PARAM_NAME, xmlUri);
-    	tC.addParameterAssignment(XsltService.XSLT_IN_PARAM_NAME, xsltUri);
+    	tC.addParameterAssignment(XsltService.PARAM_XML_IN, xmlUri);
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, xsltUri);
     	tC.publishToService();
     	
     	ClientResponse resp = client.putPojoToService(tC, SERVICE_URI);
@@ -101,7 +101,7 @@ public class XsltServiceITCase extends OmnomTestCase {
 	    	job.loadFromURI(jobUri);
 	    	log.info(job.toLogString());
     	}
-    	String resultUri = job.getParameterValueByName(XsltService.XML_OUT_PARAM_NAME);
+    	String resultUri = job.getParameterValueByName(XsltService.PARAM_XML_OUT);
     	assertNotNull(resultUri);
     	log.info("Job finished. Result is at " + resultUri );
     	

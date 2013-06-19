@@ -19,7 +19,6 @@ import java.util.logging.Level;
 import javax.ws.rs.Path;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
@@ -34,7 +33,6 @@ import org.grep4j.core.result.GrepResults;
 
 import com.sun.jersey.api.client.ClientResponse;
 
-import eu.dm2e.ws.api.AbstractJobPojo;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.ParameterPojo;
