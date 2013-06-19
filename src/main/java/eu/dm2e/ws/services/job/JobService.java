@@ -61,7 +61,7 @@ public class JobService extends AbstractJobService {
 	public Response postJob(Grafeo inputGrafeo, String uriStr) {
 		
 		log.fine("Skolemnizing");
-		inputGrafeo.skolemnizeUUID(uriStr, NS.OMNOM.PROP_OUTPUT_ASSIGNMENT, "assignment");
+		inputGrafeo.skolemnizeUUID(uriStr, NS.OMNOM.PROP_ASSIGNMENT, "assignment");
 		inputGrafeo.skolemnizeUUID(uriStr, NS.OMNOM.PROP_LOG_ENTRY, "log");
 		
 		log.warning("Instantiating Job POJO " + uriStr);
@@ -72,19 +72,19 @@ public class JobService extends AbstractJobService {
 		
 		Grafeo outputGrafeo = new GrafeoImpl();
 		outputGrafeo.getObjectMapper().addObject(jobPojo);
-		outputGrafeo.writeToEndpoint(NS.ENDPOINT_STATEMENTS, uriStr);
+		outputGrafeo.writeToEndpoint(NS.ENDPOINT_UPDATE, uriStr);
 		return Response.created(URI.create(uriStr)).entity(getResponseEntity(jobPojo.getGrafeo())).build();
 	}
 	
 	@Override
 	public Response putJob(Grafeo inputGrafeo, String uriStr) {
 		log.fine("Skolemnizing");
-		GResource blank = inputGrafeo.findTopBlank("omnom:Job");
+		GResource blank = inputGrafeo.findTopBlank(NS.OMNOM.CLASS_JOB);
 		if (blank != null) {
 			blank.rename(uriStr);
 		}
 		inputGrafeo.skolemnizeUUID(uriStr, NS.OMNOM.PROP_LOG_ENTRY, "log");
-		inputGrafeo.skolemnizeUUID(uriStr, NS.OMNOM.PROP_OUTPUT_ASSIGNMENT, "assignment");
+		inputGrafeo.skolemnizeUUID(uriStr, NS.OMNOM.PROP_ASSIGNMENT, "assignment");
 		
 		log.warning("Instantiating Job POJO " + uriStr);
 		JobPojo jobPojo = inputGrafeo.getObjectMapper().getObject(JobPojo.class, uriStr);
@@ -113,7 +113,7 @@ public class JobService extends AbstractJobService {
 		} catch (Exception e) {
 			return throwServiceError(ErrorMsg.BAD_RDF);
 		}
-		GResource blank = inputGrafeo.findTopBlank("omnom:ParameterAssignment");
+		GResource blank = inputGrafeo.findTopBlank(NS.OMNOM.CLASS_PARAMETER_ASSIGNMENT);
 		if (blank == null) {
 			return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE);
 		}
@@ -124,7 +124,7 @@ public class JobService extends AbstractJobService {
 		
 		Grafeo outputGrafeo = new GrafeoImpl();
 		outputGrafeo.getObjectMapper().addObject(ass);
-		outputGrafeo.addTriple(jobUri, NS.OMNOM.PROP_OUTPUT_ASSIGNMENT, assUri);
+		outputGrafeo.addTriple(jobUri, NS.OMNOM.PROP_ASSIGNMENT, assUri);
 		SparqlUpdate sparul = new SparqlUpdate.Builder()
 				.delete("?s ?p ?o.")
 				.insert(outputGrafeo.getNTriples())
