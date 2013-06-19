@@ -2,7 +2,7 @@
 @prefix dm2e_types: <http://onto.dm2e.eu/types#> .
 @prefix omnom: <http://omnom.dm2e.eu/> .
 @prefix xslt_service: <http://omnom.dm2e.eu/service/xslt#> .
-[]  a dm2e:WebServiceConfig ;
+[]  a dm2e:WebserviceConfig ;
     xslt_service:xsltSource <http://localhost:9998/file/1363780209671_ed6faa77-92b8-4f02-9607-feee380e67e8>  ;
     xslt_service:xmlSource <http://localhost:9998/file/1363780209400_fd034a7c-e3da-49a3-958c-c14899a4e2e4> ;
     xslt_service:output <http://localhost:9998/file/1363780210241_b8661e64-12bb-4166-a5c8-1a6f500b27cd> .

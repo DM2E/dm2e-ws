@@ -1,0 +1,8 @@
+* JSON-Talis Serialization für WP3
+* NTUA wrgen XSD fragen
+* Bevor Ingestion nach Europeana: Filtern
+    * dm2e:Manuscript als ProvidedCHO
+    * Case-to-Case Basis
+    * "Noteworthy" Flag in Metadaten
+    * "dm2e:isProvidedFor" + URL 
+    

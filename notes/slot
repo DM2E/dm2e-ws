@@ -1,0 +1,27 @@
+wf1 a workflow ;
+    position [
+        service: ws1
+        config: [
+            inputParam fooInput1
+            outputParam quuxOutput1
+        ]
+    ] ;
+    position [
+        service: ws2
+        config: [
+            inputParam barInput1
+            outputParam fnoorOutput1
+    ] ;
+    slot [
+        fromString "http://foo.bar/urks" ;
+        toPosition #1 ;
+        toParam fooInput1 ;
+    ] ;
+    slot [
+        fromPosition #1
+        fromParam quuxOutput1
+        toPosition #2
+        toParam barInput1
+    ]
+
+

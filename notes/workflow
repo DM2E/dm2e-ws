@@ -1,0 +1,33 @@
+WorkflowGenerator
+    POST => Workflow
+Workflow
+    inputParameter
+    outputParameter
+WorkflowConfig
+    assignment
+    position
+    connector
+WorkflowJob
+    workflow
+    workflowConfig
+    outputParam
+
+
+------
+Webservice
+    id
+    inputParameter
+    outputParameter
+WebserviceConfig
+    inputparamssignemtn
+WebserviceJob
+    webservice
+    webserviceConfig
+    outputAssignment
+    status..
+    
+
+
+------
+File
+    

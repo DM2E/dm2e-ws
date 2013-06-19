@@ -23,6 +23,6 @@
 @prefix cc:      <http://creativecommons.org/ns#> .
 
 []
-      a       dm2e:WebServiceConfig ;
+      a       dm2e:WebserviceConfig ;
       :xmlSource <http://141.20.126.155/api/file/5087efca56dd640869000036/data> ;
       :xsltSource <http://141.20.126.155/api/file/5087f01056dd6408690000a9/data> .
