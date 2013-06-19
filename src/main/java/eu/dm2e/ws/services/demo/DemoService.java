@@ -3,6 +3,7 @@ package eu.dm2e.ws.services.demo;
 import javax.ws.rs.Path;
 
 import eu.dm2e.ws.ErrorMsg;
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
@@ -21,7 +22,7 @@ public class DemoService extends AbstractTransformationService {
 	
     public DemoService() {
         ParameterPojo sleeptimeParam = getWebServicePojo().addInputParameter("sleeptime");
-        sleeptimeParam.setParameterType("xsd:int");
+        sleeptimeParam.setParameterType(NS.XSD.INT);
         sleeptimeParam.setIsRequired(true);
         ParameterPojo countdownPhraseParam = getWebServicePojo().addInputParameter("countdownPhrase");
         countdownPhraseParam.setIsRequired(false);
@@ -35,14 +36,15 @@ public class DemoService extends AbstractTransformationService {
         jobPojo.debug("wsConf: " + wsConf);
 
         int sleepTime = 0;
-        jobPojo.debug(wsConf.getParameterValueByName("sleeptime"));
-        jobPojo.debug(wsConf.getParameterValueByName("countdownPhrase"));
+        jobPojo.debug("sleeptime: " + wsConf.getParameterValueByName("sleeptime"));
+        jobPojo.debug("countdownPhrase: " + wsConf.getParameterValueByName("countdownPhrase"));
 
         try {
             sleepTime = Integer.parseInt(wsConf.getParameterValueByName("sleeptime"));
         } catch(Exception e) {
             jobPojo.warn(wsConf.getParameterValueByName("sleeptime") + " " + ErrorMsg.ILLEGAL_PARAMETER_VALUE.toString() + " " + e);
         }
+        log.info("Parsed sleeptime: " + sleepTime);
         String countdownPhrase = (null == wsConf.getParameterValueByName("countdownPhrase"))
         		? "bottles of beer on the wall."
         		: wsConf.getParameterValueByName("countdownPhrase");
