@@ -89,7 +89,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		} catch (Exception e) {
 			return throwServiceError(ErrorMsg.BAD_RDF);
 		}
-		GResource blank = inputGrafeo.findTopBlank("omnom:Job");
+		GResource blank = inputGrafeo.findTopBlank(NS.OMNOM.CLASS_JOB);
 		if (blank == null) {
 			return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE + inputGrafeo.getTurtle());
 		}
@@ -170,8 +170,8 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		
 		String jobUri = getRequestUriWithoutQuery().toString().replaceAll("/status$", "");
 		SparqlUpdate sparul = new SparqlUpdate.Builder()
-			.delete("?s " + NS.OMNOM.PROP_JOB_STATUS + " ?p")
-			.insert("<" + jobUri + "> " + NS.OMNOM.PROP_JOB_STATUS + " \"" + newStatus.toString() + "\"")
+			.delete("?s <" + NS.OMNOM.PROP_JOB_STATUS + "> ?p")
+			.insert("<" + jobUri + "> <" + NS.OMNOM.PROP_JOB_STATUS + "> \"" + newStatus.toString() + "\"")
 			.endpoint(Config.ENDPOINT_UPDATE)
 			.graph(jobUri)
 			.build();
@@ -198,7 +198,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 			return throwServiceError(e);
 		}
 		Grafeo gEntry = new GrafeoImpl(IOUtils.toInputStream(logRdfStr));
-		GResource blank = gEntry.findTopBlank("omnom:LogEntry");
+		GResource blank = gEntry.findTopBlank(NS.OMNOM.CLASS_LOG_ENTRY);
 		if (null == blank) {
 			return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE);
 		}
