@@ -36,6 +36,7 @@ import eu.dm2e.utils.PojoUtils;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -173,9 +174,9 @@ public class FileService extends AbstractRDFService {
 		boolean metaPartIsEmpty = (metaPart == null) ? true : metaPart.getValueAs(String.class).equals("");
 		if (! metaPartIsEmpty) {
 			newG.readHeuristically(metaPart.getValueAs(String.class));
-			GResource res = newG.findTopBlank("omnom:File");
+			GResource res = newG.findTopBlank(NS.OMNOM.CLASS_FILE);
 			if (res == null) {
-				return throwServiceError("omnom:File", ErrorMsg.NO_TOP_BLANK_NODE);
+				return throwServiceError(NS.OMNOM.CLASS_FILE, ErrorMsg.NO_TOP_BLANK_NODE);
 			}
 			res.rename(uri.toString());
 			newFilePojo = newG.getObjectMapper().getObject(FilePojo.class, uri);
@@ -341,14 +342,14 @@ public class FileService extends AbstractRDFService {
 			}
 			
 			// rename top blank node to the newly minted URI if it exists
-			GResource uriRes = g.findTopBlank("omnom:File");
+			GResource uriRes = g.findTopBlank(NS.OMNOM.CLASS_FILE);
 			if (null == uriRes) {
-				Iterator<GResource> iter = g.findByClass("omnom:File").iterator();
+				Iterator<GResource> iter = g.findByClass(NS.OMNOM.CLASS_FILE).iterator();
 				if (iter.hasNext()) {
 					uriRes = iter.next();
 				}
 				else {
-					return throwServiceError("omnom:file", ErrorMsg.NO_RESOURCE_OF_CLASS);
+					return throwServiceError(NS.OMNOM.CLASS_FILE, ErrorMsg.NO_RESOURCE_OF_CLASS);
 				}
 			}
 			else {
@@ -624,7 +625,7 @@ public class FileService extends AbstractRDFService {
 		// load posted RDF
 		GrafeoImpl g = new GrafeoImpl(bodyInputStream);
 		// rename the top blank node to uri if it exists
-		if (g.findTopBlank("omnom:File") != null) {
+		if (g.findTopBlank(NS.OMNOM.CLASS_FILE) != null) {
 			g.findTopBlank().rename(uri.toString());
 		}			
 		
