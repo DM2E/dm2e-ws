@@ -13,4 +13,4 @@ src/main/resources/logging.properties
 testconfig
 src/main/java/eu/dm2e/ws/grafeo/annotations/NestedURIComponent.java
 log
-output.svg
+/*.svg

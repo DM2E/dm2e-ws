@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -357,9 +358,45 @@ public interface Grafeo {
 	void removeTriple(GStatement stmt);
 
 	/**
-	 * Renames every resource to a blank node.
+	 * Replace every resource (blank and URI) with a blank node, but keep the structure.
+	 * 
 	 */
 	void unskolemize();
+//
+//	/**
+//	 * Replace every resource (blank and URI) with a blank node, destroying the structure.
+//	 * 
+//	 */
+//	void unskolemizeToSingleResource();
+
+	/**
+	 * Create N-TRIPLEs representation sorted by predicate
+	 * @return
+	 */
+	String getPredicateSortedNTriples();
+
+//	/**
+//	 * Replace every resource/blank with a dummy resource, serialize to N-TRIPLES, sort by predicate and rename all resources to blank.
+//	 * @return
+//	 */
+//	String getUnskolemnizedToSingleResourcePredicateSortedNTriples();
+
+	List<String> diffUnskolemizedNTriples(Grafeo that);
+
+	/**
+	 * Replaces all resources/blanks with blanks and checks whether Grafeos are isomorphic.
+	 * 
+	 * @param g The Grafeo to compare to
+	 * @return true if they are isomorphic structurally, false otherwise
+	 */
+	boolean isStructuralGraphEquivalent(Grafeo g);
+
+	/**
+	 * Deeply copies one grafeo instance to another.
+	 * 
+	 * @return New instance of Grafeo with the same statements
+	 */
+	Grafeo copy();
 
 
 }

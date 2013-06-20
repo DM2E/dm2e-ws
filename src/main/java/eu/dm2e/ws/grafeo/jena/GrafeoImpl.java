@@ -11,12 +11,15 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -686,6 +689,68 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         return StringUtils.join(lines, "\n");
     }
     
+//    public String getUnskolemnizedToSingleResourcePredicateSortedNTriples() {
+//    	GrafeoImpl thisCopy = new GrafeoImpl();
+//    	thisCopy.unskolemize();
+//    	thisCopy.readHeuristically(this.getNTriples());
+//    	String pSortedNT = thisCopy.getPredicateSortedNTriples();
+//    	return pSortedNT.replaceAll("<_[^>]+>", "<blank>");
+//    }
+    
+    @Override
+    public String getPredicateSortedNTriples() {
+        StringWriter sw = new StringWriter();
+        model.write(sw, "N-TRIPLE");
+        String[] lines = sw.toString().split("\n");
+        List<String> linesPOSlist = new ArrayList<>();
+        List<String> linesSPOlist = new ArrayList<>();
+        for (String line : lines) {
+        	String linePSO = line.replaceAll("^([^\\s*]+)\\s+(.*)$", "$2 $1");
+        	linesPOSlist.add(linePSO);
+        }
+        Collections.sort(linesPOSlist);
+        for (String line : linesPOSlist) {
+        	String lineSPO = line.replaceAll("(.*)\\s([^\\s]+)$", "$2 $1");
+        	linesSPOlist.add(lineSPO);
+        }
+        return StringUtils.join(linesSPOlist, "\n");
+    }
+    
+    @Override
+    public List<String> diffUnskolemizedNTriples(Grafeo that) {
+    	
+    	List<Grafeo> grafeos = Arrays.asList(this.copy(), that.copy());
+    	List<String> grafeosNT = new ArrayList<>();
+    	for (int i = 0; i <= 1; i++) {
+    		Grafeo g = grafeos.get(i);
+    		g.unskolemize();
+    		String asNT = g.getPredicateSortedNTriples();
+    		asNT += "\n";
+	    	grafeosNT.add(asNT.replaceAll("<_[^>]+>", "_"));
+    	}
+    	
+    	// sort by grafeo size
+    	if (this.size() > that.size()) {
+    		String swap = grafeosNT.get(0);
+    		grafeosNT.set(0, grafeosNT.get(1));
+    		grafeosNT.set(1, swap);
+    	}
+//    	log.severe("SIZERRR: " + this.size() + "" + that.size());
+    	
+    	// replace all the statements from the smaller one in the larger one and the smaller one
+    	for (String line : grafeosNT.get(0).split("\n")) {
+    		line += "\n";
+    		grafeosNT.set(0, StringUtils.replaceOnce(grafeosNT.get(0), line, ""));
+    		grafeosNT.set(1, StringUtils.replaceOnce(grafeosNT.get(1), line, ""));
+    	}
+    	// replace all the statements from the larger one in the smaller one
+    	for (String line : grafeosNT.get(1).split("\n")) {
+    		line += "\n";
+    		grafeosNT.set(0, StringUtils.replaceOnce(grafeosNT.get(0), line, ""));
+    	}
+    	return grafeosNT;
+    }
+    
     @Override
     public String getTurtle() {
         StringWriter sw = new StringWriter();
@@ -929,10 +994,18 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     
     @Override
     public void unskolemize() {
+    	long i = 0;
     	for (GResource res : this.listResources()) {
-    		res.rename(this.createBlank());
+    		res.rename(this.resource("_blank_" + (i++) +"_"));
     	}
     }
+//    @Override
+//    public void unskolemizeToSingleResource() {
+//    	GResourceImpl blank = this.resource("blank");
+//    	for (GResource res : this.listResources()) {
+//    		res.rename(blank);
+//    	}
+//    }
 
 	@Override
 	public void skolemize(String subject, String predicate, String template, SkolemizationMethod method) {
@@ -1031,11 +1104,25 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		}
 		return matchingStmts;
 	}
+	
+	@Override 
+	public Grafeo copy() {
+		Grafeo newGrafeo = new GrafeoImpl();
+		newGrafeo.readHeuristically(this.getNTriples());
+		return newGrafeo;
+	}
 
     @Override
     public boolean isGraphEquivalent(Grafeo g) {
         GrafeoImpl gi = (GrafeoImpl) g;
         return getModel().isIsomorphicWith(gi.getModel());
+    }
+    @Override
+    public boolean isStructuralGraphEquivalent(Grafeo g) {
+        GrafeoImpl that = (GrafeoImpl) g;
+        List<Grafeo> toCompare = Arrays.asList(this.copy(), that.copy());
+        for (Grafeo gN : toCompare) gN.unskolemize();
+        return toCompare.get(0).isGraphEquivalent(toCompare.get(1));
     }
     
     @Override

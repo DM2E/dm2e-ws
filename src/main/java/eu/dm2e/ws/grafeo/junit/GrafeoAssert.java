@@ -1,11 +1,13 @@
 package eu.dm2e.ws.grafeo.junit;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
+import java.util.List;
 import java.util.Set;
 
 import org.junit.ComparisonFailure;
 
+import eu.dm2e.ws.api.SerializablePojo;
 import eu.dm2e.ws.grafeo.GLiteral;
 import eu.dm2e.ws.grafeo.GStatement;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -68,6 +70,12 @@ public class GrafeoAssert {
 			throw new ComparisonFailure("Grafeo size differs", ""+size, ""+grafeo.size());
 		}
 	}
+	static public void sizeEquals(Grafeo g1, Grafeo g2) {
+		if (!(g1.size() == g2.size())) {
+			throw new ComparisonFailure("Grafeo size differs", ""+g1.size(), ""+g2.size());
+		}
+		
+	}
 	/**
 	 * @param grafeo
 	 * @param size
@@ -89,11 +97,23 @@ public class GrafeoAssert {
 					"" + set.size());
 		}
 	}
+	static public void graphsAreEquivalent(SerializablePojo p1, SerializablePojo p2) {
+		graphsAreEquivalent(p1.getGrafeo(), p2.getGrafeo());
+	}
 	static public void graphsAreEquivalent(Grafeo g1, Grafeo g2) {
 		if (! g1.isGraphEquivalent(g2)) {
 			throw new ComparisonFailure("Graphs are not equivalent!",
-					g1.getCanonicalNTriples(),
-					g2.getCanonicalNTriples());
+					g1.getTerseTurtle(),
+					g2.getTerseTurtle());
+		}
+	}
+	static public void graphsAreStructurallyEquivalent(SerializablePojo p1, SerializablePojo p2) {
+		graphsAreStructurallyEquivalent(p1.getGrafeo(), p2.getGrafeo());
+	}
+	static public void graphsAreStructurallyEquivalent(Grafeo g1, Grafeo g2) {
+		if (! g1.isStructuralGraphEquivalent(g2)) {
+			List<String> diff = g1.diffUnskolemizedNTriples(g2);
+			throw new ComparisonFailure("Graphs are not structurally isomorphic.", diff.get(0), diff.get(1));
 		}
 	}
 
