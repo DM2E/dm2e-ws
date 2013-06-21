@@ -11,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NotImplementedException;
+import org.junit.Assert;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -62,16 +63,16 @@ public class Client {
 				.post(ClientResponse.class);	
     }
     
-    public String publishPojo(AbstractPersistentPojo pojo, WebResource configWR) {
+    public String publishPojo(AbstractPersistentPojo pojo, WebResource serviceEndpoint) {
 		ClientResponse resp;
 		String method = "POST";
 		if (null == pojo.getId()) {
-			log.warning(method + "ing pojo to service " + configWR.getURI() + ": " + pojo.getTurtle());
-			resp = this.postPojoToService(pojo, configWR);
+			log.warning(method + "ing pojo to service " + serviceEndpoint.getURI() + ": " + pojo.getTurtle());
+			resp = this.postPojoToService(pojo, serviceEndpoint);
 		} else {
 			method = "PUT";
-			log.info(method + "ing pojo to service " + configWR.getURI());
-			if (pojo.getId().startsWith(configWR.getURI().toString())) {
+			log.info(method + "ing pojo to service " + serviceEndpoint.getURI());
+			if (pojo.getId().startsWith(serviceEndpoint.getURI().toString())) {
 				 resp = resource(pojo.getId())
 					.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
 //					.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
@@ -91,7 +92,7 @@ public class Client {
 					);
 		}
 		if (null == resp.getLocation()) {
-			throw new RuntimeException(method +"ing " + configWR.toString() +  " did not return a location. Body was " + resp.getEntity(String.class));
+			throw new RuntimeException(method +"ing " + serviceEndpoint.toString() +  " did not return a location. Body was " + resp.getEntity(String.class));
 		}
 		pojo.setId(resp.getLocation().toString());
 		pojo.loadFromURI(pojo.getId());

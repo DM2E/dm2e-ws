@@ -265,7 +265,7 @@ public class NewFileServiceITCase extends OmnomTestCase {
 					.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
 					.get(ClientResponse.class);
 			GrafeoImpl g = new GrafeoImpl(resp.getEntityInputStream());
-			g.containsStatementPattern(fileUri, "omnom:fileStatus", "DELETED");
+			g.containsTriple(fileUri, "omnom:fileStatus", "DELETED");
 			FilePojo fp = new FilePojo();
 			fp.loadFromURI(fileUri);
 			assertEquals("File is available", FileStatus.DELETED.toString(), fp.getFileStatus());

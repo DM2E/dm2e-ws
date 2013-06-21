@@ -78,7 +78,7 @@ public class ClientITCase extends OmnomTestCase {
 			Grafeo g = new GrafeoImpl(resp.getEntityInputStream());
 			log.info(g.getTurtle());
 			assertTrue(
-					g.containsStatementPattern(uri,
+					g.containsTriple(uri,
 					"rdf:type",
 					"omnom:Webservice")
 			);

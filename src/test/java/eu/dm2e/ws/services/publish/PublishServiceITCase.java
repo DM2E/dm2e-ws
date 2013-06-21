@@ -57,19 +57,19 @@ public class PublishServiceITCase extends OmnomTestCase {
                 .accept("text/turtle")
                 .get(InputStream.class));
         log.info(g.getNTriples());
-        assertTrue(g.containsStatementPattern(SERVICE_URI, NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_WEBSERVICE));
-        assertTrue(g.containsStatementPattern(SERVICE_URI, NS.OMNOM.PROP_INPUT_PARAM, SERVICE_URI + "/param/to-publish"));
-        assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/to-publish", NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_PARAMETER));
-        assertTrue(g.containsStatementPattern(SERVICE_URI, NS.OMNOM.PROP_INPUT_PARAM, SERVICE_URI + "/param/dataset-id"));
-        assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/dataset-id", NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_PARAMETER));
-        assertTrue(g.containsStatementPattern(SERVICE_URI, NS.OMNOM.PROP_INPUT_PARAM, SERVICE_URI + "/param/endpoint-select"));
-        assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/endpoint-select", NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_PARAMETER));
-        assertTrue(g.containsStatementPattern(SERVICE_URI, NS.OMNOM.PROP_INPUT_PARAM, SERVICE_URI + "/param/endpoint-update"));
-        assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/endpoint-update", NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_PARAMETER));
-        assertTrue(g.containsStatementPattern(SERVICE_URI, NS.OMNOM.PROP_INPUT_PARAM, SERVICE_URI + "/param/label"));
-        assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/label", NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_PARAMETER));
-        assertTrue(g.containsStatementPattern(SERVICE_URI, NS.OMNOM.PROP_INPUT_PARAM, SERVICE_URI + "/param/comment"));
-        assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/comment", NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_PARAMETER));
+        assertTrue(g.containsTriple(SERVICE_URI, NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_WEBSERVICE));
+        assertTrue(g.containsTriple(SERVICE_URI, NS.OMNOM.PROP_INPUT_PARAM, SERVICE_URI + "/param/to-publish"));
+        assertTrue(g.containsTriple(SERVICE_URI + "/param/to-publish", NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_PARAMETER));
+        assertTrue(g.containsTriple(SERVICE_URI, NS.OMNOM.PROP_INPUT_PARAM, SERVICE_URI + "/param/dataset-id"));
+        assertTrue(g.containsTriple(SERVICE_URI + "/param/dataset-id", NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_PARAMETER));
+        assertTrue(g.containsTriple(SERVICE_URI, NS.OMNOM.PROP_INPUT_PARAM, SERVICE_URI + "/param/endpoint-select"));
+        assertTrue(g.containsTriple(SERVICE_URI + "/param/endpoint-select", NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_PARAMETER));
+        assertTrue(g.containsTriple(SERVICE_URI, NS.OMNOM.PROP_INPUT_PARAM, SERVICE_URI + "/param/endpoint-update"));
+        assertTrue(g.containsTriple(SERVICE_URI + "/param/endpoint-update", NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_PARAMETER));
+        assertTrue(g.containsTriple(SERVICE_URI, NS.OMNOM.PROP_INPUT_PARAM, SERVICE_URI + "/param/label"));
+        assertTrue(g.containsTriple(SERVICE_URI + "/param/label", NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_PARAMETER));
+        assertTrue(g.containsTriple(SERVICE_URI, NS.OMNOM.PROP_INPUT_PARAM, SERVICE_URI + "/param/comment"));
+        assertTrue(g.containsTriple(SERVICE_URI + "/param/comment", NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_PARAMETER));
     }
 
 

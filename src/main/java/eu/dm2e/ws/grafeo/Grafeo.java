@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.hp.hpl.jena.query.ResultSet;
-
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 import eu.dm2e.ws.grafeo.gom.ObjectMapper;
@@ -134,6 +132,16 @@ public interface Grafeo {
 	 */
 	GStatement addTriple(String subject, String predicate, GValue object);
 	
+	/**
+	 * Add a triple to the graph. 
+	 * 
+	 * @param subject Resource of the subject
+	 * @param predicate URI/Shorthand of the predicate
+	 * @param object GValue representing the object
+	 * @return
+	 */
+	GStatement addTriple(GResource subject, String predicate, GValue object);
+	
 	boolean isEscaped(String input);
 
 	String unescapeLiteral(String literal);
@@ -208,21 +216,13 @@ public interface Grafeo {
 
 	GLiteral date(Long timestamp);
 
-	boolean containsStatementPattern(String s, String p, String o);
+	boolean containsTriple(String s, String p, String o);
 
-	boolean containsStatementPattern(String s, String p, GLiteral o);
+	boolean containsTriple(String s, String p, GLiteral o);
 
 	boolean containsResource(String graph);
 
 	boolean containsResource(URI graphURI);
-
-	boolean executeSparqlAsk(String queryString);
-
-	ResultSet executeSparqlSelect(String queryString);
-
-	Grafeo executeSparqlConstruct(String queryString);
-	
-	void executeSparqlUpdate(String queryString, String endpoint);
 
 	void readHeuristically(String content);
 
@@ -253,9 +253,9 @@ public interface Grafeo {
 	 */
     Set<GResource> findByClass(String type);
 
-    GResourceImpl createBlank();
+    GResource createBlank();
 
-    GResourceImpl createBlank(String id);
+    GResource createBlank(String id);
 
     /**
      * Get an object mapper that can instantiate classes annotated with Grafeo annotations.
@@ -324,7 +324,7 @@ public interface Grafeo {
 	
     boolean isGraphEquivalent(Grafeo g);
 
-	String visualizeWithGraphviz(String outname) throws Exception;
+	void visualizeWithGraphviz(String outname) throws Exception;
 
 	/**
 	 * @return Map of namespace prefix mappings
@@ -397,6 +397,13 @@ public interface Grafeo {
 	 * @return New instance of Grafeo with the same statements
 	 */
 	Grafeo copy();
+
+	/**
+	 * Return those namespaces that have been actually used for expansion.
+	 * 
+	 * @return
+	 */
+	Map<String, String> getNamespacesUsed();
 
 
 }

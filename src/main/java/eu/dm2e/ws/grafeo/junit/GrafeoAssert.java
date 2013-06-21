@@ -20,6 +20,7 @@ import eu.dm2e.ws.grafeo.Grafeo;
  */
 public class GrafeoAssert {
 	
+	
 	/**
 	 * Assert that a grafeo contians a certain statement pattern where the object is a resource.
 	 * 
@@ -28,14 +29,9 @@ public class GrafeoAssert {
 	 * @param predicate
 	 * @param object The object interpreted as a URI or QName
 	 */
-	static public void containsResource(Grafeo grafeo, Object subject, Object predicate, Object object) {
-		if (null == grafeo) {
-			fail("Grafeo is null.");
-		}
-		String s = subject == null ? null : subject.toString();
-		String p = predicate == null ? null : predicate.toString();
-		String o = object == null ? null : object.toString();
-		if (!grafeo.containsStatementPattern(s, p, o)) {
+	static public void containsResource(Grafeo grafeo, String s, String p, String o) {
+		if (null == grafeo) fail("Grafeo is null.");
+		if (!grafeo.containsTriple(s, p, o)) {
 			fail("Grafeo doesn't contain { " + grafeo.stringifyResourcePattern(s, p, o) + " }.");
 		}
 	}
@@ -53,7 +49,7 @@ public class GrafeoAssert {
 		String s = subject == null ? null : subject.toString();
 		String p = predicate == null ? null : predicate.toString();
 		GLiteral o = object == null ? null : grafeo.literal(object);
-		if (!grafeo.containsStatementPattern(s, p, o)) {
+		if (!grafeo.containsTriple(s, p, o)) {
 			fail("Grafeo doesn't contain { " + grafeo.stringifyLiteralPattern(s, p, o) + "}.");
 		}
 	}

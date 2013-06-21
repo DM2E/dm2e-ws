@@ -50,10 +50,10 @@ public class XsltServiceITCase extends OmnomTestCase {
     			.accept("text/turtle")
     			.get(InputStream.class));
     	log.info(g.getTurtle());
-    	assertTrue(g.containsStatementPattern(SERVICE_URI, "rdf:type", "omnom:Webservice"));
-    	assertTrue(g.containsStatementPattern(SERVICE_URI, "omnom:inputParam", SERVICE_URI + "/param/xmlInput"));
-    	assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/xmlInput", "rdf:type", "omnom:Parameter"));
-    	assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/xmlInput", "omnom:parameterType", g.literal(g.expand("xsd:anyURI"))));
+    	assertTrue(g.containsTriple(SERVICE_URI, "rdf:type", "omnom:Webservice"));
+    	assertTrue(g.containsTriple(SERVICE_URI, "omnom:inputParam", SERVICE_URI + "/param/xmlInput"));
+    	assertTrue(g.containsTriple(SERVICE_URI + "/param/xmlInput", "rdf:type", "omnom:Parameter"));
+    	assertTrue(g.containsTriple(SERVICE_URI + "/param/xmlInput", "omnom:parameterType", g.literal(g.expand("xsd:anyURI"))));
     }
     
 	/**

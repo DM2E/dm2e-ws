@@ -60,10 +60,10 @@ public class DemoServiceITCase extends OmnomTestCase {
     	Grafeo g = new GrafeoImpl();
     	g.readHeuristically(respStr);
     	log.info(g.getTurtle());
-    	assertTrue(g.containsStatementPattern(SERVICE_URI, "rdf:type", "omnom:Webservice"));
-    	assertTrue(g.containsStatementPattern(SERVICE_URI, "omnom:inputParam", SERVICE_URI + "/param/sleeptime"));
-    	assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/sleeptime", "rdf:type", "omnom:Parameter"));
-    	assertTrue(g.containsStatementPattern(SERVICE_URI + "/param/sleeptime", "omnom:parameterType", g.literal(g.expand("xsd:int"))));
+    	assertTrue(g.containsTriple(SERVICE_URI, "rdf:type", "omnom:Webservice"));
+    	assertTrue(g.containsTriple(SERVICE_URI, "omnom:inputParam", SERVICE_URI + "/param/sleeptime"));
+    	assertTrue(g.containsTriple(SERVICE_URI + "/param/sleeptime", "rdf:type", "omnom:Parameter"));
+    	assertTrue(g.containsTriple(SERVICE_URI + "/param/sleeptime", "omnom:parameterType", g.literal(g.expand("xsd:int"))));
     }
     
     @Test

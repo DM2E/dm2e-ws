@@ -45,10 +45,6 @@ import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.update.UpdateExecutionFactory;
-import com.hp.hpl.jena.update.UpdateFactory;
-import com.hp.hpl.jena.update.UpdateProcessor;
-import com.hp.hpl.jena.update.UpdateRequest;
 
 import eu.dm2e.ws.grafeo.GLiteral;
 import eu.dm2e.ws.grafeo.GResource;
@@ -66,7 +62,8 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 
     private Logger log = Logger.getLogger(getClass().getName());
     protected Model model;
-    protected Map<String, String> namespaces = new HashMap<>();
+    private Map<String, String> namespaces = new HashMap<>();
+    private Map<String, String> namespacesUsed = new HashMap<>();;
     protected ObjectMapper objectMapper;
 
     public static String SPARQL_CONSTRUCT_EVERYTHING = "CONSTRUCT { ?s ?p ?o } WHERE { { GRAPH ?g { ?s ?p ?o } } UNION { ?s ?p ?o } }";
@@ -411,7 +408,14 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 
     @Override
     public String expand(String uri) {
-        return model.expandPrefix(uri);
+    	String ns = uri.substring(0, uri.indexOf(":"));
+        String expanded = model.expandPrefix(uri);
+        if (! namespacesUsed.keySet().contains(ns) 
+        		&& 
+    		(expanded.length() > uri.length())) {
+        	this.namespacesUsed.put(ns, namespaces.get(ns));
+        }
+        return expanded;
     }
     
     @Override
@@ -726,7 +730,9 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     		g.unskolemize();
     		String asNT = g.getPredicateSortedNTriples();
     		asNT += "\n";
-	    	grafeosNT.add(asNT.replaceAll("<_[^>]+>", "_"));
+	    	asNT = asNT.replaceAll("<_[^>]+>", "_");
+	    	asNT = asNT.replaceAll("_[^\\s]+", "_");
+	    	grafeosNT.add(asNT);
     	}
     	
     	// sort by grafeo size
@@ -788,77 +794,38 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         return model;
 
     }
-    
+
     @Override
-    public void executeSparqlUpdate(String queryString, String endpoint) {
-        UpdateRequest update = UpdateFactory.create(queryString);
-        UpdateProcessor exec = UpdateExecutionFactory.createRemoteForm(update, endpoint);
-        exec.execute();
+    public boolean containsTriple(String s, String p, String o) {
+    	List<String> spo = Arrays.asList(s, p, o);
+    	for (int i = 0; i <= 2; i++) {
+    		if (spo.get(i) == null) spo.set(i, "?var" + i);
+    		else spo.set(i, spo.get(i).startsWith("?") 
+	    			? spo.get(i) 
+					: String.format("<%s>", expand(spo.get(i))));
+    	}
+        return new SparqlAsk.Builder()
+        	.ask(String.format("%s %s %s", spo.toArray()))
+        	.grafeo(this)
+        	.build()
+        	.execute();
     }
 
     @Override
-    public boolean executeSparqlAsk(String queryString) {
-        Query query = QueryFactory.create(queryString);
-        QueryExecution qe = QueryExecutionFactory.create(query, model);
-        return qe.execAsk();
-    }
-
-    @Override
-    public boolean containsStatementPattern(String s, String p, String o) {
-    	if (s == null) {
-    		s = "?s";
-    	} else  {
-	        s = s.startsWith("?") ? s : "<" + expand(s) + ">";
+    public boolean containsTriple(String s, String p, GLiteral o) {
+    	List<String> sp = Arrays.asList(s,p);
+    	for (int i = 0; i <= 1; i++) {
+    		if (sp.get(i) == null) sp.set(i, "?var" + i);
+    		else sp.set(i, sp.get(i).startsWith("?") 
+	    			? sp.get(i) 
+					: String.format("<%s>", expand(sp.get(i))));
     	}
-    	if (p == null) {
-    		p = "?p";
-    	} else  {
-	        p = p.startsWith("?") ? p : "<" + expand(p) + ">";
-    	}
-    	if (o == null) {
-    		o = "?o";
-    	} else  {
-	        o = o.startsWith("?") ? o : "<" + expand(o) + ">";
-    	}
-        String queryString = String.format("ASK { %s %s %s }", s, p, o);
-        log.info(queryString);
-        return executeSparqlAsk(queryString);
-    }
-
-    @Override
-    public boolean containsStatementPattern(String s, String p, GLiteral o) {
-    	if (s == null) {
-    		s = "?s";
-    	} else  {
-	        s = s.startsWith("?") ? s : "<" + expand(s) + ">";
-    	}
-    	if (p == null) {
-    		p = "?p";
-    	} else  {
-	        p = p.startsWith("?") ? p : "<" + expand(p) + ">";
-    	}
-    	String oStr = "?o";
-    	if (o != null) {
-	        oStr = o.getTypedValue();
-    	}
-        String queryString = String.format("ASK { %s %s %s }", s, p, oStr);
-        log.info("ASK query: " + queryString);
-        return executeSparqlAsk(queryString);
-    }
-
-    @Override
-    public ResultSet executeSparqlSelect(String queryString) {
-        log.info("SELECT query: " + queryString);
-        Query query = QueryFactory.create(queryString);
-        QueryExecution qe = QueryExecutionFactory.create(query, model);
-        return qe.execSelect();
-    }
-
-    @Override
-    public GrafeoImpl executeSparqlConstruct(String queryString) {
-        Query query = QueryFactory.create(queryString);
-        QueryExecution qe = QueryExecutionFactory.create(query, model);
-        return new GrafeoImpl(qe.execConstruct());
+    	String oStr = (o == null) ? "?o" : o.getTypedValue();
+        return new SparqlAsk.Builder()
+        	.ask(String.format("%s %s %s", sp.get(0), sp.get(1), oStr))
+        	.grafeo(this)
+        	.build()
+        	.execute();
     }
 
     @Override
@@ -872,12 +839,17 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     }
 
     public GValueImpl firstMatchingObject(String s, String p) {
+    	
         s = s.startsWith("?") ? s : "<" + expand(s) + ">";
         p = p.startsWith("?") ? p : "<" + expand(p) + ">";
-        ResultSet iter = this.executeSparqlSelect(String.format("SELECT ?o { %s %s ?o } LIMIT 1", s, p));
-        if (!iter.hasNext())
-            return null;
-//        return new GValueImpl(this, iter.next().get("?o"));
+        ResultSet iter = new SparqlSelect.Builder()
+        	.where(String.format("%s %s ?o", s, p))
+        	.select("?o")
+        	.grafeo(this)
+        	.limit(1)
+        	.build()
+        	.execute();
+        if (!iter.hasNext()) return null;
         RDFNode jenaNode = iter.next().get("?o");
         if (jenaNode.isLiteral()) {
         	return new GLiteralImpl(this, (Literal) jenaNode);
@@ -891,12 +863,12 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     
 	@Override
 	public void emptyGraph(String endpoint, String graph) {
-		String updateStr = new SparqlUpdate.Builder()
+		new SparqlUpdate.Builder()
 			.graph(graph)
+			.endpoint(endpoint)
 			.delete("?s ?p ?o.")
-			.build().toString();
-        log.info("Empty Graph query: " + updateStr);
-        this.executeSparqlUpdate(updateStr, endpoint);
+			.build()
+			.execute();
 	}
 
 
@@ -941,45 +913,60 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     
     @Override
     public Set<GResource> listResources() {
-    	Set<GResource> resList = new HashSet<>();
-    	NodeIterator iter = this.getModel().listObjects();
-    	while (iter.hasNext()) {
-    		RDFNode node = iter.next();
-    		if (! node.isLiteral()) {
-    			resList.add(this.resource(node.asResource()));
-    		}
+    	Set<GResource> resSet = new HashSet<>();
+    	NodeIterator iterObj = this.getModel().listObjects();
+    	while (iterObj.hasNext()) {
+    		RDFNode node = iterObj.next();
+    		if (! node.isLiteral()) resSet.add(this.resource(node.asResource()));
     	}
-    	return resList;
+    	ResIterator iterSub = this.getModel().listSubjects();
+    	while (iterSub.hasNext()) {
+			resSet.add(this.resource(iterSub.next()));
+    	}
+    	return resSet;
     }
+    
+    /**
+     * Create a new GResouce from a Jena Resource
+     * 
+     * @param jenaResource
+     * @return New GResource
+     */
     private GResource resource(Resource jenaResource) {
     	return new GResourceImpl(this, jenaResource);
-    	
 	}
 
 	@Override
     public Set<GResource> listURIResources() {
-    	Set<GResource> resList = new HashSet<>();
-    	NodeIterator iter = this.getModel().listObjects();
-    	while (iter.hasNext()) {
-    		RDFNode node = iter.next();
-    		if (node.isURIResource()) {
-    			resList.add(this.resource(node.asResource().getURI()));
-    		}
+    	Set<GResource> resSet = new HashSet<>();
+    	NodeIterator iterObj = this.getModel().listObjects();
+    	while (iterObj.hasNext()) {
+    		RDFNode node = iterObj.next();
+    		if (node.isURIResource()) resSet.add(this.resource(node.asResource().getURI()));
     	}
-    	return resList;
+    	ResIterator iterSub = this.getModel().listSubjects();
+    	while (iterSub.hasNext()) {
+    		RDFNode node = iterObj.next();
+    		if (node.isURIResource()) resSet.add(this.resource(node.asResource()));
+    	}
+    	return resSet;
     }
     @Override
     public Set<GResource> listAnonResources() {
-    	Set<GResource> resList = new HashSet<GResource>();
-    	NodeIterator iter = this.getModel().listObjects();
-    	while (iter.hasNext()) {
-    		RDFNode node = iter.next();
+    	Set<GResource> resSet = new HashSet<GResource>();
+    	NodeIterator iterObj = this.getModel().listObjects();
+    	while (iterObj.hasNext()) {
+    		RDFNode node = iterObj.next();
     		if (node.isAnon()) {
-    			GResource gres = new GResourceImpl(this, node.asResource());
-    			resList.add(gres);
+    			resSet.add(this.resource(node.asResource()));
     		}
     	}
-    	return resList;
+    	ResIterator iterSub = this.getModel().listSubjects();
+    	while (iterSub.hasNext()) {
+    		RDFNode node = iterObj.next();
+    		if (node.isURIResource()) resSet.add(this.resource(node.asResource()));
+    	}
+    	return resSet;
     }
     
     @Override
@@ -998,14 +985,8 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     	for (GResource res : this.listResources()) {
     		res.rename(this.resource("_blank_" + (i++) +"_"));
     	}
+    	log.info(this.getTerseTurtle());
     }
-//    @Override
-//    public void unskolemizeToSingleResource() {
-//    	GResourceImpl blank = this.resource("blank");
-//    	for (GResource res : this.listResources()) {
-//    		res.rename(blank);
-//    	}
-//    }
 
 	@Override
 	public void skolemize(String subject, String predicate, String template, SkolemizationMethod method) {
@@ -1126,19 +1107,15 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     }
     
     @Override
-	public String visualizeWithGraphviz(String outname) throws Exception {
+	public void visualizeWithGraphviz(String outname) throws Exception {
     	if (null == outname) {
     		outname = "output.svg";
     	}
-//		BufferedReader inp;
 		BufferedWriter out;
-//		String cmd = "rapper -o dot -i ntriples -I \"http://EXAMPLE/\" - | dot -Tpng -o output.png";
 		String cmd = "./bin/visualize-turtle.sh " + outname  +" \n";
 		Process p;
 		try {
 			p = Runtime.getRuntime().exec(cmd);
-//	        System.out.println(System.getProperty("user.dir"));
-//			inp = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			out = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
 			out.write(this.getTurtle());
 			out.write("\n");
@@ -1147,18 +1124,6 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		} catch (Exception e) {
 			throw new RuntimeException("Could not execute command for visualizing: " + e);
 		}
-		return "";
-//		String retStr;
-//		try {
-//			retStr = inp.readLine();
-//			inp.close();
-//			if (p.exitValue() != 0) {
-//				throw new RuntimeException("Command exited with value: " + p.exitValue());
-//			}
-//			return retStr;
-//		} catch (IOException e) {
-//			throw new RuntimeException("Could not execute command for visualizing: " + e);
-//		}
 	}
 
     @Override
@@ -1208,5 +1173,18 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		GStatementImpl stmtImpl = new GStatementImpl(this, stmt.getSubject(), stmt.getPredicate(), stmt.getObject());
 		this.model.remove(stmtImpl.getStatement());
 	}
+
+	@Override
+	public GStatement addTriple(GResource subject, String predicate, GValue object) {
+		// TODO Auto-generated method stub
+        GResourceImpl p = new GResourceImpl(this, predicate);
+        GStatementImpl statement;
+        statement = new GStatementImpl(this, subject, p, object);
+        model.add(statement.getStatement());
+        return statement;
+	}
+
+	@Override
+	public Map<String, String> getNamespacesUsed() { return namespacesUsed; }
 
 }
