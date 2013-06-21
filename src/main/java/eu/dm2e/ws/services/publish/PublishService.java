@@ -33,17 +33,19 @@ public class PublishService extends AbstractTransformationService {
     public static final String PARAM_TO_PUBLISH = "to-publish";
 	public static final String PARAM_LABEL = "label";
 	public static final String PARAM_DATASET_ID = "dataset-id";
+	public static final String PARAM_RESULT_DATASET_ID = "result-dataset-id";
 
 	private Logger log = Logger.getLogger(getClass().getName());
 	
     public PublishService() {
         IWebservice ws = getWebServicePojo();
         ws.addInputParameter(PARAM_TO_PUBLISH).setIsRequired(true);
-        ws.addInputParameter(PARAM_DATASET_ID).setIsRequired(true);
+        ws.addInputParameter(PARAM_DATASET_ID).setIsRequired(false);
         ws.addInputParameter(PARAM_LABEL).setIsRequired(true);
         ws.addInputParameter(PARAM_COMMENT);
         ws.addInputParameter(PARAM_ENDPOINT_UPDATE);
         ws.addInputParameter(PARAM_ENDPOINT_SELECT);
+        ws.addOutputParameter(PARAM_RESULT_DATASET_ID);
     }
 
     @Override
@@ -70,6 +72,9 @@ public class PublishService extends AbstractTransformationService {
 
             jobPojo.setStarted();
 
+            if (null == dataset) {
+            	dataset = createUniqueStr();
+            }
             String datasetURI = dataset;
             if (!dataset.startsWith("http")) datasetURI = Config.getString("dm2e.service.publish.graph_prefix") + dataset;
 
@@ -98,6 +103,7 @@ public class PublishService extends AbstractTransformationService {
             jobPojo.debug("Published graph: " + g.getTurtle());
             log.info("Write to endpoint: " + endpoint + " / Graph: " + versionedURI);
             g.writeToEndpoint(endpoint, versionedURI);
+            jobPojo.addOutputParameterAssignment(PARAM_RESULT_DATASET_ID, versionedURI);
 
         } catch (Throwable t) {
             log.log(Level.SEVERE, "Exception during publishing: " + t, t);
