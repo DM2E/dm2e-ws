@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import eu.dm2e.ws.NS;
+import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
@@ -16,6 +17,13 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 	})
 @RDFClass(NS.OMNOM.CLASS_WORKFLOW)
 public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implements IWebservice, IValidatable {
+	
+	@Override
+	public Grafeo getGrafeo() {
+		Grafeo g = super.getGrafeo();
+		return g;
+	};
+	
 	
     /*********************
      * HELPER FUNCTIONS
@@ -62,16 +70,35 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
         log.warning("No parameter found for needle: " + needle);
     	return null;
     }
-    public ParameterConnectorPojo connectorToPositionAndParam(WorkflowPositionPojo pos, ParameterPojo needle) {
+    public ParameterConnectorPojo connectorToPositionAndParam(WorkflowPositionPojo pos, ParameterPojo param) {
     	for (ParameterConnectorPojo conn : this.getParameterConnectors()) {
+	    	log.fine("Checking " + conn.getToPosition() + ":" + conn.getToParam() + " in " + conn);
     		if (
+    				conn.hasToPosition()
+				&&
     				conn.getToPosition().hasId()
 				&&
     				conn.getToParam().hasId()
 				&&
     				conn.getToPosition().getId().equals(pos.getId())
 				&&
-    				conn.getToParam().getId().equals(needle)) {
+    				conn.getToParam().getId().equals(param.getId())) {
+    			return conn;
+    		}
+    	}
+    	return null;
+    }
+    public ParameterConnectorPojo connectorToWorkflowOutputParam(ParameterPojo param) {
+    	for (ParameterConnectorPojo conn : this.getParameterConnectors()) {
+	    	log.fine("Checking " + conn.getToWorkflow() + ":" + conn.getToParam() + " in " + conn);
+    		if (
+    				conn.hasToWorkflow()
+				&&
+    				conn.getToParam().hasId()
+				&&
+    				conn.getToWorkflow().getId().equals(this.getId())
+				&&
+    				conn.getToParam().getId().equals(param.getId())) {
     			return conn;
     		}
     	}
@@ -81,13 +108,15 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
     public ParameterConnectorPojo connectorToPositionAndParam(WorkflowPositionPojo pos, String needle) {
     	for (ParameterConnectorPojo conn : this.getParameterConnectors()) {
     		if (
+    				conn.hasToPosition()
+				&&
     				conn.getToPosition().hasId()
 				&&
     				conn.getToParam().hasId()
 				&&
 					conn.getToPosition().getId().equals(pos.getId())
 				&&
-    			conn.getToParam().matchesParameterName(needle)) {
+	    			conn.getToParam().matchesParameterName(needle)) {
     			return conn;
     		}
     	}
