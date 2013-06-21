@@ -96,6 +96,15 @@ public class GrafeoAssert {
 	static public void graphsAreEquivalent(SerializablePojo p1, SerializablePojo p2) {
 		graphsAreEquivalent(p1.getGrafeo(), p2.getGrafeo());
 	}
+	static public void graphsAreNotEquivalent(SerializablePojo p1, SerializablePojo p2) {
+		boolean failedOK = true;
+		try {
+			graphsAreEquivalent(p1, p2);
+			failedOK = false;
+		} catch (ComparisonFailure e) {
+		}
+		if (! failedOK) fail("They are equivalent.");
+	}
 	static public void graphsAreEquivalent(Grafeo g1, Grafeo g2) {
 		if (! g1.isGraphEquivalent(g2)) {
 			throw new ComparisonFailure("Graphs are not equivalent!",
@@ -103,14 +112,38 @@ public class GrafeoAssert {
 					g2.getTerseTurtle());
 		}
 	}
+	static public void graphsAreNotEquivalent(Grafeo g1, Grafeo g2) {
+		boolean failedOK = true;
+		try {
+			graphsAreEquivalent(g1, g2);
+			failedOK = false;
+		} catch (ComparisonFailure e) { }
+		if (! failedOK) fail("They are equivalent.");
+	}
 	static public void graphsAreStructurallyEquivalent(SerializablePojo p1, SerializablePojo p2) {
 		graphsAreStructurallyEquivalent(p1.getGrafeo(), p2.getGrafeo());
+	}
+	static public void graphsAreNotStructurallyEquivalent(SerializablePojo p1, SerializablePojo p2) {
+		boolean failedOK = true;
+		try {
+			graphsAreStructurallyEquivalent(p1, p2);
+			failedOK = false;
+		} catch (ComparisonFailure e) { }
+		if (! failedOK) fail("They are structurally equivalent.");
 	}
 	static public void graphsAreStructurallyEquivalent(Grafeo g1, Grafeo g2) {
 		if (! g1.isStructuralGraphEquivalent(g2)) {
 			List<String> diff = g1.diffUnskolemizedNTriples(g2);
 			throw new ComparisonFailure("Graphs are not structurally isomorphic.", diff.get(0), diff.get(1));
 		}
+	}
+	static public void graphsAreNotStructurallyEquivalent(Grafeo g1, Grafeo g2) {
+		boolean failedOK = true;
+		try {
+			graphsAreStructurallyEquivalent(g1, g2);
+			failedOK = false;
+		} catch (ComparisonFailure e) { }
+		if (! failedOK) fail("They are structurally equivalent.");
 	}
 
 }
