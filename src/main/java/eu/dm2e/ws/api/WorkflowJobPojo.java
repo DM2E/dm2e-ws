@@ -1,24 +1,28 @@
 package eu.dm2e.ws.api;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/",
 			 "dc", "http://purl.org/dc/elements/1.1/"})
-@RDFClass("omnom:WorkflowJob")
-public class WorkflowJobPojo extends JobPojo {
+@RDFClass(NS.OMNOM.CLASS_WORKFLOW_JOB)
+public class WorkflowJobPojo extends AbstractJobPojo {
 	
-	@RDFProperty("omnom:hasSlotAssignment")
-	private Set<ParameterSlotAssignmentPojo> slotAssignments = new HashSet<>();
 	
-    @RDFProperty("omnom:webservice")
-    private WebservicePojo webService;
-
-	public Set<ParameterSlotAssignmentPojo> getSlotAssignments() { return slotAssignments; }
-	public void setSlotAssignments(Set<ParameterSlotAssignmentPojo> slotAssignments) { this.slotAssignments = slotAssignments; }
+	/*******************************
+	 * FIELDS / GETTERS / SETTERS
+	 *******************************/
+	
+//	@RDFProperty(NS.OMNOM.PROP_CONNECTOR_ASSIGNMENT)
+//	private Set<ParameterConnectorAssignmentPojo> connectorAssignments = new HashSet<>();
+//	public Set<ParameterConnectorAssignmentPojo> getConnectorAssignments() { return connectorAssignments; }
+//	public void setConnectorAssignments(Set<ParameterConnectorAssignmentPojo> connectorAssignments) { this.connectorAssignments = connectorAssignments; }
+	
+    @RDFProperty(NS.OMNOM.PROP_WORKFLOW_CONFIG)
+    private WorkflowConfigPojo workflowConfig;
+	public WorkflowConfigPojo getWorkflowConfig() { return workflowConfig; }
+	public void setWorkflowConfig(WorkflowConfigPojo workflowConfig) { this.workflowConfig = workflowConfig; }
 
 }
