@@ -27,8 +27,9 @@ import java.util.logging.Logger;
 @Path("/publish")
 public class PublishService extends AbstractTransformationService {
 	
-    public static final String PARAM_ENDPOINT_SELECT = "endpoint-select";
+	public static final String PARAM_ENDPOINT_SELECT = "endpoint-select";
 	public static final String PARAM_ENDPOINT_UPDATE = "endpoint-update";
+    public static final String PARAM_PROVIDER_ID = "provider-id";
 	public static final String PARAM_COMMENT = "comment";
     public static final String PARAM_TO_PUBLISH = "to-publish";
 	public static final String PARAM_LABEL = "label";
@@ -42,6 +43,7 @@ public class PublishService extends AbstractTransformationService {
         ws.addInputParameter(PARAM_TO_PUBLISH).setIsRequired(true);
         ws.addInputParameter(PARAM_DATASET_ID).setIsRequired(false);
         ws.addInputParameter(PARAM_LABEL).setIsRequired(true);
+        ws.addInputParameter(PARAM_PROVIDER_ID).setIsRequired(true);
         ws.addInputParameter(PARAM_COMMENT);
         ws.addInputParameter(PARAM_ENDPOINT_UPDATE);
         ws.addInputParameter(PARAM_ENDPOINT_SELECT);
@@ -58,6 +60,7 @@ public class PublishService extends AbstractTransformationService {
             String input = wsConf.getParameterValueByName(PARAM_TO_PUBLISH);
             String dataset = wsConf.getParameterValueByName(PARAM_DATASET_ID);
             String label = wsConf.getParameterValueByName(PARAM_LABEL);
+            String provider = wsConf.getParameterValueByName(PARAM_PROVIDER_ID);
             String comment = wsConf.getParameterValueByName(PARAM_COMMENT);
             String endpoint = wsConf.getParameterValueByName(PARAM_ENDPOINT_UPDATE);
             String endpointSelect = wsConf.getParameterValueByName(PARAM_ENDPOINT_SELECT);
@@ -76,7 +79,7 @@ public class PublishService extends AbstractTransformationService {
             	dataset = createUniqueStr();
             }
             String datasetURI = dataset;
-            if (!dataset.startsWith("http")) datasetURI = Config.getString("dm2e.service.publish.graph_prefix") + dataset;
+            if (!dataset.startsWith("http")) datasetURI = Config.getString("dm2e.service.publish.graph_prefix") + provider + "/" + dataset;
 
             String versionedURI = datasetURI;
             if (!versionedURI.endsWith("/")) versionedURI = versionedURI + "/";

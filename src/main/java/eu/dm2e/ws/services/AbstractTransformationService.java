@@ -36,6 +36,7 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
         /*
          * Resolve configURI to WebserviceConfigPojo
          */
+        log.info("Request to start the service: " + configURI);
         WebserviceConfigPojo wsConf = new WebserviceConfigPojo();
 		try {
 			wsConf.loadFromURI(configURI, 1);
@@ -108,5 +109,4 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
     	}
         return this.putConfigToService(resp.getLocation().toString());
     }
-
 }

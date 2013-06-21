@@ -42,10 +42,14 @@ import eu.dm2e.ws.services.Client;
 
 @Path("/service/xslt-zip")
 public class XsltZipService extends AbstractTransformationService {
-	
+
 	public static final String XSLTZIP_IN_PARAM_NAME = "xsltZipInput";
 	public static final String XML_IN_PARAM_NAME = "xmlInput";
 	public static final String XML_OUT_PARAM_NAME = "xmlOutput";
+	public static final String PROVIDER_ID = "provider-id";
+	public static final String DATASET_ID = "dataset-id";
+	public static final String PROVIDER_ID_PARAM = "provider-id-param";
+	public static final String DATASET_ID_PARAM = "dataset-id-param";
 
 	@Override
 	public WebservicePojo getWebServicePojo() {
@@ -61,25 +65,40 @@ public class XsltZipService extends AbstractTransformationService {
 		xmlInParam.setIsRequired(true);
 		xmlInParam.setParameterType("xsd:anyURI");
 
+		ParameterPojo providerId = ws.addInputParameter(PROVIDER_ID);
+		providerId.setTitle("Provider ID");
+
+		ParameterPojo providerIdParam = ws.addInputParameter(PROVIDER_ID_PARAM);
+		providerIdParam.setTitle("Provider ID Parameter used in XSLT");
+
+		ParameterPojo datasetId = ws.addInputParameter(DATASET_ID);
+		datasetId.setTitle("Dataset ID");
+
+		ParameterPojo datasetIdParam = ws.addInputParameter(DATASET_ID_PARAM);
+		datasetIdParam.setTitle("Dataset ID Parameter used in XSLT");
+
 		ParameterPojo xmlOutParam = ws.addOutputParameter(XML_OUT_PARAM_NAME);
 		xmlOutParam.setTitle("XML output");
-		
-//		ParameterPojo fileServiceParam = ws.addInputParameter("fileServiceParam");
-//		fileServiceParam.setIsRequired(false);
-		
+
+		// ParameterPojo fileServiceParam =
+		// ws.addInputParameter("fileServiceParam");
+		// fileServiceParam.setIsRequired(false);
+
 		return ws;
 	}
 
 	@Override
 	public void run() {
 		JobPojo jobPojo = getJobPojo();
+		log.warning("Starting to handle XSLT transformation job");
+		jobPojo.debug("Starting to handle XSLT transformation job");
+		String xsltZipUrl, xmlUrl, providerId, datasetId, providerIdParam, datasetIdParam;
 		try {
-			log.warning("Starting to handle XSLT transformation job");
-			jobPojo.debug("Starting to handle XSLT transformation job");
-			String xsltZipUrl, xmlUrl;
 			try {
-				// TODO this should be refactored to a validation routine in the JobPojo
-				xsltZipUrl = jobPojo.getWebserviceConfig().getParameterValueByName(XSLTZIP_IN_PARAM_NAME);
+				// TODO this should be refactored to a validation routine in the
+				// JobPojo
+				xsltZipUrl = jobPojo.getWebserviceConfig().getParameterValueByName(
+						XSLTZIP_IN_PARAM_NAME);
 				if (null == xsltZipUrl) {
 					throw new NullPointerException("xmlUrl is null");
 				}
@@ -94,18 +113,29 @@ public class XsltZipService extends AbstractTransformationService {
 				jobPojo.setFailed();
 				return;
 			}
+			jobPojo.debug("XSL URL: " + xmlUrl);
+			providerId = jobPojo.getWebserviceConfig().getParameterValueByName(PROVIDER_ID);
+			if (providerId == null) providerId = "PROVIDER_NOT_SET";
+			datasetId = jobPojo.getWebserviceConfig().getParameterValueByName(DATASET_ID);
+			if (datasetId == null) providerId = "DATASET_NOT_SET";
+			providerIdParam = jobPojo.getWebserviceConfig().getParameterValueByName(
+					PROVIDER_ID_PARAM);
+			if (providerIdParam == null) providerIdParam = "DATAPROVIDER_ABB";
+			datasetIdParam = jobPojo
+				.getWebserviceConfig()
+				.getParameterValueByName(DATASET_ID_PARAM);
+			if (datasetIdParam == null) datasetIdParam = "REPOSITORY_ABB";
 			jobPojo.info("Preparing transformation");
-			
+
 			// download and extract zip
 			jobPojo.debug("Downloading XML/ZIP");
 			java.nio.file.Path zipdir = downloadAndExtractZip(xsltZipUrl, jobPojo);
 			jobPojo.debug("Done unzipping XSLTZIP.");
-			
+
 			jobPojo.debug("Determining root stylesheet.");
 			String rootStyleSheet = grepRootStylesheet(zipdir, jobPojo);
 			jobPojo.debug("Determined root stylesheet: " + rootStyleSheet);
-			
-			
+
 			// update job status
 			jobPojo.info("Starting transformation");
 			jobPojo.setStarted();
@@ -114,7 +144,8 @@ public class XsltZipService extends AbstractTransformationService {
 				jobPojo.debug("Instantiating custom error listener");
 				OmnomErrorListener errL;
 				try {
-//				errL = new OmnomErrorListener(Logger.getLogger(getClass().getName()));
+					// errL = new
+					// OmnomErrorListener(Logger.getLogger(getClass().getName()));
 					errL = new OmnomErrorListener(jobPojo);
 				} catch (Exception e) {
 					jobPojo.fatal(e);
@@ -139,6 +170,8 @@ public class XsltZipService extends AbstractTransformationService {
 				StreamResult xslResult = new StreamResult(xslResultStrWriter);
 
 				StreamSource xmlSource = new StreamSource(new URL(xmlUrl).openStream());
+				transformer.setParameter(datasetIdParam, datasetId);
+				transformer.setParameter(providerIdParam, providerId);
 				transformer.transform(xmlSource, xslResult);
 
 			} catch (Exception e) {
@@ -147,15 +180,14 @@ public class XsltZipService extends AbstractTransformationService {
 				jobPojo.setFailed();
 				return;
 			}
-			
+
 			jobPojo.info("Getting the transformation result as a string.");
 			String xslResultStr = "";
 			try {
 				xslResultStr = xslResultStrWriter.toString();
 				if (xslResultStr.length() == 0) {
 					throw new RuntimeException("No result from the transformation.");
-				}
-				else if (xslResultStr.equals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")) {
+				} else if (xslResultStr.equals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")) {
 					jobPojo.warn("XSLT transformation yielded in empty XML file.");
 				}
 			} catch (Exception e) {
@@ -163,7 +195,7 @@ public class XsltZipService extends AbstractTransformationService {
 				jobPojo.setFailed();
 				return;
 			}
-			
+
 			FilePojo fp = new FilePojo();
 			fp.setGeneratorJob(jobPojo);
 			String fileLocation = new Client().publishFile(xslResultStr, fp);
@@ -175,17 +207,17 @@ public class XsltZipService extends AbstractTransformationService {
 			// Update job status
 			jobPojo.info("XSLT Transformation complete.");
 			jobPojo.setFinished();
-        } catch (Throwable t) {
-            log.log(Level.SEVERE, "Exception during publishing: " + t, t);
-            jobPojo.fatal(t);
-            jobPojo.setFailed();
-            throw t;
-        }
+		} catch (Throwable t) {
+			log.log(Level.SEVERE, "Exception during publishing: " + t, t);
+			jobPojo.fatal(t);
+			jobPojo.setFailed();
+			throw t;
+		}
 	}
 
 	/**
 	 * @param xsltZipUrl
-	 * @param jobPojo 
+	 * @param jobPojo
 	 * @return
 	 */
 	protected java.nio.file.Path downloadAndExtractZip(String xsltZipUrl, JobPojo jobPojo) {
@@ -196,7 +228,7 @@ public class XsltZipService extends AbstractTransformationService {
 			return null;
 		}
 		jobPojo.debug("File is available.");
-		
+
 		jobPojo.debug("Create tempfile");
 		java.nio.file.Path zipfile;
 		FileOutputStream zipfile_fos;
@@ -207,9 +239,9 @@ public class XsltZipService extends AbstractTransformationService {
 			jobPojo.setFailed();
 			return null;
 		}
-		
+
 		jobPojo.debug("XML/ZIP will be stored as " + zipfile);
-		
+
 		try {
 			zipfile_fos = new FileOutputStream(zipfile.toFile());
 		} catch (FileNotFoundException e1) {
@@ -223,32 +255,31 @@ public class XsltZipService extends AbstractTransformationService {
 			jobPojo.fatal("Could not store XML/ZIP: " + e);
 			jobPojo.setFailed();
 			return null;
-		}
-		finally {
-		      IOUtils.closeQuietly(zipfile_fos);
+		} finally {
+			IOUtils.closeQuietly(zipfile_fos);
 		}
 		jobPojo.debug("XML/ZIP was stored as " + zipfile);
-		
+
 		jobPojo.debug("Creating temp directory.");
 		java.nio.file.Path zipdir;
 		try {
-			 zipdir = Files.createTempDirectory("omnom_xsltzip_");
+			zipdir = Files.createTempDirectory("omnom_xsltzip_");
 		} catch (IOException e) {
 			jobPojo.fatal(e);
 			jobPojo.setFailed();
 			return null;
 		}
 		jobPojo.debug("Temp directory is " + zipdir);
-		
-		jobPojo.debug("Unzipping " + zipfile + " to " + zipdir.toString() );
-	    try {
-	         ZipFile zipFile = new ZipFile(zipfile.toFile());
-	         zipFile.extractAll(zipdir.toString());
-	    } catch (ZipException e) {
+
+		jobPojo.debug("Unzipping " + zipfile + " to " + zipdir.toString());
+		try {
+			ZipFile zipFile = new ZipFile(zipfile.toFile());
+			zipFile.extractAll(zipdir.toString());
+		} catch (ZipException e) {
 			jobPojo.fatal(e);
 			jobPojo.setFailed();
 			return null;
-	    }
+		}
 		return zipdir;
 	}
 
@@ -257,48 +288,35 @@ public class XsltZipService extends AbstractTransformationService {
 	 * @return
 	 */
 	protected String grepRootStylesheet(java.nio.file.Path zipdir, JobPojo jobPojo) {
-		Profile xsltDirProfile = ProfileBuilder.newBuilder()
-                .name("Files in XSLT directory")
-                .filePath(zipdir.toString() + "/*")
-                .onLocalhost()
-                .build();	
-		GrepResults results = grep(
-				constantExpression("xsl:template match=\"/\""),
-				on(xsltDirProfile),
-				with(option(filesMatching()))
-				);
+		Profile xsltDirProfile = ProfileBuilder
+			.newBuilder()
+			.name("Files in XSLT directory")
+			.filePath(zipdir.toString() + "/*")
+			.onLocalhost()
+			.build();
+		GrepResults results = grep(constantExpression("xsl:template match=\"/\""),
+				on(xsltDirProfile), with(option(filesMatching())));
 		if (results.isEmpty()) {
 			jobPojo.fatal("Could not find root stylesheet containing 'xsl:template match=\"/\"'");
 			jobPojo.setFailed();
-			throw new RuntimeException("Could not find root stylesheet containing 'xsl:template match=\"/\"'");
+			throw new RuntimeException(
+					"Could not find root stylesheet containing 'xsl:template match=\"/\"'");
 		}
-//		else if (results.size() >= 1) {
-//			jobPojo.fatal("More than one stylesheet containing 'xsl:template match=\"/\"': " + results.size());
-//			jobPojo.setFailed();
-//			throw new RuntimeException("More than one stylesheet containing 'xsl:template match=\"/\"'");
-//		}
+		// else if (results.size() >= 1) {
+		// jobPojo.fatal("More than one stylesheet containing 'xsl:template match=\"/\"': "
+		// + results.size());
+		// jobPojo.setFailed();
+		// throw new
+		// RuntimeException("More than one stylesheet containing 'xsl:template match=\"/\"'");
+		// }
 		String rootStyleSheet = null;
-		for (GrepResult result : results ) {
-			if (null != result.getText() && ! "".equals(result.getText())) {
+		for (GrepResult result : results) {
+			if (null != result.getText() && !"".equals(result.getText())) {
 				rootStyleSheet = result.getFileName();
 				break;
 			}
 		}
 		return rootStyleSheet;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 }

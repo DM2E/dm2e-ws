@@ -78,6 +78,7 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
         	log.info("Loading from " + this.getId());
 			g.load(this.getId(), expansionSteps);
         	log.info("DONE Loading from " + this.getId());
+            log.fine("Triples loaded from URI " + this.getId() + ": " + g.getTurtle());
 		} catch (Exception e1) {
 			log.warning("Failed to initialize Pojo from URI: " + e1);
 			return;
@@ -134,5 +135,6 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
 //		String endPoint = Config.getString("dm2e.ws.sparql_endpoint_statements");
 //		this.publishToEndpoint(endPoint);
 //	}
-	
+
+
 }
