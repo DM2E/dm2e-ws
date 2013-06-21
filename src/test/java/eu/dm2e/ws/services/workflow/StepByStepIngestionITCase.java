@@ -74,7 +74,7 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
         conf.addParameterAssignment(XsltZipService.XSLTZIP_IN_PARAM_NAME, XSLTZIP_URI_1);
         conf.addParameterAssignment(XsltZipService.DATASET_ID, "IngestionTest");
         conf.addParameterAssignment(XsltZipService.PROVIDER_ID, "dm2edev");
-            conf.publishToService();
+        conf.publishToService(client.getConfigWebResource());
 
 
             ClientResponse confGETresp = client.resource(conf.getId()).get(ClientResponse.class);
@@ -127,7 +127,7 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
         ws.loadFromURI(XSLT_SERVICE_URI);
         WebserviceConfigPojo tC = new WebserviceConfigPojo();
         assertThat(tC.getId(), is(nullValue()));
-        tC.publishToService();
+        tC.publishToService(client.getConfigWebResource());
         assertThat(tC.getId(), not(nullValue()));
         log.info("config uri: " + tC.getId());
         tC.setWebservice(ws);
@@ -183,7 +183,7 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
             config.addParameterAssignment("comment", "This dataset can safely be deleted.");
             // config.addParameterAssignment("endpoint-update", "http://lelystad.informatik.uni-mannheim.de:3030/dm2etest/update");
             // config.addParameterAssignment("endpoint-select", "http://lelystad.informatik.uni-mannheim.de:3030/dm2etest/sparql");
-            config.publishToService();
+            config.publishToService(client.getConfigWebResource());
 
             log.info("Configuration created for Test: " + config.getTurtle());
 

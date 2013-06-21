@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
 import eu.dm2e.ws.services.xslt.XsltService;
 
 public class WebservicePojoTest {
@@ -46,11 +47,11 @@ public class WebservicePojoTest {
 		GrafeoImpl g = new GrafeoImpl();
         g.getObjectMapper().addObject(ws);
         log.info("WS: " + g.getTurtle());
-        WebservicePojo ws2 = g.getObjectMapper().getObject(WebservicePojo.class,"http://data.dm2e.eu/data/services/xslt");
+        WebservicePojo ws2 = g.getObjectMapper().getObject(WebservicePojo.class, ws.getId());
         Grafeo g2 = new GrafeoImpl();
         g2.getObjectMapper().addObject(ws2);
-        log.info("WS 2: " + g.getTurtle());
-        assert(g.getTurtle().equals(g2.getTurtle()));
+        log.info("WS 2: " + g2.getTurtle());
+        GrafeoAssert.graphsAreEquivalent(g, g2);
     }
 	
 	@Test

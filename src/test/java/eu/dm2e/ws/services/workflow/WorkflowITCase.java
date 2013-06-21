@@ -144,6 +144,7 @@ public class WorkflowITCase extends OmnomTestCase {
 protected WorkflowPojo createWorkflow() {
 	WorkflowPojo wf = new WorkflowPojo();
 	String _ws_label = "XML -> XMLRDF -> DM2E yay";
+	String _ws_param_provider = "providerID";
 	String _ws_param_xmlinput = "inputXML";
 	String _ws_param_xsltinput = "inputXSLT";
 	String _ws_param_outgraph = "outputGraph";
@@ -186,6 +187,15 @@ protected WorkflowPojo createWorkflow() {
 	step0_step1_xslt.setToPosition(step1_pos);
 	step0_step1_xslt.setToParam(step1_ws.getParamByName(XsltService.PARAM_XSLT_IN));
 	wf.getParameterConnectors().add(step0_step1_xslt);
+	
+	// workflow:providerID => publish:providerID
+	ParameterConnectorPojo step0_step2_provider = new ParameterConnectorPojo();
+	step0_step2_provider.setToWorkflow(wf);
+	step0_step2_provider.setFromParam(wf.getParamByName(_ws_param_provider));
+	step0_step2_provider.setToPosition(step2_pos);
+	step0_step2_provider.setToParam(step2_ws.getParamByName(PublishService.PARAM_PROVIDER_ID));
+	wf.getParameterConnectors().add(step0_step2_provider);
+	
 	
 	// xmlrdf:xmloutput => publish:to-publish
 	ParameterConnectorPojo step1_step2_xml = new ParameterConnectorPojo();

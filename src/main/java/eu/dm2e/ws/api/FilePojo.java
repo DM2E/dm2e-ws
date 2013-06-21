@@ -1,9 +1,6 @@
 package eu.dm2e.ws.api;
 
 import eu.dm2e.ws.NS;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFId;
