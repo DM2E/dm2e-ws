@@ -16,7 +16,6 @@ import eu.dm2e.ws.Config;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
-import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.api.WorkflowConfigPojo;
 import eu.dm2e.ws.api.WorkflowJobPojo;
@@ -122,6 +121,8 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 	@Override
 	public Response postGrafeo(Grafeo g) {
 		GResource wfRes = g.findTopBlank(NS.OMNOM.CLASS_WORKFLOW);
+		log.fine("Workflow before Posting: " + g.getTerseTurtle());
+		log.info("Number of positions: " + g.listStatements(null, "omnom:hasPosition", null).size());
 
 		if (null == wfRes) {
 			return throwServiceError(NS.OMNOM.CLASS_WORKFLOW, ErrorMsg.NO_TOP_BLANK_NODE);
@@ -148,7 +149,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 //				positionItemRes.rename(wfUri + "/position-item/" + positionItemIndex);
 //			}
 //		}
-		log.info("Skolemnizing Positions.");
+		log.info("Skolemizing Positions.");
 		{
 			int positionIndex = 0;
 			for (GResource positionRes : g.findByClass(NS.OMNOM.CLASS_WORKFLOW_POSITION)) {
@@ -159,20 +160,20 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 				}
 			}
 		}
-		log.info("Publishing blank web service configs.");
-		{
-			for (GResource wsConfRes : g.findByClass(NS.OMNOM.CLASS_WEBSERVICE_CONFIG)) {
-				WebserviceConfigPojo wsConf = g.getObjectMapper().getObject(
-						WebserviceConfigPojo.class, wsConfRes);
-				if (!wsConf.hasId()) {
-					String confLoc = wsConf.publishToService(client.getConfigWebResource());
-					wsConfRes.rename(confLoc);
-				}
-				// if (wsConf.isAnon()) {
-				// w
-				// }
-			}
-		}
+//		log.info("Publishing blank web service configs.");
+//		{
+//			for (GResource wsConfRes : g.findByClass(NS.OMNOM.CLASS_WEBSERVICE_CONFIG)) {
+//				WebserviceConfigPojo wsConf = g.getObjectMapper().getObject(
+//						WebserviceConfigPojo.class, wsConfRes);
+//				if (!wsConf.hasId()) {
+//					String confLoc = wsConf.publishToService(client.getConfigWebResource());
+//					wsConfRes.rename(confLoc);
+//				}
+//				// if (wsConf.isAnon()) {
+//				// w
+//				// }
+//			}
+//		}
 
 		log.info("Skolemnizing Connectors.");
 		{
@@ -187,9 +188,11 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		}
 
 		log.info("Writing workflow to config.");
+		g.emptyGraph(NS.ENDPOINT_UPDATE, wfUri);
 		g.writeToEndpoint(NS.ENDPOINT_UPDATE, wfUri);
 		log.info("Done Writing workflow to config: " + wfUri);
 
+//		Assert.assertEquals(1, g.listStatements(null, "omnom:hasPosition", null).size());
 		return Response.ok().entity(getResponseEntity(g)).location(URI.create(wfUri)).build();
 	}
 
