@@ -75,6 +75,7 @@ public class ObjectMapper {
     	if (objectCache.keySet().contains(object))
     		return objectCache.get(object);
     	
+    	log.info("Adding object " + object);
         setAnnotatedNamespaces(object);
         GResource targetResource = getGResource(object);
         objectCache.put(object, targetResource);
@@ -274,6 +275,12 @@ public class ObjectMapper {
 	 * @param value
 	 */
 	private void serializeList(GResource targetResource, String property, Object value) {
+		
+		// Stop if the list has already been serialized
+		if (null != targetResource.get(property)) {
+			log.fine(targetResource + " has " + property + " already set to " + value);
+			return;
+		}
 		
 		// Attach a blank node as list with the property
 		GResource listResource = grafeo.createBlank();
