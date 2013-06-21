@@ -56,16 +56,10 @@ public class JobPojo extends AbstractJobPojo{
     public ParameterAssignmentPojo getParameterAssignmentForParam(String paramName) {
         log.info("Access to param assignment by name: " + paramName);
         for (ParameterAssignmentPojo ass : this.outputParameters) {
-            try {
-//				log.warning("" + ass.getForParam().getId());
-                if (ass.getForParam().getId().matches(".*" + paramName + "$")
-                        ||
-                        ass.getForParam().getLabel().equals(paramName)
-                        ){
-                    return ass;
-                }
-            } catch (NullPointerException e) {
-            }
+        	if (ass.hasForParam()
+	    			&&
+    			ass.getForParam().matchesParameterName(paramName))
+        			return ass;
         }
         return null;
     }
