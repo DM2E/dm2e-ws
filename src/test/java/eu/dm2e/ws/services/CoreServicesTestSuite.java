@@ -8,12 +8,12 @@ import eu.dm2e.ws.services.data.ConfigServiceITCase;
 import eu.dm2e.ws.services.file.FileServiceITCase;
 import eu.dm2e.ws.services.job.JobServiceITCase;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-	FileServiceITCase.class,
-	JobServiceITCase.class,
-	ConfigServiceITCase.class,
-	ClientITCase.class })
+//@RunWith(Suite.class)
+//@SuiteClasses({
+//	FileServiceITCase.class,
+//	JobServiceITCase.class,
+//	ConfigServiceITCase.class,
+//	ClientITCase.class })
 public class CoreServicesTestSuite {
 
 }

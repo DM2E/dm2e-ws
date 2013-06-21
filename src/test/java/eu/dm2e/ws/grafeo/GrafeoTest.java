@@ -5,9 +5,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
-import org.junit.*;
-import static org.junit.Assert.*;
-import eu.dm2e.ws.grafeo.Grafeo;
 
 /**
  * This file was created within the DM2E project.

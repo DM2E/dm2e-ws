@@ -1,16 +1,14 @@
 package eu.dm2e.ws;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.BeforeClass;
+import org.junit.Before;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -43,8 +41,8 @@ public class OmnomTestCase extends OmnomUnitTest{
 		}
 	}
 	
-	@BeforeClass
-	public static void setUpClass() {
+	@Before
+	public void setUpBase() throws Exception {
         System.setProperty("http.keepAlive", "false");
         ManageService.startAll();
 	}

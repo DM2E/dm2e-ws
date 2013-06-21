@@ -1,5 +1,4 @@
 package eu.dm2e.utils;
-import java.util.Date;
 import java.util.logging.Formatter;
 import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
@@ -19,7 +18,7 @@ public class OmnomJULFormatter extends Formatter {
 		StringBuilder sb = new StringBuilder();
 		
 		// Get the date from the LogRecord and add it to the buffer
-		Date date = new Date(record.getMillis());
+//		Date date = new Date(record.getMillis());
 //		sb.append(date.toString());
 //		sb.append(" ");
 		

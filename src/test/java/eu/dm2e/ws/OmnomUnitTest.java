@@ -3,7 +3,6 @@ package eu.dm2e.ws;
 import java.io.IOException;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
-@SuppressWarnings("unused")
 public class OmnomUnitTest {
 	
 	protected Logger log = Logger.getLogger(getClass().getName());
