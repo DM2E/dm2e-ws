@@ -1,7 +1,5 @@
 package eu.dm2e.ws.api;
 
-import org.apache.xerces.impl.dv.ValidationContext;
-
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
@@ -20,31 +18,37 @@ public class ParameterConnectorPojo extends SerializablePojo<ParameterConnectorP
 	private WorkflowPojo fromWorkflow;
 	public WorkflowPojo getFromWorkflow() { return fromWorkflow; }
 	public void setFromWorkflow(WorkflowPojo wf) { this.fromWorkflow = wf; }
-	public boolean hasFromWorkflow() { return this.fromWorkflow == null; }
+	public boolean hasFromWorkflow() { return this.fromWorkflow != null; }
+	
+	@RDFProperty(NS.OMNOM.PROP_TO_WORKFLOW)
+	private WorkflowPojo toWorkflow;
+	public WorkflowPojo getToWorkflow() { return toWorkflow; }
+	public void setToWorkflow(WorkflowPojo wf) { this.toWorkflow = wf; }
+	public boolean hasToWorkflow() { return this.toWorkflow != null; }
 	
 	@RDFProperty(NS.OMNOM.PROP_FROM_POSITION)
 	private WorkflowPositionPojo fromPosition;
 	public WorkflowPositionPojo getFromPosition() { return fromPosition; }
 	public void setFromPosition(WorkflowPositionPojo fromPosition) { this.fromPosition = fromPosition; }
-	public boolean hasFromPosition() { return this.fromPosition == null; }
+	public boolean hasFromPosition() { return this.fromPosition != null; }
 	
 	@RDFProperty(NS.OMNOM.PROP_TO_POSITION)
 	private WorkflowPositionPojo toPosition;
 	public WorkflowPositionPojo getToPosition() { return toPosition; }
 	public void setToPosition(WorkflowPositionPojo toPosition) { this.toPosition = toPosition; }
-	public boolean hasToPosition() { return this.toPosition == null; }
+	public boolean hasToPosition() { return this.toPosition != null; }
 
 	@RDFProperty(NS.OMNOM.PROP_FROM_PARAM)
 	private ParameterPojo fromParam;
 	public ParameterPojo getFromParam() { return fromParam; }
 	public void setFromParam(ParameterPojo fromParam) { this.fromParam = fromParam; }
-	public boolean hasFromParam() { return this.fromParam == null; }
+	public boolean hasFromParam() { return this.fromParam != null; }
 	
 	@RDFProperty(NS.OMNOM.PROP_TO_PARAM)
 	private ParameterPojo toParam;
 	public ParameterPojo getToParam() { return toParam; }
 	public void setToParam(ParameterPojo toParam) { this.toParam = toParam; }
-	public boolean hasToParam() { return this.toParam == null; }
+	public boolean hasToParam() { return this.toParam != null; }
 	
 //	@RDFProperty(NS.OMNOM.PROP_FROM_STRING)
 //	private String fromString;

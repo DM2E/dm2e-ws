@@ -18,11 +18,13 @@ public class ParameterAssignmentPojo  extends SerializablePojo {
 	private ParameterPojo forParam;
 	public ParameterPojo getForParam() { return forParam; }
 	public void setForParam(ParameterPojo forParam) { this.forParam = forParam; }
+	public boolean hasForParam() { return this.forParam != null; }
 	
 	@RDFProperty(NS.OMNOM.PROP_PARAMETER_VALUE)
 	private String parameterValue;
 	public String getParameterValue() { return parameterValue; }
 	public void setParameterValue(String parameterValue) { this.parameterValue = parameterValue; }
+	public boolean hasParameterValue() { return this.parameterValue != null; }
 	
 
 }
