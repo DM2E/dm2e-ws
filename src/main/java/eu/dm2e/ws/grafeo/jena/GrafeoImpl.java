@@ -272,6 +272,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         if (!success) throw new RuntimeException("After 3 tries I still couldn't make sense from this URI: " + uri);
         // Expand the graph by recursively loading additional resources
         Set<GResource> resourceCache = new HashSet<GResource>();
+        log.info("Expansions to go: " + expansionSteps);
         for ( ; expansionSteps > 0 ; expansionSteps--) {
         	log.info("Expansion No. " + expansionSteps);
         	log.info("Before expansion: "+ this.size());
@@ -408,13 +409,15 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 
     @Override
     public String expand(String uri) {
-    	String ns = uri.substring(0, uri.indexOf(":"));
         String expanded = model.expandPrefix(uri);
-        if (! namespacesUsed.keySet().contains(ns) 
-        		&& 
-    		(expanded.length() > uri.length())) {
-        	this.namespacesUsed.put(ns, namespaces.get(ns));
-        }
+    	if (uri.indexOf(":") > 0) {
+	    	String ns = uri.substring(0, uri.indexOf(":"));
+	        if (! namespacesUsed.keySet().contains(ns) 
+	        		&& 
+	    		(expanded.length() > uri.length())) {
+	        	this.namespacesUsed.put(ns, namespaces.get(ns));
+	        }
+    	}
         return expanded;
     }
     
@@ -946,7 +949,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     	}
     	ResIterator iterSub = this.getModel().listSubjects();
     	while (iterSub.hasNext()) {
-    		RDFNode node = iterObj.next();
+    		RDFNode node = iterSub.next();
     		if (node.isURIResource()) resSet.add(this.resource(node.asResource()));
     	}
     	return resSet;
@@ -963,7 +966,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     	}
     	ResIterator iterSub = this.getModel().listSubjects();
     	while (iterSub.hasNext()) {
-    		RDFNode node = iterObj.next();
+    		RDFNode node = iterSub.next();
     		if (node.isURIResource()) resSet.add(this.resource(node.asResource()));
     	}
     	return resSet;
@@ -981,9 +984,10 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     
     @Override
     public void unskolemize() {
-    	long i = 0;
+//    	long i = 0;
     	for (GResource res : this.listResources()) {
-    		res.rename(this.resource("_blank_" + (i++) +"_"));
+//    		res.rename(this.resource("_blank_" + (i++) +"_"));
+    		res.rename(this.createBlank());
     	}
     	log.info(this.getTerseTurtle());
     }
