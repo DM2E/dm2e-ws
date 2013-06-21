@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.OmnomUnitTest;
+import eu.dm2e.ws.api.SetAndList;
 import eu.dm2e.ws.grafeo.jena.GResourceImpl;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
@@ -47,6 +48,31 @@ public class AnnotationExportTest extends OmnomUnitTest {
 		assertThat(list.getLongList(), is(listPojo2.getLongList()));
 		GrafeoAssert.graphsAreEquivalent(list.getGrafeo(), listPojo2.getGrafeo());
 	}
+	
+	@Test
+	public void testCombinedSetAndListRename() {
+		SetAndList pojo = new SetAndList();
+		pojo.getList().add(new IntegerPojo(0));
+		pojo.getList().add(new IntegerPojo(1));
+		pojo.getList().add(new IntegerPojo(2));
+		
+		pojo.getSet().add(new IntegerPojo(3));
+		pojo.getSet().add(new IntegerPojo(4));
+		pojo.getSet().add(new IntegerPojo(5));
+		Grafeo g1 = new GrafeoImpl();
+		g1.getObjectMapper().addObject(pojo);
+		
+		Grafeo g2 = pojo.getGrafeo();
+		
+		GrafeoAssert.graphsAreEquivalent(g1, g2);
+		
+		log.info(g1.getTerseTurtle());
+		g1.findTopBlank("co:List").rename("omnom:FORK");
+		log.info(g2.getTerseTurtle());
+		
+		GrafeoAssert.sizeEquals(g1, g2);
+		GrafeoAssert.graphsAreStructurallyEquivalent(g1, g2);
+	}
 
 	
 	@Test
@@ -57,11 +83,15 @@ public class AnnotationExportTest extends OmnomUnitTest {
 		list.getIntegerResourceList().add(new IntegerPojo(6));
 		list.getIntegerResourceList().add(new IntegerPojo(7));
 		
-		log.info("Serializing");
+		log.info("Serializing manually");
 		Grafeo g = new GrafeoImpl();
 		g.getObjectMapper().addObject(list);
 		GrafeoAssert.numberOfResourceStatements(g, 3, null, NS.RDF.PROP_TYPE, NS.CO.CLASS_ITEM);
 		log.info(g.getTerseTurtle());
+		
+		log.info("Serializing from pojo");
+		Grafeo g2 = list.getGrafeo();
+		GrafeoAssert.graphsAreEquivalent(g, g2);
 		
 		log.info("De-Serializing");
 		GResource topBlank = g.findTopBlank(list.getRDFClass().value());
@@ -87,8 +117,8 @@ public class AnnotationExportTest extends OmnomUnitTest {
 		g.getObjectMapper().addObject(pojo);
 		log.info(g.getTurtle());
 //		log.info(""+g.size());
-		assertTrue(g.containsStatementPattern(pojo_uri, "omnom:some_number", g.literal(5)));
-		assertTrue(g.containsStatementPattern(pojo_uri, "omnom:some_number", g.literal(11111)));
+		assertTrue(g.containsTriple(pojo_uri, "omnom:some_number", g.literal(5)));
+		assertTrue(g.containsTriple(pojo_uri, "omnom:some_number", g.literal(11111)));
 	}
 	
 	@Test
