@@ -1192,4 +1192,12 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 	@Override
 	public Map<String, String> getNamespacesUsed() { return namespacesUsed; }
 
+	@Override
+	public boolean containsTriple(GResource s, String p, GValue o) {
+		GResourceImpl gResourceImpl = (GResourceImpl) s;
+		Property prop = this.getModel().createProperty(expand(p));
+		GValueImpl oImpl = (GValueImpl) o;
+		return this.model.contains(gResourceImpl.getJenaResource(), prop, oImpl.getJenaRDFNode());
+	}
+
 }

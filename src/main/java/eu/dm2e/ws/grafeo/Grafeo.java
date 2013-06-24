@@ -215,6 +215,8 @@ public interface Grafeo {
 	GLiteral now();
 
 	GLiteral date(Long timestamp);
+	
+	boolean containsTriple(GResource s, String p, GValue o);
 
 	boolean containsTriple(String s, String p, String o);
 
@@ -404,6 +406,8 @@ public interface Grafeo {
 	 * @return
 	 */
 	Map<String, String> getNamespacesUsed();
+
+
 
 
 }

@@ -130,10 +130,14 @@ public class GResourceImpl extends GValueImpl implements GResource {
         GResource prop = grafeo.resource(uri);
         grafeo.addTriple(this, prop, value);
     }
+    
+    @Override
+    public boolean isa(String uri) {
+    	return grafeo.containsTriple(this, "rdf:type", grafeo.resource(uri));
+    }
 
     @Override
     public Grafeo getGrafeo() {
-
         return grafeo;
     }
 }

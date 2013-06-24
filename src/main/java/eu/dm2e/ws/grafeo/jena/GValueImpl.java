@@ -121,6 +121,8 @@ public abstract class GValueImpl extends JenaImpl implements GValue {
         return result;
     }
 
-
+	public RDFNode getJenaRDFNode() {
+		return value;
+	}
 
 }

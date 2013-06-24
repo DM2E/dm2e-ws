@@ -20,4 +20,10 @@ public interface GResource extends GValue {
     boolean isAnon();
 
     String getAnonId();
+	/**
+	 * Check whether a resource has a certain rdf:type.
+	 * 
+	 * @param uri
+	 */
+	boolean isa(String uri);
 }
