@@ -164,7 +164,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
             if (! res.isAnon()) {
             	continue;
             }
-            log.info("Checking resource: " + res);
+            log.info("Checking blank resource: " + res);
 //            if (model.listStatements(null, null, res).hasNext())
 //            	continue;
             if (model.listStatements(res, typeProperty, typeObjectResource).hasNext()) {
@@ -258,7 +258,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
             try {
                 // NOTE: read(String uri) does content-negotiation - sort of
                 this.model.read(uri);
-                log.info("Content read.");
+                log.fine("Content read.");
                 success = true;
             } catch (Throwable t) {
                     log.severe("Could not parse URI content: " + t.getMessage());
@@ -274,24 +274,24 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         if (!success) throw new RuntimeException("After 3 tries I still couldn't make sense from this URI: " + uri);
         // Expand the graph by recursively loading additional resources
         Set<GResource> resourceCache = new HashSet<GResource>();
-        log.info("Expansions to go: " + expansionSteps);
+        log.fine("Expansions to go: " + expansionSteps);
         for ( ; expansionSteps > 0 ; expansionSteps--) {
-        	log.info("Expansion No. " + expansionSteps);
-        	log.info("Before expansion: "+ this.size());
+        	log.finer("Expansion No. " + expansionSteps);
+        	log.fine("Size Before expansion: "+ this.size());
         	for (GResource gres : this.listURIResources()) {
         		if (resourceCache.contains(gres)){
         			continue;
         		}
 				try {
-					log.info("Trying to load resource " + gres.getUri());
+					log.finer("Trying to load resource " + gres.getUri());
 					this.load(gres.getUri(), 0);
 				} catch (Throwable t) {
-					log.info("Failed to load resource " + gres.getUri() +".");
+					log.fine("Failed to load resource " + gres.getUri() +".");
 //					t.printStackTrace();
 				}
 				resourceCache.add(gres);
     		}
-        	log.info("After expansion: "+ this.size());
+        	log.fine("Size After expansion: "+ this.size());
         }
 
     }
@@ -302,11 +302,11 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         uri = expand(uri);
         try {
             this.model.read(uri, null, "N3");
-            log.info("Content read, found N3.");
+            log.fine("Content read, found N3.");
         } catch (Throwable t) {
             try {
                 this.model.read(uri, null, "RDF/XML");
-                log.info("Content read, found RDF/XML.");
+                log.fine("Content read, found RDF/XML.");
             } catch (Throwable t2) {
                 // TODO Throw proper exception that is converted to a proper
                 // HTTP response in DataService
@@ -324,11 +324,11 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         uri = expand(uri);
         try {
             this.model.read(uri, null, "N3");
-            log.info("Content read, found N3.");
+            log.fine("Content read, found N3.");
         } catch (Throwable t) {
             try {
                 this.model.read(uri, null, "RDF/XML");
-                log.info("Content read, found RDF/XML.");
+                log.fine("Content read, found RDF/XML.");
             } catch (Throwable t2) {
                 // TODO Throw proper exception that is converted to a proper
                 // HTTP response in DataService
@@ -340,8 +340,8 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         // Expand the graph by recursively loading additional resources
         Set<GResource> resourceCache = new HashSet<GResource>();
         for ( ; expansionSteps > 0 ; expansionSteps--) {
-            log.info("Expansion No. " + expansionSteps);
-            log.info("Before expansion: "+ this.size());
+            log.fine("Expansion No. " + expansionSteps);
+            log.fine("Size Before expansion: "+ this.size());
             for (GResource gres : this.listURIResources()) {
                 if (resourceCache.contains(gres)){
                     continue;
@@ -349,12 +349,12 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
                 try {
                     this.loadWithoutContentNegotiation(gres.getUri(), 0);
                 } catch (Throwable t) {
-                    log.info("Failed to load resource " + gres.getUri() +".");
+                    log.fine("Failed to load resource " + gres.getUri() +".");
 //					t.printStackTrace();
                 }
                 resourceCache.add(gres);
             }
-            log.info("After expansion: "+ this.size());
+            log.fine("After expansion: "+ this.size());
         }
     }
 
@@ -553,7 +553,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 //        sb.append("?s ?p ?o");
 //        sb.append("} . }");
         Query query = QueryFactory.create(sparco.toString());
-        log.info("CONSTRUCT Query: " + sparco.toString());
+        log.finer("CONSTRUCT Query: " + sparco.toString());
 
         long sizeBefore = size();
         long stmtsAdded = 0;
@@ -583,23 +583,22 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         if (stmtsAdded == 0) {
         	throw new RuntimeException("Graph contained no statements: " + graph);
         }
-        log.info("Added " + stmtsAdded + " statements to the graph.");
+        log.fine("Added " + stmtsAdded + " statements to the graph.");
         
         // Expand the graph by recursively loading additional resources
         Set<GResource> resourceCache = new HashSet<GResource>();
         for ( ; expansionSteps > 0 ; expansionSteps--) {
-        	log.info("SCHMExpansion No. " + expansionSteps);
-    		log.info("LIVELIVE");
-        	log.info("Before expansion: "+ this.size());
+        	log.fine("SExpansion No. " + expansionSteps);
+        	log.fine("Size Before expansion: "+ this.size());
         	for (GResource gres : this.listURIResources()) {
         		if (resourceCache.contains(gres)){
         			continue;
         		}
         		try {
-        			log.info("Reading graph " + graph + " from endpoint " + endpoint + ".");
+        			log.fine("Reading graph " + graph + " from endpoint " + endpoint + ".");
         			this.readFromEndpoint(endpoint, graph, 0);
         		} catch (Throwable t) {
-        			log.info("Graph not found in endpoint: " + graph);
+        			log.fine("Graph not found in endpoint: " + graph);
         			try {
 						this.load(gres.getUri(), 0);
 	        		} catch (Throwable t2) {
@@ -611,9 +610,9 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         		log.severe("LIVE");
 				resourceCache.add(gres);
     		}
-        	log.info("After expansion: "+ this.size());
+        	log.fine("Size After expansion: "+ this.size());
         }
-        log.info("Reading from endpoint finished.");
+        log.fine("Reading from endpoint finished.");
     }
     
     @Override
@@ -659,7 +658,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         	.graph(graph)
         	.endpoint(endpoint)
         	.build();
-        log.info("writeToEndpoint Query: " + sparul.toString());
+        log.info("writeToEndpoint Update Query: " + sparul.toString());
         sparul.execute();
 
     }

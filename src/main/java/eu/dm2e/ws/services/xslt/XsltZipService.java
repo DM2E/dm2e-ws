@@ -56,29 +56,29 @@ public class XsltZipService extends AbstractTransformationService {
 		WebservicePojo ws = super.getWebServicePojo();
 
 		ParameterPojo xsltInParam = ws.addInputParameter(XML_IN_PARAM_NAME);
-		xsltInParam.setTitle("XML input");
+		xsltInParam.setComment("XML input");
 		xsltInParam.setIsRequired(true);
 		xsltInParam.setParameterType("xsd:anyURI");
 
 		ParameterPojo xmlInParam = ws.addInputParameter(XSLTZIP_IN_PARAM_NAME);
-		xmlInParam.setTitle("XML ZIP input");
+		xmlInParam.setComment("XML ZIP input");
 		xmlInParam.setIsRequired(true);
 		xmlInParam.setParameterType("xsd:anyURI");
 
 		ParameterPojo providerId = ws.addInputParameter(PROVIDER_ID);
-		providerId.setTitle("Provider ID");
+		providerId.setComment("Provider ID");
 
 		ParameterPojo providerIdParam = ws.addInputParameter(PROVIDER_ID_PARAM);
-		providerIdParam.setTitle("Provider ID Parameter used in XSLT");
+		providerIdParam.setComment("Provider ID Parameter used in XSLT");
 
 		ParameterPojo datasetId = ws.addInputParameter(DATASET_ID);
-		datasetId.setTitle("Dataset ID");
+		datasetId.setComment("Dataset ID");
 
 		ParameterPojo datasetIdParam = ws.addInputParameter(DATASET_ID_PARAM);
-		datasetIdParam.setTitle("Dataset ID Parameter used in XSLT");
+		datasetIdParam.setComment("Dataset ID Parameter used in XSLT");
 
 		ParameterPojo xmlOutParam = ws.addOutputParameter(XML_OUT_PARAM_NAME);
-		xmlOutParam.setTitle("XML output");
+		xmlOutParam.setComment("XML output");
 
 		// ParameterPojo fileServiceParam =
 		// ws.addInputParameter("fileServiceParam");

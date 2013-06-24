@@ -145,6 +145,8 @@ public final class NS {
 		public static final String PROP_FOR_SLOT = BASE + "forSlot";
 		public static final String CLASS_PARAMETER_CONNECTOR_ASSIGNMENT = BASE + "ParameterConnectorAssignment";
 
+		public static final String PROP_DEFAULT_VALUE = BASE + "defaultValue";
+
 	}
 	
 	/**

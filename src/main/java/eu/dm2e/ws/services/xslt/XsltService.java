@@ -28,17 +28,17 @@ public class XsltService extends AbstractTransformationService {
 		WebservicePojo ws = super.getWebServicePojo();
 
 		ParameterPojo xsltInParam = ws.addInputParameter(PARAM_XSLT_IN);
-		xsltInParam.setTitle("XSLT input");
+		xsltInParam.setComment("XSLT input");
 		xsltInParam.setIsRequired(true);
 		xsltInParam.setParameterType("xsd:anyURI");
 
 		ParameterPojo xmlInParam = ws.addInputParameter(PARAM_XML_IN);
-		xmlInParam.setTitle("XML input");
+		xmlInParam.setComment("XML input");
 		xmlInParam.setIsRequired(true);
 		xmlInParam.setParameterType("xsd:anyURI");
 
 		ParameterPojo xmlOutParam = ws.addOutputParameter(PARAM_XML_OUT);
-		xmlOutParam.setTitle("XML output");
+		xmlOutParam.setComment("XML output");
 		
 //		ParameterPojo fileServiceParam = ws.addInputParameter("fileServiceParam");
 //		fileServiceParam.setIsRequired(false);

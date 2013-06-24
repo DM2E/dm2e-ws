@@ -75,7 +75,7 @@ public class ObjectMapper {
     	if (objectCache.keySet().contains(object))
     		return objectCache.get(object);
     	
-    	log.info("Adding object " + object);
+    	log.fine("Adding object " + object);
         setAnnotatedNamespaces(object);
         GResource targetResource = getGResource(object);
         objectCache.put(object, targetResource);
@@ -417,7 +417,7 @@ public class ObjectMapper {
 			log.severe("No firstItem: " + e);
 			return;
 		}
-		log.info("co:firstItem : " + currentItem);
+		log.fine("co:firstItem : " + currentItem);
 		
 		// Cache for the list items to prevent cyclic references and other recursions
 		Set<GResource> listItemCache = new HashSet<>();

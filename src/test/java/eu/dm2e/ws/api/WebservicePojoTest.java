@@ -28,15 +28,15 @@ public class WebservicePojoTest {
 		ws.setId(serviceUri);
 		
 		xsltInParam = ws.addInputParameter(XsltService.PARAM_XSLT_IN);
-		xsltInParam.setTitle("XSLT input");
+		xsltInParam.setComment("XSLT input");
 		xsltInParam.setIsRequired(true);
 		
 		xmlInParam = ws.addInputParameter(XsltService.PARAM_XML_IN);
-		xmlInParam.setTitle("XML input");
+		xmlInParam.setComment("XML input");
 		xmlInParam.setIsRequired(true); 
 		
 		xmlOutParam = ws.addInputParameter(XsltService.PARAM_XML_OUT);
-		xmlOutParam.setTitle("XML output");
+		xmlOutParam.setComment("XML output");
 	}
 
 	@Test
