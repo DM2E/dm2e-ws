@@ -84,14 +84,15 @@ public final class NS {
 		public static final String PROP_INPUT_PARAM = BASE + "inputParam";
 		public static final String PROP_OUTPUT_PARAM = BASE + "outputParam";
 		
-		public static final String PROP_FROM_POSITION = BASE + "forPosition";
-		public static final String PROP_TO_POSITION = BASE + "toPosition";
-		
-		public static final String PROP_FROM_PARAM = BASE + "fromParam";
-		public static final String PROP_TO_PARAM = BASE + "toParam";
-		public static final String PROP_FROM_STRING = BASE + "fromString";
-		
+		public static final String PROP_FROM_POSITION = BASE + "fromPosition";
 		public static final String PROP_FROM_WORKFLOW = BASE + "fromWorkflow";
+		public static final String PROP_FROM_PARAM = BASE + "fromParam";
+		
+		public static final String PROP_TO_POSITION = BASE + "toPosition";
+		public static final String PROP_TO_WORKFLOW = BASE + "toWorkflow";
+		public static final String PROP_TO_PARAM = BASE + "toParam";
+		
+		public static final String PROP_FROM_STRING = BASE + "fromString";
 		
 		public static final String PROP_WORKFLOW = BASE + "workflow";
 		
@@ -144,7 +145,6 @@ public final class NS {
 		public static final String PROP_FOR_SLOT = BASE + "forSlot";
 		public static final String CLASS_PARAMETER_CONNECTOR_ASSIGNMENT = BASE + "ParameterConnectorAssignment";
 
-		public static final String PROP_TO_WORKFLOW = BASE + "toWorkflow";
 	}
 	
 	/**

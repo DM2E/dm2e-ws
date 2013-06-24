@@ -51,7 +51,7 @@ public class ParameterPojo extends SerializablePojo<ParameterPojo>{
 		return (
 				(this.hasId() && this.getId().equals(needle))
 			||
-				(this.hasId() && this.getId().matches(".*" + needle + "$"))
+				(this.hasId() && this.getId().matches(".*/" + needle + "$"))
 			||
 				(this.hasLabel() && this.getLabel().equals(needle))
 			);
