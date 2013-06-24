@@ -75,30 +75,29 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
 		this.setId(id);
         Grafeo g = new GrafeoImpl();
         try {
-        	log.info("Loading from " + this.getId());
+        	log.finer("Loading from " + this.getId());
 			g.load(this.getId(), expansionSteps);
-        	log.info("DONE Loading from " + this.getId());
+        	log.finer("DONE Loading from " + this.getId());
             log.fine("Triples loaded from URI " + this.getId() + ": " + g.getTurtle());
 		} catch (Exception e1) {
 			log.warning("Failed to initialize Pojo from URI: " + e1);
 			return;
 		}
-        log.info("Instantiating " + this.getClass() + " Pojo from " + this.getId());
+        log.finer("Instantiating " + this.getClass() + " Pojo from " + this.getId());
 		T theNewPojo = g.getObjectMapper().getObject(this.getClass(), this.getId());
-        log.info("DONE Instantiating " + this.getClass() + " Pojo from " + this.getId());
+        log.finer("DONE Instantiating " + this.getClass() + " Pojo from " + this.getId());
         try {
-        	log.info("Copying properties from Pojo " + this.getId());
+        	log.fine("Copying properties from Pojo " + this.getId());
             PojoUtils.copyProperties(this, theNewPojo);
-        	log.info("Copying properties from Pojo " + this.getId());
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("An exception occurred: " + e, e);
         }
     }
 	
 	public String publishToService(WebResource wr) {
-		log.info("Publishing myself (pojo) to " + wr.getURI());
+		log.fine("Publishing myself (pojo) to " + wr.getURI());
 		String loc = this.client.publishPojo(this, wr);
-		log.info("Done Publishing myself (pojo) to " + wr.getURI());
+		log.fine("Done Publishing myself (pojo) to " + wr.getURI());
 		return loc;
 	}
 	public String publishToService(String serviceUri) {
@@ -110,31 +109,4 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
 		}
 		return this.publishToService(this.getId());
 	}
-
-//	public void publishToEndpoint(String endPoint, String graph) {
-//        log.info("Writing to endpoint: " + endPoint + " / Graph: " + graph);
-//		Grafeo g = new GrafeoImpl();
-//		g.getObjectMapper().addObject(this);
-//		g.emptyGraph(endPoint, graph);
-//		g.writeToEndpoint(endPoint, graph);
-//	}
-//	public void publishToEndpoint(String endPoint) {
-//		if (null == this.getId()) {
-//			String prefix;
-//			try {
-//				prefix = this.getClass().getAnnotation(RDFInstancePrefix.class).value();
-//			} catch (NullPointerException e) {
-//				prefix = "http://data.dm2e.eu/THIS_CLASS_SHOULD_HAVE_A_RDFINSTANCEPREFIX/";
-//			}
-//			String newURI = prefix+UUID.randomUUID().toString();
-//			this.setId(newURI);
-//		}
-//		this.publishToEndpoint(endPoint, this.getId());
-//	}
-//	public void publishToEndpoint() {
-//		String endPoint = Config.getString("dm2e.ws.sparql_endpoint_statements");
-//		this.publishToEndpoint(endPoint);
-//	}
-
-
 }
