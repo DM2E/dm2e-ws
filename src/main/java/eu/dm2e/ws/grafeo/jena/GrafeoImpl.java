@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,6 +47,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.GLiteral;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.GStatement;
@@ -981,6 +983,10 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     public void skolemizeUUID(String subject, String predicate, String template) {
     	this.skolemize(subject, predicate, template, SkolemizationMethod.RANDOM_UUID);
     }
+    @Override
+    public void skolemizeByLabel(String subject, String predicate, String template) {
+    	this.skolemize(subject, predicate, template, SkolemizationMethod.BY_RDFS_LABEL);
+    }
     
     @Override
     public void unskolemize() {
@@ -997,25 +1003,59 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		log.fine("Skolemizing " + stringifyResourcePattern(subject, predicate, null) + " with template '" + template + "'");
 		subject = expand(subject);
 		predicate = expand(predicate);
-		Set<GResource> anonRes = new HashSet<>();
-		for (GStatement stmt : this.listAnonStatements(subject, predicate)) {
-			if (! anonRes.contains(stmt.getResourceValue())) {
-				anonRes.add(stmt.getResourceValue());
+		LinkedHashSet<GResource> anonRes = new LinkedHashSet<>();
+		GValue possiblyList = this.resource(subject).get(predicate);
+		if (null == possiblyList) {
+			log.fine("No statements fit " + this.stringifyResourcePattern(subject, predicate, null));
+			return;
+		}
+		if (! possiblyList.isLiteral() && possiblyList.resource().isa(NS.CO.CLASS_LIST)) {
+			log.fine("This is a list.");
+			GResource listRes = possiblyList.resource();
+			GResource cur = listRes.get(NS.CO.PROP_FIRST_ITEM).resource();
+			while (null != cur) {
+				if (cur.isAnon()) {
+					log.fine("Adding " + cur);
+					anonRes.add(cur.get(NS.CO.PROP_ITEM_CONTENT).resource());
+				}
+				GValue next = cur.get(NS.CO.PROP_NEXT_ITEM);
+				if (null == next) break;
+				cur = next.resource();
 			}
 		}
-		long i = 1;
+		else {
+			log.fine("This is NOT a list.");
+			for (GValue val : this.resource(subject).getAll(predicate)) {
+				if (! val.isLiteral() && val.resource().isAnon()) {
+					anonRes.add(val.resource());
+				}
+			}
+		}
+		
+		long i = 0;
+		log.fine("Skolemizing " + template + ": " + anonRes);
 		for (GResource gres : anonRes) {
-			String randomId;
+			// start counting from 1;
+			log.fine("Resource before skolem: " + gres);
+			i++;
+			String resId;
 			if (method.equals(SkolemizationMethod.RANDOM_UUID)) {
-				randomId = UUID.randomUUID().toString();
+				resId = UUID.randomUUID().toString();
 			}
 			else if (method.equals(SkolemizationMethod.SEQUENTIAL_ID)) {
-				randomId = "" + i++;
+				resId = "" + i;
+			}
+			else if (method.equals(SkolemizationMethod.BY_RDFS_LABEL)) {
+				resId = gres.get("rdfs:label").literal().getValue();
+				if (null == resId) {
+					throw new RuntimeException("Blank resource " + gres + " has no rdfs:label");
+				}
 			}
 			else {
 				throw new RuntimeException("Unknown SkolemnizationMethod " + method.toString());
 			}
-			gres.rename(subject + "/" + template + "/" + randomId);
+			gres.rename(subject + "/" + template + "/" + resId);
+			log.fine("Resource after skolem: " + gres);
 		}
 	}
 	

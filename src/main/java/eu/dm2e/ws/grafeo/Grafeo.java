@@ -27,6 +27,10 @@ import eu.dm2e.ws.grafeo.jena.GResourceImpl;
  * @author Konstantin Baierer
  *
  */
+/**
+ * @author Konstantin Baierer
+ *
+ */
 public interface Grafeo {
 	GResource findTopBlank();
 
@@ -288,6 +292,15 @@ public interface Grafeo {
 	 * @param newURI the string to base the naming on.
 	 */
 	void skolemizeSequential(String subject, String predicate, String template);
+	
+	/**
+	 * Replace blank nodes that are objects of a triple with the rdfs:label assigned to that object. 
+	 * 
+	 * @param wfUri
+	 * @param propInputParam
+	 * @param string
+	 */
+	void skolemizeByLabel(String wfUri, String propInputParam, String string);
 
 	/**
 	 * List all resources in the Grafeo.
@@ -406,6 +419,7 @@ public interface Grafeo {
 	 * @return
 	 */
 	Map<String, String> getNamespacesUsed();
+
 
 
 

@@ -11,5 +11,6 @@ package eu.dm2e.ws.grafeo;
  */
 public enum SkolemizationMethod {
 	RANDOM_UUID,
-	SEQUENTIAL_ID
+	SEQUENTIAL_ID,
+	BY_RDFS_LABEL
 }
