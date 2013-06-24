@@ -27,9 +27,11 @@ import eu.dm2e.ws.OmnomTestResources;
 import eu.dm2e.ws.api.AbstractJobPojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.ParameterAssignmentPojo;
+import eu.dm2e.ws.api.WorkflowJobPojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
+import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.services.Client;
 import eu.dm2e.ws.services.demo.DemoService;
 
@@ -295,7 +297,7 @@ public class JobServiceITCase extends OmnomTestCase {
 	@Test
 	public void testPojoPublishStatus() {
 		JobPojo job = new JobPojo();
-		job.publishToService();
+		job.publishToService(client.getJobWebResource());
 		{
 			job.setFailed();
 			String getJobNT = client.resource(job.getId()).accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES).get(String.class);
@@ -307,6 +309,35 @@ public class JobServiceITCase extends OmnomTestCase {
 			client.resource(job.getId()).path("status").entity("FINISHED").put();
 			getjob.loadFromURI(job.getId().toString());
 			assertEquals("FINISHED", getjob.getStatus());
+		}
+	}
+	
+	@Test
+	public void testWorkflowPojoPublish() {
+		WorkflowJobPojo job = new WorkflowJobPojo();
+		{
+			assertThat(job.getId(), is(nullValue()));
+			job.info("FOO");
+			job.debug("FOO");
+			job.trace("FOO");
+			job.warn("FOO");
+			job.fatal("FOO");
+			assertThat(job.getId(), is(nullValue()));
+			job.setStarted();
+			job.setFailed();
+			job.setFinished();
+			assertThat(job.getId(), is(nullValue()));
+			job.publishToService(client.getJobWebResource());
+			assertThat(job.getId(), not(nullValue()));
+		}	
+		{
+			Grafeo gInter = job.getGrafeo().copy();
+			WorkflowJobPojo job2 = gInter.getObjectMapper().getObject(WorkflowJobPojo.class, job.getId());
+			assertNotNull(job2);
+			assertNotNull(job2.getId());
+			assertEquals(JobStatus.FINISHED.toString(), job2.getStatus());
+			job2.setStatus(JobStatus.FAILED);
+			job2.publishToService();
 		}
 	}
 	
@@ -325,7 +356,7 @@ public class JobServiceITCase extends OmnomTestCase {
 			job.setFailed();
 			job.setFinished();
 			assertThat(job.getId(), is(nullValue()));
-			job.publishToService();
+			job.publishToService(client.getJobWebResource());
 			assertThat(job.getId(), not(nullValue()));
 		}
 		
@@ -356,7 +387,7 @@ public class JobServiceITCase extends OmnomTestCase {
 			.listAnonResources()
 			.size() > 0);
 		Grafeo gJobBefore = job.getGrafeo();
-		job.publishToService();
+		job.publishToService(client.getJobWebResource());
 		Grafeo gJobAfter = job.getGrafeo();
 		GrafeoAssert.graphsAreStructurallyEquivalent(gJobBefore,gJobAfter);
 //		if (true) return;

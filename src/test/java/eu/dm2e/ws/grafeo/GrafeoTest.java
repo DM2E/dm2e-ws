@@ -15,6 +15,11 @@ import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
  */
 
 public class GrafeoTest {
+	
+	private String
+		res1 = "http://res1",
+		res2 = "http://res2",
+		res3 = "http://res3";
 
     @Test
     public void testEscaping() {
@@ -55,6 +60,13 @@ public class GrafeoTest {
 			   o = "dc:quux";
 		grafeo.addTriple(s,p,o);
 		assertTrue(grafeo.containsTriple(s,p,o));
+	}
+	
+	@Test
+	public void testIsa() {
+		GrafeoImpl g = new GrafeoImpl();
+		g.addTriple(res1, "rdf:type", res2);
+		assertTrue(g.get(res1).isa(res2));
 	}
 
 }

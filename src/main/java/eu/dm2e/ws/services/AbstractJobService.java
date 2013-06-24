@@ -28,6 +28,7 @@ import eu.dm2e.ws.api.AbstractJobPojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.LogEntryPojo;
 import eu.dm2e.ws.api.ParameterAssignmentPojo;
+import eu.dm2e.ws.api.WorkflowJobPojo;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
@@ -67,7 +68,35 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		} catch (Exception e) {
 			return throwServiceError(ErrorMsg.BAD_RDF);
 		}
-		return this.putJob(inputGrafeo, inputGrafeo.get(uriStr));
+		
+		log.fine("Skolemnizing");
+		GResource blank = inputGrafeo.findTopBlank(NS.OMNOM.CLASS_WORKFLOW_JOB);
+		if (blank != null) {
+			blank.rename(uriStr);
+		} else {
+			blank = inputGrafeo.findTopBlank(NS.OMNOM.CLASS_JOB);
+			if (blank != null) {
+				blank.rename(uriStr);
+			}
+		}
+		inputGrafeo.skolemizeUUID(uriStr, NS.OMNOM.PROP_LOG_ENTRY, "log");
+		inputGrafeo.skolemizeUUID(uriStr, NS.OMNOM.PROP_ASSIGNMENT, "assignment");
+		
+		log.warning("Instantiating " + uriStr);
+		GrafeoImpl outputGrafeo = new GrafeoImpl();
+		if (inputGrafeo.resource(uriStr).isa(NS.OMNOM.CLASS_WORKFLOW_JOB)) {
+			log.info("Will instantiate as WorkflowJobPojo : " + uriStr);
+			WorkflowJobPojo workflowJobPojo = inputGrafeo.getObjectMapper().getObject(WorkflowJobPojo.class, uriStr);
+			outputGrafeo.getObjectMapper().addObject(workflowJobPojo);
+		}
+		else {
+			log.info("Will instantiate as JobPojo : " + uriStr);
+			JobPojo jobPojo = inputGrafeo.getObjectMapper().getObject(JobPojo.class, uriStr);
+			outputGrafeo.getObjectMapper().addObject(jobPojo);
+		}
+		
+		
+		return this.putJob(outputGrafeo, outputGrafeo.get(uriStr));
 	}
 
 	@POST
@@ -90,16 +119,34 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		} catch (Exception e) {
 			return throwServiceError(ErrorMsg.BAD_RDF);
 		}
-		GResource blank = inputGrafeo.findTopBlank(NS.OMNOM.CLASS_JOB);
+		GResource blank = inputGrafeo.findTopBlank(NS.OMNOM.CLASS_WORKFLOW_JOB);
 		if (blank == null) {
-			blank = inputGrafeo.findTopBlank(NS.OMNOM.CLASS_WORKFLOW_JOB);
+			blank = inputGrafeo.findTopBlank(NS.OMNOM.CLASS_JOB);
 			if (blank == null)
 				return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE + inputGrafeo.getTurtle());
 		}
 		String uriStr = getWebServicePojo().getId() + "/" + UUID.randomUUID().toString();;
 		blank.rename(uriStr);
-		log.info(inputGrafeo.getNTriples());
-		return this.postJob(inputGrafeo, blank);
+//		log.info(inputGrafeo.getNTriples());
+		
+		log.fine("Skolemizing");
+		inputGrafeo.skolemizeUUID(uriStr, NS.OMNOM.PROP_ASSIGNMENT, "assignment");
+		inputGrafeo.skolemizeUUID(uriStr, NS.OMNOM.PROP_LOG_ENTRY, "log");
+		
+		log.warning("Instantiating " + uriStr);
+		GrafeoImpl outputGrafeo = new GrafeoImpl();
+		if (blank.isa(NS.OMNOM.CLASS_WORKFLOW_JOB)) {
+			log.info("Will instantiate as WorkflowJobPojo : " + uriStr);
+			WorkflowJobPojo workflowJobPojo = inputGrafeo.getObjectMapper().getObject(WorkflowJobPojo.class, uriStr);
+			outputGrafeo.getObjectMapper().addObject(workflowJobPojo);
+		}
+		else {
+			log.info("Will instantiate as JobPojo : " + uriStr);
+			JobPojo jobPojo = inputGrafeo.getObjectMapper().getObject(JobPojo.class, uriStr);
+			outputGrafeo.getObjectMapper().addObject(jobPojo);
+		}
+		
+		return this.postJob(outputGrafeo, blank);
 	}
 	
 	@GET

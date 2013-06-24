@@ -1,12 +1,9 @@
 package eu.dm2e.ws.api;
 
-import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
-import eu.dm2e.utils.PojoUtils;
-import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
@@ -14,10 +11,8 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
 @RDFClass(NS.OMNOM.CLASS_JOB)
 @RDFInstancePrefix("http://localhost:9998/job/")
-public class JobPojo extends AbstractJobPojo{
+public class JobPojo extends AbstractJobPojo {
 	
-//	Logger log = Logger.getLogger(getClass().getName());
-    
     public JobPojo() { 
     	// move along nothing to see here
     }
@@ -30,14 +25,14 @@ public class JobPojo extends AbstractJobPojo{
      */
     public void addOutputParameterAssignment(ParameterAssignmentPojo ass) {
     	this.outputParameters.add(ass);
-    	if (null != this.getId()) {
-    		client
-    			.resource(getId())
-    			.path("assignment")
-    			.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
-    			.entity(ass.getNTriples())
-    			.post();
-    	}
+//    	if (null != this.getId()) {
+//    		client
+//    			.resource(getId())
+//    			.path("assignment")
+//    			.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+//    			.entity(ass.getNTriples())
+//    			.post();
+//    	}
     }
     public ParameterAssignmentPojo addOutputParameterAssignment(String forParam, String value) {
     	if (null == this.getWebService()) {
@@ -68,20 +63,6 @@ public class JobPojo extends AbstractJobPojo{
         log.info("No value found for: " + needle);
         return null;
     }
-    
-	@Override
-	public String publishToService() {
-		String loc = this.publishToService(this.client.getJobWebResource());
-		JobPojo newPojo = new JobPojo();
-		newPojo.loadFromURI(loc);
-		try {
-			PojoUtils.copyProperties(this, newPojo);
-		} catch (IllegalAccessException | InvocationTargetException e) {
-			log.severe("Couldn't refresh this pojo with live data: " + e);
-		}
-		log.info(newPojo.getTurtle());
-		return loc;
-	}
     
 	/**
 	 * GETTERS/SETTERS (non-javadoc)
