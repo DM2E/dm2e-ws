@@ -154,6 +154,10 @@ public abstract class AbstractJobPojo extends AbstractPersistentPojo<JobPojo> {
 
 	public boolean isStarted() { return ! this.getStatus().equals(JobStatus.NOT_STARTED.toString()); }
 
+	public boolean isStillRunning() {
+		if (isFinished() || isFailed()) return false;
+		return true;
+	}
 
 	protected void publishJobStatus(String status) {
 		if (null != this.getId()) {
