@@ -56,8 +56,9 @@ public class WorkflowConfigPojo extends AbstractPersistentPojo<WorkflowConfigPoj
 	/**
 	 * Things to make sure:
 	 * a) Every input parameter of the workflow must be covered by an assignment of the workflowconfig
-	 * b) Every required inputParameter of every position is going to be filled somehow
-	 * c) Every output parameter of the workflow is going to be filled somehow
+	 * b) All Connecotrs from/to Workflows must reference existing parameters of the workflow
+	 * c) Every required inputParameter of every position is going to be filled somehow
+	 * d) Every output parameter of the workflow is going to be filled somehow
 	 * 
 	 * @see eu.dm2e.ws.api.IValidatable#validate()
 	 */
@@ -65,8 +66,11 @@ public class WorkflowConfigPojo extends AbstractPersistentPojo<WorkflowConfigPoj
 	public void validate() {
 		WorkflowPojo wf = this.getWorkflow();
 		log.info("Validating " + this + " with " + wf);
+		log.info("Input params" + wf.getInputParams());
 		
+		//
 		// a)
+		//
 		for (ParameterPojo param : wf.getInputParams()) {
 			ParameterAssignmentPojo ass = this.getParameterAssignmentForParam(param.getId());
 			if (null == ass) {
@@ -74,7 +78,25 @@ public class WorkflowConfigPojo extends AbstractPersistentPojo<WorkflowConfigPoj
 			}
 		}
 		
+		//
 		// b)
+		//
+		for (ParameterConnectorPojo conn : wf.getParameterConnectors()) {
+			if (conn.hasFromWorkflow() 
+					&&
+				null == wf.getParamByName(conn.getFromParam().getId())) {
+				throw new AssertionError(conn + " references parameter " + conn.getToParam() + " which is not defined by " + wf);
+			}
+			if (conn.hasToWorkflow() 
+					&&
+				null == wf.getParamByName(conn.getToParam().getId())) {
+				throw new AssertionError(conn + " references parameter " + conn.getToParam() + " which is not defined by " + wf);
+			}
+		}
+		
+		//
+		// c)
+		//
 		// for every position
 		for (WorkflowPositionPojo pos : wf.getPositions()) {
 			WebserviceConfigPojo wsconf = pos.getWebserviceConfig();
@@ -92,19 +114,20 @@ public class WorkflowConfigPojo extends AbstractPersistentPojo<WorkflowConfigPoj
 				}
 				if (param.getIsRequired()
 						&&
-					null == wf.connectorToPositionAndParam(pos, param)) {
-					throw new RuntimeException(param + " of " + ws + " in " + pos + "is not connected.");
+					null == wf.getConnectorToPositionAndParam(pos, param)) {
+					throw new RuntimeException(param.getLabel() + " of " + ws + " in " + pos + "is not connected in the workflow " + wf + ".");
 				}
+					
 			}
 		}
 		
-		// c)
-		outparams:
+		//
+		// d)
+		//
 		for (ParameterPojo param : wf.getOutputParams()) {
-			if (null != wf.connectorToWorkflowOutputParam(param)) {
-				continue outparams;
+			if (null == wf.getConnectorToWorkflowOutputParam(param)) {
+				throw new RuntimeException("No connector to output parameter " + param + "of workflow " + wf);
 			}
-			throw new RuntimeException("No connector to output parameter " + param + "of workflow " + wf);
 		}
 	}
 	

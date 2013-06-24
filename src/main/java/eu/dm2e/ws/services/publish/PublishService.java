@@ -41,7 +41,7 @@ public class PublishService extends AbstractTransformationService {
     public PublishService() {
         IWebservice ws = getWebServicePojo();
         ws.addInputParameter(PARAM_TO_PUBLISH).setIsRequired(true);
-        ws.addInputParameter(PARAM_DATASET_ID).setIsRequired(false);
+        ws.addInputParameter(PARAM_DATASET_ID).setIsRequired(true);
         ws.addInputParameter(PARAM_LABEL).setIsRequired(true);
         ws.addInputParameter(PARAM_PROVIDER_ID).setIsRequired(true);
         ws.addInputParameter(PARAM_COMMENT);
@@ -75,9 +75,9 @@ public class PublishService extends AbstractTransformationService {
 
             jobPojo.setStarted();
 
-            if (null == dataset) {
-            	dataset = createUniqueStr();
-            }
+//            if (null == dataset) {
+//            	dataset = createUniqueStr();
+//            }
             String datasetURI = dataset;
             if (!dataset.startsWith("http")) datasetURI = Config.getString("dm2e.service.publish.graph_prefix") + provider + "/" + dataset;
 

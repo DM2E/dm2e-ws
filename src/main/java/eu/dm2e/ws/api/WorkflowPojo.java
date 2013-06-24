@@ -1,3 +1,4 @@
+
 package eu.dm2e.ws.api;
 
 import java.util.ArrayList;
@@ -70,25 +71,10 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
         log.warning("No parameter found for needle: " + needle);
     	return null;
     }
-    public ParameterConnectorPojo connectorToPositionAndParam(WorkflowPositionPojo pos, ParameterPojo param) {
-    	for (ParameterConnectorPojo conn : this.getParameterConnectors()) {
-	    	log.fine("Checking " + conn.getToPosition() + ":" + conn.getToParam() + " in " + conn);
-    		if (
-    				conn.hasToPosition()
-				&&
-    				conn.getToPosition().hasId()
-				&&
-    				conn.getToParam().hasId()
-				&&
-    				conn.getToPosition().getId().equals(pos.getId())
-				&&
-    				conn.getToParam().getId().equals(param.getId())) {
-    			return conn;
-    		}
-    	}
-    	return null;
+    public ParameterConnectorPojo getConnectorToWorkflowOutputParam(ParameterPojo param) {
+    	return getConnectorToWorkflowOutputParam(param.getId());
     }
-    public ParameterConnectorPojo connectorToWorkflowOutputParam(ParameterPojo param) {
+    public ParameterConnectorPojo getConnectorToWorkflowOutputParam(String needle) {
     	for (ParameterConnectorPojo conn : this.getParameterConnectors()) {
 	    	log.fine("Checking " + conn.getToWorkflow() + ":" + conn.getToParam() + " in " + conn);
     		if (
@@ -98,14 +84,17 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
 				&&
     				conn.getToWorkflow().getId().equals(this.getId())
 				&&
-    				conn.getToParam().getId().equals(param.getId())) {
+    				conn.getToParam().matchesParameterName(needle)) {
     			return conn;
     		}
     	}
     	return null;
     }
     
-    public ParameterConnectorPojo connectorToPositionAndParam(WorkflowPositionPojo pos, String needle) {
+    public ParameterConnectorPojo getConnectorToPositionAndParam(WorkflowPositionPojo pos, ParameterPojo param) {
+    	return getConnectorToPositionAndParam(pos, param.getId());
+    }
+    public ParameterConnectorPojo getConnectorToPositionAndParam(WorkflowPositionPojo pos, String needle) {
     	for (ParameterConnectorPojo conn : this.getParameterConnectors()) {
     		if (
     				conn.hasToPosition()
@@ -123,6 +112,66 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
     	return null;
     }
     
+    
+    /**
+     * Add a connector from an input parameter of this workflow to a position/parameter pair
+     * 
+     * @param fromParamName 
+     * @param toPos
+     * @param toParamName
+     * @return
+     */
+    public ParameterConnectorPojo addConnectorFromWorkflowToPosition(String fromParamName, WorkflowPositionPojo toPos, String toParamName) {
+    	ParameterConnectorPojo conn = new ParameterConnectorPojo();
+    	conn.setInWorkflow(this);
+    	conn.setFromWorkflow(this);
+    	conn.setFromParam(getParamByName(fromParamName));
+    	conn.setToPosition(toPos);
+    	conn.setToParam(toPos.getWebserviceConfig().getWebservice().getParamByName(toParamName));
+    	conn.validate();
+    	this.getParameterConnectors().add(conn);
+    	return conn;
+    }
+    
+    /**
+     * Add a connector from a Position/Param pair to an output parameter of the workflow
+     * 
+     * @param fromPos
+     * @param fromParamName
+     * @param toParamName
+     * @return
+     */
+    public ParameterConnectorPojo addConnectorFromPositionToWorkflow(WorkflowPositionPojo fromPos, String fromParamName, String toParamName) {
+    	ParameterConnectorPojo conn = new ParameterConnectorPojo();
+    	conn.setInWorkflow(this);
+    	conn.setFromPosition(fromPos);
+    	conn.setFromParam(fromPos.getWebserviceConfig().getWebservice().getParamByName(fromParamName));
+    	conn.setToWorkflow(this);
+    	conn.setToParam(getParamByName(toParamName));
+    	conn.validate();
+    	this.getParameterConnectors().add(conn);
+    	return conn;
+    }
+    /**
+     * Add a connection from a position/param pair to another position/param pair
+     * @param fromPos
+     * @param fromParamName
+     * @param toPos
+     * @param toParamName
+     * @return
+     */
+    public ParameterConnectorPojo addConnectorFromPositionToPosition(WorkflowPositionPojo fromPos, String fromParamName, WorkflowPositionPojo toPos, String toParamName) {
+    	ParameterConnectorPojo conn = new ParameterConnectorPojo();
+    	conn.setInWorkflow(this);
+    	conn.setFromPosition(fromPos);
+    	conn.setFromParam(fromPos.getWebserviceConfig().getWebservice().getParamByName(fromParamName));
+    	conn.setToPosition(toPos);
+    	conn.setToParam(toPos.getWebserviceConfig().getWebservice().getParamByName(toParamName));
+    	conn.validate();
+    	this.getParameterConnectors().add(conn);
+    	return conn;
+    	
+    }
     
 	/**
 	 * Things to make sure:

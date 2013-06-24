@@ -19,15 +19,15 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
 	 ********************/
 	
 	public ParameterAssignmentPojo getParameterAssignmentForParam(String paramName) {
-		log.info("Access to param assignment by name: " + paramName);
+		log.fine("Access to param assignment by name: " + paramName);
         for (ParameterAssignmentPojo ass : this.getParameterAssignments()) {
-        	log.info("" + ass.getForParam());
+        	log.fine("Parameter being checked " + ass.getForParam());
 			if (ass.getForParam().matchesParameterName(paramName)) {
-				log.info("GOTCHA : " + ass.getParameterValue());
+				log.fine("GOTCHA : " + ass.getParameterValue());
 				return ass;
 			}
 		}
-		log.warning("FAILED: Access to param assignment by name: " + paramName);
+		log.fine("FAILED: Access to param assignment by name: " + paramName);
 		return null;
 	}
 	public void addParameterAssignment(ParameterAssignmentPojo ass) {

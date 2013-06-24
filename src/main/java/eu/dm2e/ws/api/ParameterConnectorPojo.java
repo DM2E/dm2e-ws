@@ -14,6 +14,12 @@ public class ParameterConnectorPojo extends SerializablePojo<ParameterConnectorP
 	 * GETTERS/SETTERS
 	 *****************/
 	
+	@RDFProperty(NS.OMNOM.PROP_IN_WORKFLOW)
+	private WorkflowPojo inWorkflow;
+	public WorkflowPojo getInWorkflow() { return inWorkflow; }
+	public void setInWorkflow(WorkflowPojo wf) { this.inWorkflow = wf; }
+	public boolean hasInWorkflow() { return this.inWorkflow != null; }
+	
 	@RDFProperty(NS.OMNOM.PROP_FROM_WORKFLOW)
 	private WorkflowPojo fromWorkflow;
 	public WorkflowPojo getFromWorkflow() { return fromWorkflow; }
@@ -59,14 +65,20 @@ public class ParameterConnectorPojo extends SerializablePojo<ParameterConnectorP
 	// TODO create ErrorMsgs
 	@Override
 	public void validate() {
+		if (! hasInWorkflow()) {
+			throw new RuntimeException("Every parameter connector must exist inside a workflow.");
+		}
 		if (! hasFromParam()) {
 			throw new RuntimeException("Missing Param: Every Workflow Connector must source from a param (either Workflow or Position).");
 		}
-		if (! hasToParam() || ! hasToPosition()) {
-			throw new RuntimeException("ParameterSlot must have a toPosition/toParam pair.");
+		if (! hasToParam()) {
+			throw new RuntimeException("Missing Param: Every Workflow Connector must point to a param (either Workflow or Position).");
 		}
-		if ( ! hasFromPosition() && ! hasFromWorkflow() ) {
-			throw new RuntimeException("Missing Workflow/Position: Every Workflow Connector must source from a param (either Workflow or Position).");
+		if (! hasToWorkflow() && ! hasToPosition()) {
+			throw new RuntimeException("ParameterConnector must have a toPosition or a toWorkflow pair.");
+		}
+		if (! hasToWorkflow() && ! hasToPosition()) {
+			throw new RuntimeException("ParameterConnector must have a fromPosition or a fromWorkflow pair.");
 		}
 	}
 	
