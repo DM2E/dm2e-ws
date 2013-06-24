@@ -1,23 +1,14 @@
 package eu.dm2e.ws.services.job;
 
-import java.io.File;
 import java.net.URI;
-import java.util.UUID;
 import java.util.logging.Logger;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import eu.dm2e.ws.Config;
-import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.JobPojo;
-import eu.dm2e.ws.api.ParameterAssignmentPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -55,17 +46,22 @@ public class JobService extends AbstractJobService {
             return Response.notAcceptable(supportedVariants).build();
         }
 	}
-	
 
 	@Override
 	public Response postJob(Grafeo inputGrafeo, String uriStr) {
 		
-		log.fine("Skolemnizing");
+		log.fine("Skolemizing");
 		inputGrafeo.skolemizeUUID(uriStr, NS.OMNOM.PROP_ASSIGNMENT, "assignment");
 		inputGrafeo.skolemizeUUID(uriStr, NS.OMNOM.PROP_LOG_ENTRY, "log");
 		
 		log.warning("Instantiating Job POJO " + uriStr);
-		JobPojo jobPojo = inputGrafeo.getObjectMapper().getObject(JobPojo.class, uriStr);
+		JobPojo jobPojo = null;
+		try {
+			jobPojo = inputGrafeo.getObjectMapper().getObject(JobPojo.class, uriStr);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		log.info(inputGrafeo.getTurtle());
 		jobPojo.setId(uriStr);
 		log.info(jobPojo.getTurtle());
@@ -103,43 +99,4 @@ public class JobService extends AbstractJobService {
 		return Response.created(URI.create(uriStr)).entity(getResponseEntity(jobPojo.getGrafeo())).build();
 	}
 	
-	@POST
-	@Consumes(MediaType.WILDCARD)
-	@Path("/{id}/assignment")
-	public Response postAssignment(File bodyAsFile) {
-		Grafeo inputGrafeo;
-		try {
-			inputGrafeo = new GrafeoImpl(bodyAsFile);
-		} catch (Exception e) {
-			return throwServiceError(ErrorMsg.BAD_RDF);
-		}
-		GResource blank = inputGrafeo.findTopBlank(NS.OMNOM.CLASS_PARAMETER_ASSIGNMENT);
-		if (blank == null) {
-			return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE);
-		}
-		String jobUri = getRequestUriWithoutQuery().toString().replaceAll("/assignment$", "");
-		String assUri = getRequestUriWithoutQuery() + "/" + UUID.randomUUID().toString();;
-		ParameterAssignmentPojo ass = inputGrafeo.getObjectMapper().getObject(ParameterAssignmentPojo.class, blank);
-		ass.setId(assUri);
-		
-		Grafeo outputGrafeo = new GrafeoImpl();
-		outputGrafeo.getObjectMapper().addObject(ass);
-		outputGrafeo.addTriple(jobUri, NS.OMNOM.PROP_ASSIGNMENT, assUri);
-		SparqlUpdate sparul = new SparqlUpdate.Builder()
-				.delete("?s ?p ?o.")
-				.insert(outputGrafeo.getNTriples())
-				.graph(jobUri)
-				.endpoint(Config.ENDPOINT_UPDATE)
-				.build();
-		sparul.execute();
-		return Response.created(URI.create(assUri)).entity(getResponseEntity(ass.getGrafeo())).build();
-	}
-    @GET
-    @Path("{id}/assignment/{assId}")
-    public Response getAssignment( @PathParam("id") String id, @PathParam("assId") String assId) {
-        log.info("Output Assignment " + assId + " of job requested: " + uriInfo.getRequestUri());
-        String uri = getRequestUriWithoutQuery().toString().replaceAll("/assignment/[^/]*", "");
-
-        return Response.status(303).location(URI.create(uri)).build();
-    }
 }

@@ -89,6 +89,11 @@ public class JobPojo extends AbstractJobPojo{
 	 * @see AbstractJobPojo for more
 	 */
 
+    @RDFProperty(NS.OMNOM.PROP_WEBSERVICE)
+    private WebservicePojo webService;
+	public WebservicePojo getWebService() { return webService; }
+	public void setWebService(WebservicePojo webService) { this.webService = webService; }
+
     @RDFProperty(NS.OMNOM.PROP_WEBSERVICE_CONFIG)
     private WebserviceConfigPojo webserviceConfig;
 	public WebserviceConfigPojo getWebserviceConfig() { return webserviceConfig; }

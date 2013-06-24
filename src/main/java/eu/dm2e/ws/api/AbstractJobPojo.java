@@ -195,11 +195,6 @@ public abstract class AbstractJobPojo extends AbstractPersistentPojo<JobPojo> {
 		return JobStatus.NOT_STARTED.toString();
 	}
 	public void setStatus(String status) { this.status = status; }
-
-    @RDFProperty(NS.OMNOM.PROP_WEBSERVICE)
-    private IWebservice webService;
-	public IWebservice getWebService() { return webService; }
-	public void setWebService(IWebservice webService) { this.webService = webService; }
 	
     @RDFProperty(NS.OMNOM.PROP_LOG_ENTRY) 
     Set<LogEntryPojo> logEntries = new HashSet<>();

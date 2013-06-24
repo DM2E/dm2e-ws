@@ -27,6 +27,7 @@ import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.AbstractJobPojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.LogEntryPojo;
+import eu.dm2e.ws.api.ParameterAssignmentPojo;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
@@ -98,7 +99,6 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		log.info(inputGrafeo.getNTriples());
 		return this.postJob(inputGrafeo, uriStr);
 	}
-
 	
 	@GET
 	@Path("/{resourceId}")
@@ -128,7 +128,6 @@ public abstract class AbstractJobService extends AbstractRDFService {
         return this.getJob(g, uriStr);
     }
 	
-	
 	/**
 	 * Get the job status as a string.
 	 * @param id
@@ -138,6 +137,8 @@ public abstract class AbstractJobService extends AbstractRDFService {
 	@Path("/{id}/status")
 	public Response getJobStatus(@PathParam("id") String id) {
 		String resourceUriStr = getRequestUriWithoutQuery().toString().replaceAll("/status$", "");
+		// this must be a concrete JobPojo but it still uses only the means of AbstractJobPojo
+		// so it should work for workflowjobs as well.
 		AbstractJobPojo jobPojo = new JobPojo();
 		try {
 			jobPojo.loadFromURI(resourceUriStr);
@@ -272,4 +273,44 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		return this.listLogEntriesAsLogFile(minLevelStr, maxLevelStr);
 	}
 
+	@POST
+	@Consumes(MediaType.WILDCARD)
+	@Path("/{id}/assignment")
+	public Response postAssignment(File bodyAsFile) {
+		Grafeo inputGrafeo;
+		try {
+			inputGrafeo = new GrafeoImpl(bodyAsFile);
+		} catch (Exception e) {
+			return throwServiceError(ErrorMsg.BAD_RDF);
+		}
+		GResource blank = inputGrafeo.findTopBlank(NS.OMNOM.CLASS_PARAMETER_ASSIGNMENT);
+		if (blank == null) {
+			return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE);
+		}
+		String jobUri = getRequestUriWithoutQuery().toString().replaceAll("/assignment$", "");
+		String assUri = getRequestUriWithoutQuery() + "/" + UUID.randomUUID().toString();;
+		ParameterAssignmentPojo ass = inputGrafeo.getObjectMapper().getObject(ParameterAssignmentPojo.class, blank);
+		ass.setId(assUri);
+		
+		Grafeo outputGrafeo = new GrafeoImpl();
+		outputGrafeo.getObjectMapper().addObject(ass);
+		outputGrafeo.addTriple(jobUri, NS.OMNOM.PROP_ASSIGNMENT, assUri);
+		SparqlUpdate sparul = new SparqlUpdate.Builder()
+				.delete("?s ?p ?o.")
+				.insert(outputGrafeo.getNTriples())
+				.graph(jobUri)
+				.endpoint(Config.ENDPOINT_UPDATE)
+				.build();
+		sparul.execute();
+		return Response.created(URI.create(assUri)).entity(getResponseEntity(ass.getGrafeo())).build();
+	}
+	
+    @GET
+    @Path("{id}/assignment/{assId}")
+    public Response getAssignment( @PathParam("id") String id, @PathParam("assId") String assId) {
+        log.info("Output Assignment " + assId + " of job requested: " + uriInfo.getRequestUri());
+        String uri = getRequestUriWithoutQuery().toString().replaceAll("/assignment/[^/]*", "");
+
+        return Response.status(303).location(URI.create(uri)).build();
+    }
 }

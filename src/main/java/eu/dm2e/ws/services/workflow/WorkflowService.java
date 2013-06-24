@@ -76,7 +76,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		 */
 		WorkflowJobPojo job = new WorkflowJobPojo();
 		job.setWorkflowConfig(wfConf);
-		job.addLogEntry("JobPojo constructed by AbstractTransformationService", "TRACE");
+		job.addLogEntry("WorkflowJobPojo constructed by WorkflowService", "TRACE");
 		job.publishToService();
 
 		/*

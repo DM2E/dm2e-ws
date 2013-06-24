@@ -13,6 +13,11 @@ public class WorkflowJobPojo extends AbstractJobPojo {
 	/*******************************
 	 * FIELDS / GETTERS / SETTERS
 	 *******************************/
+
+    @RDFProperty(NS.OMNOM.PROP_WORKFLOW)
+    private WorkflowPojo workflow;
+	public WorkflowPojo getWorkflow() { return workflow; }
+	public void setWorkflow(WorkflowPojo webService) { this.workflow = webService; }
 	
     @RDFProperty(NS.OMNOM.PROP_WORKFLOW_CONFIG)
     private WorkflowConfigPojo workflowConfig;

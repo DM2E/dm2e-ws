@@ -994,6 +994,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 
 	@Override
 	public void skolemize(String subject, String predicate, String template, SkolemizationMethod method) {
+		log.fine("Skolemizing " + stringifyResourcePattern(subject, predicate, null) + " with template '" + template + "'");
 		subject = expand(subject);
 		predicate = expand(predicate);
 		Set<GResource> anonRes = new HashSet<>();
