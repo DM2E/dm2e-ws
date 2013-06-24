@@ -41,9 +41,9 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		super();
 	}
 
-	public abstract Response putJob(Grafeo inputGrafeo, String uriStr);
-	public abstract Response postJob(Grafeo inputGrafeo, String uriStr);
-	public abstract Response getJob(Grafeo g, String uri);
+	public abstract Response putJob(Grafeo inputGrafeo, GResource uriStr);
+	public abstract Response postJob(Grafeo inputGrafeo, GResource blank);
+	public abstract Response getJob(Grafeo g, GResource uri);
 	
 	@PUT
 	@Path("/{resourceID}")
@@ -67,7 +67,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		} catch (Exception e) {
 			return throwServiceError(ErrorMsg.BAD_RDF);
 		}
-		return this.putJob(inputGrafeo, uriStr);
+		return this.putJob(inputGrafeo, inputGrafeo.get(uriStr));
 	}
 
 	@POST
@@ -92,12 +92,14 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		}
 		GResource blank = inputGrafeo.findTopBlank(NS.OMNOM.CLASS_JOB);
 		if (blank == null) {
-			return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE + inputGrafeo.getTurtle());
+			blank = inputGrafeo.findTopBlank(NS.OMNOM.CLASS_WORKFLOW_JOB);
+			if (blank == null)
+				return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE + inputGrafeo.getTurtle());
 		}
 		String uriStr = getWebServicePojo().getId() + "/" + UUID.randomUUID().toString();;
 		blank.rename(uriStr);
 		log.info(inputGrafeo.getNTriples());
-		return this.postJob(inputGrafeo, uriStr);
+		return this.postJob(inputGrafeo, blank);
 	}
 	
 	@GET
@@ -125,7 +127,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
                 return throwServiceError(e);
             }
         }
-        return this.getJob(g, uriStr);
+        return this.getJob(g, g.resource(uriStr));
     }
 	
 	/**
