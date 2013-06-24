@@ -8,13 +8,10 @@ import java.util.Set;
 import eu.dm2e.utils.PojoUtils;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.NS;
-import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
-@Namespaces({"omnom", "http://onto.dm2e.eu/omnom/",
-			 "dc", "http://purl.org/dc/elements/1.1/"})
 @RDFClass(NS.OMNOM.CLASS_JOB)
 @RDFInstancePrefix("http://localhost:9998/job/")
 public class JobPojo extends AbstractJobPojo{
@@ -102,8 +99,4 @@ public class JobPojo extends AbstractJobPojo{
 	public Set<ParameterAssignmentPojo> getOutputParameters() { return outputParameters; }
 	public void setOutputParameters(Set<ParameterAssignmentPojo> outputParameters) { this.outputParameters = outputParameters; }
 
-//	@RDFProperty(NS.OMNOM.PROP_SLOT_ASSIGNMENT)
-//	private Set<ParameterSlotAssignmentPojo> slotAssignments = new HashSet<>();
-//	public Set<ParameterSlotAssignmentPojo> getSlotAssignments() { return slotAssignments; }
-//	public void setSlotAssignments(Set<ParameterSlotAssignmentPojo> slotAssignments) { this.slotAssignments = slotAssignments; }
 }
