@@ -99,6 +99,7 @@ public abstract class AbstractRDFService {
 	}
  
 	protected Response throwServiceError(String msg, int status) {
+		log.warning("EXCEPTION: " + msg);
 		return Response.status(status).entity(msg).build();
 	}
 	protected Response throwServiceError(String msg) {

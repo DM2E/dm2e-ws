@@ -2,4 +2,5 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#>.
 @prefix omnom: <http://onto.dm2e.eu/omnom/> .
 
-[] a omnom:Job .
+[] a omnom:Job ;
+    omnom:webservice <http://localhost:9998/services/xslt> .

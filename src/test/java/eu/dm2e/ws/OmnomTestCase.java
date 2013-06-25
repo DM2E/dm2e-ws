@@ -22,9 +22,9 @@ import eu.dm2e.ws.wsmanager.ManageService;
 
 public class OmnomTestCase extends OmnomUnitTest{
 	protected Logger log = Logger.getLogger(getClass().getName());
-	protected Client client = new Client();
+	protected static Client client = new Client();
 	protected String URI_BASE = "http://localhost:9998/";
-	protected Map<OmnomTestResources, String> configString = new HashMap<>();
+	protected static Map<OmnomTestResources, String> configString = new HashMap<>();
 	protected Map<OmnomTestResources, File> configFile = new HashMap<>();;
 	
 //	@Before

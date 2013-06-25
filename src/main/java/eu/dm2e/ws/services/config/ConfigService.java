@@ -142,11 +142,17 @@ public class ConfigService extends AbstractRDFService {
 	 * @param g
 	 * @param res
 	 */
+	@GET
 	@Path("{id}/validate")
 	public Response getValidation() {
 		log.info("Validating");
+		URI confPojoUri = popPath();
         WebserviceConfigPojo confPojo = new WebserviceConfigPojo();
-		confPojo.loadFromURI(getRequestUriWithoutQuery());
+		try {
+			confPojo.loadFromURI(confPojoUri);
+		} catch (Exception e1) {
+			return throwServiceError(e1);
+		}
         try {
 			confPojo.validate();
 		} catch (Exception e) {

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.matchers.JUnitMatchers.containsString;
 
 import java.io.File;
+import java.net.URI;
 import java.util.logging.Logger;
 
 import org.junit.Before;
@@ -122,7 +123,40 @@ public class ConfigServiceITCase extends OmnomTestCase{
         g2.addTriple(response.getLocation().toString(), "http://doesnotexist.org/bla", g.resource("http://localhost/kai"));
         g2.addTriple(response.getLocation().toString(), "rdf:type", g.resource("omnom:WebServiceConfig"));
         assertFalse(g.isGraphEquivalent(g2));
-
     }
+	
+	@Test
+	public void testValidate() {
+		log.info("Validating Valid ...");
+		{
+			Grafeo gOut = new GrafeoImpl(configFile.get(OmnomTestResources.DEMO_SERVICE_WORKING));
+			ClientResponse respPOST = client.getConfigWebResource()
+					.post(ClientResponse.class, gOut.getCanonicalNTriples());
+			assertEquals(201, respPOST.getStatus());
+			URI uri = respPOST.getLocation();
+			assertNotNull(uri);
+			String validateUri = uri.toString() + "/validate";
+			ClientResponse resp = client.resource(validateUri).get(ClientResponse.class);
+			assertEquals(200, resp.getStatus());
+		}
+		log.info("Validating Invalid ...");
+		{
+			Grafeo gOut = new GrafeoImpl(configFile.get(OmnomTestResources.DEMO_SERVICE_NO_TOP_BLANK));
+			ClientResponse respPOST = client.getConfigWebResource()
+					.post(ClientResponse.class, gOut.getCanonicalNTriples());
+			assertEquals(400, respPOST.getStatus());
+			String respStr = respPOST.getEntity(String.class);
+			assertThat(respStr, containsString(ErrorMsg.NO_TOP_BLANK_NODE.toString()));
+		}
+//		log.info("Validating Invalid ...");
+//		{
+//			Grafeo gOut = new GrafeoImpl(configFile.get(OmnomTestResources.DEMO_SERVICE_NO_TOP_BLANK));
+//			ClientResponse respPOST = client.getConfigWebResource()
+//					.post(ClientResponse.class, gOut.getCanonicalNTriples());
+//			assertEquals(400, respPOST.getStatus());
+//			String respStr = respPOST.getEntity(String.class);
+//			assertThat(respStr, containsString(ErrorMsg.NO_TOP_BLANK_NODE.toString()));
+//		}
+	}
 
 }
