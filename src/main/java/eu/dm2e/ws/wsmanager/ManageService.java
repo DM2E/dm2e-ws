@@ -34,7 +34,8 @@ public class ManageService {
 	private static final int OMNOM_PORT = 9998;
 
     private static HttpServer httpServer;
-    private static HttpServer manageServer;
+    @SuppressWarnings("unused")
+	private static HttpServer manageServer;
     private static SPARQLServer sparqlServer;
 
     @GET

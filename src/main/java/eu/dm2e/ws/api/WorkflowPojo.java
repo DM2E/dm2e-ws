@@ -75,20 +75,21 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
     	return getConnectorToWorkflowOutputParam(param.getId());
     }
     public ParameterConnectorPojo getConnectorToWorkflowOutputParam(String needle) {
+    	ParameterConnectorPojo retConn = null;
     	for (ParameterConnectorPojo conn : this.getParameterConnectors()) {
+    		if (! conn.hasToWorkflow())
+    			continue;
 	    	log.fine("Checking " + conn.getToWorkflow() + ":" + conn.getToParam() + " in " + conn);
-    		if (
-    				conn.hasToWorkflow()
-				&&
-    				conn.getToParam().hasId()
-				&&
-    				conn.getToWorkflow().getId().equals(this.getId())
-				&&
-    				conn.getToParam().matchesParameterName(needle)) {
-    			return conn;
+    		if (conn.getToParam().hasId()
+					&&
+				conn.getToWorkflow().getId().equals(this.getId())
+					&&
+				conn.getToParam().matchesParameterName(needle)) {
+    			retConn = conn;
+    			break;
     		}
     	}
-    	return null;
+    	return retConn;
     }
     
     public ParameterConnectorPojo getConnectorToPositionAndParam(WorkflowPositionPojo pos, ParameterPojo param) {

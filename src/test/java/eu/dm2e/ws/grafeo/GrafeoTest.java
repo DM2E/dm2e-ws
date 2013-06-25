@@ -16,6 +16,7 @@ import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
 public class GrafeoTest {
 	
+	@SuppressWarnings("unused")
 	private String
 		res1 = "http://res1",
 		res2 = "http://res2",
