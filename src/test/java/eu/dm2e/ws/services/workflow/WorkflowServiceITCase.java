@@ -28,7 +28,7 @@ import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
 import eu.dm2e.ws.services.publish.PublishService;
 import eu.dm2e.ws.services.xslt.XsltService;
 
-public class WorkflowITCase extends OmnomTestCase {
+public class WorkflowServiceITCase extends OmnomTestCase {
 
 	private Logger log = Logger.getLogger(getClass().getName());
 	private WorkflowPojo wf = null;
