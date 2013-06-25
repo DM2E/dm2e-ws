@@ -1,8 +1,5 @@
 package eu.dm2e.ws.api;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
@@ -10,26 +7,11 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/"})
 @RDFClass(NS.OMNOM.CLASS_WORKFLOW_CONFIG)
-public class WorkflowConfigPojo extends AbstractPersistentPojo<WorkflowConfigPojo> implements IValidatable {
+public class WorkflowConfigPojo extends AbstractConfigPojo<WorkflowConfigPojo> {
 	
-	public ParameterAssignmentPojo getParameterAssignmentForParam(String paramName) {
-		log.info("Access to param assignment by name: " + paramName);
-        for (ParameterAssignmentPojo ass : this.getParameterAssignments()) {
-        	if (ass.getForParam().matchesParameterName(paramName)) {
-				log.info("GOTCHA : " + ass.getParameterValue()); 
-                return ass;
-			}
-		}
-		return null;
-	}
-	
-	public void addParameterAssignment(String paramName, String paramValue) {
-		ParameterAssignmentPojo ass = new ParameterAssignmentPojo();
-		ParameterPojo param = this.getWorkflow().getParamByName(paramName);
-		ass.setLabel(paramName);
-		ass.setForParam(param);
-		ass.setParameterValue(paramValue);
-		this.getParameterAssignments().add(ass);
+	@Override
+	public ParameterPojo getParamByName(String needle) {
+		return this.getWorkflow().getParamByName(needle);
 	}
     
     // TODO this is not perfect, there could be several slots for the same position and the same parameter
@@ -66,12 +48,14 @@ public class WorkflowConfigPojo extends AbstractPersistentPojo<WorkflowConfigPoj
 	public void validate() {
 		WorkflowPojo wf = this.getWorkflow();
 		log.info("Validating " + this + " with " + wf);
-		log.info("Input params" + wf.getInputParams());
+		log.info("Input params: " + wf.getInputParams());
+		log.info("Assignments: " + this.getParameterAssignments());
 		
 		//
 		// a)
 		//
 		for (ParameterPojo param : wf.getInputParams()) {
+			log.info("" + param);
 			ParameterAssignmentPojo ass = this.getParameterAssignmentForParam(param.getId());
 			if (null == ass) {
 				throw new RuntimeException(param + " is not set by " + this); 
@@ -140,10 +124,5 @@ public class WorkflowConfigPojo extends AbstractPersistentPojo<WorkflowConfigPoj
 	public WorkflowPojo getWorkflow() { return workflow; }
 	public void setWorkflow(WorkflowPojo wf) { this.workflow = wf; }
 	
-	@RDFProperty(NS.OMNOM.PROP_ASSIGNMENT)
-	private Set<ParameterAssignmentPojo> parameterAssignments = new HashSet<>();
-	public Set<ParameterAssignmentPojo> getParameterAssignments() { return parameterAssignments; }
-	public void setParameterAssignments(Set<ParameterAssignmentPojo> parameterAssignments) { this.parameterAssignments = parameterAssignments; }
-
 
 }
