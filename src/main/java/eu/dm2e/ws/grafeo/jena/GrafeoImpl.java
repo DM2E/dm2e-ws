@@ -62,6 +62,9 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 	
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
+    private static final long RETRY_INTERVAL = 500;
+    private static final int RETRY_COUNT = 3;
+    
     private Logger log = Logger.getLogger(getClass().getName());
     protected Model model;
     private Map<String, String> namespaces = new HashMap<>();
@@ -251,7 +254,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     public void load(String uri, int expansionSteps) {
         log.fine("Load data from URI: " + uri);
         uri = expand(uri);
-        int count = 3;
+        int count = RETRY_COUNT;
         boolean success = false;
         // Workaround, if just published content is not yet ready (and against other web problems)
         while (count > 0 && !success) {
@@ -264,9 +267,10 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
                     log.severe("Could not parse URI content: " + t.getMessage());
                     throw new RuntimeException("Could not parse uri content: " + uri + " : " + t.getMessage());
             }
+            if (success) break;
             count--;
             try {
-                Thread.sleep(500);
+                Thread.sleep(RETRY_INTERVAL);
             } catch (InterruptedException e) {
                 throw new RuntimeException("An exception occurred: " + e, e);
             }
@@ -293,7 +297,6 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     		}
         	log.fine("Size After expansion: "+ this.size());
         }
-
     }
 
     @Override
@@ -546,12 +549,6 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     		.graph(graph)
     		.endpoint(endpoint)
     		.build();
-//        StringBuilder sb = new StringBuilder(
-//                "CONSTRUCT {?s ?p ?o}  WHERE { GRAPH <");
-//        sb.append(graph);
-//        sb.append("> {");
-//        sb.append("?s ?p ?o");
-//        sb.append("} . }");
         Query query = QueryFactory.create(sparco.toString());
         log.finer("CONSTRUCT Query: " + sparco.toString());
 
@@ -745,7 +742,6 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     		grafeosNT.set(0, grafeosNT.get(1));
     		grafeosNT.set(1, swap);
     	}
-//    	log.severe("SIZERRR: " + this.size() + "" + that.size());
     	
     	// replace all the statements from the smaller one in the larger one and the smaller one
     	for (String line : grafeosNT.get(0).split("\n")) {
@@ -994,7 +990,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 //    		res.rename(this.resource("_blank_" + (i++) +"_"));
     		res.rename(this.createBlank());
     	}
-    	log.info(this.getTerseTurtle());
+    	log.finest(this.getTerseTurtle());
     }
 
 	@Override
