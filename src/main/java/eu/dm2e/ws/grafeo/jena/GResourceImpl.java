@@ -92,7 +92,10 @@ public class GResourceImpl extends GValueImpl implements GResource {
         log.fine("Check for property: " + uri);
         uri = grafeo.expand(uri);
         Statement st = jenaResource.getProperty(getGrafeoImpl(grafeo).model.createProperty(uri));
-        if (st==null) return null;
+        if (st==null) {
+        	log.fine("Nothing found for " + uri);
+        	return null;
+        }
         RDFNode value = st.getObject();
         log.fine("Found value: " + value.toString());
         if (value.isResource()) return new GResourceImpl(grafeo, value.asResource());

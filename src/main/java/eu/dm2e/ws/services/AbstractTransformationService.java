@@ -68,7 +68,7 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
          * Let the asynchronous worker handle the job
          */
         try {
-            AbstractTransformationService instance = getClass().newInstance();
+            AbstractTransformationService instance = this.getClass().newInstance();
             Method method = getClass().getMethod("setJobPojo",JobPojo.class);
             method.invoke(instance, job);
             log.info("Job is before instantiation :" + job);

@@ -371,6 +371,8 @@ public interface Grafeo {
 	Set<GStatement> listStatements(GResource subject, String predicate, GValue object);
 
 	void removeTriple(GStatement stmt);
+	void removeTriple(GResource s, String p, GValue o);
+	void removeTriple(String s, String p, String o);
 
 	/**
 	 * Replace every resource (blank and URI) with a blank node, but keep the structure.
@@ -419,6 +421,18 @@ public interface Grafeo {
 	 * @return
 	 */
 	Map<String, String> getNamespacesUsed();
+
+	/**
+	 * Tests whether this grafeo contians all statements from another Grafeo.
+	 * 
+	 * @param that
+	 * @return
+	 */
+	boolean containsAllStatementsFrom(Grafeo that);
+
+	boolean containsTriple(GStatement stmt);
+	
+	String stringifyLiteralPattern(GStatement stmt);
 
 
 

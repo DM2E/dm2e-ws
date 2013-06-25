@@ -11,6 +11,7 @@ import eu.dm2e.ws.api.SerializablePojo;
 import eu.dm2e.ws.grafeo.GLiteral;
 import eu.dm2e.ws.grafeo.GStatement;
 import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
 /**
  * Helper functions for asserting facts about
@@ -145,5 +146,36 @@ public class GrafeoAssert {
 		} catch (ComparisonFailure e) { }
 		if (! failedOK) fail("They are structurally equivalent.");
 	}
+	static public void graphContainsGraph(Grafeo g1, Grafeo g2) {
+		GrafeoImpl g1Impl = (GrafeoImpl) g1;
+		GrafeoImpl g2Impl = (GrafeoImpl) g2;
+		if (! g1Impl.containsAllStatementsFrom(g2Impl)) {
+			throw new AssertionError("Grafeo " + g1 + " does not contain all statements from Grafeo " + g2);
+		}
+	}
+	public static void graphDoesntContainGraph(Grafeo g1, Grafeo g2) {
+		boolean failedOK = true;
+		try {
+			graphContainsGraph(g1, g2);
+			failedOK = false;
+		} catch (ComparisonFailure e) { }
+		if (! failedOK) fail("Grafeo " + g1 + " does contain all statements from Grafeo " + g2);
+	}
+	static public void graphContainsGraphStructurally(Grafeo g1, Grafeo g2) {
+		GrafeoImpl g1Copy = (GrafeoImpl) g1.copy();
+		Grafeo g2Copy = (GrafeoImpl) g2.copy();
+		g1Copy.unskolemize();
+		g2Copy.unskolemize();
+		graphContainsGraph(g1Copy, g2Copy);
+	}
+	static public void graphDoesntContainGraphStructurally(Grafeo g1, Grafeo g2) {
+		boolean failedOK = true;
+		try {
+			graphContainsGraphStructurally(g1, g2);
+			failedOK = false;
+		} catch (ComparisonFailure e) { }
+		if (! failedOK) fail("Grafeo " + g1 + " does contain all statements from Grafeo " + g2);
+	}
+
 
 }

@@ -1,5 +1,12 @@
 package eu.dm2e.ws.services.publish;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Date;
+import java.util.logging.Level;
+
+import javax.ws.rs.Path;
+
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.IWebservice;
@@ -9,13 +16,6 @@ import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.AbstractTransformationService;
-
-import javax.ws.rs.Path;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This file was created within the DM2E project.
@@ -36,8 +36,6 @@ public class PublishService extends AbstractTransformationService {
 	public static final String PARAM_DATASET_ID = "dataset-id";
 	public static final String PARAM_RESULT_DATASET_ID = "result-dataset-id";
 
-	private Logger log = Logger.getLogger(getClass().getName());
-	
     public PublishService() {
         IWebservice ws = getWebServicePojo();
         ws.addInputParameter(PARAM_TO_PUBLISH).setIsRequired(true);

@@ -813,19 +813,9 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 
     @Override
     public boolean containsTriple(String s, String p, GLiteral o) {
-    	List<String> sp = Arrays.asList(s,p);
-    	for (int i = 0; i <= 1; i++) {
-    		if (sp.get(i) == null) sp.set(i, "?var" + i);
-    		else sp.set(i, sp.get(i).startsWith("?") 
-	    			? sp.get(i) 
-					: String.format("<%s>", expand(sp.get(i))));
-    	}
-    	String oStr = (o == null) ? "?o" : o.getTypedValue();
-        return new SparqlAsk.Builder()
-        	.ask(String.format("%s %s %s", sp.get(0), sp.get(1), oStr))
-        	.grafeo(this)
-        	.build()
-        	.execute();
+    	GrafeoImpl temp = new GrafeoImpl();
+    	temp.addTriple(s, p, o);
+    	return this.containsAllStatementsFrom(temp);
     }
 
     @Override
@@ -1007,7 +997,14 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		if (! possiblyList.isLiteral() && possiblyList.resource().isa(NS.CO.CLASS_LIST)) {
 			log.fine("This is a list.");
 			GResource listRes = possiblyList.resource();
-			GResource cur = listRes.get(NS.CO.PROP_FIRST_ITEM).resource();
+			GResource cur;
+			try {
+				cur = listRes.get(NS.CO.PROP_FIRST_ITEM).resource();
+			} catch (NullPointerException e) {
+				log.severe("List has no first item. Weird: " + listRes);
+				log.severe(listRes.getGrafeo().getTerseTurtle());
+				return;
+			}
 			while (null != cur) {
 				if (cur.isAnon()) {
 					log.fine("Adding " + cur);
@@ -1213,6 +1210,18 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		GStatementImpl stmtImpl = new GStatementImpl(this, stmt.getSubject(), stmt.getPredicate(), stmt.getObject());
 		this.model.remove(stmtImpl.getStatement());
 	}
+	
+	@Override
+	public void removeTriple(GResource s, String p, GValue o) {
+		GStatementImpl stmtImpl = new GStatementImpl(this, s, this.resource(p), o);
+		this.model.remove(stmtImpl.getStatement());
+	};
+	
+	@Override
+	public void removeTriple(String s, String p, String o) {
+		GStatementImpl stmtImpl = new GStatementImpl(this, this.resource(s), this.resource(p), this.resource(o));
+		this.model.remove(stmtImpl.getStatement());
+	};
 
 	@Override
 	public GStatement addTriple(GResource subject, String predicate, GValue object) {
@@ -1233,6 +1242,24 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		Property prop = this.getModel().createProperty(expand(p));
 		GValueImpl oImpl = (GValueImpl) o;
 		return this.model.contains(gResourceImpl.getJenaResource(), prop, oImpl.getJenaRDFNode());
+	}
+
+	@Override
+	public boolean containsTriple(GStatement stmt) {
+		return this.containsTriple(stmt.getSubject(), stmt.getPredicate().toString(), stmt.getObject());
+	}
+	@Override
+	public boolean containsAllStatementsFrom(Grafeo that) {
+		SparqlAsk sparqlAsk = new SparqlAsk.Builder()
+			.ask(that.getNTriples())
+			.grafeo(this)
+			.build();
+		return sparqlAsk.execute();
+	}
+
+	@Override
+	public String stringifyLiteralPattern(GStatement stmt) {
+		return this.stringifyLiteralPattern(stmt.getSubject().toString(), stmt.getPredicate().toString(), stmt.getObject().toString());
 	}
 
 }
