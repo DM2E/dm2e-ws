@@ -2,6 +2,7 @@ package eu.dm2e.ws.api;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import eu.dm2e.ws.NS;
@@ -32,6 +33,14 @@ public abstract class SerializablePojo<T> {
 	public RDFClass getRDFClass() {
         if (this.getClass().isAnnotationPresent(RDFClass.class))
         	return this.getClass().getAnnotation(RDFClass.class);
+        return null;
+	}
+	public String getRDFClassUri() {
+        if (this.getClass().isAnnotationPresent(RDFClass.class)) {
+        	String uri = this.getClass().getAnnotation(RDFClass.class).value();
+        	uri = this.getGrafeo().expand(uri);
+        	return uri;
+        }
         return null;
 	}
 
@@ -75,10 +84,22 @@ public abstract class SerializablePojo<T> {
 				+ (this.hasLabel() ? "(\"" + this.getLabel() + "\")" : "");
     }
     
+    public T copy() {
+    	String origId = this.getId();
+    	String tempID = "http://temporary/" + UUID.randomUUID(); 
+    	this.setId(tempID);
+    	
+    	SerializablePojo<T> that = this.getGrafeo().getObjectMapper().getObject(this.getClass(), tempID);
+    	
+    	this.setId(origId);
+    	that.setId(origId);
+    	
+		return (T) that;
+    }
+    
     /*********************************************
      * GETTERS SETTERS PREDICATES
      *********************************************/
-    
 	
     /**
      * Every Pojo needs and ID - though it can be null for a blank node

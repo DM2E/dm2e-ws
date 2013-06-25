@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 import eu.dm2e.utils.PojoUtils;
 import eu.dm2e.ws.NS;
@@ -174,7 +175,7 @@ public class ObjectMapper {
             uriCache.put(uri, targetObject);
             log.fine("Added to cache: " + T + " for " + uri);
         } catch (InstantiationException | IllegalAccessException | SecurityException e) {
-            throw new RuntimeException("An exception occurred instantiating class " + T + " for URI " + uri + ". "  + e, e);
+            throw new RuntimeException("An exception occurred instantiating class " + T + " for URI " + uri + ". "  + e + "\n" + ExceptionUtils.getStackTrace(e));
         }
 
         // iterate fields in the class definition

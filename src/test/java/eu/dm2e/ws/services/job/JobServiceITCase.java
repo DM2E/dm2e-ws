@@ -331,8 +331,8 @@ public class JobServiceITCase extends OmnomTestCase {
 			assertThat(job.getId(), not(nullValue()));
 		}	
 		{
-			Grafeo gInter = job.getGrafeo().copy();
-			WorkflowJobPojo job2 = gInter.getObjectMapper().getObject(WorkflowJobPojo.class, job.getId());
+			
+			WorkflowJobPojo job2 = (WorkflowJobPojo) job.copy();
 			assertNotNull(job2);
 			assertNotNull(job2.getId());
 			assertEquals(JobStatus.FINISHED.toString(), job2.getStatus());
