@@ -115,7 +115,7 @@ public class WorkflowConfigPojo extends AbstractPersistentPojo<WorkflowConfigPoj
 				if (param.getIsRequired()
 						&&
 					null == wf.getConnectorToPositionAndParam(pos, param)) {
-					throw new RuntimeException(param.getLabel() + " of " + ws + " in " + pos + "is not connected in the workflow " + wf + ".");
+					throw new RuntimeException(param + " of " + ws + " in " + pos + "is not connected in the workflow " + wf + ".");
 				}
 					
 			}

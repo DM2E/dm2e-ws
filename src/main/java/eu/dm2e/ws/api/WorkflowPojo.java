@@ -109,6 +109,7 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
     			return conn;
     		}
     	}
+    	log.warning("No connector for position " + pos + " and param " + needle);
     	return null;
     }
     

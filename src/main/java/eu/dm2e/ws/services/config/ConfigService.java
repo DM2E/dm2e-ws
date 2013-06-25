@@ -2,8 +2,6 @@ package eu.dm2e.ws.services.config;
 
 import java.io.File;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.UUID;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -39,13 +37,12 @@ public class ConfigService extends AbstractRDFService {
     @GET
     @Path("{id}")
     public Response getConfig(@Context UriInfo uriInfo, @PathParam("id") String id) {
-    	String uriStr = getRequestUriWithoutQuery().toString();
-        log.info("Configuration requested: " + uriStr);
+        log.info("Configuration requested: " + getRequestUriWithoutQuery());
         Grafeo g = new GrafeoImpl();
         try {
-	        g.readFromEndpoint(NS.ENDPOINT_SELECT, uriStr);
+	        g.readFromEndpoint(NS.ENDPOINT_SELECT, getRequestUriWithoutQuery());
         } catch (RuntimeException e) {
-        	return throwServiceError(uriStr, ErrorMsg.NOT_FOUND, 404);
+        	return throwServiceError(getRequestUriWithoutQuery().toString(), ErrorMsg.NOT_FOUND, 404);
         }
         return getResponse(g);
     }
@@ -58,16 +55,18 @@ public class ConfigService extends AbstractRDFService {
      		@PathParam("assId") String assId
     		) {
         log.info("Assignment " + assId + " of configuration requested: " + uriInfo.getRequestUri());
-        String uri = getRequestUriWithoutQuery().toString().replaceAll("/assignment/[^/]*", "");
+        URI uri = popPath();
+        uri = popPath();
 
-        return Response.status(303).location(URI.create(uri)).build();
+        return Response.status(303).location(uri).build();
     }
     
     @GET
     @Path("list")
-    public Response getConfig(@Context UriInfo uriInfo) {
+    public Response getConfigList(@Context UriInfo uriInfo) {
         Grafeo g = new GrafeoImpl();
-        g.readTriplesFromEndpoint(NS.ENDPOINT_SELECT, null, NS.RDF.PROP_TYPE, g.resource("http://example.org/classes/Configuration"));
+        g.readTriplesFromEndpoint(NS.ENDPOINT_SELECT, null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_WEBSERVICE_CONFIG));
+        g.readTriplesFromEndpoint(NS.ENDPOINT_SELECT, null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_WORKFLOW_CONFIG));
         return getResponse(g);
     }
 
@@ -85,24 +84,20 @@ public class ConfigService extends AbstractRDFService {
         	return throwServiceError(ErrorMsg.BAD_RDF, t);
         }
         log.info("Looking for top blank node.");
-        GResource res = g.findTopBlank(NS.OMNOM.CLASS_WEBSERVICE_CONFIG);
+        GResource res = g.findTopBlank(NS.OMNOM.CLASS_WORKFLOW_CONFIG);
+        if (null == res) {
+        	res = g.findTopBlank(NS.OMNOM.CLASS_WEBSERVICE_CONFIG);
+        }
         if (null == res)  {
         	res = g.resource(uri);
         }
         else {
         	res.rename(uri.toString());
         }
-        log.warning("Skolemnizing ...");
+        log.warning("Skolemnizing assignments ...");
         g.skolemizeSequential(uri.toString(), NS.OMNOM.PROP_ASSIGNMENT, "assignment");
         log.warning("DONE Skolemnizing ...");
-//        }
-//        WebserviceConfigPojo pojo = g.getObjectMapper().getObject(WebserviceConfigPojo.class, uri);
-//        if (null == pojo) {
-//        	return throwServiceError(ErrorMsg.NOT_FOUND, 404);
-//        }
-//        else {
-//        	throwServiceError(pojo.getTurtle());
-//        }
+        
         g.emptyGraph(Config.ENDPOINT_UPDATE, uri.toString());
         g.writeToEndpoint(Config.ENDPOINT_UPDATE, uri.toString());
         return Response.created(uri).entity(getResponseEntity(g)).build();
@@ -114,14 +109,8 @@ public class ConfigService extends AbstractRDFService {
         log.info("POST config.");
 //        // TODO BUG this fails if newlines aren't correctly transmitted due to line-wide comments in turtle
         
-    	String uriStr = getRequestUriWithoutQuery().normalize().toString() + "/" + UUID.randomUUID().toString();
-    	log.info("Posting the config to " + uriStr);
-    	URI uri = null;
-    	try {
-    		uri = getUriForString(uriStr);
-    	} catch (URISyntaxException e1) {
-    		return throwServiceError("Couldn't generate URI");
-    	}
+    	URI uri = appendPath(createUniqueStr());
+    	log.info("Posting the config to " + uri.toString());
         Grafeo g;
         try {
         	g = new GrafeoImpl(input);
@@ -130,28 +119,21 @@ public class ConfigService extends AbstractRDFService {
         	return throwServiceError(ErrorMsg.BAD_RDF, t);
         }
         log.fine("Parsed config RDF.");
-        log.info(NS.OMNOM.CLASS_WEBSERVICE_CONFIG);
-        GResource res = g.findTopBlank(NS.OMNOM.CLASS_WEBSERVICE_CONFIG);
+        GResource res = g.findTopBlank(NS.OMNOM.CLASS_WORKFLOW_CONFIG);
         if (null == res)  {
-        	return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE + ": " + g.getTurtle());
+        	res = g.findTopBlank(NS.OMNOM.CLASS_WEBSERVICE_CONFIG);
+        	if (null == res)
+	        	return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE + ": " + g.getTurtle());
         }
-        res.rename(uriStr);
+        res.rename(uri);
         log.info("Renamed top blank node.");
-        	g.skolemizeSequential(uriStr, NS.OMNOM.PROP_ASSIGNMENT, "assignment");
+        	g.skolemizeSequential(uri.toString(), NS.OMNOM.PROP_ASSIGNMENT, "assignment");
 //        }
         log.info("Skolemnized assignments");
         
-//        WebserviceConfigPojo pojo = g.getObjectMapper().getObject(WebserviceConfigPojo.class, uriStr);
-//        if (null == pojo) {
-//        	return throwServiceError(ErrorMsg.NOT_FOUND, 404);
-//        }
-//        else {
-//        	throwServiceError(pojo.getTurtle());
-//        }
-//        pojo.publishToEndpoint(Config.ENDPOINT_UPDATE, uriStr);
-        g.emptyGraph(Config.ENDPOINT_UPDATE, uriStr);
+        g.emptyGraph(Config.ENDPOINT_UPDATE, uri.toString());
         log.info("Emptied graph");
-        g.writeToEndpoint(Config.ENDPOINT_UPDATE, uriStr);
+        g.writeToEndpoint(Config.ENDPOINT_UPDATE, uri);
         log.info("Written data to endpoint.");
         return Response.created(uri).entity(getResponseEntity(g)).build();
     }

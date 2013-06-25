@@ -222,7 +222,7 @@ public abstract class AbstractRDFService {
         WebservicePojo wsDesc = this.getWebServicePojo();
         URI wsUri = popPath();
         wsDesc.setId(wsUri);
-        log.fine(wsDesc.getTerseTurtle());
+        log.finest(wsDesc.getTerseTurtle());
         return Response.ok().entity(getResponseEntity(wsDesc.getGrafeo())).build();
 	}
     
@@ -363,7 +363,7 @@ public abstract class AbstractRDFService {
     protected URI appendPath(URI uri, String path) {
         String query = uri.getQuery();
         String u = uri.toString();
-        log.fine("URI: " + u);
+        log.finest("URI: " + u);
         if (query!=null) {
             log.fine("Query: " + query);
             u = u.replace("?" + query,"");
@@ -373,7 +373,7 @@ public abstract class AbstractRDFService {
         if (query!=null) {
             u = u + "?" + query;
         }
-        log.info("Result: " + u);
+        log.finest("After append: " + u);
         try {
             return new URI(u);
         } catch (URISyntaxException e) {
@@ -395,7 +395,7 @@ public abstract class AbstractRDFService {
     protected URI popPath(URI uri, String path) {
         String query = uri.getQuery();
         String u = uri.toString();
-        log.fine("URI: " + u);
+        log.finest("URI: " + u);
         if (query!=null) {
             log.fine("Query: " + query);
             u = u.replace("?" + query,"");
@@ -415,7 +415,7 @@ public abstract class AbstractRDFService {
         if (query!=null) {
             u = u + "?" + query;
         }
-        log.info("Result: " + u);
+        log.finest("Result: " + u);
         try {
             return new URI(u);
         } catch (URISyntaxException e) {
@@ -436,7 +436,7 @@ public abstract class AbstractRDFService {
 		@Override
 		public void write(OutputStream output) throws IOException,
 				WebApplicationException {
-			log.fine("Media type: " + this.mediaType);
+			log.finest("Media type: " + this.mediaType);
 			model.write(output, mediaType2Language.get(this.mediaType));
 		}
 	}
