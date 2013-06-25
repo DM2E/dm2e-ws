@@ -51,7 +51,7 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
     }
 
 
-    protected String doXSLTZIP() {
+    protected String doXSLTZIP() throws Exception {
         String XSLTZIP_URI_1;
         String XML_URI_1;
 
@@ -115,7 +115,7 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
 
 
 
-    protected String doXSL() {
+    protected String doXSL() throws Exception {
         OmnomTestResources xmlRes = OmnomTestResources.INGESTION_XML;
         OmnomTestResources xslRes = OmnomTestResources.INGESTION_XSL;
         String xmlUri = client.publishFile(configFile.get(xmlRes));
@@ -169,7 +169,7 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
     }
 
 
-    protected void doPublish(String rdfUri) {
+    protected void doPublish(String rdfUri) throws Exception {
 
         WebservicePojo ws = new WebservicePojo();
         ws.loadFromURI(PUBLISH_SERVICE_URI);
@@ -230,7 +230,7 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
     }
 
     @Test
-    public void testIngestion() {
+    public void testIngestion() throws Exception {
         String result = doXSLTZIP();
         doPublish(result);
     }

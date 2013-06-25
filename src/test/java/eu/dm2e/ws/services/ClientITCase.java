@@ -40,7 +40,13 @@ public class ClientITCase extends OmnomTestCase {
 
 	private boolean isMetadataKept(String fileUri) {
 		FilePojo fp = new FilePojo();
-		fp.loadFromURI(fileUri);
+		try {
+			fp.loadFromURI(fileUri);
+		} catch (Exception e) {
+			log.severe("Could reload job pojo." + e);
+			e.printStackTrace();
+			return false;
+		}
 		if (null == fp.getOriginalName()) {
 			return false;
 		}

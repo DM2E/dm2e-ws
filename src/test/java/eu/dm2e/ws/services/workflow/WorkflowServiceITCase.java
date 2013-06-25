@@ -20,7 +20,6 @@ import eu.dm2e.ws.api.ParameterConnectorPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.api.WorkflowConfigPojo;
-import eu.dm2e.ws.api.WorkflowJobPojo;
 import eu.dm2e.ws.api.WorkflowPojo;
 import eu.dm2e.ws.api.WorkflowPositionPojo;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -111,8 +110,7 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 	 * @return
 	 * @throws Exception
 	 */
-	public String publishWorkflow()
-			throws Exception {
+	public String publishWorkflow() throws Exception {
 		// FileUtils.writeStringToFile(new File("SHOULD.ttl"), wf.getTurtle());
 		log.info("testsimple: Publishing the workflow.");
 
@@ -252,7 +250,7 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 	}
 	
 	@Test
-	public void testRunWorkflow() throws IOException, InterruptedException {
+	public void testRunWorkflow() throws Exception {
 		WorkflowConfigPojo wfconf = new WorkflowConfigPojo();
 		wfconf.setWorkflow(wf);
 		wfconf.addParameterAssignment(_ws_param_xmlinput, "foo");
@@ -262,29 +260,34 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 		wfconf.addParameterAssignment(_ws_param_provider, "onb");
 		
 		Assert.assertNull(wfconf.getId());
+		log.severe("<VALIDATE>");
 		wfconf.validate();
+		log.severe("</VALIDATE>");
 		wfconf.publishToService(client.getConfigWebResource());
+		log.severe("<VALIDATE>");
 		wfconf.validate();
+		log.severe("</VALIDATE>");
 		Assert.assertNotNull(wfconf.getId());
 		
 		WorkflowConfigPojo wfconf2 = new WorkflowConfigPojo();
 		wfconf2.loadFromURI(wfconf.getId());
 		GrafeoAssert.graphsAreEquivalent(wfconf.getGrafeo(), wfconf2.getGrafeo());
 		
+		log.info("RUNNING WORKFLOW");
 		ClientResponse resp = client
 			.resource(wf.getId())
 			.entity(wfconf.getId())
 			.type(DM2E_MediaType.TEXT_PLAIN)
 			.put(ClientResponse.class);
-		log.info("RESPONSE FROM WORKFLOW " + wf.getId() +": "+ resp);
-		Assert.assertEquals(202, resp.getStatus());
-		log.info("Location: " + resp.getLocation());
-		WorkflowJobPojo workflowJob = new WorkflowJobPojo();
-		do {
-			workflowJob.loadFromURI(resp.getLocation());
-			log.info(workflowJob.toLogString());
-			Thread.sleep(2000);
-		} while (workflowJob.isStillRunning());
+//		log.info("RESPONSE FROM WORKFLOW " + wf.getId() +": "+ resp);
+//		Assert.assertEquals(202, resp.getStatus());
+//		log.info("Location: " + resp.getLocation());
+//		WorkflowJobPojo workflowJob = new WorkflowJobPojo();
+//		do {
+//			workflowJob.loadFromURI(resp.getLocation());
+//			log.info(workflowJob.toLogString());
+//			Thread.sleep(2000);
+//		} while (workflowJob.isStillRunning());
 		
 	}
 }

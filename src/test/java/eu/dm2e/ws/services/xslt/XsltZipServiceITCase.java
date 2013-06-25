@@ -16,7 +16,6 @@ import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
-import eu.dm2e.ws.model.JobStatus;
 
 public class XsltZipServiceITCase extends OmnomTestCase {
 	
@@ -43,7 +42,7 @@ public class XsltZipServiceITCase extends OmnomTestCase {
 	}
 
 	@Test
-	public void testRun() throws InterruptedException {
+	public void testRun() throws Exception {
 		
 		Map<String, String> templMap = new HashMap<String,String>();
 		templMap.put("xmlInput", XML_URI_1);
@@ -76,17 +75,20 @@ public class XsltZipServiceITCase extends OmnomTestCase {
 		
 		JobPojo jobPojo = new JobPojo();
 		
-		for (
-				jobPojo.loadFromURI(resp.getLocation())
-			;
-				! jobPojo.getStatus().equals(JobStatus.FINISHED.toString())
-				&&
-				! jobPojo.getStatus().equals(JobStatus.FAILED.toString())
-			;
-				jobPojo.loadFromURI(resp.getLocation())) {
-			log.info(jobPojo.toLogString());
-			Thread.sleep(2000);
-			;
+		try {
+			for (
+					jobPojo.loadFromURI(resp.getLocation())
+				;
+					! jobPojo.isStillRunning()
+				;
+					jobPojo.loadFromURI(resp.getLocation())) {
+				log.info(jobPojo.toLogString());
+				Thread.sleep(2000);
+				;
+			}
+		} catch (Exception e) {
+			log.severe("Could reload job pojo." + e);
+			throw e;
 		}
 		log.info(jobPojo.toLogString());
 		assertEquals("FINISHED", jobPojo.getStatus());

@@ -115,7 +115,12 @@ public class DemoServiceITCase extends OmnomTestCase {
     public void testDemo() {
     	
         WebservicePojo ws = new WebservicePojo();
-        ws.loadFromURI(SERVICE_URI);
+        try {
+			ws.loadFromURI(SERVICE_URI);
+		} catch (Exception e1) {
+			log.severe("Could reload job pojo." + e1);
+			e1.printStackTrace();
+		}
         WebserviceConfigPojo config = new WebserviceConfigPojo();
         config.setWebservice(ws);
 //        config.setId(SERVICE_URI + "/" + )

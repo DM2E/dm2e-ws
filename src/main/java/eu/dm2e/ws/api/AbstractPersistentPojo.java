@@ -15,79 +15,34 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
 	protected Client client = new Client();
 	
 	
-	// TODO think harder whether this is necessary and how to do skolemnization properly
-	// TODO this should be a static method but it's impossible to determine the runtime static class
-//	public T constructFromRdfString(String rdfString, String id) {
-//		Grafeo g = new GrafeoImpl();
-//		g.readHeuristically(rdfString);
-//		return g.getObjectMapper().getObject(this.getClass(), id);
-//	}
-//	
-//	public T constructFromRdfString(String rdfString) {
-//		Grafeo g = new GrafeoImpl();
-//		g.readHeuristically(rdfString);
-//		String rdfType = this.getClass().getAnnotation(RDFClass.class).value();
-//		String prefix;
-//		try { 
-//			prefix = this.getClass().getAnnotation(RDFInstancePrefix.class).value();
-//		} catch (NullPointerException e) {
-//			throw(e);
-//		}
-//		GResource topBlank = g.findTopBlank(rdfType);
-//		T theThing;
-//		if (null != topBlank) {
-//			String newURI = prefix + UUID.randomUUID().toString();
-//			topBlank.rename(newURI);
-////			g.skolemnize(newURI);
-////			for (Field field : this.getClass().getDeclaredFields()) {
-////				if (field.isAnnotationPresent(RDFProperty.class)) {
-////					Object prop = PropertyUtils.getProperty(this, field.getName());
-////					try {
-////						Object id = PropertyUtils.getProperty(object, field.getName());
-////						if (null == id || "0".equals(id.toString()) ) return new GResourceImpl(this, model.createResource(AnonId.create(object.toString())));
-////						uri = field.getAnnotation(RDFId.class).prefix() + id.toString();
-////					} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-////						throw new RuntimeException("An exception occurred: " + e, e);
-////					}
-////				}
-////			}
-//			theThing = g.getObjectMapper().getObject(this.getClass(), newURI);
-//		}
-//		else {
-//			throw new RuntimeException("No top blank node.");
-//		}
-//		return theThing;
-//	}
-
-	public void loadFromURI(String id) {
-		this.loadFromURI(id, 0);
+	public void loadFromURI(String uri) throws Exception {
+		this.loadFromURI(uri, 0);
 	}
 	
-	public void loadFromURI(URI id) {
-		this.loadFromURI(id.toString(), 0);
+	public void loadFromURI(URI uri) throws Exception {
+		this.loadFromURI(uri.toString(), 0);
 	}
 	
-	public void loadFromURI(URI id, int expansionSteps) {
-		this.loadFromURI(id.toString(), expansionSteps);
+	public void loadFromURI(URI uri, int expansionSteps) throws Exception {
+		this.loadFromURI(uri.toString(), expansionSteps);
 	}
 	
-	public void loadFromURI(String id, int expansionSteps) {
-		this.setId(id);
+	public void loadFromURI(String uri, int expansionSteps) throws Exception {
         Grafeo g = new GrafeoImpl();
         try {
-        	log.finer("Loading from " + this.getId());
-			g.load(this.getId(), expansionSteps);
-        	log.finer("DONE Loading from " + this.getId());
-            log.fine("Triples loaded from URI " + this.getId() + ": " + g.getTurtle());
+        	log.fine("Loading from " + uri);
+			g.load(uri, expansionSteps);
+        	log.fine("DONE Loading from " + uri);
+            log.fine("No of Triples loaded from URI " + uri + ": " + g.size());
 		} catch (Exception e1) {
 			log.warning("Failed to initialize Pojo from URI: " + e1);
 			return;
 		}
-        log.finer("Instantiating " + this.getClass() + " Pojo from " + this.getId());
-		T theNewPojo = g.getObjectMapper().getObject(this.getClass(), this.getId());
-        log.finer("DONE Instantiating " + this.getClass() + " Pojo from " + this.getId());
+        log.finer("Instantiating " + this.getClass() + " Pojo from " + uri);
+		T theNewPojo = g.getObjectMapper().getObject(this.getClass(), uri);
+        log.finer("DONE Instantiating " + this.getClass() + " Pojo from " + uri);
         try {
-        	log.fine("Copying properties from Pojo " + this.getId());
+        	log.fine("Copying properties from Pojo " + uri);
             PojoUtils.copyProperties(this, theNewPojo);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("An exception occurred: " + e, e);

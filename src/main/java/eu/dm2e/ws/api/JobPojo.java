@@ -17,7 +17,12 @@ public class JobPojo extends AbstractJobPojo {
     	// move along nothing to see here
     }
     public JobPojo(URI joburi) {
-    	this.loadFromURI(joburi);
+    	try {
+			this.loadFromURI(joburi);
+		} catch (Exception e) {
+			log.severe("Could reload job pojo." + e);
+			e.printStackTrace();
+		}
 	}
     
     /**

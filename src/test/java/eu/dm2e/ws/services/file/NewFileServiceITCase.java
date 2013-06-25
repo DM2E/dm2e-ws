@@ -46,8 +46,12 @@ public class NewFileServiceITCase extends OmnomTestCase {
 		assertNotNull(fs);
     }
 
+	/**
+	 * @throws Exception 
+	 * 
+	 */
 	@Test
-	public void testPostEmptyFile() {
+	public void testPostEmptyFile() throws Exception {
 		// Minimal valid file
 		{
 			Grafeo metaGrafeo = new GrafeoImpl(configFile.get(OmnomTestResources.MINIMAL_FILE));
@@ -102,7 +106,7 @@ public class NewFileServiceITCase extends OmnomTestCase {
 	}
 
 	@Test
-	public void testPutFileAndOrMetadata() throws IOException {
+	public void testPutFileAndOrMetadata() throws Exception {
 		FilePojo origFP = new FilePojo();
 		origFP.setOriginalName("Foo");
 		origFP.setMd5("123");
@@ -120,7 +124,7 @@ public class NewFileServiceITCase extends OmnomTestCase {
 					.put(ClientResponse.class);
 			assertEquals(200, resp.getStatus());
 			FilePojo curFP = new FilePojo();
-			curFP.loadFromURI(fileUriStr);
+			extracted(fileUriStr, curFP);
 			assertThat("md5 should be replaced", curFP.getMd5(), not(origFP.getMd5()));
 			assertThat("md5 should be replaced", curFP.getMd5(), is("987"));
 			assertThat("originalname should have been deleted", curFP.getOriginalName(), nullValue());
@@ -145,9 +149,14 @@ public class NewFileServiceITCase extends OmnomTestCase {
 			String respDataStr = respData.getEntity(String.class);
 			assertThat("file is updated", respDataStr, is(newFileContents));
 			FilePojo curFP = new FilePojo();
-			curFP.loadFromURI(fileUriStr);
+			extracted(fileUriStr, curFP);
 			assertThat("metadata is unchanged", curFP.getOriginalName(), is(origFP.getOriginalName()));
 		}
+	}
+
+	private void extracted(String fileUriStr, FilePojo curFP)
+			throws Exception {
+		curFP.loadFromURI(fileUriStr);
 	}
 //
 	@Test
@@ -247,12 +256,12 @@ public class NewFileServiceITCase extends OmnomTestCase {
 		}
 	}
 	@Test
-	public void testDeleteFile() throws IOException {
+	public void testDeleteFile() throws Exception {
 		OmnomTestResources res = OmnomTestResources.ASCII_NOISE;
 		String fileUri = client.publishFile(configFile.get(res), new FilePojo());
 		{
 			FilePojo fp = new FilePojo();
-			fp.loadFromURI(fileUri);
+			extracted(fileUri, fp);
 			log.severe(fp.getTurtle());
 			assertEquals("File is available", FileStatus.AVAILABLE.toString(), fp.getFileStatus());
 		}
@@ -267,20 +276,20 @@ public class NewFileServiceITCase extends OmnomTestCase {
 			GrafeoImpl g = new GrafeoImpl(resp.getEntityInputStream());
 			g.containsTriple(fileUri, "omnom:fileStatus", "DELETED");
 			FilePojo fp = new FilePojo();
-			fp.loadFromURI(fileUri);
+			extracted(fileUri, fp);
 			assertEquals("File is available", FileStatus.DELETED.toString(), fp.getFileStatus());
 		}
 	}
 	
 	@Test
-	public void testUpdateStatements() throws IOException {
+	public void testUpdateStatements() throws Exception {
 		OmnomTestResources res = OmnomTestResources.ASCII_NOISE;
 		FilePojo origFp = new FilePojo();
 		origFp.setOriginalName("foo_bar.baz");
 		String fileUri = client.publishFile(configFile.get(res), origFp);
 		{
 			FilePojo fp = new FilePojo();
-			fp.loadFromURI(fileUri);
+			extracted(fileUri, fp);
 			log.severe(fp.getTurtle());
 			assertEquals("File is available", FileStatus.AVAILABLE.toString(), fp.getFileStatus());
 			assertEquals(origFp.getOriginalName(), fp.getOriginalName());
@@ -295,7 +304,7 @@ public class NewFileServiceITCase extends OmnomTestCase {
 					.post(ClientResponse.class, patchFp.getNTriples());
 			assertEquals(200, resp.getStatus());
 			FilePojo fp = new FilePojo();
-			fp.loadFromURI(fileUri);
+			extracted(fileUri, fp);
 			assertThat(fp.getOriginalName(), not(origFp.getOriginalName()));
 			assertThat(fp.getOriginalName(), is(patchFp.getOriginalName()));
 			assertEquals("d41d8cd98f00b204e9800998ecf8427e", fp.getMd5());

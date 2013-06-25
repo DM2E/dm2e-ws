@@ -72,7 +72,7 @@ public class PublishServiceITCase extends OmnomTestCase {
 
 
     @Test
-    public void testPublish1() {
+    public void testPublish1() throws Exception {
 
         WebservicePojo ws = new WebservicePojo();
         ws.loadFromURI(SERVICE_URI);
@@ -139,7 +139,7 @@ public class PublishServiceITCase extends OmnomTestCase {
         }
     }
     @Test
-    public void testPublish2() {
+    public void testPublish2() throws Exception {
 
         WebservicePojo ws = new WebservicePojo();
         ws.loadFromURI(SERVICE_URI);

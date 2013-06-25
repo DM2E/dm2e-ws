@@ -290,13 +290,21 @@ public abstract class AbstractJobService extends AbstractRDFService {
 
 	@GET
 	@Path("/{id}/log")
-	@Produces({ DM2E_MediaType.TEXT_TURTLE, DM2E_MediaType.TEXT_RDF_N3,
-			DM2E_MediaType.APPLICATION_RDF_TRIPLES, DM2E_MediaType.APPLICATION_RDF_XML })
+	@Produces({ 
+		DM2E_MediaType.TEXT_TURTLE,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML })
 	public Response listLogEntries(@QueryParam("minLevel") String minLevelStr, @QueryParam("maxLevel") String maxLevelStr) {
 	
-		String resourceUriStr = getRequestUriWithoutQuery().toString().replaceAll("/log$", "");
+		URI resourceUri  = popPath(getRequestUriWithoutQuery());
 		AbstractJobPojo jobPojo = new JobPojo();
-		jobPojo.loadFromURI(resourceUriStr);
+		try {
+			jobPojo.loadFromURI(resourceUri);
+		} catch (Exception e) {
+			log.severe("Could reload job pojo." + e);
+			throwServiceError(e);
+		}
 		Set<LogEntryPojo> logEntries = jobPojo.getLogEntries(minLevelStr, maxLevelStr);
 		Grafeo logGrafeo = new GrafeoImpl();
 		for (LogEntryPojo logEntry : logEntries) {
@@ -311,7 +319,12 @@ public abstract class AbstractJobService extends AbstractRDFService {
 	public Response listLogEntriesAsLogFile(@QueryParam("minLevel") String minLevelStr, @QueryParam("maxLevel") String maxLevelStr) {
 		String resourceUriStr = getRequestUriWithoutQuery().toString().replaceAll("/log$", "");
 		AbstractJobPojo jobPojo = new JobPojo();
-		jobPojo.loadFromURI(resourceUriStr);
+		try {
+			jobPojo.loadFromURI(resourceUriStr);
+		} catch (Exception e) {
+			log.severe("Could reload job pojo." + e);
+			throwServiceError(e);
+		}
 		return Response.ok().entity(jobPojo.toLogString(minLevelStr, maxLevelStr)).build();
 	}
 
@@ -357,9 +370,8 @@ public abstract class AbstractJobService extends AbstractRDFService {
     @GET
     @Path("{id}/assignment/{assId}")
     public Response getAssignment( @PathParam("id") String id, @PathParam("assId") String assId) {
-        log.info("Output Assignment " + assId + " of job requested: " + uriInfo.getRequestUri());
-        String uri = getRequestUriWithoutQuery().toString().replaceAll("/assignment/[^/]*", "");
-
-        return Response.status(303).location(URI.create(uri)).build();
+        log.finest("Output Assignment " + assId + " of job requested: " + uriInfo.getRequestUri());
+        URI uri = popPath(popPath());
+        return Response.status(303).location(uri).build();
     }
 }

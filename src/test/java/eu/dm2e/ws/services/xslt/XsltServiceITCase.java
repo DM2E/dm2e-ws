@@ -8,7 +8,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
@@ -58,12 +57,10 @@ public class XsltServiceITCase extends OmnomTestCase {
     
 	/**
 	 * TODO  The test works but there is some weird bug that occurs infrequently, Jena complaining* about QNames when trying to do Grafeo.load(String). Need to investigate
-	 * 
-     * @throws IOException
-     * @throws InterruptedException
+	 * @throws Exception 
      */
     @Test
-    public void testTransformation() throws IOException, InterruptedException {
+    public void testTransformation() throws Exception {
     	OmnomTestResources xmlRes = OmnomTestResources.XML_DTA_GRIMM;
     	OmnomTestResources xsltRes = OmnomTestResources.XSLT_KBA_BBAW_TO_EDM;
     	String xmlUri = client.publishFile(configFile.get(xmlRes));

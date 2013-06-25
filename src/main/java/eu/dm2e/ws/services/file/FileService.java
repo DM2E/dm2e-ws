@@ -221,7 +221,12 @@ public class FileService extends AbstractRDFService {
 		boolean filePartIsEmpty = (filePart == null) ? true : filePart.getValueAs(String.class).equals("");
 			
 		FilePojo filePojo = new FilePojo();
-		filePojo.loadFromURI(uriStr);
+		try {
+			filePojo.loadFromURI(uriStr);
+		} catch (Exception e) {
+			log.severe("Could reload job pojo." + e);
+			throwServiceError(e);
+		}
 		GrafeoImpl g = new GrafeoImpl();
 		
 		// if file data: store file at location
@@ -601,11 +606,10 @@ public class FileService extends AbstractRDFService {
 	 * @param uriStr
 	 * @param bodyInputStream
 	 * @return
-	 * @throws URISyntaxException 
 	 */
 	@POST
 	@Path("{id}/patch")
-	public Response updateStatements(InputStream bodyInputStream) throws URISyntaxException {
+	public Response updateStatements(InputStream bodyInputStream) throws Exception {
 		
 		// Check if the data is of a RDF content type
 		if (DM2E_MediaType.noRdfRequest(headers)) {

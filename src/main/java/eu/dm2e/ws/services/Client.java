@@ -66,11 +66,11 @@ public class Client {
 		ClientResponse resp;
 		String method = "POST";
 		if (null == pojo.getId()) {
-			log.warning(method + "ing pojo to service " + serviceEndpoint.getURI() + ": " + pojo.getTurtle());
+			log.warning(method + "ing " + pojo + " to service " + serviceEndpoint.getURI() + ": " + pojo.getTurtle());
 			resp = this.postPojoToService(pojo, serviceEndpoint);
 		} else {
 			method = "PUT";
-			log.info(method + "ing pojo to service " + serviceEndpoint.getURI());
+			log.info(method + "ing " + pojo + " to service " + serviceEndpoint.getURI());
 			if (pojo.getId().startsWith(serviceEndpoint.getURI().toString())) {
 				 resp = resource(pojo.getId())
 					.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
@@ -91,10 +91,14 @@ public class Client {
 					);
 		}
 		if (null == resp.getLocation()) {
-			throw new RuntimeException(method +"ing " + serviceEndpoint.toString() +  " did not return a location. Body was " + resp.getEntity(String.class));
+			throw new RuntimeException(method +"ing " + pojo + " to " + serviceEndpoint.toString() +  " did not return a location. Body was " + resp.getEntity(String.class));
 		}
 		pojo.setId(resp.getLocation().toString());
-		pojo.loadFromURI(pojo.getId());
+		try {
+			pojo.loadFromURI(pojo.getId());
+		} catch (Exception e) {
+			log.severe("Could reload pojo." + e);
+		}
 		return resp.getLocation().toString();
     }
     public String publishPojo(AbstractPersistentPojo pojo, String serviceURI) { return this.publishPojo(pojo, this.resource(serviceURI)); }
@@ -183,6 +187,23 @@ public class Client {
     }
     public WebResource resource(URI URI) {
     	return this.resource(URI.toString());
+    }
+    
+    public <U extends AbstractPersistentPojo>U loadPojoFromURI(Class<U> clazz, String id) {
+    	U thePojo = null;
+    	try {
+			 thePojo = clazz.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			log.severe("Could reload job pojo." + e);
+			e.printStackTrace();
+		}
+    	try {
+			thePojo.loadFromURI(id);
+		} catch (Exception e) {
+			log.severe("Could reload job pojo." + e);
+			e.printStackTrace();
+		}
+		return thePojo;
     }
 
     /*******************
