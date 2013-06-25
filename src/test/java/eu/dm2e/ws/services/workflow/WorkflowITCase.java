@@ -16,9 +16,11 @@ import com.sun.jersey.api.client.ClientResponse;
 
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.OmnomTestCase;
+import eu.dm2e.ws.api.ParameterConnectorPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.api.WorkflowConfigPojo;
+import eu.dm2e.ws.api.WorkflowJobPojo;
 import eu.dm2e.ws.api.WorkflowPojo;
 import eu.dm2e.ws.api.WorkflowPositionPojo;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -49,7 +51,7 @@ public class WorkflowITCase extends OmnomTestCase {
 		Assert.assertNotNull(wf.getId());
 	}
 
-	@Test
+	//@Test
 	public void testGetWorkflow() {
 		// ClientResponse resp2 =
 		// client.resource(wf.getId()).get(ClientResponse.class);
@@ -81,7 +83,7 @@ public class WorkflowITCase extends OmnomTestCase {
 		// g.listAnonStatements(null, null).size() );
 	}
 
-	@Test
+	//@Test
 	public void testValidate()
 			throws IOException {
 		{
@@ -178,9 +180,10 @@ public class WorkflowITCase extends OmnomTestCase {
 		wf.addInputParameter(_ws_param_xmlinput);
 		wf.addInputParameter(_ws_param_provider);
 		wf.addInputParameter(_ws_param_xsltinput);
-		wf.addOutputParameter(_ws_param_outgraph);
 		wf.addInputParameter(_ws_param_datasetLabel);
 		wf.addInputParameter(_ws_param_datasetID);
+		
+		wf.addOutputParameter(_ws_param_outgraph);
 
 		WorkflowPositionPojo step1_pos = new WorkflowPositionPojo();
 		WebservicePojo step1_ws = new XsltService().getWebServicePojo();
@@ -214,10 +217,11 @@ public class WorkflowITCase extends OmnomTestCase {
 				XsltService.PARAM_XSLT_IN);
 		
 		// workflow:datasetID => publish:dataset-id
-		wf.addConnectorFromWorkflowToPosition(
+		ParameterConnectorPojo x = wf.addConnectorFromWorkflowToPosition(
 				_ws_param_datasetID,
 				step2_pos, 
 				PublishService.PARAM_DATASET_ID);
+		log.info(x.getTerseTurtle());
 
 		// workflow:providerID => publish:providerID
 		wf.addConnectorFromWorkflowToPosition(
@@ -225,18 +229,18 @@ public class WorkflowITCase extends OmnomTestCase {
 				step2_pos,
 				PublishService.PARAM_PROVIDER_ID);
 
+		// workflow:label => publish:label
+		wf.addConnectorFromWorkflowToPosition(
+				_ws_param_datasetLabel,
+				step2_pos,
+				PublishService.PARAM_LABEL);
+
 		// xmlrdf:xmloutput => publish:to-publish
 		wf.addConnectorFromPositionToPosition(
 				step1_pos,
 				XsltService.PARAM_XML_OUT,
 				step2_pos,
 				PublishService.PARAM_TO_PUBLISH);
-
-		// workflow:label => publish:label
-		wf.addConnectorFromWorkflowToPosition(
-				_ws_param_datasetLabel,
-				step2_pos,
-				PublishService.PARAM_LABEL);
 
 		// publish:result-dataset-id => workfow:outputGraph
 		wf.addConnectorFromPositionToWorkflow(
@@ -248,13 +252,39 @@ public class WorkflowITCase extends OmnomTestCase {
 	}
 	
 	@Test
-	public void testRunWorkflow() {
-		
+	public void testRunWorkflow() throws IOException, InterruptedException {
 		WorkflowConfigPojo wfconf = new WorkflowConfigPojo();
+		wfconf.setWorkflow(wf);
+		wfconf.addParameterAssignment(_ws_param_xmlinput, "foo");
+		wfconf.addParameterAssignment(_ws_param_xsltinput, "foo");
+		wfconf.addParameterAssignment(_ws_param_datasetLabel, "A fascinating dataset indeed.");
+		wfconf.addParameterAssignment(_ws_param_datasetID, "dataset-1234");
+		wfconf.addParameterAssignment(_ws_param_provider, "onb");
 		
-//		wfconf.addParameterAssignment(wf.getParamByName(URI_BASE), URI_BASE)
+		Assert.assertNull(wfconf.getId());
+		wfconf.validate();
+		wfconf.publishToService(client.getConfigWebResource());
+		wfconf.validate();
+		Assert.assertNotNull(wfconf.getId());
 		
+		WorkflowConfigPojo wfconf2 = new WorkflowConfigPojo();
+		wfconf2.loadFromURI(wfconf.getId());
+		GrafeoAssert.graphsAreEquivalent(wfconf.getGrafeo(), wfconf2.getGrafeo());
+		
+		ClientResponse resp = client
+			.resource(wf.getId())
+			.entity(wfconf.getId())
+			.type(DM2E_MediaType.TEXT_PLAIN)
+			.put(ClientResponse.class);
+		log.info("RESPONSE FROM WORKFLOW " + wf.getId() +": "+ resp);
+		Assert.assertEquals(202, resp.getStatus());
+		log.info("Location: " + resp.getLocation());
+		WorkflowJobPojo workflowJob = new WorkflowJobPojo();
+		do {
+			workflowJob.loadFromURI(resp.getLocation());
+			log.info(workflowJob.toLogString());
+			Thread.sleep(2000);
+		} while (workflowJob.isStillRunning());
 		
 	}
-
 }
