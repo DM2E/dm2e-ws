@@ -11,16 +11,20 @@ import com.hp.hpl.jena.query.QueryFactory;
 
 public class SparqlConstruct {
 	
+	protected static final long DEFAULT_TIMEOUT=-1;
+	
 	private Logger log = Logger.getLogger(getClass().getName());
 	
 	private String graph, endpoint, constructClause, whereClause;
 	private GrafeoImpl grafeo;
 	private Map<String, String> prefixes;
+	private long timeout;
 
 	public static class Builder {
 		private String graph, endpoint, constructClause, whereClause;
 		private GrafeoImpl grafeo;
 		private Map<String, String> prefixes = new HashMap<>();
+		private long timeoutInMs = DEFAULT_TIMEOUT;
 		
 		public Builder grafeo(GrafeoImpl s)	{ this.grafeo = s; return this; }
 		public Builder graph(String s)  	{ this.graph = s; return this; }
@@ -30,6 +34,8 @@ public class SparqlConstruct {
 		
         public Builder prefixes(Map<String,String> prefixes)	{ this.prefixes.putAll(prefixes); return this; }
         public Builder prefix(String prefix, String value) 		{ this.prefixes.put(prefix, value); return this; }
+        
+		public Builder timeout(long t)     { this.timeoutInMs = t; return this; }
 		
 		public SparqlConstruct build() { return new SparqlConstruct(this); } 
 	}
@@ -38,6 +44,7 @@ public class SparqlConstruct {
 		if (null == builder.constructClause) 
 			throw new IllegalArgumentException("Must set constructClause in Query Builder.");
 		
+		this.timeout = builder.timeoutInMs;
 		this.prefixes = builder.prefixes;
 		this.graph = builder.graph;
 		this.constructClause = builder.constructClause;
@@ -92,14 +99,23 @@ public class SparqlConstruct {
 	public void execute() {
 		if (null == grafeo)
 			throw new IllegalArgumentException("Must set grafeo in the builder or use execute(GrafeoImpl g).");
+		long startTime = System.currentTimeMillis();
         log.fine("CONSTRUCT query (built): " + toString());
         Query query = QueryFactory.create(toString());
         log.fine("CONSTRUCT query (Jena): " + query);
         QueryExecution exec = QueryExecutionFactory.create(query, grafeo.getModel());
         exec.execConstruct(grafeo.getModel());
+        long estimatedTime = System.currentTimeMillis() - startTime;
+        if (estimatedTime < 250) {
+	        log.info("CONSTRUCT took " + estimatedTime + "ms.");
+        } else {
+	        log.severe("CONSTRUCT took " + estimatedTime + "ms.");
+//	        log.severe(grafeo.getTerseTurtle());
+        }
 	}
 	
 	public void execute(GrafeoImpl g) {
+		long startTime = System.currentTimeMillis();
         Query query = QueryFactory.create(toString());
         log.info("CONSTRUCT query: " + query);
         QueryExecution exec;
@@ -108,6 +124,15 @@ public class SparqlConstruct {
 		} else {
 			exec = QueryExecutionFactory.create(query, grafeo.getModel());
 		}
+        exec.setTimeout(timeout);
         exec.execConstruct(g.getModel());
+        exec.close();
+        long estimatedTime = System.currentTimeMillis() - startTime;
+        if (estimatedTime < 250) {
+	        log.info("CONSTRUCT took " + estimatedTime + "ms.");
+        } else {
+	        log.severe("CONSTRUCT took " + estimatedTime + "ms: " + query);
+//	        log.severe(g.getTerseTurtle());
+        }
 	}
 }

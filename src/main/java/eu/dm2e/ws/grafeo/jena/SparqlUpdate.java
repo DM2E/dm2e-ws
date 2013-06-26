@@ -13,6 +13,7 @@ import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateProcessor;
 import com.hp.hpl.jena.update.UpdateRequest;
 
+import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
 
 public class SparqlUpdate {
@@ -22,23 +23,26 @@ public class SparqlUpdate {
 	private String graph, endpoint, deleteClause, insertClause, whereClause;
 	private GrafeoImpl grafeo;
 	private Map<String, String> prefixes;
+	private boolean insertDataFlag, deleteDataFlag;
 
 	public static class Builder {
 		private String graph, endpoint, deleteClause, insertClause, whereClause;
 		private GrafeoImpl grafeo;
         private Map<String,String> prefixes = new HashMap<>();
+        private boolean insertDataFlag, deleteDataFlag;
 		
 		public Builder graph(String s)  	{ this.graph = s; return this; }
 		public Builder graph(URI s)     	{ this.graph = s.toString(); return this; }
+		public Builder graph(GResource s)  	{ this.graph = s.getUri(); return this; }
 		
 		public Builder endpoint(String s) 	{ this.endpoint = s; return this; }
 		public Builder endpoint(URI s)     	{ this.endpoint = s.toString(); return this; }
 		
 		public Builder delete(String s) 	{ this.deleteClause = s; return this; }
-		public Builder delete(Grafeo s) 	{ this.deleteClause = s.getNTriples(); return this; }
+		public Builder delete(Grafeo s) 	{ this.deleteClause = s.getNTriples(); deleteDataFlag = true; return this; }
 		
 		public Builder insert(String s) 	{ this.insertClause = s; return this; }
-		public Builder insert(Grafeo s) 	{ this.insertClause = s.getNTriples(); return this; }
+		public Builder insert(Grafeo s) 	{ this.insertClause = s.getNTriples(); insertDataFlag = true; return this; }
 		
 		public Builder where(String s) 		{ this.whereClause = s; return this; }
 		
@@ -60,6 +64,8 @@ public class SparqlUpdate {
 		this.deleteClause = builder.deleteClause;
 		this.insertClause = builder.insertClause;
 		this.whereClause = builder.whereClause;
+		this.insertDataFlag = builder.insertDataFlag;
+		this.deleteDataFlag = builder.deleteDataFlag;
 		
 		if (null != builder.endpoint && null != builder.grafeo)
 			throw new IllegalArgumentException("Must set endpoint or grafeo, not both.");
@@ -86,8 +92,20 @@ public class SparqlUpdate {
             sb.append("\n");
         }
 		if (null != graph) 			sb.append(String.format("WITH <%s>", graph));
-		if (null != deleteClause)	sb.append(String.format(" DELETE { %s }", deleteClause));
-		if (null != insertClause) 	sb.append(String.format(" INSERT { %s }", insertClause));
+		if (null != deleteClause)	{
+//			if (insertDataFlag) {
+//				sb.append(String.format(" DELETE DATA { %s }", deleteClause));
+//			} else {
+				sb.append(String.format(" DELETE { %s }", deleteClause));
+//			}
+		}
+		if (null != insertClause) {
+//			if (insertDataFlag) {
+//				sb.append(String.format(" INSERT DATA { %s }", insertClause));
+//			} else {
+				sb.append(String.format(" INSERT { %s }", insertClause));
+//			}
+		}
 		
 		if (null != whereClause)	sb.append(String.format(" WHERE { %s }", whereClause));
 		else if (null != deleteClause)	sb.append(String.format(" WHERE { %s }", deleteClause));
@@ -98,6 +116,7 @@ public class SparqlUpdate {
 	
 	public void execute() {
         log.info("UPDATE query: " + toString());
+		long startTime = System.currentTimeMillis();
         UpdateRequest update = UpdateFactory.create();
         for (Entry<String, String> namespaceMapping : new GrafeoImpl().getNamespacesUsed().entrySet()) {
         	update.setPrefix(namespaceMapping.getKey(), namespaceMapping.getValue());
@@ -111,5 +130,11 @@ public class SparqlUpdate {
 			exec = UpdateExecutionFactory.create(update, gs);
 		}
         exec.execute();
+        long estimatedTime = System.currentTimeMillis() - startTime;
+        if (estimatedTime < 700) {
+	        log.info("UPDATE took " + estimatedTime +"ms");
+        } else { 
+	        log.severe("UPDATE took " + estimatedTime +"ms: " + toString());
+        }
 	}
 }
