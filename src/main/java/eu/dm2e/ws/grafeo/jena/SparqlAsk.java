@@ -22,16 +22,19 @@ public class SparqlAsk {
 	private String graph, endpoint, askClause;
 	private GrafeoImpl grafeo;
 	private Map<String, String> prefixes;
+	private long timeout;
 
 	public static class Builder {
 		private String graph, endpoint, askClause;
 		private GrafeoImpl grafeo;
 		private Map<String, String> prefixes = new HashMap<>();
+		private long timeoutMs = 5000;
 		
 		public Builder grafeo(GrafeoImpl s)  	{ this.grafeo = s; return this; }
 		public Builder graph(String s)  	{ this.graph = s; return this; }
 		public Builder endpoint(String s) 	{ this.endpoint = s; return this; }
 		public Builder ask(String s) 		{ this.askClause = s; return this; }
+		public Builder timeout(long t)     { this.timeoutMs = t; return this; }
 		
         public Builder prefixes(Map<String,String> prefixes)	{ this.prefixes.putAll(prefixes); return this; }
         public Builder prefix(String prefix, String value) 		{ this.prefixes.put(prefix, value); return this; }
@@ -46,6 +49,7 @@ public class SparqlAsk {
 		this.prefixes = builder.prefixes;
 		this.askClause = builder.askClause;
 		this.graph = builder.graph;
+		this.timeout = builder.timeoutMs;
 		
 		if (null != grafeo && null != endpoint) {
 			throw new IllegalArgumentException("Must set either grafeo or endpoint, not both.");
@@ -95,6 +99,7 @@ public class SparqlAsk {
 		} else {
 	        qe = QueryExecutionFactory.create(query, grafeo.getModel());
 		}
+		qe.setTimeout(timeout);
         return qe.execAsk();
 	}
 }
