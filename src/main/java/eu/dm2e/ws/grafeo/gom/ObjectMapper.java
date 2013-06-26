@@ -2,7 +2,6 @@ package eu.dm2e.ws.grafeo.gom;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -104,10 +103,10 @@ public class ObjectMapper {
             if (isAnnotatedObject(value)) {
                 serializeAnnotatedObject(targetResource, property, value);
             } else if (value instanceof Set) { 
-            	serializeSet(targetResource, property, value);
+            	serializeSet(targetResource, property, field, value);
             }
 			else if (value instanceof List) {
-            	serializeList(targetResource, property, value);
+            	serializeList(targetResource, property, field, value);
             }
 			else if (value instanceof URI){
                 serializeURI(targetResource, property, value);
@@ -196,7 +195,9 @@ public class ObjectMapper {
                 else if (field.getType().isAssignableFrom(java.util.List.class)) {
 	                deserializeList(targetResource, targetObject, field, prop);
                 }
-                // TODO URL deserialization
+                else if (field.getType().isAssignableFrom(java.net.URI.class)){
+                	deserializeURI(targetResource, targetObject, field, prop);
+                }
                 else {
                     deserializeLiteral(targetResource, targetObject, field, prop);
                 }
@@ -250,9 +251,10 @@ public class ObjectMapper {
 	 * @param property
 	 * @param value
 	 */
-	private void serializeSet(GResource targetResource, String property, Object value) {
+	private void serializeSet(GResource targetResource, String property, Field field, Object value) {
 		log.fine("Adding All objects from the Set "  + value);
 		Iterable valueIterable = (Iterable) value;
+		Class<?> subtypeClass = PojoUtils.subtypeClassOfGenericField(field);
 		for (Object setItem : valueIterable) {
 			// nested object
 			if (isAnnotatedObject(setItem)) {
@@ -261,6 +263,9 @@ public class ObjectMapper {
 				log.finest("Added item as '" + setItemRes + "' to grafeo");
 				log.finest("Asserting relation " + property + " between " + targetResource + " and " + setItemRes);
 				targetResource.set(property, setItemRes);
+			//TODO lists/set
+			} else if (subtypeClass.isAssignableFrom(java.net.URI.class)) {
+				targetResource.set(property, setItem.toString());
 			} else {
 				log.finest("Asserting relation " + property + " between " + targetResource + " and " + setItem);
 				serializeLiteral(targetResource, property, setItem);
@@ -275,11 +280,22 @@ public class ObjectMapper {
 	 * @param targetResource
 	 * @param value
 	 */
-	private void serializeList(GResource targetResource, String property, Object value) {
+	private void serializeList(GResource targetResource, String property, Field field, Object value) {
+		
 		
 		// Stop if the list has already been serialized
 		if (null != targetResource.get(property)) {
 			log.fine(targetResource + " has " + property + " already set to " + value);
+			return;
+		}
+		
+		Class<?> subtypeClass = PojoUtils.subtypeClassOfGenericField(field);
+		
+		// get actual list
+		List valueList = (List) value;
+		
+		// Don't serialize empty lists
+		if (valueList.size() == 0) {
 			return;
 		}
 		
@@ -288,10 +304,7 @@ public class ObjectMapper {
 		listResource.set(NS.RDF.PROP_TYPE, grafeo.resource(NS.CO.CLASS_LIST));
 		targetResource.set(property, listResource);
 		
-		// get actual list
-		List valueList = (List) value;
-		
-		// set size
+		// list size
 		listResource.set(NS.CO.PROP_SIZE, grafeo.literal(valueList.size()));
 		
 		// store backref to previous list resource so we can link them with co:nextItem
@@ -326,9 +339,10 @@ public class ObjectMapper {
 			Object itemContent = valueList.get(i);
 			if (isAnnotatedObject(itemContent)) {
 				serializeAnnotatedObject(itemResource, NS.CO.PROP_ITEM_CONTENT, itemContent);
-			}
+			} else if (subtypeClass.isAssignableFrom(java.net.URI.class)) {
+				serializeURI(itemResource, NS.CO.PROP_ITEM_CONTENT, itemContent);
 			// TODO Sets/Lists/URI
-			else {
+			} else {
 				serializeLiteral(itemResource, NS.CO.PROP_ITEM_CONTENT, itemContent);
 				
 			}
@@ -356,8 +370,7 @@ public class ObjectMapper {
 	 */
 	private <T> void deserializeSet(GResource objectResource, T targetObject, Field field, String prop) {
 		log.fine(field.getName() + " is a SET.");
-		ParameterizedType subtype = (ParameterizedType) field.getGenericType();
-		Class<?> subtypeClass = (Class<?>) subtype.getActualTypeArguments()[0];
+		Class<?> subtypeClass = PojoUtils.subtypeClassOfGenericField(field);
 		Set propSet = new HashSet();
 		Set<GValue> propValues = objectResource.getAll(prop);
 		for (GValue thisValue : propValues) {
@@ -367,10 +380,7 @@ public class ObjectMapper {
 		        Object thisValueTyped = thisValue.getTypedValue(subtypeClass);
 		        propSet.add(thisValueTyped);
 		        log.fine("Added literal value: " + thisValue.toString());
-		    }
-
-		    // or resources
-		    else {
+			} else {
 		        // TODO infinite recursion on doubly-linked resources? Is that fixed by caching?
 		        Object nestedObject = getObject(subtypeClass, (GResource) thisValue);
 		        propSet.add(nestedObject);
@@ -397,9 +407,14 @@ public class ObjectMapper {
 	private <T> void deserializeList(GResource objectResource, T targetObject, Field field, String prop) {
 		log.fine(field.getName() + " is a LIST.");
 		
-		// Find the type of the List (i.e. determine FooPojo from List<FooPojo>
-		ParameterizedType subtype = (ParameterizedType) field.getGenericType();
-		Class<?> subtypeClass = (Class<?>) subtype.getActualTypeArguments()[0];
+//		// Skip de-serialization if there is already one statement with this property
+//		// in the graph (this is a HACK). This prevents grafeo from promiscuously
+//		// aggregating blank nodes.
+//		if (this.grafeo.containsTriple(objectResource, prop, null)) {
+//			log.info("Skipping further list deserialization.");
+//		}
+		
+		Class<?> subtypeClass = PojoUtils.subtypeClassOfGenericField(field);
 		
 		// Find the co:List
 		GResource listResource;
@@ -448,7 +463,7 @@ public class ObjectMapper {
 				log.fine("Adding literal item '" + contentValue + " instanceof  " + subtypeClass);
 				propArray.add(contentValue.literal().getTypedValue(subtypeClass));
 			}
-			// TODO nested lists/sets/uri
+			// TODO nested lists/sets
 			else {
 				log.fine("Recursively Adding annotated object '" + contentValue);
 				propArray.add(getObject(subtypeClass, contentValue.resource()));
@@ -462,27 +477,28 @@ public class ObjectMapper {
 			}
 		}
 		
-//		ArrayList propArray = new ArrayList();
-//		for (nextItem = currentItem; nextItem != null ; nextItem = nextItem.get(NS.CO.PROP_NEXT_ITEM).resource()) {
-//			if (null != previousItem && previousItem.resource().getUri().equals(nextItem.resource().getUri())) {
-//				throw new RuntimeException("This might very well be a bad list leading to infinite recursion.");
-//			}
-//		    log.fine("Next (proxy) item in list: " + nextItem.resource());
-//		    GValue itemContentValue = nextItem.get(NS.CO.PROP_ITEM_CONTENT);
-//		    log.fine("Next (real) item in list: " + itemContentValue);
-//		    if (null == itemContentValue) {
-//		    	return;
-//		    }
-//		    GResource itemContentRes = itemContentValue.resource();
-//		    Object itemContentObject = getObject(subtypeClass, itemContentRes);
-//		    log.fine("Instantiated this object as "+subtypeClass + " to object " + itemContentObject);
-//		    propArray.add(itemContentObject);
-//		    previousItem = nextItem;
-//		}
 		try{
 		    PropertyUtils.setProperty(targetObject, field.getName(), propArray);
 		} catch (InvocationTargetException | NoSuchMethodException  | IllegalAccessException e) {
 		    throw new RuntimeException("An exception occurred: " + e, e);
+		}
+	}
+	
+	protected <T> void deserializeURI(GResource targetResource, T targetObject, Field field, String prop) {
+		log.fine(field.getName() + " is a fascinating " + field.getType());
+		GValue propValue = targetResource.get(prop);
+		if (propValue != null && ! propValue.isLiteral() && ! propValue.resource().isAnon()) {
+			try {
+				PropertyUtils.setProperty(targetObject, field.getName(), propValue.resource().getUri());
+			} catch (NoSuchMethodException e) {
+				log.severe(targetObject.getClass().getName() +": No getter/setters for " + field.getName() + " property: " + e);
+				return;
+			} catch (InvocationTargetException | IllegalAccessException e) {
+				throw new RuntimeException( "An exception occurred for type: "
+						+ targetObject.getClass()
+						+ " Make sure the Pojo has valid getters/setters for all RDFProperty fields. "
+						+ e, e);
+			}
 		}
 	}
 	
