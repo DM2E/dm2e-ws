@@ -16,6 +16,7 @@ public interface GResource extends GValue {
     String getUri();
 
     void set(String uri, GValue value);
+	void set(String property, String string);
 
     boolean isAnon();
 

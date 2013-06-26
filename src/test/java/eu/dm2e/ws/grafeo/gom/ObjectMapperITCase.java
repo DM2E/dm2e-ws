@@ -1,31 +1,37 @@
-package eu.dm2e.ws.grafeo;
+package eu.dm2e.ws.grafeo.gom;
 
-import static org.hamcrest.Matchers.is;
+
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.net.URI;
 import java.util.Arrays;
-import java.util.logging.Logger;
+import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import eu.dm2e.ws.NS;
-import eu.dm2e.ws.OmnomUnitTest;
+import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.api.SetAndList;
+import eu.dm2e.ws.api.WorkflowPojo;
+import eu.dm2e.ws.api.WorkflowPositionPojo;
+import eu.dm2e.ws.grafeo.GResource;
+import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GResourceImpl;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
 import eu.dm2e.ws.grafeo.test.IntegerPojo;
 import eu.dm2e.ws.grafeo.test.LiteralList;
-import eu.dm2e.ws.grafeo.test.ResourceListPojo;
 import eu.dm2e.ws.grafeo.test.NestedSetPojo;
+import eu.dm2e.ws.grafeo.test.ResourceListPojo;
 import eu.dm2e.ws.grafeo.test.SetPojo;
 
-public class AnnotationExportTest extends OmnomUnitTest {
+public class ObjectMapperITCase extends OmnomTestCase {
 	
-	Logger log = Logger.getLogger(getClass().getName());
-
 	@Test
 	public void testBlankLiteralList() {
 		
@@ -215,6 +221,109 @@ public class AnnotationExportTest extends OmnomUnitTest {
 			itemRes1.set("omnom:some_number", g.literal(0));
 			itemRes2.set("omnom:some_number", g.literal(1));
 			itemRes3.set("omnom:some_number", g.literal(8));
+			GrafeoAssert.graphsAreEquivalent(g, g2);
+		}
+	}
+	
+	@Test
+	@Ignore
+	public void infiniteRecursion() throws Exception {
+		WorkflowPojo wf = new WorkflowPojo();
+		final long initialSize;
+		{
+			WorkflowPositionPojo pos1 = new WorkflowPositionPojo();
+			wf.addPosition(pos1);
+			
+			wf.publishToService(client.getWorkflowWebResource());
+			assertNotNull(wf.getId());
+			initialSize = wf.getGrafeo().size();
+		}
+		{
+			WorkflowPojo wf2 = wf.getGrafeo().getObjectMapper().getObject(WorkflowPojo.class, wf.getId());
+			assertNotNull(wf2.getId());
+			List<String> x = wf2.getGrafeo().diffUnskolemizedNTriples(wf.getGrafeo());
+			log.info(x.get(0) + x.get(1));
+			assertEquals(initialSize, wf2.getGrafeo().size());
+		}
+		{
+			WorkflowPojo wf2 = client.loadPojoFromURI(WorkflowPojo.class, wf.getId());
+			assertEquals(initialSize, wf2.getGrafeo().size());
+		}
+		{
+			WorkflowPojo wf2 = new WorkflowPojo();
+			wf2.loadFromURI(wf.getId());
+			log.info(wf2.getTerseTurtle());
+			assertEquals(initialSize, wf2.getGrafeo().size());
+		}
+		log.info(wf.getTerseTurtle());
+	}
+	
+	@Test
+	public void testURI() {
+		
+		String uriName1 = "http://foo";
+		String uriName2 = "http://bar";
+		
+		UriResourcePojo uriRes = new UriResourcePojo();
+		GrafeoImpl g = new GrafeoImpl();
+		
+		GResourceImpl pojoRes = g.createBlank();
+		GResourceImpl integerPojoRes = g.createBlank();
+		GResourceImpl listRes = g.createBlank();
+		GResourceImpl itemRes1 = g.createBlank();
+		GResourceImpl itemRes2 = g.createBlank();
+		
+		{
+			pojoRes.set(UriResourcePojo.PROP_POJO_RESOURCE, integerPojoRes);
+			pojoRes.set("rdf:type", UriResourcePojo.CLASS_NAME);
+			integerPojoRes.set(IntegerPojo.PROP_SOME_NUMBER, g.literal(5));
+			integerPojoRes.set("rdf:type", IntegerPojo.CLASS_NAME);
+			
+			uriRes.setPojoResource(new IntegerPojo(5));
+			
+			GrafeoAssert.graphsAreEquivalent(g, uriRes.getGrafeo());
+		}
+		{
+			pojoRes.set(UriResourcePojo.PROP_URI_RESOURCE, uriName1);
+			uriRes.setUriResource(URI.create(uriName1));
+			
+			GrafeoAssert.graphsAreEquivalent(g, uriRes.getGrafeo());
+		}
+		{
+			pojoRes.set(UriResourcePojo.PROP_URI_RESOURCE_SET, uriName1);
+			pojoRes.set(UriResourcePojo.PROP_URI_RESOURCE_SET, uriName2);
+			uriRes.getUriResourceSet().add(URI.create(uriName1));
+			uriRes.getUriResourceSet().add(URI.create(uriName2));
+			
+			GrafeoAssert.graphsAreEquivalent(g, uriRes.getGrafeo());
+		}
+		{
+			pojoRes.set(UriResourcePojo.PROP_URI_RESOURCE_LIST, listRes);
+			listRes.set("rdf:type", NS.CO.CLASS_LIST);
+			listRes.set(NS.CO.PROP_FIRST_ITEM, itemRes1);
+			listRes.set(NS.CO.PROP_SIZE, g.literal(2));
+			
+			itemRes1.set("rdf:type", NS.CO.CLASS_ITEM);
+			itemRes1.set(NS.CO.PROP_INDEX, g.literal(0));
+			itemRes1.set(NS.CO.PROP_ITEM_CONTENT, uriName1);
+			itemRes1.set(NS.CO.PROP_NEXT_ITEM, itemRes2);
+			
+			listRes.set(NS.CO.PROP_LAST_ITEM, itemRes2);
+			itemRes2.set("rdf:type", NS.CO.CLASS_ITEM);
+			itemRes2.set(NS.CO.PROP_INDEX, g.literal(1));
+			itemRes2.set(NS.CO.PROP_ITEM_CONTENT, uriName2);
+			
+			uriRes.getUriResourceList().add(URI.create(uriName1));
+			uriRes.getUriResourceList().add(URI.create(uriName2));
+			
+			log.severe(g.getTerseTurtle());
+			GrafeoAssert.graphsAreEquivalent(g, uriRes.getGrafeo());
+		}
+		{
+			log.info("De-serializing");
+			GrafeoImpl g2 = new GrafeoImpl();
+			g2.getObjectMapper().addObject(uriRes);
+			
 			GrafeoAssert.graphsAreEquivalent(g, g2);
 		}
 	}

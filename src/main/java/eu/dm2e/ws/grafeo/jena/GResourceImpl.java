@@ -143,4 +143,10 @@ public class GResourceImpl extends GValueImpl implements GResource {
     public Grafeo getGrafeo() {
         return grafeo;
     }
+
+    @Override
+	public void set(String uri, String className) {
+        GResource res = grafeo.resource(className);
+        set(uri, res);
+	}
 }
