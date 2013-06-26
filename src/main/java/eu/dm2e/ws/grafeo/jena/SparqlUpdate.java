@@ -21,9 +21,15 @@ public class SparqlUpdate {
 	private Logger log = Logger.getLogger(getClass().getName());
 	
 	private String graph, endpoint, deleteClause, insertClause, whereClause;
+	private boolean insertDataFlag, deleteDataFlag;
 	private GrafeoImpl grafeo;
 	private Map<String, String> prefixes;
-	private boolean insertDataFlag, deleteDataFlag;
+	
+	private boolean hasGraph() { return graph != null; };
+//	private boolean hasEndpoint() { return endpoint != null; };
+	private boolean hasDeleteClause() { return deleteClause != null; };
+	private boolean hasInsertClause() { return insertClause != null; };
+	private boolean hasWhereClause() { return whereClause != null; };
 
 	public static class Builder {
 		private String graph, endpoint, deleteClause, insertClause, whereClause;
@@ -82,7 +88,7 @@ public class SparqlUpdate {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
         if (!prefixes.keySet().isEmpty()) {
-            for (String prefix:prefixes.keySet()) {
+            for (String prefix : prefixes.keySet()) {
                 sb.append("PREFIX ")
                   .append(prefix)
                   .append(": <")
@@ -91,37 +97,68 @@ public class SparqlUpdate {
             }
             sb.append("\n");
         }
-		if (null != graph) 			sb.append(String.format("WITH <%s>", graph));
-		if (null != deleteClause)	{
-//			if (insertDataFlag) {
-//				sb.append(String.format(" DELETE DATA { %s }", deleteClause));
-//			} else {
-				sb.append(String.format(" DELETE { %s }", deleteClause));
-//			}
-		}
-		if (null != insertClause) {
-//			if (insertDataFlag) {
-//				sb.append(String.format(" INSERT DATA { %s }", insertClause));
-//			} else {
-				sb.append(String.format(" INSERT { %s }", insertClause));
-//			}
-		}
-		
-		if (null != whereClause)	sb.append(String.format(" WHERE { %s }", whereClause));
-		else if (null != deleteClause)	sb.append(String.format(" WHERE { %s }", deleteClause));
-		else sb.append("WHERE {}");
+        // only insert
+        if (! hasDeleteClause()) {
+        	if (insertDataFlag) {
+				sb.append( hasGraph()
+					? String.format(" INSERT DATA { GRAPH <%s> { %s } }", graph, insertClause)
+					: String.format(" INSERT DATA { %s }", insertClause));
+        	} else {
+				sb.append( hasGraph()
+					? String.format(" INSERT { GRAPH <%s> { %s } }", graph, insertClause)
+					: String.format(" INSERT { %s }", insertClause));
+				sb.append( hasWhereClause()
+					? hasGraph() 
+						? String.format(" WHERE { GRAPH <%s> { %s } }", graph, whereClause)
+						: String.format(" WHERE { %s }", whereClause)
+					: "WHERE { }");	
+        	}
+        	
+		// only delete	
+        } else if (! hasInsertClause()) {
+			if (deleteDataFlag) {
+				sb.append( hasGraph()
+					? String.format(" DELETE DATA { GRAPH <%s> { %s } }", graph, deleteClause)
+					: String.format(" DELETE DATA { %s }", deleteClause));
+			} else {
+				sb.append( hasGraph()
+					? String.format(" DELETE { GRAPH <%s> { %s } }", graph, deleteClause)
+					: String.format(" DELETE { %s }", deleteClause));
+				sb.append( hasWhereClause()
+					?  hasGraph() 
+						? String.format(" WHERE { GRAPH <%s> { %s } }", graph, whereClause)
+						: String.format(" WHERE { %s }", whereClause)
+					: hasGraph() 
+						? String.format(" WHERE { GRAPH <%s> { %s } }", graph, deleteClause)
+						: String.format(" WHERE { %s }", deleteClause));
+				}
+		// both insert and delete
+        } else {
+        	if (hasGraph())
+        		sb.append(String.format(" WITH <%s> ", graph));
+    		sb.append(String.format(" DELETE { %s }", deleteClause));
+    		sb.append(String.format(" INSERT { %s }", insertClause));
+    		sb.append( hasWhereClause()
+				? hasGraph() 
+					? String.format(" WHERE { GRAPH <%s> { %s } }", graph, whereClause)
+					: String.format(" WHERE { %s }", whereClause)
+				: hasGraph() 
+					? String.format(" WHERE { GRAPH <%s> { %s } }", graph, deleteClause)
+					: String.format(" WHERE { %s }", deleteClause));
+        }
 		
 		return sb.toString();
 	}
 	
 	public void execute() {
-        log.info("UPDATE query: " + toString());
 		long startTime = System.currentTimeMillis();
         UpdateRequest update = UpdateFactory.create();
-        for (Entry<String, String> namespaceMapping : new GrafeoImpl().getNamespacesUsed().entrySet()) {
-        	update.setPrefix(namespaceMapping.getKey(), namespaceMapping.getValue());
-        }
+//        for (Entry<String, String> namespaceMapping : new GrafeoImpl().getNamespacesUsed().entrySet()) {
+//        	update.setPrefix(namespaceMapping.getKey(), namespaceMapping.getValue());
+//        }
+        log.info("UPDATE query (created): " + toString());
         update.add(toString());
+        log.info("UPDATE query (parsed): " + update.toString());
         UpdateProcessor exec;
 		if (null != endpoint) {
 			exec = UpdateExecutionFactory.createRemoteForm(update, endpoint);
