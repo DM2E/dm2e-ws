@@ -31,10 +31,6 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Literal;
@@ -629,43 +625,37 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     public void readFromEndpoint(String endpoint, URI graphURI) {
         readFromEndpoint(endpoint, graphURI.toString());
     }
-
+    public void readTriplesFromEndpoint(String endpointUpdate, String subject, GResource predicate, GValue object) {
+    	readTriplesFromEndpoint(endpointUpdate, subject, predicate.getUri(), object);
+    }
+//    @Override
+//    public void readTriplesFromEndpoint(String endpointUpdate, GResource subject, GResource predicate, GValue object) {
+//    	readTriplesFromEndpoint(endpointUpdate, subject.toString(), predicate.getUri(), object);
+//    }
     @Override
     public void readTriplesFromEndpoint(String endpoint, String subject, String predicate, GValue object) {
 
-        if (subject != null)
-            subject = escapeResource(expand(subject));
-        if (predicate != null)
-            predicate = escapeResource(expand(predicate));
-
-        StringBuilder sb = new StringBuilder("CONSTRUCT {");
-        sb.append(subject != null ? subject : "?s").append(" ");
-        sb.append(predicate != null ? predicate : "?p").append(" ");
-        sb.append(object != null ? object.toEscapedString() : "?o").append(" ");
-        sb.append("}  WHERE { ");
-        sb.append(subject != null ? subject : "?s").append(" ");
-        sb.append(predicate != null ? predicate : "?p").append(" ");
-        sb.append(object != null ? object.toEscapedString() : "?o").append(" ");
-        sb.append(" }");
-        log.finest("Query: " + sb.toString());
-        Query query = QueryFactory.create(sb.toString());
-        QueryExecution exec = QueryExecutionFactory.createServiceRequest(
-                endpoint, query);
-        exec.execConstruct(model);
+    	log.info("Querying endpoint for pattern :" + stringifyPattern(subject, predicate, object));
+        new SparqlConstruct.Builder()
+        	.construct(stringifyPattern(subject, predicate, object))
+        	.graph("?g")
+        	.endpoint(endpoint)
+        	.build()
+        	.execute(this);
     }
     @Override
     public void putToEndpoint(String endpoint, String graph) {
         GrafeoImpl gTest1 = new GrafeoImpl();
-        gTest1.readFromEndpoint(NS.ENDPOINT_SELECT, graph);
-        log.info("Before Size: " + gTest1.size());
-        log.info("Put to endpoint: " + endpoint + " / Graph: " + graph);
+//        gTest1.readFromEndpoint(NS.ENDPOINT_SELECT, graph);
+//        log.info("Before Size: " + gTest1.size());
+//        log.info("Put to endpoint: " + endpoint + " / Graph: " + graph);
         
         emptyGraph(endpoint, graph);
         postToEndpoint(endpoint, graph);
         
-        GrafeoImpl gTest2 = new GrafeoImpl();
-        gTest2.readFromEndpoint(NS.ENDPOINT_SELECT, graph);
-        log.info("After Size: " + gTest2.size());
+//        GrafeoImpl gTest2 = new GrafeoImpl();
+//        gTest2.readFromEndpoint(NS.ENDPOINT_SELECT, graph);
+//        log.info("After Size: " + gTest2.size());
     }
     @Override
     public void putToEndpoint(String endpoint, URI graph) {
@@ -1201,36 +1191,43 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     @Override
     public String stringifyResourcePattern(String subject, String predicate, String object) {
     	StringBuilder sb = new StringBuilder();
-    	sb.append("<");
-    	sb.append(subject == null ? "?s" : this.expand(subject));
-    	sb.append("> <");
-    	sb.append(predicate == null ? "?p" : this.expand(predicate));
-    	sb.append("> <");
-    	sb.append(object == null ? "?o" : this.expand(object));
-    	sb.append(">.");
+    	sb.append(subject == null ? "?s" : "<" + this.expand(subject) + ">");
+    	sb.append(" ");
+    	sb.append(predicate == null ? "?p" : "<" + this.expand(predicate) + ">");
+    	sb.append(" ");
+    	sb.append(object == null ? "?o" : "<" + this.expand(object) + ">");
+    	sb.append(" .");
     	return sb.toString();
     }
     @Override
     public String stringifyLiteralPattern(String subject, String predicate, String object) {
     	StringBuilder sb = new StringBuilder();
-    	sb.append("<");
-    	sb.append(subject == null ? "?s" : this.expand(subject));
-    	sb.append("> <");
-    	sb.append(predicate == null ? "?p" : this.expand(predicate));
-    	sb.append("> ");
+    	sb.append(subject == null ? "?s" : "<" + this.expand(subject) + ">");
+    	sb.append(" ");
+    	sb.append(predicate == null ? "?p" : "<" + this.expand(predicate) + ">");
+    	sb.append(" ");
     	sb.append(object == null ? "?o" : this.literal(object).getTypedValue());
-    	sb.append(". ");
+    	sb.append(" .");
 		return sb.toString();
+    }
+    @Override
+    public String stringifyPattern(String subject, String predicate, GValue object) {
+    	if (object.isLiteral()) {
+    		return stringifyLiteralPattern(subject, predicate, object.literal());
+    	} else if (object.resource().isAnon()){
+    		return stringifyResourcePattern(subject, predicate, (String) null);
+    	} else {
+    		return stringifyResourcePattern(subject, predicate, object.resource().getUri());
+    	}
     }
     @Override
     public String stringifyLiteralPattern(String subject, String predicate, GLiteral object) {
     	StringBuilder sb = new StringBuilder();
-    	sb.append("<");
-    	sb.append(subject == null ? "?s" : this.expand(subject));
-    	sb.append("> <");
-    	sb.append(predicate == null ? "?p" : this.expand(predicate));
-    	sb.append("> ");
-    	sb.append(object == null ? "?o" : object.getTypedValue());
+    	sb.append(subject == null ? "?s" : "<" + this.expand(subject) + ">");
+    	sb.append(" ");
+    	sb.append(predicate == null ? "?p" : "<" + this.expand(predicate) + ">");
+    	sb.append(" ");
+    	sb.append(object == null ? "?o" :  object.getTypedValue());
     	sb.append(". ");
 		return sb.toString();
     }

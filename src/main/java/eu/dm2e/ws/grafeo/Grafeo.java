@@ -179,8 +179,9 @@ public interface Grafeo {
 	void readFromEndpoint(String endpoint, String graph, int numberOfExpansions);
 
 	void readFromEndpoint(String endpoint, URI graphURI);
-
 	void readTriplesFromEndpoint(String endpoint, String subject, String predicate, GValue object);
+	void readTriplesFromEndpoint(String endpointUpdate, String subject, GResource predicate, GValue object);
+//	void readTriplesFromEndpoint(String endpointUpdate, GResource subject, GResource predicate, GValue object); 
 
 	/**
 	 * Writes the grafeo to the specified named graph of the endpoint
@@ -391,6 +392,8 @@ public interface Grafeo {
 
 	String stringifyLiteralPattern(String subject, String predicate, GLiteral object);
 	
+	String stringifyPattern(String subject, String predicate, GValue object);
+	
 	Set<GStatement> listStatements(GResource subject, String predicate, GValue object);
 
 	void removeTriple(GStatement stmt);
@@ -460,6 +463,8 @@ public interface Grafeo {
 	String summarizeClasses();
 
 	void merge(Grafeo that);
+
+
 
 
 

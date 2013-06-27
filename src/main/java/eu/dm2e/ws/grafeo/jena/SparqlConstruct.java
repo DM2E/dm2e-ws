@@ -86,7 +86,10 @@ public class SparqlConstruct {
 		 * prop and set WHERE accordingly
 		 */
 		if (null != graph) {
-			sb.append(String.format(" GRAPH <%s> { ", graph));
+			sb.append(String.format(" GRAPH %s { ", 
+					graph.startsWith("?") 
+							? graph 
+							: "<" + graph +">"));
 			sb.append(whereClause);
 			sb.append(" } .");
 		}
