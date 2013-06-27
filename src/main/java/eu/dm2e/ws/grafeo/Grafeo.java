@@ -182,9 +182,31 @@ public interface Grafeo {
 
 	void readTriplesFromEndpoint(String endpoint, String subject, String predicate, GValue object);
 
-	void writeToEndpoint(String endpoint, String graph);
+	/**
+	 * Writes the grafeo to the specified named graph of the endpoint
+	 * 
+	 * @param endpoint
+	 * @param graph
+	 */
+	void postToEndpoint(String endpoint, String graph);
 
-	void writeToEndpoint(String endpoint, URI graphURI);
+	/**
+	 * @see Grafeo#postToEndpoint(String, String)
+	 */
+	void postToEndpoint(String endpoint, URI graphURI);
+	
+	/**
+	 * Empties the specified graph on the endpoint and writes the grafeo to it.
+	 * 
+	 * @param endpoint
+	 * @param graph
+	 */
+	void putToEndpoint(String endpoint, String graph);
+
+	/**
+	 * @see Grafeo#putToEndpoint(String, String)
+	 */
+	void putToEndpoint(String endpoint, URI graphURI);
 
 	/**
 	 * Returns an NTRIPLES serialization.
@@ -250,6 +272,7 @@ public interface Grafeo {
 	 * @param graph
 	 */
 	void emptyGraph(String endpoint, String graph);
+	void emptyGraph(String endpoint, URI graph);
 
 	/**
 	 * List all subjects of rdf:type type in the graph.
@@ -434,7 +457,9 @@ public interface Grafeo {
 	
 	String stringifyLiteralPattern(GStatement stmt);
 
+	String summarizeClasses();
 
+	void merge(Grafeo that);
 
 
 

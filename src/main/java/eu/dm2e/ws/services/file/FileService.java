@@ -193,7 +193,7 @@ public class FileService extends AbstractRDFService {
 		// save it
 		// set the status of the file to waiting
 		filePojo.setFileStatus(FileStatus.WAITING.toString());
-		filePojo.getGrafeo().writeToEndpoint(STORAGE_ENDPOINT_STATEMENTS, uriStr);
+		filePojo.getGrafeo().putToEndpoint(STORAGE_ENDPOINT_STATEMENTS, uriStr);
 		
 		return Response.created(uri).entity(getResponseEntity(filePojo.getGrafeo())).build();
 	}
@@ -363,7 +363,7 @@ public class FileService extends AbstractRDFService {
 			
 			FilePojo f;
 			try {
-				f = g.getObjectMapper().getObject(FilePojo.class, uriRes);
+				f = g.getObjectMapper().getObject(FilePojo.class, uri);
 			} catch (Exception e) {
 				return throwServiceError(e);
 			}
@@ -405,7 +405,7 @@ public class FileService extends AbstractRDFService {
         log.info("Final RDF to be stored for this file: " + g.getTurtle());
         
 		// store RDF data
-		g.writeToEndpoint(STORAGE_ENDPOINT_STATEMENTS, uri);
+		g.putToEndpoint(STORAGE_ENDPOINT_STATEMENTS, uri);
 		return Response.created(uri).entity(getResponseEntity(g)).build();
 	}
 
@@ -478,7 +478,7 @@ public class FileService extends AbstractRDFService {
 		if (!g.containsResource(uri)) {
 			return Response.status(404).entity("No such file in the triplestore.").build();
 		}
-		FilePojo filePojo = g.getObjectMapper().getObject(FilePojo.class, g.resource(uri));
+		FilePojo filePojo = g.getObjectMapper().getObject(FilePojo.class, uri);
 		Grafeo outG = new GrafeoImpl();
 		outG.getObjectMapper().addObject(filePojo);
 		return getResponse(outG);

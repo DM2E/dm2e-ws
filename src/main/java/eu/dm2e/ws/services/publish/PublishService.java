@@ -103,7 +103,7 @@ public class PublishService extends AbstractTransformationService {
             log.info("Published graph: " + g.getTurtle());
             jobPojo.debug("Published graph: " + g.getTurtle());
             log.info("Write to endpoint: " + endpoint + " / Graph: " + versionedURI);
-            g.writeToEndpoint(endpoint, versionedURI);
+            g.postToEndpoint(endpoint, versionedURI);
             jobPojo.addOutputParameterAssignment(PARAM_RESULT_DATASET_ID, versionedURI);
 
         } catch (Throwable t) {

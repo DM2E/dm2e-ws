@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -60,6 +61,7 @@ import eu.dm2e.ws.grafeo.gom.ObjectMapper;
 
 public class GrafeoImpl extends JenaImpl implements Grafeo {
 	
+	public static final String NO_EXTERNAL_URL_FLAG = "eu.dm2e.ws.grafeo.no_external_url";
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
     private static final long RETRY_INTERVAL = 500;
@@ -247,11 +249,19 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     
     @Override
     public void load(String uri) {
+        log.fine("Load data from URI without any expansions");
     	this.load(uri, 0);
     }
 
     @Override
     public void load(String uri, int expansionSteps) {
+    	if (System.getProperty(NO_EXTERNAL_URL_FLAG).equals("true")
+			&&
+			! uri.matches("https?://localhost.*")
+			) {
+    		log.warning("Skipping loading because "+ NO_EXTERNAL_URL_FLAG +" system property is set." );
+    		return;
+    	}
         log.fine("Load data from URI: " + uri);
         uri = expand(uri);
         int count = RETRY_COUNT;
@@ -270,6 +280,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
             if (success) break;
             count--;
             try {
+                log.info("Trying again in " + RETRY_INTERVAL + "ms");
                 Thread.sleep(RETRY_INTERVAL);
             } catch (InterruptedException e) {
                 throw new RuntimeException("An exception occurred: " + e, e);
@@ -286,14 +297,14 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         		if (resourceCache.contains(gres)){
         			continue;
         		}
+				resourceCache.add(gres);
 				try {
-					log.finer("Trying to load resource " + gres.getUri());
+					log.fine("Expansion: Trying to load resource " + gres.getUri());
 					this.load(gres.getUri(), 0);
 				} catch (Throwable t) {
-					log.fine("Failed to load resource " + gres.getUri() +".");
+					log.fine("Expansion: Failed to load resource " + gres.getUri() +".");
 //					t.printStackTrace();
 				}
-				resourceCache.add(gres);
     		}
         	log.fine("Size After expansion: "+ this.size());
         }
@@ -301,7 +312,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 
     @Override
     public void loadWithoutContentNegotiation(String uri) {
-        log.fine("Load data from URI: " + uri);
+        log.fine("Load data from URI without content negotiation: " + uri);
         uri = expand(uri);
         try {
             this.model.read(uri, null, "N3");
@@ -323,7 +334,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 
     @Override
     public void loadWithoutContentNegotiation(String uri, int expansionSteps) {
-        log.fine("Load data from URI: " + uri);
+        log.fine("Load data from URI without content negotiation: " + uri);
         uri = expand(uri);
         try {
             this.model.read(uri, null, "N3");
@@ -549,23 +560,20 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     		.graph(graph)
     		.endpoint(endpoint)
     		.build();
-        Query query = QueryFactory.create(sparco.toString());
+//        Query query = QueryFactory.create(sparco.toString());
         log.finer("CONSTRUCT Query: " + sparco.toString());
 
         long sizeBefore = size();
         long stmtsAdded = 0;
 
         boolean success = false;
-        int count = 5;
+        int count = RETRY_COUNT;
         // Workaround to avoid the empty graph directly after a publish and other bad things that happen in the web.
         while (count>0 && !success) {
-            QueryExecution exec = QueryExecutionFactory.createServiceRequest(
-                    endpoint, query);
-            exec.execConstruct(model);
+        	sparco.execute(this);
             stmtsAdded = size() - sizeBefore;
             if (stmtsAdded > 0) {
                 success = true;
-
             } else {
                 count--;
                 log.info("No statements found, I try again... Count: " + count);
@@ -575,17 +583,17 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
                     throw new RuntimeException("An exception occurred: " + e, e);
                 }
             }
-            exec.close();
         }
         if (stmtsAdded == 0) {
-        	throw new RuntimeException("Graph contained no statements: " + graph);
+        	log.warning("No statements were addded from graph <" + graph + ">. It is either empty or contained no new statements.");
+//        	throw new RuntimeException("Graph contained no statements: " + graph);
         }
         log.fine("Added " + stmtsAdded + " statements to the graph.");
         
         // Expand the graph by recursively loading additional resources
         Set<GResource> resourceCache = new HashSet<GResource>();
         for ( ; expansionSteps > 0 ; expansionSteps--) {
-        	log.fine("SExpansion No. " + expansionSteps);
+        	log.fine("Expansion No. " + expansionSteps);
         	log.fine("Size Before expansion: "+ this.size());
         	for (GResource gres : this.listURIResources()) {
         		if (resourceCache.contains(gres)){
@@ -609,6 +617,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     		}
         	log.fine("Size After expansion: "+ this.size());
         }
+        log.info("Summary: \n" + summarizeClasses());
         log.fine("Reading from endpoint finished.");
     }
     
@@ -623,8 +632,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     }
 
     @Override
-    public void readTriplesFromEndpoint(String endpoint, String subject,
-                                        String predicate, GValue object) {
+    public void readTriplesFromEndpoint(String endpoint, String subject, String predicate, GValue object) {
 
         if (subject != null)
             subject = escapeResource(expand(subject));
@@ -646,23 +654,41 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
                 endpoint, query);
         exec.execConstruct(model);
     }
+    @Override
+    public void putToEndpoint(String endpoint, String graph) {
+        GrafeoImpl gTest1 = new GrafeoImpl();
+        gTest1.readFromEndpoint(NS.ENDPOINT_SELECT, graph);
+        log.info("Before Size: " + gTest1.size());
+        log.info("Put to endpoint: " + endpoint + " / Graph: " + graph);
+        
+        emptyGraph(endpoint, graph);
+        postToEndpoint(endpoint, graph);
+        
+        GrafeoImpl gTest2 = new GrafeoImpl();
+        gTest2.readFromEndpoint(NS.ENDPOINT_SELECT, graph);
+        log.info("After Size: " + gTest2.size());
+    }
+    @Override
+    public void putToEndpoint(String endpoint, URI graph) {
+    	putToEndpoint(endpoint, graph.toString());
+    }
 
     @Override
-    public void writeToEndpoint(String endpoint, String graph) {
-        log.info("Write to endpoint: " + endpoint + " / Graph: " + graph);
+    public void postToEndpoint(String endpoint, String graph) {
+        log.info("Post to endpoint: " + endpoint + " / Graph: " + graph);
         SparqlUpdate sparul = new SparqlUpdate.Builder()
-        	.insert(this.getNTriples())
+        	.insert(this)
         	.graph(graph)
         	.endpoint(endpoint)
         	.build();
-        log.info("writeToEndpoint Update Query: " + sparul.toString());
+        log.fine("Post to endpoint SPARQL UPDATE query: " + sparul.toString());
         sparul.execute();
 
     }
 
     @Override
-    public void writeToEndpoint(String endpoint, URI graphURI) {
-        writeToEndpoint(endpoint, graphURI.toString());
+    public void postToEndpoint(String endpoint, URI graphURI) {
+        postToEndpoint(endpoint, graphURI.toString());
     }
 
     @Override
@@ -853,12 +879,17 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     
 	@Override
 	public void emptyGraph(String endpoint, String graph) {
+		log.info("Emptying graph " + graph);
 		new SparqlUpdate.Builder()
 			.graph(graph)
 			.endpoint(endpoint)
 			.delete("?s ?p ?o.")
 			.build()
 			.execute();
+	}
+	@Override
+	public void emptyGraph(String endpoint, URI graph) {
+		emptyGraph(endpoint, graph.toString());
 	}
 
 
@@ -1262,4 +1293,46 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		return this.stringifyLiteralPattern(stmt.getSubject().toString(), stmt.getPredicate().toString(), stmt.getObject().toString());
 	}
 
+	@Override
+	public String summarizeClasses() {
+		Map<String, Map<String, Long>> summary = new HashMap<>();
+		log.info("Start summarizing");
+		for (GStatement stmt : this.listStatements(null, "rdf:type", null)) {
+			String type = shorten(stmt.getObject().resource().getUri());
+			if (null == type) { continue; }
+			Map<String, Long> entry = summary.get(type);
+			if (null == entry) {
+				entry = new HashMap<>();
+				entry.put("uri", 0L);
+				entry.put("blank", 0L);
+				entry.put("total", 0L);
+			}
+			if (stmt.getSubject().isAnon())
+				entry.put("blank", 1 + entry.get("blank"));
+			else
+				entry.put("uri", 1 + entry.get("uri"));
+			entry.put("total", 1 + entry.get("total"));
+			summary.put(type, entry);
+		}
+		log.info("Done summarizing");
+		StringBuilder sb = new StringBuilder();
+		sb.append(String.format("%-30s %10s %10s %10s\n", "rdf:type", "TOTAL", "URI", "BLANK"));
+		for (Entry<String,Map<String,Long>> entry : summary.entrySet()) {
+//			log.info("entry: " + entry);
+			sb.append(String.format("%30s", entry.getKey()));
+			sb.append(String.format("%10d", entry.getValue().get("total")));
+			sb.append(String.format("%10d", entry.getValue().get("uri")));
+			sb.append(String.format("%10d", entry.getValue().get("blank")));
+			sb.append("\n");
+		}
+		return sb.toString();
+	}
+
+	@Override
+	public void merge(Grafeo that) {
+		for (GStatement stmt : that.listStatements(null, null, null)) {
+			this.addTriple(stmt);
+		}
+	}
+	
 }

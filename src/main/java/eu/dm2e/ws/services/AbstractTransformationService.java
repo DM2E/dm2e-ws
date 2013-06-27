@@ -28,6 +28,9 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
 	public void setJobPojo(JobPojo jobPojo) { this.jobPojo = jobPojo; };
 
 
+    /* (non-Javadoc)
+     * @see eu.dm2e.ws.services.AbstractAsynchronousRDFService#putConfigToService(java.lang.String)
+     */
     @Override
 	@PUT
     @Consumes(MediaType.TEXT_PLAIN)
@@ -62,7 +65,11 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
         job.setWebService(wsConf.getWebservice());
         job.setWebserviceConfig(wsConf);
         job.addLogEntry("JobPojo constructed by AbstractTransformationService", "TRACE");
-        job.publishToService();
+        try {
+			job.publishToService(client.getJobWebResource());
+		} catch (Exception e1) {
+			return throwServiceError(e1);
+		}
 
         /*
          * Let the asynchronous worker handle the job
