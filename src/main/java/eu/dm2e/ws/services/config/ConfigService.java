@@ -9,12 +9,14 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import eu.dm2e.ws.Config;
+import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
@@ -22,6 +24,7 @@ import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.grafeo.jena.SparqlUpdate;
 import eu.dm2e.ws.services.AbstractRDFService;
 
 @Path("/config")
@@ -45,20 +48,6 @@ public class ConfigService extends AbstractRDFService {
         	return throwServiceError(getRequestUriWithoutQuery().toString(), ErrorMsg.NOT_FOUND, 404);
         }
         return getResponse(g);
-    }
-    
-    @GET
-    @Path("{id}/assignment/{assId}")
-    public Response getConfigAssignment(
-    		@Context UriInfo uriInfo,
-     		@PathParam("id") String id,
-     		@PathParam("assId") String assId
-    		) {
-        log.info("Assignment " + assId + " of configuration requested: " + uriInfo.getRequestUri());
-        URI uri = popPath();
-        uri = popPath();
-
-        return Response.status(303).location(uri).build();
     }
     
     @GET
@@ -98,8 +87,8 @@ public class ConfigService extends AbstractRDFService {
         g.skolemizeSequential(uri.toString(), NS.OMNOM.PROP_ASSIGNMENT, "assignment");
         log.warning("DONE Skolemnizing ...");
         
-        g.emptyGraph(Config.ENDPOINT_UPDATE, uri.toString());
-        g.writeToEndpoint(Config.ENDPOINT_UPDATE, uri.toString());
+        g.putToEndpoint(Config.ENDPOINT_UPDATE, uri);
+        
         return Response.created(uri).entity(getResponseEntity(g)).build();
     }
 
@@ -127,13 +116,10 @@ public class ConfigService extends AbstractRDFService {
         }
         res.rename(uri);
         log.info("Renamed top blank node.");
-        	g.skolemizeSequential(uri.toString(), NS.OMNOM.PROP_ASSIGNMENT, "assignment");
-//        }
+        g.skolemizeSequential(uri.toString(), NS.OMNOM.PROP_ASSIGNMENT, "assignment");
         log.info("Skolemnized assignments");
         
-        g.emptyGraph(Config.ENDPOINT_UPDATE, uri.toString());
-        log.info("Emptied graph");
-        g.writeToEndpoint(Config.ENDPOINT_UPDATE, uri);
+        g.putToEndpoint(Config.ENDPOINT_UPDATE, uri);
         log.info("Written data to endpoint.");
         return Response.created(uri).entity(getResponseEntity(g)).build();
     }
@@ -161,6 +147,63 @@ public class ConfigService extends AbstractRDFService {
         return Response.ok().build();
 	}
 
-    
+	@POST
+	@Consumes({
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML,
+		DM2E_MediaType.APPLICATION_X_TURTLE,
+		DM2E_MediaType.TEXT_PLAIN,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.TEXT_TURTLE })
+	@Path("{configId}/assignment/")
+	public Response postAssignment(@PathParam("configId") String configId, String rdfString) { Grafeo g = new GrafeoImpl(rdfString, null);
+		GResource blank = g.findTopBlank(NS.OMNOM.CLASS_PARAMETER_ASSIGNMENT);
+		if (null == blank) {
+			return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE);
+		}
+		URI newUri = appendPath(createUniqueStr());
+		URI conifgUri = popPath();
+		blank.rename(newUri);
+		g.postToEndpoint(Config.ENDPOINT_UPDATE, conifgUri);
+		return Response.created(newUri).build();
+	}
+	
+	@PUT
+	@Consumes({
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML,
+		DM2E_MediaType.APPLICATION_X_TURTLE,
+		DM2E_MediaType.TEXT_PLAIN,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.TEXT_TURTLE })
+	@Path("{configId}/assignment/{assId}")
+	public Response putAssignment(@PathParam("configId") String configId, @PathParam("assId") String assId, String rdfString) {
+		URI assUri = getRequestUriWithoutQuery();
+		URI configUri = popPath(popPath());
+		Grafeo g = new GrafeoImpl(rdfString, null);
+		SparqlUpdate sparul = new SparqlUpdate.Builder()
+			.delete(assUri + "?s ?o")
+			.insert(g.toString())
+			.endpoint(Config.ENDPOINT_UPDATE)
+			.graph(configUri).build();
+		sparul.execute();
+		return getResponse(g);
+	}
+	
+	@GET
+	@Path("{configId}/assignment/{assId}")
+	@Produces({
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML,
+		DM2E_MediaType.APPLICATION_X_TURTLE,
+		DM2E_MediaType.TEXT_PLAIN,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.TEXT_TURTLE
+	})
+	public Response getWorkflowConnector( @PathParam("configId") String configId, @PathParam("assId") String assId) {
+        log.info("Assignment " + assId + " of configuration requested: " + uriInfo.getRequestUri());	
+		URI configUri = popPath(popPath());
+		return Response.seeOther(configUri).build();
+	}
 
 }
