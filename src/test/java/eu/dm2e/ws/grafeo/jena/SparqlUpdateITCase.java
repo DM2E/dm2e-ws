@@ -7,13 +7,18 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.OmnomTestCase;
+import eu.dm2e.ws.grafeo.GResource;
+import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
 
 public class SparqlUpdateITCase extends OmnomTestCase {
@@ -22,12 +27,13 @@ public class SparqlUpdateITCase extends OmnomTestCase {
 
 	private static final String ENDPOINT_UPDATE = Config.ENDPOINT_UPDATE;
 
-	public static final String BASE = "http://www.w3.org/2000/01/rdf-schema#";
+	public static final String BASE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 	
 	private static final String SUB1  = BASE + "sub1";
 	private static final String SUB2  = BASE + "sub2";
 	private static final String SUB3  = BASE + "sub3";
 	
+	private static final String PROP_TYPE = BASE + "type";
 	private static final String PROP1 = BASE + "prop1";
 	private static final String PROP2 = BASE + "prop2";
 	private static final String PROP3 = BASE + "prop3";
@@ -472,9 +478,10 @@ public class SparqlUpdateITCase extends OmnomTestCase {
 	}
 	
 	@Test
+	@Ignore
 	public void testStress() {
 		
-		long max = 50000;
+		long max = 25000;
 		GrafeoImpl gTest = new GrafeoImpl();
 		GrafeoImpl gLoaded = new GrafeoImpl();
 		for (long i = 0; i < max ; i ++ ) {
@@ -487,5 +494,47 @@ public class SparqlUpdateITCase extends OmnomTestCase {
 			.build()
 			.execute();
 		GrafeoAssert.graphsAreEquivalent(gTest, gLoaded);
+	}	
+	
+	@Test
+	public void testBlankNodes() {
+		
+		GrafeoImpl gBlank = new GrafeoImpl();
+		List<GResource> blankList = new ArrayList<>();
+		for (int i=0; i <5; i++) {
+			blankList.add(gBlank.createBlank());
+		}
+		gBlank.addTriple(blankList.get(0), PROP1, blankList.get(1));
+		gBlank.addTriple(blankList.get(1), PROP1, blankList.get(2));
+		gBlank.addTriple(blankList.get(2), PROP2, blankList.get(3));
+		
+		log.info(gBlank.getTerseTurtle());
+		
+		log.info("Delete by pattern from graph, remote");
+		{
+			SparqlUpdate sparulInsert = new SparqlUpdate.Builder()
+				.insert(gBlank)
+				.graph(GRAPH1)
+				.endpoint(ENDPOINT_UPDATE)
+				.build();
+			sparulInsert.execute();
+			
+			new SparqlUpdate.Builder()
+//				.delete("?s ?p ?o")
+				.insert(g1)
+				.graph(GRAPH1)
+				.endpoint(ENDPOINT_UPDATE)
+				.build()
+				.execute();
+			
+			Grafeo gCompare = gBlank.copy();
+			gCompare.merge(g1);
+			
+			GrafeoImpl gLoaded = new GrafeoImpl();
+			gLoaded.readFromEndpoint(ENDPOINT_QUERY, GRAPH1);
+//			gLoaded.readFromEndpoint(ENDPOINT_QUERY, GRAPH1);
+			log.info(gLoaded.getTerseTurtle());
+			GrafeoAssert.graphsAreEquivalent(gCompare, gLoaded);
+		}
 	}
 }

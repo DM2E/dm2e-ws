@@ -3,7 +3,6 @@ package eu.dm2e.ws.grafeo.jena;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import com.hp.hpl.jena.update.GraphStore;
@@ -44,6 +43,7 @@ public class SparqlUpdate {
 		public Builder endpoint(String s) 	{ this.endpoint = s; return this; }
 		public Builder endpoint(URI s)     	{ this.endpoint = s.toString(); return this; }
 		
+		public Builder deleteAll() 			{ this.deleteClause = "?s ?p ?o"; return this; } 
 		public Builder delete(String s) 	{ this.deleteClause = s; return this; }
 		public Builder delete(Grafeo s) 	{ this.deleteClause = s.getNTriples(); deleteDataFlag = true; return this; }
 		
@@ -57,7 +57,7 @@ public class SparqlUpdate {
         public Builder prefixes(Map<String,String> prefixes)	{ this.prefixes.putAll(prefixes); return this; }
         public Builder prefix(String prefix, String value) 		{ this.prefixes.put(prefix, value); return this; }
 		
-		public SparqlUpdate build() 		{ return new SparqlUpdate(this); } 
+		public SparqlUpdate build() 		{ return new SparqlUpdate(this); }
 	}
 
 	public SparqlUpdate(Builder builder) {
@@ -134,17 +134,20 @@ public class SparqlUpdate {
 				}
 		// both insert and delete
         } else {
-        	if (hasGraph())
-        		sb.append(String.format(" WITH <%s> ", graph));
-    		sb.append(String.format(" DELETE { %s }", deleteClause));
-    		sb.append(String.format(" INSERT { %s }", insertClause));
-    		sb.append( hasWhereClause()
-				? hasGraph() 
-					? String.format(" WHERE { GRAPH <%s> { %s } }", graph, whereClause)
-					: String.format(" WHERE { %s }", whereClause)
-				: hasGraph() 
-					? String.format(" WHERE { GRAPH <%s> { %s } }", graph, deleteClause)
-					: String.format(" WHERE { %s }", deleteClause));
+				sb.append( hasGraph()
+					? String.format(" DELETE { GRAPH <%s> { %s } }", graph, deleteClause)
+					: String.format(" DELETE { %s }", deleteClause));
+				sb.append( hasGraph()
+					? String.format(" INSERT { GRAPH <%s> { %s } }", graph, insertClause)
+					: String.format(" INSERT { %s }", insertClause));
+				sb.append( hasWhereClause()
+					?  hasGraph() 
+						? String.format(" WHERE { GRAPH <%s> { %s } }", graph, whereClause)
+						: String.format(" WHERE { %s }", whereClause)
+					: hasGraph() 
+						? String.format(" WHERE { GRAPH <%s> { %s } }", graph, deleteClause)
+						: String.format(" WHERE { %s }", deleteClause));
+//				log.info("MODIFY+DELETE:" + sb.toString());
         }
 		
 		return sb.toString();
@@ -156,9 +159,9 @@ public class SparqlUpdate {
 //        for (Entry<String, String> namespaceMapping : new GrafeoImpl().getNamespacesUsed().entrySet()) {
 //        	update.setPrefix(namespaceMapping.getKey(), namespaceMapping.getValue());
 //        }
-        log.info("UPDATE query (created): " + toString());
+        log.finest("UPDATE query (created): " + toString());
         update.add(toString());
-        log.info("UPDATE query (parsed): " + update.toString());
+        log.finest("UPDATE query (parsed): " + update.toString());
         UpdateProcessor exec;
 		if (null != endpoint) {
 			exec = UpdateExecutionFactory.createRemoteForm(update, endpoint);
@@ -168,8 +171,8 @@ public class SparqlUpdate {
 		}
         exec.execute();
         long estimatedTime = System.currentTimeMillis() - startTime;
-        if (estimatedTime < 700) {
-	        log.info("UPDATE took " + estimatedTime +"ms");
+        if (estimatedTime < 2000) {
+	        log.fine("UPDATE took " + estimatedTime +"ms");
         } else { 
 	        log.severe("UPDATE took " + estimatedTime +"ms: " + toString());
         }
