@@ -56,9 +56,11 @@ public class WorkflowConfigPojo extends AbstractConfigPojo<WorkflowConfigPojo> {
 		//
 		for (ParameterPojo param : wf.getInputParams()) {
 			log.info("" + param);
-			ParameterAssignmentPojo ass = this.getParameterAssignmentForParam(param.getId());
-			if (null == ass) {
-				throw new RuntimeException(param + " is not set by " + this); 
+			if (param.getIsRequired()) {
+				ParameterAssignmentPojo ass = this.getParameterAssignmentForParam(param.getId());
+				if (null == ass) {
+					throw new RuntimeException(param + " is not set by " + this); 
+				}
 			}
 		}
 		
@@ -68,12 +70,12 @@ public class WorkflowConfigPojo extends AbstractConfigPojo<WorkflowConfigPojo> {
 		for (ParameterConnectorPojo conn : wf.getParameterConnectors()) {
 			if (conn.hasFromWorkflow() 
 					&&
-				null == wf.getParamByName(conn.getFromParam().getId())) {
+				null == wf.getParamByName(conn.getFromParam().getLabel())) {
 				throw new AssertionError(conn + " references parameter " + conn.getToParam() + " which is not defined by " + wf);
 			}
 			if (conn.hasToWorkflow() 
 					&&
-				null == wf.getParamByName(conn.getToParam().getId())) {
+				null == wf.getParamByName(conn.getToParam().getLabel())) {
 				throw new AssertionError(conn + " references parameter " + conn.getToParam() + " which is not defined by " + wf);
 			}
 		}
@@ -119,10 +121,10 @@ public class WorkflowConfigPojo extends AbstractConfigPojo<WorkflowConfigPojo> {
      * GETTERS/SETTERS
      ********************/
 	
-    @RDFProperty(value = NS.OMNOM.PROP_WORKFLOW )
+    @RDFProperty(value = NS.OMNOM.PROP_WORKFLOW, serializeAsURI = true )
     private WorkflowPojo workflow;
 	public WorkflowPojo getWorkflow() { return workflow; }
 	public void setWorkflow(WorkflowPojo wf) { this.workflow = wf; }
-	
+
 
 }

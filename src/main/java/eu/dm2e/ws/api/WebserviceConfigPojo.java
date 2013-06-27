@@ -51,7 +51,10 @@ public class WebserviceConfigPojo extends AbstractConfigPojo<WebserviceConfigPoj
 				throw new RuntimeException(ass.getParameterValue() + ": "
 						+ ErrorMsg.ILLEGAL_PARAMETER_VALUE.toString());
 			}
+			log.info("Param is valid: " + param);
 		}
+		
+		log.info("This config is valid: " + this );
     }
     
     
