@@ -1,18 +1,21 @@
 package eu.dm2e.ws.grafeo.jena;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Calendar;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import javax.xml.bind.DatatypeConverter;
+
+import org.joda.time.DateTime;
+
 import com.hp.hpl.jena.rdf.model.RDFNode;
+
 import eu.dm2e.ws.grafeo.GLiteral;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.GValue;
 import eu.dm2e.ws.grafeo.Grafeo;
-
-import javax.xml.bind.DatatypeConverter;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * This file was created within the DM2E project.
@@ -100,9 +103,12 @@ public abstract class GValueImpl extends JenaImpl implements GValue {
             } else if (T.equals(String.class)) {
                 log.fine("Found String.");
                 result = (T) toParse;
-            } else if (T.equals(Date.class)) {
+            } else if (T.equals(java.util.Date.class)) {
                 log.fine("Found Date.");
                 result = (T) DatatypeConverter.parseDateTime(toParse).getTime();
+            } else if (T.equals(org.joda.time.DateTime.class)) {
+                log.fine("Found org.joda.time.DateTime.");
+                result = (T) DateTime.parse(toParse);
             } else if (T.equals(Calendar.class)) {
                 log.fine("Found Calendar.");
                 result = (T) DatatypeConverter.parseDateTime(toParse);

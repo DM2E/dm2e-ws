@@ -3,7 +3,6 @@ package eu.dm2e.ws.services;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
@@ -19,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
+import org.joda.time.DateTime;
 
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.DM2E_MediaType;
@@ -47,6 +47,22 @@ public abstract class AbstractJobService extends AbstractRDFService {
 	public abstract Response putJob(Grafeo inputGrafeo, GResource uriStr);
 	public abstract Response postJob(Grafeo inputGrafeo, GResource blank);
 	public abstract Response getJob(Grafeo g, GResource uri);
+	@GET
+	@Path("/list")
+	@Produces({
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML,
+		DM2E_MediaType.APPLICATION_X_TURTLE,
+		DM2E_MediaType.TEXT_PLAIN,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.TEXT_TURTLE
+	})
+	public Response getJobList() {
+		Grafeo g = new GrafeoImpl();
+		g.readTriplesFromEndpoint(Config.ENDPOINT_QUERY, null, "rdf:type", g.resource(NS.OMNOM.CLASS_JOB));
+		g.readTriplesFromEndpoint(Config.ENDPOINT_QUERY, null, "rdf:type", g.resource(NS.OMNOM.CLASS_WORKFLOW_JOB));
+		return getResponse(g);
+	}
 	
 	@PUT
 	@Path("/{resourceID}")
@@ -314,7 +330,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		entry.setId(jobUri + "/log/" + createUniqueStr());
 		entry.setMessage(logString);
 		entry.setLevel(logLevel);
-		entry.setTimestamp(new Date());
+		entry.setTimestamp(DateTime.now());
 		Grafeo outG = entry.getGrafeo();
 		outG.addTriple(jobUri, NS.OMNOM.PROP_LOG_ENTRY, entry.getId());
 		outG.postToEndpoint(Config.ENDPOINT_UPDATE, jobUri);

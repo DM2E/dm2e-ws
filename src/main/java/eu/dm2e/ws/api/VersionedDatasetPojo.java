@@ -2,7 +2,9 @@ package eu.dm2e.ws.api;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Date;
+
+import org.joda.time.DateTime;
+//import java.util.Date;
 
 import com.hp.hpl.jena.query.ResultSet;
 
@@ -71,9 +73,9 @@ public class VersionedDatasetPojo extends AbstractPersistentPojo<VersionedDatase
     public void setPriorVersionURI(URI priorVersionURI) { this.priorVersionURI = priorVersionURI; }
 
     @RDFProperty(NS.DC.PROP_DATE)
-    private Date timestamp;
-    public Date getTimestamp() { return timestamp; }
-    public void setTimestamp(Date timestamp) { this.timestamp = timestamp; }
+    private DateTime timestamp;
+    public DateTime getTimestamp() { return timestamp; }
+    public void setTimestamp(DateTime timestamp) { this.timestamp = timestamp; }
 
 //    @RDFProperty(NS.RDFS.PROP_LABEL)
 //    private String label;

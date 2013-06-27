@@ -9,6 +9,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
+
 /**
  * This file was created within the DM2E project.
  * http://dm2e.eu
@@ -35,8 +39,12 @@ public class GLiteralImpl extends GValueImpl implements GLiteral {
     		df.setTimeZone(tz);
     		String nowAsISO = df.format(literalValue);
     		this.literal = getGrafeoImpl(grafeo).getModel().createTypedLiteral(nowAsISO, "http://www.w3.org/2001/XMLSchema#dateTime");
-    	}
-    	else {
+    	} else if (literalValue.getClass().equals(org.joda.time.DateTime.class)) {
+    		DateTime dt = (DateTime) literalValue;
+    		DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
+    		String nowAsISO = fmt.print(dt);
+    		this.literal = getGrafeoImpl(grafeo).getModel().createTypedLiteral(nowAsISO, "http://www.w3.org/2001/XMLSchema#dateTime");
+    	} else {
 	        this.literal = getGrafeoImpl(grafeo).getModel().createTypedLiteral(literalValue);
     	}
         this.grafeo = grafeo;

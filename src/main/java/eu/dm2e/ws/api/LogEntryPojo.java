@@ -1,6 +1,6 @@
 package eu.dm2e.ws.api;
 
-import java.util.Date;
+import org.joda.time.DateTime;
 
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
@@ -27,9 +27,9 @@ public class LogEntryPojo extends AbstractPersistentPojo<LogEntryPojo>{
 	public void setLevel(LogLevel level) { this.level = level.toString(); }
 	
 	@RDFProperty(NS.DC.PROP_DATE)
-	private Date timestamp;
-	public Date getTimestamp() { return timestamp; }
-	public void setTimestamp(Date timestamp) { this.timestamp = timestamp; }
+	private DateTime timestamp;
+	public DateTime getTimestamp() { return timestamp; }
+	public void setTimestamp(DateTime timestamp) { this.timestamp = timestamp; }
 	
 	@Override
 	public String toString() {

@@ -3,12 +3,12 @@ package eu.dm2e.ws.api;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.joda.time.DateTime;
 
 import com.sun.jersey.api.client.ClientResponse;
 
@@ -36,7 +36,7 @@ public abstract class AbstractJobPojo extends AbstractPersistentPojo<AbstractJob
     	LogEntryPojo entry = new LogEntryPojo();
     	entry.setMessage(message);
     	entry.setLevel(level);
-    	entry.setTimestamp(new Date());
+    	entry.setTimestamp(DateTime.now());
     	addLogEntry(entry);
     	return entry;
     }

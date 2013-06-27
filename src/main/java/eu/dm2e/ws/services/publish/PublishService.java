@@ -2,10 +2,12 @@ package eu.dm2e.ws.services.publish;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Date;
+//import java.util.Date;
 import java.util.logging.Level;
 
 import javax.ws.rs.Path;
+
+import org.joda.time.DateTime;
 
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.NS;
@@ -81,13 +83,13 @@ public class PublishService extends AbstractTransformationService {
 
             String versionedURI = datasetURI;
             if (!versionedURI.endsWith("/")) versionedURI = versionedURI + "/";
-            versionedURI = versionedURI + new Date().getTime();
+            versionedURI = versionedURI + DateTime.now().getMillis();
 
             VersionedDatasetPojo ds = new VersionedDatasetPojo();
             ds.setId(versionedURI);
             ds.setLabel(label != null ? label : dataset);
             ds.setComment(comment);
-            ds.setTimestamp(new Date());
+            ds.setTimestamp(DateTime.now());
             try {
                 ds.setJobURI(new URI(jobPojo.getId()));
                 ds.setDatasetID(new URI(datasetURI));
