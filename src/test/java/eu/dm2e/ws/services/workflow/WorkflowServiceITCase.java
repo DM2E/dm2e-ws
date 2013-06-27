@@ -20,9 +20,11 @@ import eu.dm2e.ws.api.ParameterConnectorPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.api.WorkflowConfigPojo;
+import eu.dm2e.ws.api.WorkflowJobPojo;
 import eu.dm2e.ws.api.WorkflowPojo;
 import eu.dm2e.ws.api.WorkflowPositionPojo;
 import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
 import eu.dm2e.ws.services.publish.PublishService;
 import eu.dm2e.ws.services.xslt.XsltService;
@@ -46,8 +48,14 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 			throws Exception {
 		wf = createWorkflow();
 		Assert.assertNotNull(wf);
+		testGetWebserviceDescription();
 		publishWorkflow();
 		Assert.assertNotNull(wf.getId());
+	}
+
+	private void testGetWebserviceDescription() {
+		ClientResponse resp = client.getWorkflowWebResource().get(ClientResponse.class);
+		Assert.assertEquals(200, resp.getStatus());
 	}
 
 	//@Test
@@ -110,33 +118,36 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 	 * @return
 	 * @throws Exception
 	 */
-	public String publishWorkflow() throws Exception {
+	public String publishWorkflow()  {
 		// FileUtils.writeStringToFile(new File("SHOULD.ttl"), wf.getTurtle());
 		log.info("testsimple: Publishing the workflow.");
 
-		Grafeo gBefore = wf.getGrafeo();
+		GrafeoImpl gBefore = (GrafeoImpl) wf.getGrafeo();
 		assertNull(wf.getId());
 
-		Assert.assertEquals(1, wf
-			.getGrafeo()
-			.listStatements(null, "omnom:hasPosition", null)
-			.size());
+		Assert.assertEquals(1, wf .getGrafeo() .listStatements(null, "omnom:hasPosition", null) .size());
 
-		String respStr = wf.publishToService(client.getWorkflowWebResource());
+		String respStr = null;
+		try {
+			respStr = wf.publishToService(client.getWorkflowWebResource());
+		} catch (Exception e1) {
+			log.severe("FAILOR" + e1);
+			throw(e1);
+		}
 		
 		assertNotNull(wf.getId());
 
-		Assert.assertEquals(1, wf
-			.getGrafeo()
-			.listStatements(null, "omnom:hasPosition", null)
-			.size());
+		Assert.assertEquals(1, wf.getGrafeo().listStatements(null, "omnom:hasPosition", null).size());
+		
+		for (WorkflowPositionPojo pos : wf.getPositions()) {
+			assertNotNull(pos.getId());
+		}
 
 		Grafeo gAfter = wf.getGrafeo();
 
 		log.info(gAfter.getTerseTurtle());
-		GrafeoAssert.sizeEquals(gBefore, gAfter);
-		GrafeoAssert.graphsAreNotEquivalent(gBefore, gAfter);
-		GrafeoAssert.graphsAreStructurallyEquivalent(gBefore, gAfter);
+//		GrafeoAssert.sizeEquals(gBefore, gAfter);
+		GrafeoAssert.graphContainsGraph(gAfter, gBefore);
 		// log.info("testsimple: DONE Publishing the workflow.");
 		{
 			ClientResponse resp = client.resource(respStr).accept(DM2E_MediaType.TEXT_TURTLE).get(
@@ -253,6 +264,7 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 	public void testRunWorkflow() throws Exception {
 		WorkflowConfigPojo wfconf = new WorkflowConfigPojo();
 		wfconf.setWorkflow(wf);
+		log.info(wf.getTerseTurtle());
 		wfconf.addParameterAssignment(_ws_param_xmlinput, "foo");
 		wfconf.addParameterAssignment(_ws_param_xsltinput, "foo");
 		wfconf.addParameterAssignment(_ws_param_datasetLabel, "A fascinating dataset indeed.");
@@ -260,13 +272,13 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 		wfconf.addParameterAssignment(_ws_param_provider, "onb");
 		
 		Assert.assertNull(wfconf.getId());
-		log.severe("<VALIDATE>");
+		log.info("<VALIDATE>");
 		wfconf.validate();
-		log.severe("</VALIDATE>");
+		log.info("</VALIDATE>");
 		wfconf.publishToService(client.getConfigWebResource());
-		log.severe("<VALIDATE>");
+		log.info("<VALIDATE>");
 		wfconf.validate();
-		log.severe("</VALIDATE>");
+		log.info("</VALIDATE>");
 		Assert.assertNotNull(wfconf.getId());
 		
 		WorkflowConfigPojo wfconf2 = new WorkflowConfigPojo();
@@ -279,15 +291,21 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 			.entity(wfconf.getId())
 			.type(DM2E_MediaType.TEXT_PLAIN)
 			.put(ClientResponse.class);
-//		log.info("RESPONSE FROM WORKFLOW " + wf.getId() +": "+ resp);
-//		Assert.assertEquals(202, resp.getStatus());
-//		log.info("Location: " + resp.getLocation());
-//		WorkflowJobPojo workflowJob = new WorkflowJobPojo();
-//		do {
-//			workflowJob.loadFromURI(resp.getLocation());
-//			log.info(workflowJob.toLogString());
-//			Thread.sleep(2000);
-//		} while (workflowJob.isStillRunning());
+		log.info("RESPONSE FROM WORKFLOW " + wf.getId() +": "+ resp);
+		Assert.assertEquals(202, resp.getStatus());
+		log.info("Location: " + resp.getLocation());
+		WorkflowJobPojo workflowJob = new WorkflowJobPojo();
+		do {
+			workflowJob.loadFromURI(resp.getLocation());
+			log.info(workflowJob.toLogString());
+			Thread.sleep(500);
+		} while (workflowJob.isStillRunning());
+		Thread.sleep(5000);
+		workflowJob.loadFromURI(resp.getLocation());
+		log.info(workflowJob.getTerseTurtle());
+		String compLog = workflowJob.getParameterValueByName(WorkflowService.PARAM_COMPLETE_LOG);
+		assertNotNull(compLog);
+		log.info(compLog);
 		
 	}
 }

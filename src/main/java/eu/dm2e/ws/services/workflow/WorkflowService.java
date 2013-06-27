@@ -3,6 +3,10 @@ package eu.dm2e.ws.services.workflow;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -10,15 +14,29 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+
+import org.apache.commons.lang.exception.ExceptionUtils;
+
+import com.sun.jersey.api.client.ClientResponse;
 
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.AbstractJobPojo;
+import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.api.LogEntryPojo;
+import eu.dm2e.ws.api.ParameterAssignmentPojo;
+import eu.dm2e.ws.api.ParameterConnectorPojo;
+import eu.dm2e.ws.api.ParameterPojo;
+import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.api.WorkflowConfigPojo;
 import eu.dm2e.ws.api.WorkflowJobPojo;
+import eu.dm2e.ws.api.WorkflowPojo;
+import eu.dm2e.ws.api.WorkflowPositionPojo;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
@@ -28,20 +46,17 @@ import eu.dm2e.ws.services.WorkerExecutorSingleton;
 
 @Path("/workflow")
 public class WorkflowService extends AbstractAsynchronousRDFService {
+	
+	public static String PARAM_POLL_INTERVAL = "pollInterval";
+	public static String PARAM_COMPLETE_LOG = "completeLog";
 
 	/**
 	 * The WorkflowJob object for the worker part of the service (to be used in
 	 * the run() method)
 	 */
-	private WorkflowJobPojo wfPojo;
-
-	public WorkflowJobPojo getWorkflowJobPojo() {
-		return this.wfPojo;
-	};
-
-	public void setWorkflowJobPojo(WorkflowJobPojo wfPojo) {
-		this.wfPojo = wfPojo;
-	};
+	private WorkflowJobPojo workflowJobPojo;
+	public WorkflowJobPojo getWorkflowJobPojo() { return this.workflowJobPojo; };
+	public void setWorkflowJobPojo(WorkflowJobPojo wfJobPojo) { this.workflowJobPojo = wfJobPojo; };
 
 	@Override
 	public WebservicePojo getWebServicePojo() {
@@ -49,15 +64,38 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		ws.setLabel("Workflow Service");
 		return ws;
 	}
-
-	@Override
-	public Response putConfigToService(String workflowBlueprintURI) {
+	@PUT
+	@Path("/{id}")
+	@Consumes({DM2E_MediaType.TEXT_PLAIN})
+	@Produces({
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML,
+		DM2E_MediaType.APPLICATION_X_TURTLE,
+//		 DM2E_MediaType.TEXT_PLAIN,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.TEXT_TURTLE
+	})
+	public Response putConfigToService(String workflowConfigURI) {
+		
+		URI workflowUri = getRequestUriWithoutQuery();
+		/*
+		 * Build workflow
+		 */
+		WorkflowPojo workflowPojo = new WorkflowPojo();
+		try {
+			workflowPojo.loadFromURI(workflowUri);
+		} catch (Exception e2) {
+			return throwServiceError(e2);
+		}
+		
+		
 		/*
 		 * Resolve configURI to WebserviceConfigPojo
 		 */
+		log.warning("Loading workflow config wfConfig " + workflowConfigURI);
 		WorkflowConfigPojo wfConf = new WorkflowConfigPojo();
 		try {
-			wfConf.loadFromURI(workflowBlueprintURI, 1);
+			wfConf.loadFromURI(workflowConfigURI, 1);
 		} catch (Exception e) {
 			return throwServiceError(e);
 		}
@@ -65,6 +103,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		/*
 		 * Validate the configuration
 		 */
+		log.warning("Validating workflow config");
 		try {
 			wfConf.validate();
 		} catch (Exception e) {
@@ -74,50 +113,53 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		/*
 		 * Build WorkflowJobPojo
 		 */
-		WorkflowJobPojo job = new WorkflowJobPojo();
-		job.setWorkflowConfig(wfConf);
-		job.addLogEntry("WorkflowJobPojo constructed by WorkflowService", "TRACE");
-		job.publishToService();
+		WorkflowJobPojo jobPojo = new WorkflowJobPojo();
+		jobPojo.setWorkflow(workflowPojo);
+		jobPojo.setWorkflowConfig(wfConf);
+		log.info("WorkflowJobPojo constructed by WorkflowService");
+		jobPojo.addLogEntry("WorkflowJobPojo constructed by WorkflowService", "TRACE");
+		try {
+			jobPojo.publishToService(client.getJobWebResource());
+		} catch (Exception e1) {
+			return throwServiceError(e1);
+		}
 
 		/*
 		 * Let the asynchronous worker handle the job
 		 */
+		log.info("WorkflowJob is before instantiation :" + jobPojo);
 		try {
-			WorkflowService instance = getClass().newInstance();
+			WorkflowService instance = this.getClass().newInstance();
 			Method method = getClass().getMethod("setWorkflowJobPojo", WorkflowJobPojo.class);
-			method.invoke(instance, job);
-			log.info("Job is before instantiation :" + job);
+			method.invoke(instance, jobPojo);
 			WorkerExecutorSingleton.INSTANCE.handleJob(instance);
-		} catch (NoSuchMethodException e) {
-			return throwServiceError(e);
-		} catch (InvocationTargetException e) {
-			return throwServiceError(e);
-		} catch (InstantiationException e) {
-			return throwServiceError(e);
-		} catch (IllegalAccessException e) {
+		} catch ( NoSuchMethodException |
+					InvocationTargetException |
+					InstantiationException |
+					IllegalAccessException 
+					e) {
+			log.severe("Could not initialize worker WorkflowService: " + e + ExceptionUtils.getFullStackTrace(e));
 			return throwServiceError(e);
 		} catch (Exception e) {
+			log.severe("Could not initialize worker WorkflowService: " + e + ExceptionUtils.getFullStackTrace(e));
 			return throwServiceError(e);
-
 		}
 
 		/*
 		 * Return JobPojo
 		 */
-		return Response.status(202).location(job.getIdAsURI()).entity(
-				getResponseEntity(job.getGrafeo())).build();
+		return Response.status(202).location(jobPojo.getIdAsURI()).entity(
+				getResponseEntity(jobPojo.getGrafeo())).build();
 	}
-
+	
 	@GET
 	@Path("{id}")
 	public Response getWorkflow() {
-
 		URI wfUri = getRequestUriWithoutQuery();
 		GrafeoImpl g = new GrafeoImpl();
 		g.readFromEndpoint(NS.ENDPOINT_SELECT, wfUri);
 		return getResponse(g);
 	}
-
 	@Override
 	public Response postGrafeo(Grafeo g) {
 		GResource wfRes = g.findTopBlank(NS.OMNOM.CLASS_WORKFLOW);
@@ -129,80 +171,67 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		}
 		String wfUri = getRequestUriWithoutQuery() + "/" + createUniqueStr();
 		wfRes.rename(wfUri);
+		
+		/*
+		 * Add global workflow parameters
+		 */
+		log.info("Adding global workflow parameters");
+		{
+			{
+				ParameterPojo pollTimeParam = new ParameterPojo();
+				pollTimeParam.setLabel(PARAM_POLL_INTERVAL);
+				pollTimeParam.setComment("Time to wait between polls for job status, in milliseconds.");
+				pollTimeParam.setDefaultValue("" + 2 * 1000);
+				GResource pollTimeParamRes = g.getObjectMapper().addObject(pollTimeParam);
+				g.addTriple(wfRes, NS.OMNOM.PROP_INPUT_PARAM, pollTimeParamRes);
+			}
+			{
+				ParameterPojo completeLogParam = new ParameterPojo();
+				completeLogParam.setLabel(PARAM_COMPLETE_LOG);
+				completeLogParam.setComment("The complete log file of the workflow job and its webservice jobs.");
+				GResource completeLogParamRes = g.getObjectMapper().addObject(completeLogParam);
+				g.addTriple(wfRes, NS.OMNOM.PROP_INPUT_PARAM, completeLogParamRes);
+			}
+		}
 
 		log.info("Skolemnizing parameters.");
 		{
-			for (GResource paramRes : g.findByClass(NS.OMNOM.CLASS_PARAMETER)) {
-				String paramLabel = paramRes.get(NS.RDFS.PROP_LABEL).getTypedValue(String.class);
-				log.info("Adding parameter: " + paramLabel);
-				if (paramRes.isAnon()) {
-					paramRes.rename(wfUri + "/param/" + paramLabel);
-				}
-			}
+			g.skolemizeByLabel(wfUri, NS.OMNOM.PROP_INPUT_PARAM, "param");
+			g.skolemizeByLabel(wfUri, NS.OMNOM.PROP_OUTPUT_PARAM, "param");
 		}
 
-//		log.info("Skolemnizing Position Proxies.");
-//		{
-//			int positionItemIndex = 0;
-//			for (GResource positionItemRes : g.findByClass(NS.CO.CLASS_ITEM)) {
-//				positionItemIndex++;
-//				positionItemRes.rename(wfUri + "/position-item/" + positionItemIndex);
-//			}
-//		}
 		log.info("Skolemizing Positions.");
 		{
-			int positionIndex = 0;
-			for (GResource positionRes : g.findByClass(NS.OMNOM.CLASS_WORKFLOW_POSITION)) {
-				positionIndex++;
-				log.info("Adding position # " + positionIndex);
-				if (positionRes.isAnon()) {
-					positionRes.rename(wfUri + "/position/" + positionIndex);
-				}
-			}
+			g.skolemizeSequential(wfUri, NS.OMNOM.PROP_HAS_POSITION, "position");
 		}
-//		log.info("Publishing blank web service configs.");
-//		{
-//			for (GResource wsConfRes : g.findByClass(NS.OMNOM.CLASS_WEBSERVICE_CONFIG)) {
-//				WebserviceConfigPojo wsConf = g.getObjectMapper().getObject(
-//						WebserviceConfigPojo.class, wsConfRes);
-//				if (!wsConf.hasId()) {
-//					String confLoc = wsConf.publishToService(client.getConfigWebResource());
-//					wsConfRes.rename(confLoc);
-//				}
-//				// if (wsConf.isAnon()) {
-//				// w
-//				// }
-//			}
-//		}
 
 		log.info("Skolemnizing Connectors.");
 		{
-			int connectorIndex = 0;
-			for (GResource positionRes : g.findByClass(NS.OMNOM.CLASS_PARAMETER_CONNECTOR)) {
-				connectorIndex++;
-				log.info("Adding position # " + connectorIndex);
-				if (positionRes.isAnon()) {
-					positionRes.rename(wfUri + "/connector/" + connectorIndex);
-				}
+			g.skolemizeSequential(wfUri, NS.OMNOM.PROP_PARAMETER_CONNECTOR, "connector");
+		}
+		log.info("Skolemnizing WebserviceConfigs");
+		{
+			for (GResource subj : g.findByClass(NS.OMNOM.CLASS_WORKFLOW_POSITION)) {
+				g.skolemizeUUID(subj.toString(), NS.OMNOM.PROP_WEBSERVICE_CONFIG, "webserviceconfig");
 			}
 		}
 
 		log.info("Writing workflow to config.");
-		g.emptyGraph(NS.ENDPOINT_UPDATE, wfUri);
-		g.writeToEndpoint(NS.ENDPOINT_UPDATE, wfUri);
+		try {
+			g.putToEndpoint(NS.ENDPOINT_UPDATE, wfUri);
+		} catch (Exception e) {
+			return throwServiceError(e);
+		}
 		log.info("Done Writing workflow to config: " + wfUri);
 
-//		Assert.assertEquals(1, g.listStatements(null, "omnom:hasPosition", null).size());
 		return Response.ok().entity(getResponseEntity(g)).location(URI.create(wfUri)).build();
 	}
-
 	@POST
 	@Consumes({ DM2E_MediaType.APPLICATION_RDF_TRIPLES, DM2E_MediaType.APPLICATION_RDF_XML,
 			DM2E_MediaType.APPLICATION_X_TURTLE, DM2E_MediaType.TEXT_PLAIN,
 			DM2E_MediaType.TEXT_RDF_N3, DM2E_MediaType.TEXT_TURTLE })
 	@Path("{workflowId}/position")
-	public Response postWorkflowPosition(@PathParam("workflowId") String workflowId,
-			String rdfString) {
+	public Response postWorkflowPosition(@PathParam("workflowId") String workflowId, String rdfString) {
 		Grafeo g = new GrafeoImpl(rdfString, null);
 		GResource blank = g.findTopBlank(NS.OMNOM.CLASS_WORKFLOW_POSITION);
 		if (null == blank) {
@@ -212,35 +241,48 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		URI workflowUri = popPath("position");
 		blank.rename(newUri);
 		// TODO rename blank sub-resources
-		g.writeToEndpoint(Config.ENDPOINT_UPDATE, workflowUri);
+		g.postToEndpoint(Config.ENDPOINT_UPDATE, workflowUri);
 		return Response.created(newUri).build();
 	}
-
 	@PUT
 	@Path("{workflowId}/position/{posId}")
-	public Response putWorkflowPosition(@PathParam("workflowId") String workflowId,
-			@PathParam("posId") String posId,
-			String rdfString) {
+	public Response putWorkflowPosition(@PathParam("workflowId") String workflowId, @PathParam("posId") String posId, String rdfString) {
 		URI posUri = getRequestUriWithoutQuery();
 		URI workflowUri = popPath(popPath());
 		Grafeo g = new GrafeoImpl(rdfString, null);
-		// WorkflowPositionPojo pos =
-		// g.getObjectMapper().getObject(WorkflowPositionPojo.class, posUri);
-		// pos.getGrafeo().writeToEndpoint(Config.ENDPOINT_UPDATE, posId);
-		SparqlUpdate sparul = new SparqlUpdate.Builder().delete(posUri + "?s ?o").insert(
-				g.toString()).endpoint(Config.ENDPOINT_UPDATE).graph(workflowUri).build();
+		SparqlUpdate sparul = new SparqlUpdate.Builder()
+			.delete(posUri + "?s ?o")
+			.insert(g)
+			.endpoint(Config.ENDPOINT_UPDATE)
+			.graph(workflowUri)
+			.build();
 		sparul.execute();
 		return getResponse(g);
 	}
-
+	@GET
+	@Path("{workflowId}/position/{posId}")
+	@Produces({
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML,
+		DM2E_MediaType.APPLICATION_X_TURTLE,
+		DM2E_MediaType.TEXT_PLAIN,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.TEXT_TURTLE
+	})
+	public Response getWorkflowPosition(@PathParam("workflowId") String workflowId, @PathParam("posId") String posId) {
+		URI workflowUri = popPath(popPath());
+		return Response.seeOther(workflowUri).build();
+	}
 	@POST
-	@Consumes({ DM2E_MediaType.APPLICATION_RDF_TRIPLES, DM2E_MediaType.APPLICATION_RDF_XML,
-			DM2E_MediaType.APPLICATION_X_TURTLE, DM2E_MediaType.TEXT_PLAIN,
-			DM2E_MediaType.TEXT_RDF_N3, DM2E_MediaType.TEXT_TURTLE })
+	@Consumes({
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML,
+		DM2E_MediaType.APPLICATION_X_TURTLE,
+		DM2E_MediaType.TEXT_PLAIN,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.TEXT_TURTLE })
 	@Path("{workflowId}/connector")
-	public Response postWorkflowConnector(@PathParam("workflowId") String workflowId,
-			String rdfString) {
-		Grafeo g = new GrafeoImpl(rdfString, null);
+	public Response postWorkflowConnector(@PathParam("workflowId") String workflowId, String rdfString) { Grafeo g = new GrafeoImpl(rdfString, null);
 		GResource blank = g.findTopBlank(NS.OMNOM.CLASS_WORKFLOW_PARAMETER_CONNECTOR);
 		if (null == blank) {
 			return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE);
@@ -249,37 +291,231 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		URI workflowUri = popPath("connector");
 		blank.rename(newUri);
 		// TODO rename blank sub-resources
-		g.writeToEndpoint(Config.ENDPOINT_UPDATE, workflowUri);
+		g.postToEndpoint(Config.ENDPOINT_UPDATE, workflowUri);
 		return Response.created(newUri).build();
 	}
-
 	@PUT
-	@Path("{workflowId}/connection/{conId}")
-	public Response putWorkflowConnector(@PathParam("workflowId") String workflowId,
-			@PathParam("conId") String conId,
-			String rdfString) {
+	@Consumes({
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML,
+		DM2E_MediaType.APPLICATION_X_TURTLE,
+		DM2E_MediaType.TEXT_PLAIN,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.TEXT_TURTLE })
+	@Path("{workflowId}/connector/{conId}")
+	public Response putWorkflowConnector(@PathParam("workflowId") String workflowId, @PathParam("conId") String conId, String rdfString) {
 		URI conUri = getRequestUriWithoutQuery();
 		URI workflowUri = popPath(popPath());
 		Grafeo g = new GrafeoImpl(rdfString, null);
-		SparqlUpdate sparul = new SparqlUpdate.Builder().delete(conUri + "?s ?o").insert(
-				g.toString()).endpoint(Config.ENDPOINT_UPDATE).graph(workflowUri).build();
+		SparqlUpdate sparul = new SparqlUpdate.Builder()
+			.delete(conUri + "?s ?o")
+			.insert(g.toString())
+			.endpoint(Config.ENDPOINT_UPDATE)
+			.graph(workflowUri).build();
 		sparul.execute();
 		return getResponse(g);
 	}
-
-	@Override
-	public void run() {
-		WorkflowJobPojo wf = this.getWorkflowJobPojo();
-		try {
-			wf.setStarted();
-			// for (WorkflowPositionPojo pos : jobPojo.conf.)
-
-			// TODO
-
-			wf.setFailed();
-		} catch (Exception e) {
-			throw e;
+	@GET
+	@Path("{workflowId}/connector/{conId}")
+	@Produces({
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML,
+		DM2E_MediaType.APPLICATION_X_TURTLE,
+		DM2E_MediaType.TEXT_PLAIN,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.TEXT_TURTLE
+	})
+	public Response getWorkflowConnector( @PathParam("workflowId") String workflowId, @PathParam("conId") String conId) {
+		URI workflowUri = popPath(popPath());
+		return Response.seeOther(workflowUri).build();
+	}
+	@POST
+	@Consumes({
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML,
+		DM2E_MediaType.APPLICATION_X_TURTLE,
+		DM2E_MediaType.TEXT_PLAIN,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.TEXT_TURTLE })
+	@Path("{workflowId}/param")
+	public Response postWorkflowParameter(@PathParam("workflowId") String workflowId, String rdfString) {
+		Grafeo g = new GrafeoImpl(rdfString, null);
+		GResource blank = g.findTopBlank(NS.OMNOM.CLASS_PARAMETER);
+		if (null == blank) {
+			return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE);
 		}
+		URI newUri = appendPath(createUniqueStr());
+		URI workflowUri = popPath();
+		blank.rename(newUri);
+		// TODO rename blank sub-resources
+		g.postToEndpoint(Config.ENDPOINT_UPDATE, workflowUri);
+		return Response.created(newUri).build();
+	}
+	@PUT
+	@Path("{workflowId}/param/{paramId}")
+	public Response putWorkflowParamaeter(@PathParam("workflowId") String workflowId, @PathParam("paramId") String paramId, String rdfString) {
+		URI conUri = getRequestUriWithoutQuery();
+		URI workflowUri = popPath(popPath());
+		Grafeo g = new GrafeoImpl(rdfString, null);
+		SparqlUpdate sparul = new SparqlUpdate.Builder()
+			.delete(conUri + "?s ?o")
+			.insert(g.toString())
+			.endpoint(Config.ENDPOINT_UPDATE)
+			.graph(workflowUri).build();
+		sparul.execute();
+		return getResponse(g);
+	}
+	@GET
+	@Path("{workflowId}/param/{paramId}")
+	@Produces({
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML,
+		DM2E_MediaType.APPLICATION_X_TURTLE,
+		DM2E_MediaType.TEXT_PLAIN,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.TEXT_TURTLE
+	})
+	public Response getWorkflowParameter( @PathParam("workflowId") String workflowId, @PathParam("paramId") String paramId) {
+		URI workflowUri = popPath(popPath());
+		return Response.seeOther(workflowUri).build();
 	}
 
+	/**
+	 * @see java.lang.Runnable#run()
+	 */
+	@Override
+	public void run() {
+		WorkflowJobPojo workflowJob = this.getWorkflowJobPojo();
+		WorkflowConfigPojo workflowConfig = workflowJob.getWorkflowConfig();
+		WorkflowPojo workflow = workflowJob.getWorkflowConfig().getWorkflow();
+		Map<WorkflowPositionPojo,JobPojo> finishedJobs = new HashMap<>();
+		try {
+			try {
+				workflowJob.getId().toString();
+				workflow.getId().toString();
+				workflowConfig.getId().toString();
+				log.info(workflow.getTerseTurtle());
+			} catch (NullPointerException e) {
+				throw e;
+			}
+			
+			log.info("Job used in run(): " + workflowJob);
+			
+			long pollInterval = Long.parseLong(workflow.getParamByName(PARAM_POLL_INTERVAL).getDefaultValue()); 
+			if (null != workflowConfig.getParameterAssignmentForParam(PARAM_POLL_INTERVAL)) {
+				pollInterval = Long.parseLong(workflowConfig.getParameterAssignmentForParam(PARAM_POLL_INTERVAL).getParameterValue());
+			}
+			workflowJob.setStarted();
+			/*
+			 * Iterate Positions
+			 */
+			for (WorkflowPositionPojo pos : workflow.getPositions()) {
+				WebserviceConfigPojo wsconf = pos.getWebserviceConfig();
+				WebservicePojo ws = wsconf.getWebservice();
+				
+				/*				
+				 * Iterate Input Parameters of the Webservice at this position
+				 */
+				nextParam:
+				for (ParameterPojo param : ws.getInputParams()) {
+					workflowJob.debug("Current param: " + param);
+					log.fine("Current param: " + param);
+					
+					// if there is a connector to this parameter at this position
+					ParameterConnectorPojo conn = workflow.getConnectorToPositionAndParam(pos, param);
+					if (null == conn) continue nextParam;
+					
+					final ParameterAssignmentPojo ass;
+					if (conn.hasFromWorkflow()) {
+						// if the connector is from the workflow, take the value assigned to the workflow parameter
+						ass = workflowConfig.getParameterAssignmentForParam(conn.getFromParam());
+					} else {
+						// if the connector is from a previous position, take the value from the corresponding previous job
+						ass = finishedJobs.get(conn.getFromPosition()).getWebserviceConfig().getParameterAssignmentForParam(conn.getFromParam()); 
+					}
+					if (ass == null) {
+						workflowJob.debug(workflowConfig.getTerseTurtle());
+						throw new RuntimeException("Couldn't get the assignment for param " + param);
+					}
+					wsconf.addParameterAssignment(param.getId(), ass.getParameterValue());
+				}
+				
+				/*
+				 * Publish the WebserviceConfig, so it becomes stable
+				 */
+				wsconf.resetId();
+				wsconf.publishToService(client.getConfigWebResource());
+				if (null == wsconf.getId()) {
+					throw new RuntimeException("Could not publish webservice config " + wsconf);
+				}
+				
+				/*
+				 * Run the webservice
+				 */
+				ClientResponse resp = client.resource(ws.getId())
+						.type(DM2E_MediaType.TEXT_PLAIN)
+						.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+						.entity(wsconf.getId())
+						.put(ClientResponse.class);
+				if (202 != resp.getStatus() || null == resp.getLocation()) {
+					workflowJob.debug(wsconf.getTerseTurtle());
+					throw new RuntimeException("Request to start web service " + ws + " with config " + wsconf + "failed: " + resp);
+				}
+				JobPojo wsJob = new JobPojo(resp.getLocation());
+				wsJob.publishToService();
+				do {
+					wsJob.loadFromURI(wsJob.getId());
+					try {
+						wsJob.trace("Sleeping for " + pollInterval + "ms, waiting for job " + wsJob + " to finish.");
+						Thread.sleep(pollInterval);
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+				} while (wsJob.isStillRunning());
+				log.info("Grafeo size: " + new GrafeoImpl(workflowJob.getId()).size());
+				log.info("Pojo Grafeo size: " + workflowJob.getGrafeo().size());
+				
+				finishedJobs.put(pos, wsJob);
+				workflowJob.getFinishedJobs().add(wsJob);
+				workflowJob.getFinishedPositions().add(pos);
+				workflowJob.publishToService();
+				log.info("Grafeo size: " + new GrafeoImpl(workflowJob.getId()).size());
+				log.info("Pojo Grafeo size: " + workflowJob.getGrafeo().size());
+				
+				if (wsJob.isFailed()) {
+					workflowJob.setFailed();
+					workflowJob.fatal("Job " + wsJob + " of Webservice " + ws + "failed, hence workflow " + workflow + "failed. :(");
+					throw new RuntimeException("Job " + wsJob + " of Webservice " + ws + "failed, hence workflow " + workflow + "failed. :(");
+				}
+				else if (wsJob.isFinished()) {
+					workflowJob.info("Job " + wsJob + " of Webservice " + ws + "finished successfully, moving on to next position.");
+				}
+			}
+
+			// TODO
+			workflowJob.setFailed();
+		} catch (Throwable t) {
+			log.severe("Workflow " + workflowJob +  " FAILED: " + t + "\n" + ExceptionUtils.getStackTrace(t));
+			workflowJob.fatal("Workflow " + workflowJob +  " FAILED: " + t + "\n" + ExceptionUtils.getStackTrace(t));
+			workflowJob.setFailed();
+			// TODO why can't I throw this here but in AbstractTransformationService??
+//			throw t
+		} finally {
+			JobPojo dummyJob = new JobPojo();
+			Set<AbstractJobPojo> allLoggingJobs = new HashSet<>();
+			allLoggingJobs.addAll(finishedJobs.values());
+			allLoggingJobs.add(workflowJob);
+			for (AbstractJobPojo job : allLoggingJobs) {
+				for (LogEntryPojo logEntry : job.getLogEntries()) {
+					LogEntryPojo newLogEntry = new LogEntryPojo();
+					newLogEntry.setTimestamp(logEntry.getTimestamp());
+					newLogEntry.setLevel(logEntry.getLevel());
+					newLogEntry.setMessage( job + ": " + logEntry.getMessage());
+					dummyJob.getLogEntries().add(newLogEntry);
+				}
+			}
+			workflowJob.addOutputParameterAssignment(PARAM_COMPLETE_LOG, dummyJob.toLogString());
+			workflowJob.publishToService();
+		}
+	}
 }
