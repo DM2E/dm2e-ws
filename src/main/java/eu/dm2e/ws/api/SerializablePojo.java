@@ -108,6 +108,7 @@ public abstract class SerializablePojo<T> {
 	public String getId() { return id; }
 	public void setId(String id) { this.id = id; }
 	public void setId(URI wsUri) { this.id = wsUri.toString(); }
+	public void resetId() { this.id = null; }
 	public boolean hasId() { return this.id != null; }
 	public URI getIdAsURI() {
 		URI uri = null;

@@ -10,6 +10,9 @@ public abstract class AbstractConfigPojo<T> extends AbstractPersistentPojo<T> im
 	
 	public abstract ParameterPojo getParamByName(String needle);
 	
+	public ParameterAssignmentPojo getParameterAssignmentForParam(ParameterPojo param) {
+		return getParameterAssignmentForParam(param.getId());
+	}
 	public ParameterAssignmentPojo getParameterAssignmentForParam(String paramName) {
 		log.info("Access to param assignment by name: " + paramName);
         for (ParameterAssignmentPojo ass : this.getParameterAssignments()) {
