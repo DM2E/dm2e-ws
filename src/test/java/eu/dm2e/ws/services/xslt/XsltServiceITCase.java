@@ -76,7 +76,7 @@ public class XsltServiceITCase extends OmnomTestCase {
     	tC.setWebservice(SERVICE_POJO);
     	tC.addParameterAssignment(XsltService.PARAM_XML_IN, xmlUri);
     	tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, xsltUri);
-    	tC.publishToService();
+    	tC.publishToService(client.getConfigWebResource());
     	
     	ClientResponse resp = client.putPojoToService(tC, SERVICE_URI);
     	log.info(tC.getTurtle());
@@ -101,6 +101,7 @@ public class XsltServiceITCase extends OmnomTestCase {
     	String resultUri = job.getParameterValueByName(XsltService.PARAM_XML_OUT);
     	assertNotNull(resultUri);
     	log.info("Job finished. Result is at " + resultUri );
+    	log.info(job.getTerseTurtle());
     	
     	String xmlContent = client.resource(resultUri).get(String.class);
     	log.info(xmlContent);

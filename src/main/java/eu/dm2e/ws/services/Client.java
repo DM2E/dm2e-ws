@@ -65,6 +65,7 @@ public class Client {
     public String publishPojo(AbstractPersistentPojo pojo, WebResource serviceEndpoint) {
 		ClientResponse resp;
 		String method = "POST";
+//		log.info("Size of NTRIPLES before post/put: " + pojo.getNTriples().length());
 		if (null == pojo.getId()) {
 			log.warning(method + "ing " + pojo + " to service " + serviceEndpoint.getURI() + ": " + pojo.getTurtle());
 			resp = this.postPojoToService(pojo, serviceEndpoint);
@@ -74,28 +75,34 @@ public class Client {
 			if (pojo.getId().startsWith(serviceEndpoint.getURI().toString())) {
 				 resp = resource(pojo.getId())
 					.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
-//					.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+					.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
 					.entity(pojo.getNTriples())
 					.put(ClientResponse.class);
 			} else {
 				throw new NotImplementedException("Putting a config to a non-local web service isn't implemented yet.");
 			}
 		}
+		final String respStr = resp.getEntity(String.class);
 		if (resp.getStatus() >= 400) {
 			throw new RuntimeException(method + ": Failed to publish pojo <"
 					+ pojo.getId()
 					+ "> :"
 					+ resp.getStatus() 
 					+ ":" 
-					+ resp.getEntity(String.class)
+					+ respStr
+					+ " (" + resp + ")"
 					);
 		}
+//		log.info("Size of NTRIPLES after post/put: " + respStr.length());
 		if (null == resp.getLocation()) {
-			throw new RuntimeException(method +"ing " + pojo + " to " + serviceEndpoint.toString() +  " did not return a location. Body was " + resp.getEntity(String.class));
+			throw new RuntimeException(method +"ing " + pojo + " to " + serviceEndpoint.toString() +  " did not return a location. Body was " + respStr);
 		}
 		pojo.setId(resp.getLocation().toString());
 		try {
+			long timeStart = System.currentTimeMillis();
 			pojo.loadFromURI(pojo.getId());
+			long timeElapsed = System.currentTimeMillis() - timeStart;
+			log.info("Time spent: " + timeElapsed + "ms.");
 		} catch (Exception e) {
 			log.severe("Could reload pojo." + e);
 		}

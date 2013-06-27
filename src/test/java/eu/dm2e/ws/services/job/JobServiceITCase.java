@@ -35,6 +35,7 @@ import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
 import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.services.demo.DemoService;
+import eu.dm2e.ws.services.xslt.XsltService;
 
 public class JobServiceITCase extends OmnomTestCase {
 	private static final String BASE_URI = "http://localhost:9998";
@@ -411,9 +412,9 @@ public class JobServiceITCase extends OmnomTestCase {
 //		
 //		log.info(job.getTurtle());
 
-		ParameterAssignmentPojo ass1 = job.getOutputParameters().iterator().next();
+		ParameterAssignmentPojo ass1 = job.getOutputParameterAssignments().iterator().next();
 		assertThat("Assignment has a URI", ass1.getId(), not(nullValue()));
-		log.info("" + job.getOutputParameters().iterator().next().getForParam());
+		log.info("" + job.getOutputParameterAssignments().iterator().next().getForParam());
 		ParameterAssignmentPojo ass2 = job.getParameterAssignmentForParam("sleeptime");
 		assertNotNull(ass1);
 		assertNotNull(ass2);
@@ -424,12 +425,12 @@ public class JobServiceITCase extends OmnomTestCase {
 	public void testGetAssignment() {
 		JobPojo job = postConfigToJob(OmnomTestResources.DEMO_JOB);
 		log.info(job.getTerseTurtle());
-		final String forParam = "http://foo";
+		final String forParam = XsltService.PARAM_XML_OUT;
 		final String paramValue = "bar";
 		job.addOutputParameterAssignment(forParam, paramValue);
-		assertNull(job.getOutputParameters().iterator().next().getId());
+		assertNull(job.getOutputParameterAssignments().iterator().next().getId());
 		job.publishToService(client.getJobWebResource());
-		ParameterAssignmentPojo apiAss = job.getOutputParameters().iterator().next();
+		ParameterAssignmentPojo apiAss = job.getOutputParameterAssignments().iterator().next();
 		{
 			ParameterAssignmentPojo webAss = client.loadPojoFromURI(ParameterAssignmentPojo.class, apiAss.getId());
 			GrafeoAssert.graphsAreEquivalent(apiAss, webAss);

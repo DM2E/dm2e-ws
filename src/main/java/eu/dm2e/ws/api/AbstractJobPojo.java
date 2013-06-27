@@ -18,14 +18,16 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.model.LogLevel;
 
-public abstract class AbstractJobPojo extends AbstractPersistentPojo<JobPojo> {
+public abstract class AbstractJobPojo extends AbstractPersistentPojo<AbstractJobPojo> {
 	
 	public AbstractJobPojo() {
 		super();
 	}
-	/**
+	/*********************
+	 * 
      * LOGGING
-     */
+     * 
+     ********************/
     public void addLogEntry(LogEntryPojo entry) {
     	this.getLogEntries().add(entry);
     	publishLogEntry(entry);
@@ -123,9 +125,11 @@ public abstract class AbstractJobPojo extends AbstractPersistentPojo<JobPojo> {
 		return outputBuilder.toString();
 	}
 
-	/**
+	/**********************
+	 * 
 	 * Updating status
-	 */
+	 * 
+	 ********************/
 	public void setStatus(JobStatus status) {
 		setStatus(status.toString());
 	}
@@ -174,7 +178,7 @@ public abstract class AbstractJobPojo extends AbstractPersistentPojo<JobPojo> {
 
 	protected void publishLogEntry(LogEntryPojo entry) {
 		if (null != this.getId()) {
-			ClientResponse resp = this.client
+			ClientResponse resp = client
 				.resource(this.getId())
 				.path("log")
 				.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
@@ -185,6 +189,43 @@ public abstract class AbstractJobPojo extends AbstractPersistentPojo<JobPojo> {
 			}
 		}
 	}
+	
+	/*********************
+	 * 
+	 * Assignments
+	 * 
+	 ********************/
+	
+	public ParameterAssignmentPojo addOutputParameterAssignment(String paramName, String paramValue) {
+		log.info("adding parameter assignment");
+		ParameterPojo param = this.getOutputParamByName(paramName);
+		if (null == param) {
+			throw new RuntimeException("Job has no such output parameter: " + paramName);
+		}
+		ParameterAssignmentPojo ass = new ParameterAssignmentPojo();
+		ass.setLabel(paramName);
+		ass.setForParam(param);
+		ass.setParameterValue(paramValue);
+		this.getOutputParameterAssignments().add(ass);
+		return ass;
+	}
+	public ParameterAssignmentPojo getParameterAssignmentForParam(String needle) {
+		for (ParameterAssignmentPojo ass: this.getOutputParameterAssignments()) {
+			if (ass.getForParam().matchesParameterName(needle)) {
+				return ass;
+			}
+		}
+		return null;
+	}
+	public String getParameterValueByName(String needle) {
+		ParameterAssignmentPojo ass = getParameterAssignmentForParam(needle);
+		if (ass == null) {
+			return null;
+		}
+		return ass.getParameterValue();
+	}
+
+	abstract public ParameterPojo getOutputParamByName(String paramName);
 
 	/*********************
 	 * 
@@ -205,5 +246,10 @@ public abstract class AbstractJobPojo extends AbstractPersistentPojo<JobPojo> {
 	public Set<LogEntryPojo> getLogEntries() { return logEntries; }
 	public void setLogEntries(Set<LogEntryPojo> logEntries) { this.logEntries = logEntries; }
 	
+    @RDFProperty(NS.OMNOM.PROP_ASSIGNMENT)
+    Set<ParameterAssignmentPojo> outputParameterAssignments = new HashSet<>();
+	public Set<ParameterAssignmentPojo> getOutputParameterAssignments() { return outputParameterAssignments; }
+	public void setOutputParameterAssignments(Set<ParameterAssignmentPojo> outputParameters) { this.outputParameterAssignments = outputParameters; }
+
 
 }

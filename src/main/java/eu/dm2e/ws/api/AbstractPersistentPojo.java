@@ -12,7 +12,7 @@ import eu.dm2e.ws.services.Client;
 
 public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
 	
-	protected Client client = new Client();
+	protected static Client client = new Client();
 	
 	
 	public void loadFromURI(String uri) throws Exception {
@@ -31,8 +31,11 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
         Grafeo g = new GrafeoImpl();
         try {
         	log.fine("Loading from " + uri);
+			long timeStart = System.currentTimeMillis();
 			g.load(uri, expansionSteps);
-        	log.fine("DONE Loading from " + uri);
+			long timeElapsed = System.currentTimeMillis() - timeStart;
+			log.info("Time spent: " + timeElapsed + "ms.");
+			log.fine("DONE Loading from " + uri);
             log.fine("No of Triples loaded from URI " + uri + ": " + g.size());
 		} catch (Exception e1) {
 			log.warning("Failed to initialize Pojo from URI: " + e1);
@@ -51,7 +54,7 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
 	
 	public String publishToService(WebResource wr) {
 		log.fine("Publishing myself (pojo) to " + wr.getURI());
-		String loc = this.client.publishPojo(this, wr);
+		String loc = client.publishPojo(this, wr);
 		log.fine("Done Publishing myself (pojo) to " + wr.getURI());
 		return loc;
 	}

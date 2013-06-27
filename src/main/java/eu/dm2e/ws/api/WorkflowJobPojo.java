@@ -10,23 +10,34 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 @RDFClass(NS.OMNOM.CLASS_WORKFLOW_JOB)
 public class WorkflowJobPojo extends AbstractJobPojo {
 	
+	@Override
+	public ParameterPojo getOutputParamByName(String paramName) {
+		if (null == this.getWorkflow())
+			return null;
+		return this.getWorkflow().getParamByName(paramName);
+	}
+	
 	/*******************************
 	 * FIELDS / GETTERS / SETTERS
 	 *******************************/
 
-    @RDFProperty(NS.OMNOM.PROP_WORKFLOW)
+    @RDFProperty(value = NS.OMNOM.PROP_WORKFLOW, serializeAsURI = true)
     private WorkflowPojo workflow;
 	public WorkflowPojo getWorkflow() { return workflow; }
 	public void setWorkflow(WorkflowPojo webService) { this.workflow = webService; }
 	
-    @RDFProperty(NS.OMNOM.PROP_WORKFLOW_CONFIG)
+    @RDFProperty(value = NS.OMNOM.PROP_WORKFLOW_CONFIG, serializeAsURI = true)
     private WorkflowConfigPojo workflowConfig;
 	public WorkflowConfigPojo getWorkflowConfig() { return workflowConfig; }
 	public void setWorkflowConfig(WorkflowConfigPojo workflowConfig) { this.workflowConfig = workflowConfig; }
 	
-    @RDFProperty(NS.OMNOM.PROP_ASSIGNMENT)
-    Set<ParameterAssignmentPojo> outputParameters= new HashSet<>();
-	public Set<ParameterAssignmentPojo> getOutputParameters() { return outputParameters; }
-	public void setOutputParameters(Set<ParameterAssignmentPojo> outputParameters) { this.outputParameters = outputParameters; }
-
+	@RDFProperty(value = NS.OMNOM.FINISHED_POSITION, serializeAsURI=true)
+	private Set<WorkflowPositionPojo> finishedPositions = new HashSet<>();
+	public Set<WorkflowPositionPojo> getFinishedPositions() { return finishedPositions; }
+	public void setFinishedPositions(Set<WorkflowPositionPojo> finishedPositions) { this.finishedPositions = finishedPositions; }
+	
+	@RDFProperty(value = NS.OMNOM.FINISHED_JOB, serializeAsURI=true)
+	private Set<JobPojo> finishedJobs = new HashSet<>();
+	public Set<JobPojo> getFinishedJobs() { return finishedJobs; }
+	public void setFinishedJobs(Set<JobPojo> finishedJobs) { this.finishedJobs = finishedJobs; }
 }
