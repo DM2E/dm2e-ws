@@ -11,7 +11,6 @@ import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.jena.SparqlUpdate;
 import eu.dm2e.ws.services.AbstractJobService;
 
 // TODO @GET /{id}/result with JSON
@@ -47,21 +46,21 @@ public class JobService extends AbstractJobService {
 
 	@Override
 	public Response postJob(Grafeo outputGrafeo, GResource jobRes) {
-		outputGrafeo.writeToEndpoint(NS.ENDPOINT_UPDATE, jobRes.getUri());
+		
+		log.fine("Putting job to endpoint.");
+		
+		outputGrafeo.putToEndpoint(NS.ENDPOINT_UPDATE, jobRes.getUri());
+		
 		return Response.created(URI.create(jobRes.getUri())).entity(getResponseEntity(outputGrafeo)).build();
 	}
 	
 	@Override
 	public Response putJob(Grafeo outputGrafeo, GResource jobRes) {
 		
-		log.fine("Building output.");
-		SparqlUpdate sparul = new SparqlUpdate.Builder()
-				.delete("?s ?p ?o.")
-				.insert(outputGrafeo.getNTriples())
-				.graph(jobRes.getUri())
-				.endpoint(Config.ENDPOINT_UPDATE)
-				.build();
-		sparul.execute();
+		log.fine("Putting job to endpoint.");
+		
+		outputGrafeo.putToEndpoint(Config.ENDPOINT_UPDATE, jobRes.getUri());
+		
 		return Response.created(URI.create(jobRes.getUri())).entity(getResponseEntity(outputGrafeo)).build();
 	}
 	
