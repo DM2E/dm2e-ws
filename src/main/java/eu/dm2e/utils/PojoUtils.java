@@ -2,6 +2,7 @@ package eu.dm2e.utils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -59,5 +60,14 @@ public class PojoUtils extends BeanUtils {
 	    return fields;
 	}
 
+	/**
+	 * @param field
+	 * @return
+	 */
+	public static Class<?> subtypeClassOfGenericField(Field field) {
+		ParameterizedType subtype = (ParameterizedType) field.getGenericType();
+		Class<?> subtypeClass = (Class<?>) subtype.getActualTypeArguments()[0];
+		return subtypeClass;
+	}
 
 }

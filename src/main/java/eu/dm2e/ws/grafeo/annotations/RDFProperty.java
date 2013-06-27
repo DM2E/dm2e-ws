@@ -18,6 +18,10 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface RDFProperty {
     String value();
+    /**
+     * @return true if this property should be serialized as a reference URI only
+     */
+    boolean serializeAsURI() default false;
     String itemPrefix() default "item";
     /**
      * @return true if it is the inverse of the named relation (value()) that this relation represents

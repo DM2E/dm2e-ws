@@ -102,13 +102,13 @@ public class ObjectMapper {
             // TODO make this more flexible
             if (isAnnotatedObject(value)) {
                 serializeAnnotatedObject(targetResource, property, value);
-            } else if (value instanceof Set) { 
+            } else if (value instanceof java.util.Set) { 
             	serializeSet(targetResource, property, field, value);
             }
-			else if (value instanceof List) {
+			else if (value instanceof java.util.List) {
             	serializeList(targetResource, property, field, value);
             }
-			else if (value instanceof URI){
+			else if (value instanceof java.net.URI){
                 serializeURI(targetResource, property, value);
             } else {
                 serializeLiteral(targetResource, property, value);
@@ -254,18 +254,27 @@ public class ObjectMapper {
 	private void serializeSet(GResource targetResource, String property, Field field, Object value) {
 		log.fine("Adding All objects from the Set "  + value);
 		Iterable valueIterable = (Iterable) value;
-		Class<?> subtypeClass = PojoUtils.subtypeClassOfGenericField(field);
 		for (Object setItem : valueIterable) {
-			// nested object
-			if (isAnnotatedObject(setItem)) {
+			if (setItem.getClass().isAssignableFrom(java.net.URI.class)) {
+				serializeURI(targetResource, property, setItem);
+			} else if ( isAnnotatedObject(setItem)
+						&&
+						field.getAnnotation(RDFProperty.class).serializeAsURI()
+					  ){
+				GResource itemContentRes = getGResource(setItem);
+				if (itemContentRes.isAnon()) {
+					log.warning("This element of " + property + " has no id: " + setItem);
+					continue;
+				}
+				serializeURI(targetResource, property, URI.create(itemContentRes.getUri()));
+			} else if (isAnnotatedObject(setItem)) {
+				// nested object
 				log.finest("Adding set element " + setItem + " to grafeo");
 				GResource setItemRes = addObject(setItem);
 				log.finest("Added item as '" + setItemRes + "' to grafeo");
 				log.finest("Asserting relation " + property + " between " + targetResource + " and " + setItemRes);
 				targetResource.set(property, setItemRes);
 			//TODO lists/set
-			} else if (subtypeClass.isAssignableFrom(java.net.URI.class)) {
-				targetResource.set(property, setItem.toString());
 			} else {
 				log.finest("Asserting relation " + property + " between " + targetResource + " and " + setItem);
 				serializeLiteral(targetResource, property, setItem);
@@ -337,11 +346,20 @@ public class ObjectMapper {
 			
 			// Add the itemcontent
 			Object itemContent = valueList.get(i);
-			if (isAnnotatedObject(itemContent)) {
-				serializeAnnotatedObject(itemResource, NS.CO.PROP_ITEM_CONTENT, itemContent);
-			} else if (subtypeClass.isAssignableFrom(java.net.URI.class)) {
+			if (subtypeClass.isAssignableFrom(java.net.URI.class)) {
 				serializeURI(itemResource, NS.CO.PROP_ITEM_CONTENT, itemContent);
-			// TODO Sets/Lists/URI
+			} else if ( isAnnotatedObject(itemContent)
+						&&
+						field.getAnnotation(RDFProperty.class).serializeAsURI()
+				  ){
+				GResource itemContentRes = getGResource(itemResource);
+				if (itemContentRes.isAnon()) {
+					log.warning("This element of " + property + " has no id: " + itemContent);
+					continue;
+				}
+				serializeURI(itemResource, NS.CO.PROP_ITEM_CONTENT, URI.create(itemContentRes.getUri()));
+			} else if (isAnnotatedObject(itemContent)) {
+				serializeAnnotatedObject(itemResource, NS.CO.PROP_ITEM_CONTENT, itemContent);
 			} else {
 				serializeLiteral(itemResource, NS.CO.PROP_ITEM_CONTENT, itemContent);
 				
@@ -376,16 +394,19 @@ public class ObjectMapper {
 		for (GValue thisValue : propValues) {
 
 		    // Sets can be composed of literals ...
-		    if (thisValue.isLiteral()) {
-		        Object thisValueTyped = thisValue.getTypedValue(subtypeClass);
-		        propSet.add(thisValueTyped);
-		        log.fine("Added literal value: " + thisValue.toString());
-			} else {
+			if (isAnnotatedObject(thisValue)) {
 		        // TODO infinite recursion on doubly-linked resources? Is that fixed by caching?
 		        Object nestedObject = getObject(subtypeClass, (GResource) thisValue);
 		        propSet.add(nestedObject);
 		        log.fine("Added resource value: " + thisValue.resource());
-		    }
+			} else if (subtypeClass.isAssignableFrom(java.net.URI.class)){
+				propSet.add(URI.create(thisValue.resource().getUri()));
+				// TODO lists/sets
+			} else {
+		        Object thisValueTyped = thisValue.getTypedValue(subtypeClass);
+		        propSet.add(thisValueTyped);
+		        log.fine("Added literal value: " + thisValue.toString());
+			}
 		}
 
 		// store the property set
