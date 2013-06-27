@@ -43,7 +43,7 @@ public class OmnomTestCase extends OmnomUnitTest{
 	
 	@Before
 	public void setUpBase() throws Exception {
-        System.setProperty("http.keepAlive", "false");
+//        System.setProperty("http.keepAlive", "false");
         ManageService.startAll();
 	}
 	

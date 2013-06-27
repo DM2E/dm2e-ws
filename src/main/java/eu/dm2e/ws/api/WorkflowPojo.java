@@ -98,6 +98,8 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
     public ParameterConnectorPojo getConnectorToPositionAndParam(WorkflowPositionPojo pos, String needle) {
     	for (ParameterConnectorPojo conn : this.getParameterConnectors()) {
     		if (
+    				null != needle
+    			&&
     				conn.hasToPosition()
 				&&
     				conn.getToPosition().hasId()
@@ -205,7 +207,7 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
 	@Override public Set<ParameterPojo> getOutputParams() { return outputParams; }
 	@Override public void setOutputParams(Set<ParameterPojo> outputParams) { this.outputParams = outputParams; }
     
-    @RDFProperty(value = NS.OMNOM.PROP_PARAMETER_CONNECTOR, itemPrefix = "connector")
+    @RDFProperty(NS.OMNOM.PROP_PARAMETER_CONNECTOR)
     private Set<ParameterConnectorPojo> parameterConnectors = new HashSet<>();
 	public Set<ParameterConnectorPojo> getParameterConnectors() { return parameterConnectors; }
 	public void setParameterConnectors(Set<ParameterConnectorPojo> parameterConnectors) { this.parameterConnectors = parameterConnectors; }
