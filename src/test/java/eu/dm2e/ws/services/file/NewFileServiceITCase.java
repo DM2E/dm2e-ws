@@ -67,8 +67,9 @@ public class NewFileServiceITCase extends OmnomTestCase {
 			assertNotNull(fileLoc);
 			
 			GrafeoImpl g = new GrafeoImpl(configFile.get(OmnomTestResources.MINIMAL_FILE));
-			g.findTopBlank().rename("foo");
-			FilePojo fpOrig = g.getObjectMapper().getObject(FilePojo.class, g.resource("foo"));
+			final String resName = "foo";
+			g.findTopBlank().rename(resName);
+			FilePojo fpOrig = g.getObjectMapper().getObject(FilePojo.class, resName);
 			
 			FilePojo fp = new FilePojo();
 			fp.loadFromURI(fileLoc.toString());

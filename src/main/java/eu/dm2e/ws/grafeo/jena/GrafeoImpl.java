@@ -612,7 +612,6 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 //	        			throw(t2);
 	        		}
         		}
-        		log.severe("LIVE");
 				resourceCache.add(gres);
     		}
         	log.fine("Size After expansion: "+ this.size());

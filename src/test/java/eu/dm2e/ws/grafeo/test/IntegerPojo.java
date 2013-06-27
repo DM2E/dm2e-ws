@@ -7,7 +7,10 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 @RDFClass("omnom:IntegerPojo")
 public class IntegerPojo extends SerializablePojo<IntegerPojo> {
 	
-	@RDFProperty("omnom:some_number")
+	public static final String CLASS_NAME = "omnom:IntegerPojo";
+	public static final String PROP_SOME_NUMBER = "omnom:some_number";
+	
+	@RDFProperty(PROP_SOME_NUMBER)
 	private int someNumber = 5;
 	public int getSomeNumber() { return someNumber; }
 	public void setSomeNumber(int some_number) { this.someNumber = some_number; }

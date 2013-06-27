@@ -25,7 +25,7 @@ public class FilePojoTest {
 		fileMetaStr.append("<").append(fileUri).append("> omnom:fileRetrievalURI \"").append(fileRetrievalURIShouldBe).append("\". \n");
 		fileMetaStr.append("<").append(fileUri).append("> dct:extent \"123456\". \n");
 		g.readHeuristically(fileMetaStr.toString());
-		FilePojo fp = g.getObjectMapper().getObject(FilePojo.class, g.resource(fileUri));
+		FilePojo fp = g.getObjectMapper().getObject(FilePojo.class, fileUri);
 		assertEquals(fileUri, fp.getId());
 		assertEquals(123456L, fp.getFileSize());
 		assertEquals(fileLocationShouldBe, fp.getFileLocation());

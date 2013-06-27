@@ -3,4 +3,4 @@
 @prefix omnom: <http://onto.dm2e.eu/omnom/> .
 
 [] a omnom:Job ;
-    omnom:webservice <http://localhost:9998/services/xslt> .
+    omnom:webservice <http://localhost:9998/service/xslt> .
