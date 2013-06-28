@@ -1,5 +1,7 @@
 package eu.dm2e.ws.api;
 
+import java.io.IOException;
+
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
@@ -14,28 +16,10 @@ public class WorkflowConfigPojo extends AbstractConfigPojo<WorkflowConfigPojo> {
 		return this.getWorkflow().getParamByName(needle);
 	}
     
-    // TODO this is not perfect, there could be several slots for the same position and the same parameter
-//    public ParameterConnectorPojo getSlotForPositionIndexAndParam(int index, ParameterPojo param) {
-//    	WorkflowPositionPojo pos = this.getWorkflowPojo().get(index);
-//    	if (null != pos) {
-////    		for (ParameterSlotPojo thisSlot : parameterSlots) {
-//////		    	log.info("" + thisSlot.getForPosition().getWebService());
-//////		    	log.info(""+ pos.g);
-////    			if (thisSlot.getForPosition() != pos) {
-////    				continue;
-////    			}
-////		    	log.info("" + thisSlot.getToParam().getId());
-////    			if (thisSlot.getToParam() != null
-////    					&& thisSlot.getToParam().getId().equals(param.getId())
-////    					&& thisSlot.getForPosition() == pos) {
-////    				return thisSlot;
-////    			}
-////    		}
-//    	}
-//    	return null;
-//    }
 	
 	/**
+	 * Validate a workflow config against a workflow.
+	 * 
 	 * Things to make sure:
 	 * a) Every input parameter of the workflow must be covered by an assignment of the workflowconfig
 	 * b) All Connecotrs from/to Workflows must reference existing parameters of the workflow
@@ -46,37 +30,41 @@ public class WorkflowConfigPojo extends AbstractConfigPojo<WorkflowConfigPojo> {
 	 */
 	@Override
 	public void validate() {
-		WorkflowPojo wf = this.getWorkflow();
-		log.info("Validating " + this + " with " + wf);
-		log.info("Input params: " + wf.getInputParams());
+		WorkflowPojo workflow = this.getWorkflow();
+		log.info("Validating " + this + " with " + workflow);
+		log.info("Input params: " + workflow.getInputParams());
 		log.info("Assignments: " + this.getParameterAssignments());
 		
 		//
 		// a)
 		//
-		for (ParameterPojo param : wf.getInputParams()) {
+		for (ParameterPojo param : workflow.getInputParams()) {
 			log.info("" + param);
+			ParameterAssignmentPojo ass = this.getParameterAssignmentForParam(param.getId());
 			if (param.getIsRequired()) {
-				ParameterAssignmentPojo ass = this.getParameterAssignmentForParam(param.getId());
 				if (null == ass) {
 					throw new RuntimeException(param + " is not set by " + this); 
 				}
+			}
+			
+			if (null != ass && null == ass.getParameterValue()) {
+				throw new RuntimeException(param + " has no value in " + this); 
 			}
 		}
 		
 		//
 		// b)
 		//
-		for (ParameterConnectorPojo conn : wf.getParameterConnectors()) {
+		for (ParameterConnectorPojo conn : workflow.getParameterConnectors()) {
 			if (conn.hasFromWorkflow() 
 					&&
-				null == wf.getParamByName(conn.getFromParam().getLabel())) {
-				throw new AssertionError(conn + " references parameter " + conn.getToParam() + " which is not defined by " + wf);
+				null == workflow.getParamByName(conn.getFromParam().getLabel())) {
+				throw new AssertionError(conn + " references parameter " + conn.getToParam() + " which is not defined by " + workflow);
 			}
 			if (conn.hasToWorkflow() 
 					&&
-				null == wf.getParamByName(conn.getToParam().getLabel())) {
-				throw new AssertionError(conn + " references parameter " + conn.getToParam() + " which is not defined by " + wf);
+				null == workflow.getParamByName(conn.getToParam().getLabel())) {
+				throw new AssertionError(conn + " references parameter " + conn.getToParam() + " which is not defined by " + workflow);
 			}
 		}
 		
@@ -84,7 +72,7 @@ public class WorkflowConfigPojo extends AbstractConfigPojo<WorkflowConfigPojo> {
 		// c)
 		//
 		// for every position
-		for (WorkflowPositionPojo pos : wf.getPositions()) {
+		for (WorkflowPositionPojo pos : workflow.getPositions()) {
 			WebserviceConfigPojo wsconf = pos.getWebserviceConfig();
 			if (null == wsconf) {
 				throw new AssertionError(pos + " has no WebServiceConfig");
@@ -100,8 +88,8 @@ public class WorkflowConfigPojo extends AbstractConfigPojo<WorkflowConfigPojo> {
 				}
 				if (param.getIsRequired()
 						&&
-					null == wf.getConnectorToPositionAndParam(pos, param)) {
-					throw new RuntimeException(param + " of " + ws + " in " + pos + "is not connected in the workflow " + wf + ".");
+					null == workflow.getConnectorToPositionAndParam(pos, param)) {
+					throw new RuntimeException(param + " of " + ws + " in " + pos + "is not connected in the workflow " + workflow + ".");
 				}
 					
 			}
@@ -110,9 +98,9 @@ public class WorkflowConfigPojo extends AbstractConfigPojo<WorkflowConfigPojo> {
 		//
 		// d)
 		//
-		for (ParameterPojo param : wf.getOutputParams()) {
-			if (null == wf.getConnectorToWorkflowOutputParam(param)) {
-				throw new RuntimeException("No connector to output parameter " + param + "of workflow " + wf);
+		for (ParameterPojo param : workflow.getOutputParams()) {
+			if (null == workflow.getConnectorToWorkflowOutputParam(param)) {
+				throw new RuntimeException("No connector to output parameter " + param + "of workflow " + workflow);
 			}
 		}
 	}
