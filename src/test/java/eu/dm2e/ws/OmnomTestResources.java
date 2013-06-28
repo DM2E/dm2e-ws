@@ -19,6 +19,8 @@ public enum OmnomTestResources {
     , PUBLISH_RDF("/publish/to-publish-test1.rdf")
     , INGESTION_XML("/workflow/Ms-155_OA.xml")
     , INGESTION_XSL("/workflow/2013-05-21-JI.xsl")
+    , METS2EDM("/mappings/xslt/METS2DM2Ev2.xsl")
+    , METS_EXAMPLES("/provider-examples/ffm/msma-1-10.xml")
     ;
 
 	final String path;
