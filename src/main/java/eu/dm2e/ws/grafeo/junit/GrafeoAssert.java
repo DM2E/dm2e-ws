@@ -158,7 +158,7 @@ public class GrafeoAssert {
 		try {
 			graphContainsGraph(g1, g2);
 			failedOK = false;
-		} catch (ComparisonFailure e) { }
+		} catch (AssertionError e) { }
 		if (! failedOK) fail("Grafeo " + g1 + " does contain all statements from Grafeo " + g2);
 	}
 	static public void graphContainsGraphStructurally(Grafeo g1, Grafeo g2) {

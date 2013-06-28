@@ -51,71 +51,64 @@ public class XsltService extends AbstractTransformationService {
 		JobPojo jobPojo = getJobPojo();
 		log.warning("Starting to handle XSLT transformation job");
 		jobPojo.debug("Starting to handle XSLT transformation job");
+		// update job status
+		jobPojo.setStarted();
 		String xmlUrl, xsltUrl;
 		try {
 			// TODO this should be refactored to a validation routine in the JobPojo
 			xmlUrl = jobPojo.getWebserviceConfig().getParameterValueByName(PARAM_XML_IN);
 			xsltUrl = jobPojo.getWebserviceConfig().getParameterValueByName(PARAM_XSLT_IN);
-			if (null == xmlUrl) {
+			if (null == xmlUrl)
 				throw new NullPointerException("xmlUrl is null");
-			}
-			if (null == xsltUrl) {
+			jobPojo.debug("XML URL: " + xmlUrl);
+			if (null == xsltUrl)
 				throw new NullPointerException("xsltUrl is null");
+			jobPojo.debug("XSL URL: " + xsltUrl);
+			jobPojo.info("Starting transformation");
+
+			TransformerFactory tFactory = TransformerFactory.newInstance();
+			StringWriter xslResultStrWriter = new StringWriter();
+			try {
+				StreamSource xmlSource = new StreamSource(new URL(xmlUrl).openStream());
+				StreamSource xslSource = new StreamSource(new URL(xsltUrl).openStream());
+				Transformer transformer = tFactory.newTransformer(xslSource);
+
+				StreamResult xslResult = new StreamResult(xslResultStrWriter);
+
+				transformer.transform(xmlSource, xslResult);
+			} catch (Throwable t) {
+				throw(t);
 			}
+			jobPojo.info("Getting the transformation result as a string.");
+			String xslResultStr = "";
+			try {
+				xslResultStr = xslResultStrWriter.toString();
+				if (xslResultStr.length() == 0) {
+					throw new RuntimeException("No result from the transformation.");
+				}
+				else if (xslResultStr.equals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")) {
+					jobPojo.warn("XSLT transformation yielded in empty XML file.");
+				}
+			} catch (Throwable e) {
+				throw(e);
+			}
+
+			FilePojo fp = new FilePojo();
+			fp.setGeneratorJob(jobPojo);
+			String fileLocation = new Client().publishFile(xslResultStr, fp);
+
+			jobPojo.info("Store result URI on the job (" + fileLocation + ").");
+			jobPojo.addOutputParameterAssignment(PARAM_XML_OUT, fileLocation);
+
+			// Update job status
+			jobPojo.info("XSLT Transformation complete.");
+			jobPojo.setFinished();
+			jobPojo.publishToService();
 		} catch (Exception e) {
+			log.severe("An error occured during XsltService.run: " + e);
 			jobPojo.fatal(e);
 			jobPojo.setFailed();
-			return;
+			jobPojo.publishToService();
 		}
-		jobPojo.debug("XML URL: " + xmlUrl);
-		jobPojo.debug("XSL URL: " + xsltUrl);
-		jobPojo.info("Starting transformation");
-
-		// update job status
-		jobPojo.setStarted();
-		TransformerFactory tFactory = TransformerFactory.newInstance();
-		StringWriter xslResultStrWriter = new StringWriter();
-		try {
-			StreamSource xmlSource = new StreamSource(new URL(xmlUrl).openStream());
-			StreamSource xslSource = new StreamSource(new URL(xsltUrl).openStream());
-			Transformer transformer = tFactory.newTransformer(xslSource);
-
-			StreamResult xslResult = new StreamResult(xslResultStrWriter);
-
-			transformer.transform(xmlSource, xslResult);
-
-		} catch (Exception e) {
-			jobPojo.fatal("Error during XSLT transformation: " + e);
-			jobPojo.debug(e);
-			jobPojo.setFailed();
-			return;
-		}
-		jobPojo.info("Getting the transformation result as a string.");
-		String xslResultStr = "";
-		try {
-			xslResultStr = xslResultStrWriter.toString();
-			if (xslResultStr.length() == 0) {
-				throw new RuntimeException("No result from the transformation.");
-			}
-			else if (xslResultStr.equals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")) {
-				jobPojo.warn("XSLT transformation yielded in empty XML file.");
-			}
-		} catch (Exception e) {
-			jobPojo.debug(e);
-			jobPojo.setFailed();
-			return;
-		}
-		
-		FilePojo fp = new FilePojo();
-		fp.setGeneratorJob(jobPojo);
-		String fileLocation = new Client().publishFile(xslResultStr, fp);
-
-		jobPojo.info("Store result URI on the job (" + fileLocation + ").");
-		jobPojo.addOutputParameterAssignment(PARAM_XML_OUT, fileLocation);
-		client.publishPojoToJobService(jobPojo);
-
-		// Update job status
-		jobPojo.info("XSLT Transformation complete.");
-		jobPojo.setFinished();
 	}
 }
