@@ -48,6 +48,7 @@ import eu.dm2e.ws.services.WorkerExecutorSingleton;
 public class WorkflowService extends AbstractAsynchronousRDFService {
 	
 	public static String PARAM_POLL_INTERVAL = "pollInterval";
+	public static String PARAM_JOB_TIMEOUT = "jobTimeout";
 	public static String PARAM_COMPLETE_LOG = "completeLog";
 
 	/**
@@ -180,10 +181,18 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 			{
 				ParameterPojo pollTimeParam = new ParameterPojo();
 				pollTimeParam.setLabel(PARAM_POLL_INTERVAL);
-				pollTimeParam.setComment("Time to wait between polls for job status, in milliseconds.");
+				pollTimeParam.setComment("Time to wait between polls for job status, in milliseconds. [Default: 2000ms]");
 				pollTimeParam.setDefaultValue("" + 2 * 1000);
 				GResource pollTimeParamRes = g.getObjectMapper().addObject(pollTimeParam);
 				g.addTriple(wfRes, NS.OMNOM.PROP_INPUT_PARAM, pollTimeParamRes);
+			}
+			{
+				ParameterPojo maxJobWaitParam = new ParameterPojo();
+				maxJobWaitParam.setLabel(PARAM_JOB_TIMEOUT);
+				maxJobWaitParam.setComment("Maximum time to wait for a job to finish, in seconds. [Default: 120s]");
+				maxJobWaitParam.setDefaultValue("" + 120);
+				GResource maxJobWaitParamRes = g.getObjectMapper().addObject(maxJobWaitParam);
+				g.addTriple(wfRes, NS.OMNOM.PROP_INPUT_PARAM, maxJobWaitParamRes);
 			}
 			{
 				ParameterPojo completeLogParam = new ParameterPojo();
@@ -388,7 +397,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		WorkflowJobPojo workflowJob = this.getWorkflowJobPojo();
 		WorkflowConfigPojo workflowConfig = workflowJob.getWorkflowConfig();
 		WorkflowPojo workflow = workflowJob.getWorkflowConfig().getWorkflow();
-		Map<WorkflowPositionPojo,JobPojo> finishedJobs = new HashMap<>();
+		Map<String,JobPojo> finishedJobs = new HashMap<>();
 		try {
 			try {
 				workflowJob.getId().toString();
@@ -401,11 +410,32 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 			
 			log.info("Job used in run(): " + workflowJob);
 			
+			/*
+			 * Validate
+			 */
+			try {
+				workflowConfig.validate();
+			} catch (Throwable t) {
+				throw(t);
+			}
+			
+			/*
+			 * Get global meta parameters (pollinterval, jobtimeout ...)
+			 */
 			long pollInterval = Long.parseLong(workflow.getParamByName(PARAM_POLL_INTERVAL).getDefaultValue()); 
 			if (null != workflowConfig.getParameterAssignmentForParam(PARAM_POLL_INTERVAL)) {
 				pollInterval = Long.parseLong(workflowConfig.getParameterAssignmentForParam(PARAM_POLL_INTERVAL).getParameterValue());
 			}
+			long jobTimeoutInterval = Long.parseLong(workflow.getParamByName(PARAM_JOB_TIMEOUT).getDefaultValue()); 
+			if (null != workflowConfig.getParameterAssignmentForParam(PARAM_JOB_TIMEOUT)) {
+				jobTimeoutInterval = Long.parseLong(workflowConfig.getParameterAssignmentForParam(PARAM_JOB_TIMEOUT).getParameterValue());
+			}
+			
+			/*
+			 * 
+			 */
 			workflowJob.setStarted();
+			
 			/*
 			 * Iterate Positions
 			 */
@@ -431,7 +461,9 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 						ass = workflowConfig.getParameterAssignmentForParam(conn.getFromParam());
 					} else {
 						// if the connector is from a previous position, take the value from the corresponding previous job
-						ass = finishedJobs.get(conn.getFromPosition()).getWebserviceConfig().getParameterAssignmentForParam(conn.getFromParam()); 
+						ass = finishedJobs.get(conn.getFromPosition().getId()).getParameterAssignmentForParam(conn.getFromParam()); 
+						workflowJob.debug("Finished Jobs: " + finishedJobs.keySet());
+						workflowJob.debug("This connector fromPosition: " + conn.getFromPosition());
 					}
 					if (ass == null) {
 						workflowJob.debug(workflowConfig.getTerseTurtle());
@@ -458,48 +490,53 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 						.entity(wsconf.getId())
 						.put(ClientResponse.class);
 				if (202 != resp.getStatus() || null == resp.getLocation()) {
-					workflowJob.debug(wsconf.getTerseTurtle());
+//					workflowJob.debug(wsconf.getTerseTurtle());
 					throw new RuntimeException("Request to start web service " + ws + " with config " + wsconf + "failed: " + resp);
 				}
-				JobPojo wsJob = new JobPojo(resp.getLocation());
-				wsJob.publishToService();
+				
+				
+				/*
+				 * start the job
+				 */
+				long timePassed = 0;
+				JobPojo webserviceJob = new JobPojo(resp.getLocation());
+				webserviceJob.publishToService();
 				do {
-					wsJob.loadFromURI(wsJob.getId());
+					webserviceJob.loadFromURI(webserviceJob.getId());
+					workflowJob.trace("Sleeping for " + pollInterval + "ms, waiting for job " + webserviceJob + " to finish.");
 					try {
-						wsJob.trace("Sleeping for " + pollInterval + "ms, waiting for job " + wsJob + " to finish.");
 						Thread.sleep(pollInterval);
 					} catch (Exception e) {
 						throw new RuntimeException(e);
 					}
-				} while (wsJob.isStillRunning());
-				log.info("Grafeo size: " + new GrafeoImpl(workflowJob.getId()).size());
-				log.info("Pojo Grafeo size: " + workflowJob.getGrafeo().size());
+					timePassed += pollInterval;
+					if (timePassed > jobTimeoutInterval*1000) {
+						throw new RuntimeException("Job " + webserviceJob + " took more than " + jobTimeoutInterval + "s too long to finish :(");
+					}
+					log.info("JOB STATUS: " +webserviceJob.getTerseTurtle());
+				} while (webserviceJob.isStillRunning());
 				
-				finishedJobs.put(pos, wsJob);
-				workflowJob.getFinishedJobs().add(wsJob);
+				finishedJobs.put(pos.getId(), webserviceJob);
+				workflowJob.getFinishedJobs().add(webserviceJob);
 				workflowJob.getFinishedPositions().add(pos);
 				workflowJob.publishToService();
-				log.info("Grafeo size: " + new GrafeoImpl(workflowJob.getId()).size());
-				log.info("Pojo Grafeo size: " + workflowJob.getGrafeo().size());
 				
-				if (wsJob.isFailed()) {
-					workflowJob.setFailed();
-					workflowJob.fatal("Job " + wsJob + " of Webservice " + ws + "failed, hence workflow " + workflow + "failed. :(");
-					throw new RuntimeException("Job " + wsJob + " of Webservice " + ws + "failed, hence workflow " + workflow + "failed. :(");
+				if (webserviceJob.isFailed()) {
+					throw new RuntimeException("Job " + webserviceJob + " of Webservice " + ws + "failed, hence workflow " + workflow + "failed. :(");
 				}
-				else if (wsJob.isFinished()) {
-					workflowJob.info("Job " + wsJob + " of Webservice " + ws + "finished successfully, moving on to next position.");
+				else if (webserviceJob.isFinished()) {
+					workflowJob.info("Job " + webserviceJob + " of Webservice " + ws + "finished successfully, moving on to next position.");
 				}
 			}
 
 			// TODO
-			workflowJob.setFailed();
+			workflowJob.setFinished();
 		} catch (Throwable t) {
 			log.severe("Workflow " + workflowJob +  " FAILED: " + t + "\n" + ExceptionUtils.getStackTrace(t));
 			workflowJob.fatal("Workflow " + workflowJob +  " FAILED: " + t + "\n" + ExceptionUtils.getStackTrace(t));
 			workflowJob.setFailed();
 			// TODO why can't I throw this here but in AbstractTransformationService??
-//			throw t
+			// throw t
 		} finally {
 			JobPojo dummyJob = new JobPojo();
 			Set<AbstractJobPojo> allLoggingJobs = new HashSet<>();
