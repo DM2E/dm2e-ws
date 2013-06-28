@@ -159,12 +159,11 @@ public abstract class AbstractJobPojo extends AbstractPersistentPojo<AbstractJob
 	public boolean isStarted() { return ! this.getStatus().equals(JobStatus.NOT_STARTED.toString()); }
 
 	public boolean isStillRunning() {
-		if (isFinished() || isFailed()) return false;
-		return true;
+		return !(isFinished() || isFailed());
 	}
 
 	protected void publishJobStatus(String status) {
-		if (null != this.getId()) {
+		if (this.hasId()) {
 			ClientResponse resp = client
 					.resource(this.getId())
 					.path("status")
@@ -208,6 +207,9 @@ public abstract class AbstractJobPojo extends AbstractPersistentPojo<AbstractJob
 		ass.setParameterValue(paramValue);
 		this.getOutputParameterAssignments().add(ass);
 		return ass;
+	}
+	public ParameterAssignmentPojo getParameterAssignmentForParam(ParameterPojo param) {
+		return this.getParameterAssignmentForParam(param.getId());
 	}
 	public ParameterAssignmentPojo getParameterAssignmentForParam(String needle) {
 		for (ParameterAssignmentPojo ass: this.getOutputParameterAssignments()) {
