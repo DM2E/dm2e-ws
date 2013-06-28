@@ -195,7 +195,7 @@ public class NewFileServiceITCase extends OmnomTestCase {
 				.entity(fdmp)
 				.type(MediaType.MULTIPART_FORM_DATA)
 				.post(ClientResponse.class);
-			log.info(configString.get(OmnomTestResources.MINIMAL_FILE));
+			log.info(configString.get(OmnomTestResources.MINIMAL_FILE_WITH_URI));
 			log.info(resp.getEntity(String.class));
 			assertEquals("posting rdf data with a uri", 201, resp.getStatus());
 		}
