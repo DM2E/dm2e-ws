@@ -23,6 +23,6 @@
 @prefix cc:    <http://creativecommons.org/ns#> .
 
 [] a omnom:File ;
-   omnom:fileRetrievalURI "http://foo.bar/baz" ;
-   omnom:fileEditURI "http://foo.sCHMOMRG" ;
+   omnom:fileRetrievalURI <http://foo.bar/baz> ;
+   omnom:fileEditURI <http://foo.sCHMOMRG> ;
    dc:title "some file yay" .

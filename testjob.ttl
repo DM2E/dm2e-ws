@@ -1,0 +1,293 @@
+@prefix dc:    <http://purl.org/dc/elements/1.1/> .
+@prefix ogp:   <http://ogp.me/ns#> .
+@prefix edm:   <http://www.europeana.eu/schemas/edm/> .
+@prefix geo:   <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix oo:    <http://purl.org/openorg/> .
+@prefix dm2e:  <http://onto.dm2e.eu/omnom/> .
+@prefix omnom_types: <http://onto.dm2e.eu/omnom-types/> .
+@prefix j.1:   <http://purl.org/co/> .
+@prefix j.0:   <http://onto.dm2e.eu/omnom/> .
+@prefix void:  <http://rdfs.org/ns/void#> .
+@prefix ore:   <http://www.openarchives.org/ore/terms/> .
+@prefix omnom: <http://onto.dm2e.eu/omnom/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix sioc:  <http://rdfs.org/sioc/ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix co:    <http://purl.org/co/> .
+@prefix dct:   <http://purl.org/dc/terms/> .
+@prefix bibo:  <http://purl.org/ontology/bibo/> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix gr:    <http://purl.org/goodrelations/v1#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix cc:    <http://creativecommons.org/ns#> .
+
+<http://localhost:9998/config/5ef6db54-dbf0-483a-a4c6-6508af1f6851/assignment/5>
+        a                     omnom:ParameterAssignment ;
+        rdfs:label            "datasetLabel"^^xsd:string ;
+        omnom:forParam        <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/param/datasetLabel> ;
+        omnom:parameterValue  "A fascinating dataset indeed."^^xsd:string .
+
+<http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/connector/5>
+        a                   omnom:ParameterConnector ;
+        omnom:fromParam     <http://localhost:9998/publish/param/result-dataset-id> ;
+        omnom:fromPosition  <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/position/2> ;
+        omnom:inWorkflow    <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda> ;
+        omnom:toParam       <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/param/outputGraph> ;
+        omnom:toWorkflow    <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda> .
+
+<http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/param/datasetLabel>
+        a                 omnom:Parameter ;
+        rdfs:label        "datasetLabel"^^xsd:string ;
+        omnom:isRequired  false ;
+        omnom:workflow    <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda> .
+
+<http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/param/outputGraph>
+        a                 omnom:Parameter ;
+        rdfs:label        "outputGraph"^^xsd:string ;
+        omnom:isRequired  false ;
+        omnom:workflow    <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda> .
+
+<http://localhost:9998/config/5ef6db54-dbf0-483a-a4c6-6508af1f6851/assignment/4>
+        a                     omnom:ParameterAssignment ;
+        rdfs:label            "providerID"^^xsd:string ;
+        omnom:forParam        <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/param/providerID> ;
+        omnom:parameterValue  "onb"^^xsd:string .
+
+_:b0    a               co:Item ;
+        co:index        "1"^^xsd:int ;
+        co:itemContent  <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/position/2> .
+
+<http://localhost:9998/publish/param/provider-id>
+        a                 omnom:Parameter ;
+        rdfs:label        "provider-id"^^xsd:string ;
+        omnom:isRequired  true ;
+        omnom:webservice  <http://localhost:9998/publish> .
+
+<http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/connector/4>
+        a                   omnom:ParameterConnector ;
+        omnom:fromParam     <http://localhost:9998/service/xslt/param/xmlOutput> ;
+        omnom:fromPosition  <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/position/1> ;
+        omnom:inWorkflow    <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda> ;
+        omnom:toParam       <http://localhost:9998/publish/param/to-publish> ;
+        omnom:toPosition    <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/position/2> .
+
+<http://localhost:9998/publish/param/endpoint-select>
+        a                 omnom:Parameter ;
+        rdfs:label        "endpoint-select"^^xsd:string ;
+        omnom:isRequired  false ;
+        omnom:webservice  <http://localhost:9998/publish> .
+
+<http://localhost:9998/job/80f37e8f-4687-412c-90c1-669ddfdd6b20/log/1c8fe89c-c31c-4796-bc43-0fad9581b5f6>
+        a                    omnom:LogEntry ;
+        omnom:hasLogLevel    "TRACE"^^xsd:string ;
+        omnom:hasLogMessage  "Status change: STARTED => FAILED"^^xsd:string ;
+        dc:date              "2013-06-24T17:23:24Z"^^xsd:dateTime .
+
+<http://localhost:9998/config/5ef6db54-dbf0-483a-a4c6-6508af1f6851/assignment/3>
+        a                     omnom:ParameterAssignment ;
+        rdfs:label            "datasetID"^^xsd:string ;
+        omnom:forParam        <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/param/datasetID> ;
+        omnom:parameterValue  "dataset-1234"^^xsd:string .
+
+<http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda>
+        a                         omnom:Workflow ;
+        rdfs:label                "XML -> XMLRDF -> DM2E yay"^^xsd:string ;
+        omnom:hasPosition         [ a             co:List ;
+                                    co:firstItem  [ a               co:Item ;
+                                                    co:index        "0"^^xsd:int ;
+                                                    co:itemContent  <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/position/1> ;
+                                                    co:nextItem     _:b0
+                                                  ] ;
+                                    co:lastItem   _:b0 ;
+                                    co:size       "2"^^xsd:int
+                                  ] ;
+        omnom:inputParam          <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/param/inputXSLT> , <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/param/datasetID> , <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/param/datasetLabel> , <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/param/providerID> , <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/param/inputXML> ;
+        omnom:outputParam         <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/param/outputGraph> ;
+        omnom:parameterConnector  <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/connector/3> , <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/connector/5> , <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/connector/1> , <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/connector/6> , <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/connector/2> , <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/connector/7> , <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/connector/4> .
+
+<http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/connector/3>
+        a                   omnom:ParameterConnector ;
+        omnom:fromParam     <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/param/datasetLabel> ;
+        omnom:fromWorkflow  <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda> ;
+        omnom:inWorkflow    <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda> ;
+        omnom:toParam       <http://localhost:9998/publish/param/label> ;
+        omnom:toPosition    <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/position/2> .
+
+<http://localhost:9998/service/xslt/param/xmlInput>
+        a                    omnom:Parameter ;
+        rdfs:label           "xmlInput"^^xsd:string ;
+        omnom:isRequired     true ;
+        omnom:parameterType  "http://www.w3.org/2001/XMLSchema#anyURI"^^xsd:string ;
+        omnom:webservice     <http://localhost:9998/service/xslt> ;
+        dc:title             "XML input"^^xsd:string .
+
+<http://localhost:9998/job/80f37e8f-4687-412c-90c1-669ddfdd6b20/log/60f1f3f2-5c17-4874-9398-40490f91fe32>
+        a                    omnom:LogEntry ;
+        omnom:hasLogLevel    "TRACE"^^xsd:string ;
+        omnom:hasLogMessage  "Status change: NOT_STARTED => STARTED"^^xsd:string ;
+        dc:date              "2013-06-24T17:23:24Z"^^xsd:dateTime .
+
+<http://localhost:9998/publish/param/comment>
+        a                 omnom:Parameter ;
+        rdfs:label        "comment"^^xsd:string ;
+        omnom:isRequired  false ;
+        omnom:webservice  <http://localhost:9998/publish> .
+
+<http://localhost:9998/publish/param/dataset-id>
+        a                 omnom:Parameter ;
+        rdfs:label        "dataset-id"^^xsd:string ;
+        omnom:isRequired  true ;
+        omnom:webservice  <http://localhost:9998/publish> .
+
+<http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/param/inputXSLT>
+        a                 omnom:Parameter ;
+        rdfs:label        "inputXSLT"^^xsd:string ;
+        omnom:isRequired  false ;
+        omnom:workflow    <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda> .
+
+<http://localhost:9998/job/80f37e8f-4687-412c-90c1-669ddfdd6b20/log/50ee0279-5a35-457a-a5ad-854f1f320f37>
+        a                    omnom:LogEntry ;
+        omnom:hasLogLevel    "TRACE"^^xsd:string ;
+        omnom:hasLogMessage  "WorkflowJobPojo constructed by WorkflowService"^^xsd:string ;
+        dc:date              "2013-06-24T17:23:23Z"^^xsd:dateTime .
+
+<http://localhost:9998/config/5ef6db54-dbf0-483a-a4c6-6508af1f6851/assignment/2>
+        a                     omnom:ParameterAssignment ;
+        rdfs:label            "inputXML"^^xsd:string ;
+        omnom:forParam        <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/param/inputXML> ;
+        omnom:parameterValue  "foo"^^xsd:string .
+
+<http://localhost:9998/publish/param/to-publish>
+        a                 omnom:Parameter ;
+        rdfs:label        "to-publish"^^xsd:string ;
+        omnom:isRequired  true ;
+        omnom:webservice  <http://localhost:9998/publish> .
+
+<http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/connector/2>
+        a                   omnom:ParameterConnector ;
+        omnom:fromParam     <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/param/providerID> ;
+        omnom:fromWorkflow  <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda> ;
+        omnom:inWorkflow    <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda> ;
+        omnom:toParam       <http://localhost:9998/publish/param/provider-id> ;
+        omnom:toPosition    <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/position/2> .
+
+<http://localhost:9998/publish/param/endpoint-update>
+        a                 omnom:Parameter ;
+        rdfs:label        "endpoint-update"^^xsd:string ;
+        omnom:isRequired  false ;
+        omnom:webservice  <http://localhost:9998/publish> .
+
+<http://localhost:9998/publish/param/label>
+        a                 omnom:Parameter ;
+        rdfs:label        "label"^^xsd:string ;
+        omnom:isRequired  true ;
+        omnom:webservice  <http://localhost:9998/publish> .
+
+<http://localhost:9998/service/xslt>
+        a                  omnom:Webservice ;
+        omnom:inputParam   <http://localhost:9998/service/xslt/param/xmlInput> , <http://localhost:9998/service/xslt/param/xslInput> ;
+        omnom:outputParam  <http://localhost:9998/service/xslt/param/xmlOutput> .
+
+<http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/param/providerID>
+        a                 omnom:Parameter ;
+        rdfs:label        "providerID"^^xsd:string ;
+        omnom:isRequired  false ;
+        omnom:workflow    <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda> .
+
+<http://localhost:9998/publish>
+        a                  omnom:Webservice ;
+        omnom:inputParam   <http://localhost:9998/publish/param/to-publish> , <http://localhost:9998/publish/param/endpoint-update> , <http://localhost:9998/publish/param/label> , <http://localhost:9998/publish/param/provider-id> , <http://localhost:9998/publish/param/comment> , <http://localhost:9998/publish/param/dataset-id> , <http://localhost:9998/publish/param/endpoint-select> ;
+        omnom:outputParam  <http://localhost:9998/publish/param/result-dataset-id> .
+
+<http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/param/datasetID>
+        a                 omnom:Parameter ;
+        rdfs:label        "datasetID"^^xsd:string ;
+        omnom:isRequired  false ;
+        omnom:workflow    <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda> .
+
+<http://localhost:9998/config/5ef6db54-dbf0-483a-a4c6-6508af1f6851/assignment/1>
+        a                     omnom:ParameterAssignment ;
+        rdfs:label            "inputXSLT"^^xsd:string ;
+        omnom:forParam        <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/param/inputXSLT> ;
+        omnom:parameterValue  "foo"^^xsd:string .
+
+<http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/connector/7>
+        a                   omnom:ParameterConnector ;
+        omnom:fromParam     <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/param/inputXSLT> ;
+        omnom:fromWorkflow  <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda> ;
+        omnom:inWorkflow    <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda> ;
+        omnom:toParam       <http://localhost:9998/service/xslt/param/xslInput> ;
+        omnom:toPosition    <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/position/1> .
+
+<http://localhost:9998/publish/param/result-dataset-id>
+        a                 omnom:Parameter ;
+        rdfs:label        "result-dataset-id"^^xsd:string ;
+        omnom:isRequired  false ;
+        omnom:webservice  <http://localhost:9998/publish> .
+
+<http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/position/2>
+        a                       omnom:WorkflowPosition ;
+        rdfs:label              "XMLRDF -> Graphstore"^^xsd:string ;
+        omnom:inWorkflow        <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda> ;
+        omnom:webserviceConfig  [ a                 omnom:WebserviceConfig ;
+                                  omnom:webservice  <http://localhost:9998/publish>
+                                ] .
+
+<http://localhost:9998/service/xslt/param/xslInput>
+        a                    omnom:Parameter ;
+        rdfs:label           "xslInput"^^xsd:string ;
+        omnom:isRequired     true ;
+        omnom:parameterType  "http://www.w3.org/2001/XMLSchema#anyURI"^^xsd:string ;
+        omnom:webservice     <http://localhost:9998/service/xslt> ;
+        dc:title             "XSLT input"^^xsd:string .
+
+<http://localhost:9998/service/xslt/param/xmlOutput>
+        a                 omnom:Parameter ;
+        rdfs:label        "xmlOutput"^^xsd:string ;
+        omnom:isRequired  false ;
+        omnom:webservice  <http://localhost:9998/service/xslt> ;
+        dc:title          "XML output"^^xsd:string .
+
+<http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/connector/1>
+        a                   omnom:ParameterConnector ;
+        omnom:fromParam     <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/param/inputXML> ;
+        omnom:fromWorkflow  <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda> ;
+        omnom:inWorkflow    <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda> ;
+        omnom:toParam       <http://localhost:9998/service/xslt/param/xmlInput> ;
+        omnom:toPosition    <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/position/1> .
+
+<http://localhost:9998/config/5ef6db54-dbf0-483a-a4c6-6508af1f6851>
+        a                 omnom:WorkflowConfig ;
+        omnom:assignment  <http://localhost:9998/config/5ef6db54-dbf0-483a-a4c6-6508af1f6851/assignment/1> , <http://localhost:9998/config/5ef6db54-dbf0-483a-a4c6-6508af1f6851/assignment/4> , <http://localhost:9998/config/5ef6db54-dbf0-483a-a4c6-6508af1f6851/assignment/2> , <http://localhost:9998/config/5ef6db54-dbf0-483a-a4c6-6508af1f6851/assignment/3> , <http://localhost:9998/config/5ef6db54-dbf0-483a-a4c6-6508af1f6851/assignment/5> ;
+        omnom:workflow    <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda> .
+
+<http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/connector/6>
+        a                   omnom:ParameterConnector ;
+        omnom:fromParam     <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/param/datasetID> ;
+        omnom:fromWorkflow  <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda> ;
+        omnom:inWorkflow    <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda> ;
+        omnom:toParam       <http://localhost:9998/publish/param/dataset-id> ;
+        omnom:toPosition    <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/position/2> .
+
+<http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/position/1>
+        a                       omnom:WorkflowPosition ;
+        rdfs:label              "XML -> XMLRDF"^^xsd:string ;
+        omnom:inWorkflow        <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda> ;
+        omnom:webserviceConfig  [ a                 omnom:WebserviceConfig ;
+                                  omnom:webservice  <http://localhost:9998/service/xslt>
+                                ] .
+
+<http://localhost:9998/job/80f37e8f-4687-412c-90c1-669ddfdd6b20>
+        a                     omnom:WorkflowJob ;
+        omnom:hasLogEntry     <http://localhost:9998/job/80f37e8f-4687-412c-90c1-669ddfdd6b20/log/1c8fe89c-c31c-4796-bc43-0fad9581b5f6> , <http://localhost:9998/job/80f37e8f-4687-412c-90c1-669ddfdd6b20/log/60f1f3f2-5c17-4874-9398-40490f91fe32> , <http://localhost:9998/job/80f37e8f-4687-412c-90c1-669ddfdd6b20/log/50ee0279-5a35-457a-a5ad-854f1f320f37> ;
+        omnom:status          "FAILED" ;
+        omnom:workflowConfig  <http://localhost:9998/config/5ef6db54-dbf0-483a-a4c6-6508af1f6851> .
+
+<http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda/param/inputXML>
+        a                 omnom:Parameter ;
+        rdfs:label        "inputXML"^^xsd:string ;
+        omnom:isRequired  false ;
+        omnom:workflow    <http://localhost:9998/workflow/d856e6a2-402f-4db9-ba72-7d4662052bda> .

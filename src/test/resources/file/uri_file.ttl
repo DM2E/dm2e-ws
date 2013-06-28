@@ -22,5 +22,5 @@
 @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
 @prefix cc:    <http://creativecommons.org/ns#> .
 
-<http://foo.org/baz> a omnom:File ;
+[] a omnom:File ;
    omnom:fileRetrievalURI "http://foo.bar/baz" .
