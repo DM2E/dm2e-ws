@@ -67,8 +67,8 @@ public class PublishService extends AbstractTransformationService {
             if (null == endpoint) endpoint = NS.ENDPOINT_UPDATE;
             if (null == endpointSelect) endpointSelect = NS.ENDPOINT_SELECT;
 
-            jobPojo.debug("Input file: " + input);
             jobPojo.debug("Dataset: " + dataset);
+            jobPojo.debug("Input file: " + input);
             jobPojo.debug("Label: " + label);
             jobPojo.debug("Comment: " + comment);
             jobPojo.debug("Endpoint: " + endpoint);
@@ -102,8 +102,9 @@ public class PublishService extends AbstractTransformationService {
             Grafeo g = new GrafeoImpl();
             g.loadWithoutContentNegotiation(input);
             g.getObjectMapper().addObject(ds);
-            log.info("Published graph: " + g.getTurtle());
-            jobPojo.debug("Published graph: " + g.getTurtle());
+            // TODO Logging this can be very expensive (dozens of MB of output for FFM)
+//            log.info("Published graph: " + g.getTurtle());
+//            jobPojo.debug("Published graph: " + g.getTurtle());
             log.info("Write to endpoint: " + endpoint + " / Graph: " + versionedURI);
             g.postToEndpoint(endpoint, versionedURI);
             jobPojo.addOutputParameterAssignment(PARAM_RESULT_DATASET_ID, versionedURI);

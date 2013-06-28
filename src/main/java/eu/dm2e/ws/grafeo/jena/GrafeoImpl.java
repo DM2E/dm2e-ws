@@ -670,7 +670,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         	.graph(graph)
         	.endpoint(endpoint)
         	.build();
-        log.fine("Post to endpoint SPARQL UPDATE query: " + sparul.toString());
+//        log.fine("Post to endpoint SPARQL UPDATE query: " + sparul.toString());
         sparul.execute();
 
     }
