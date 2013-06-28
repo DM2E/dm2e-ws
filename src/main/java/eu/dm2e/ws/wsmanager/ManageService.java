@@ -67,9 +67,11 @@ public class ManageService {
 
 
     public static void startFuseki() {
+         System.setProperty("org.eclipse.jetty.server.Request.maxFormContentSize", "-1");
         ServerConfig config = new ServerConfig();
         config.port = 9997;
         config.pagesPort = 9997;
+        config.jettyConfigFile = "src/main/resources/fuseki-jetty.xml";
         DatasetRef ds = new DatasetRef();
         ds.name = "test";
         config.services = new ArrayList<>();

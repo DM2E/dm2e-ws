@@ -10,6 +10,7 @@ public class OmnomUnitTest {
 	protected Logger log = Logger.getLogger(getClass().getName());
 	static {
 		try {
+	        System.setProperty("org.eclipse.jetty.server.Request.maxFormContentSize", "100000000");
 			System.setProperty("java.util.logging.config.file", "logging.properties");
 			System.setProperty(GrafeoImpl.NO_EXTERNAL_URL_FLAG, "true");
 			LogManager.getLogManager().readConfiguration();
