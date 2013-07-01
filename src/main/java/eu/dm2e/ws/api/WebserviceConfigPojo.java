@@ -1,8 +1,5 @@
 package eu.dm2e.ws.api;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
@@ -69,10 +66,10 @@ public class WebserviceConfigPojo extends AbstractConfigPojo<WebserviceConfigPoj
 //	public String getId() { return id; }
 //	public void setId(String id) { this.id = id; }
 
-	@RDFProperty(NS.OMNOM.PROP_ASSIGNMENT)
-	private Set<ParameterAssignmentPojo> parameterAssignments = new HashSet<>();
-	public Set<ParameterAssignmentPojo> getParameterAssignments() { return parameterAssignments; }
-	public void setParameterAssignments(Set<ParameterAssignmentPojo> parameterAssignments) { this.parameterAssignments = parameterAssignments; }
+//	@RDFProperty(NS.OMNOM.PROP_ASSIGNMENT)
+//	private Set<ParameterAssignmentPojo> parameterAssignments = new HashSet<>();
+//	public Set<ParameterAssignmentPojo> getParameterAssignments() { return parameterAssignments; }
+//	public void setParameterAssignments(Set<ParameterAssignmentPojo> parameterAssignments) { this.parameterAssignments = parameterAssignments; }
 
 	@RDFProperty(NS.OMNOM.PROP_WEBSERVICE)
 	private WebservicePojo webservice;
