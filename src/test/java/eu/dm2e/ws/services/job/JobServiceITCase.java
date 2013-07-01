@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +30,7 @@ import eu.dm2e.ws.OmnomTestResources;
 import eu.dm2e.ws.api.AbstractJobPojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.ParameterAssignmentPojo;
+import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WorkflowJobPojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
@@ -382,17 +384,27 @@ public class JobServiceITCase extends OmnomTestCase {
 	public void testPojoPublishAssignment() {
 		JobPojo job = new JobPojo();
 		try {
-			job.addOutputParameterAssignment("sleeptime", "bar");
+			job.addOutputParameterAssignment("foo", "bar");
 		} catch (Exception e) {
 			log.info("This should fail because of missing webservice." + e);
 			assertTrue("This should fail because of missing webservice.", true);
 		}
 
 		job.setWebService(new DemoService().getWebServicePojo());
+		job.setWebserviceConfig(new WebserviceConfigPojo());
+		job.getWebserviceConfig().setWebservice(job.getWebService());
+		job.getWebserviceConfig().addParameterAssignment("sleeptime", "5");
+		job.getWebserviceConfig().publishToService(client.getConfigWebResource());
 
-		ParameterAssignmentPojo ass = job.addOutputParameterAssignment("sleeptime", "bar");
-		assertTrue("This should succeed.", true);
+		try {
+			job.addOutputParameterAssignment("foo", "bar");
+			fail("This should fail, because 'foo' is not a valid output parameter.");
+		} catch (Exception e) {
+			log.severe("" + e);
+		}
 		
+		ParameterAssignmentPojo ass = job.addOutputParameterAssignment(DemoService.PARAM_RANDOM_OUTPUT, "bar");
+		assertTrue("This should succeed.", true);
 
 		assertThat(ass.getId(), is(nullValue()));
 		assertTrue("There are blank nodes for the job and the assignments", job
@@ -403,19 +415,16 @@ public class JobServiceITCase extends OmnomTestCase {
 		job.publishToService(client.getJobWebResource());
 		Grafeo gJobAfter = job.getGrafeo();
 		GrafeoAssert.graphsAreStructurallyEquivalent(gJobBefore,gJobAfter);
-//		if (true) return;
-//		log.info(job.getTurtle());
-//		assertTrue("No more blank nodes after publishing", job
-//			.getGrafeo()
-//			.listAnonResources()
-//			.size() == 0);
+		
+		log.info(job.getTerseTurtle());
+		assertEquals("No more blank nodes after publishing", 0, job.getGrafeo().listAnonResources().size());
 //		
-//		log.info(job.getTurtle());
+		
 
-		ParameterAssignmentPojo ass1 = job.getOutputParameterAssignments().iterator().next();
+		ParameterAssignmentPojo ass1 = job.getInputParameterAssignments().iterator().next();
 		assertThat("Assignment has a URI", ass1.getId(), not(nullValue()));
 		log.info("" + job.getOutputParameterAssignments().iterator().next().getForParam());
-		ParameterAssignmentPojo ass2 = job.getParameterAssignmentForParam("sleeptime");
+		ParameterAssignmentPojo ass2 = job.getInputParameterAssignmentForParam("sleeptime");
 		assertNotNull(ass1);
 		assertNotNull(ass2);
 		assertEquals("There should one assignment", ass1.getId(), ass2.getId());

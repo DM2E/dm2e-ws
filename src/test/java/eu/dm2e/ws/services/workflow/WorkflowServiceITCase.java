@@ -139,7 +139,7 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 			respStr = wf.publishToService(client.getWorkflowWebResource());
 		} catch (Exception e1) {
 			log.severe("FAILOR" + e1);
-			throw(e1);
+			throw new RuntimeException(e1);
 		}
 		
 		assertNotNull(wf.getId());
@@ -311,7 +311,7 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 		Thread.sleep(5000);
 		workflowJob.loadFromURI(resp.getLocation());
 		log.info(workflowJob.getTerseTurtle());
-		String compLog = workflowJob.getParameterValueByName(WorkflowService.PARAM_COMPLETE_LOG);
+		String compLog = workflowJob.getOutputParameterValueByName(WorkflowService.PARAM_COMPLETE_LOG);
 		assertNotNull(compLog);
 		log.info(compLog);
 		

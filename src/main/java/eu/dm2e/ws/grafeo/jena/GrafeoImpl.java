@@ -974,7 +974,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     	ResIterator iterSub = this.getModel().listSubjects();
     	while (iterSub.hasNext()) {
     		RDFNode node = iterSub.next();
-    		if (node.isURIResource()) resSet.add(this.resource(node.asResource()));
+    		if (node.isAnon()) resSet.add(this.resource(node.asResource()));
     	}
     	return resSet;
     }

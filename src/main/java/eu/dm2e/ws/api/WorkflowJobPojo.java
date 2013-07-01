@@ -18,9 +18,12 @@ public class WorkflowJobPojo extends AbstractJobPojo {
 	}
 	@Override
 	public ParameterPojo getInputParamByName(String needle) {
-		if (null != this.getWorkflow())
-			return this.getWorkflow().getParamByName(needle);
-		return null;
+		return this.getOutputParamByName(needle);
+	}
+	
+	@Override
+	public Set<ParameterAssignmentPojo> getInputParameterAssignments() {
+		return this.getWorkflowConfig().getParameterAssignments();
 	}
 	
 	/*******************************

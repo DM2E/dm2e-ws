@@ -18,7 +18,9 @@ public class WebserviceConfigPojo extends AbstractConfigPojo<WebserviceConfigPoj
 	
 	@Override
 	public ParameterPojo getParamByName(String needle) {
-		return this.getWebservice().getParamByName(needle);
+		return (this.getWebservice() != null)
+				? this.getWebservice().getParamByName(needle)
+				: null;
 	}
 	/*********************
 	 * HELPERS

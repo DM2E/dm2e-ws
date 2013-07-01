@@ -3,9 +3,6 @@ package eu.dm2e.ws.services.xslt;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,20 +41,24 @@ public class XsltZipServiceITCase extends OmnomTestCase {
 	@Test
 	public void testRun() throws Exception {
 		
-		Map<String, String> templMap = new HashMap<String,String>();
-		templMap.put("xmlInput", XML_URI_1);
-		templMap.put("xsltZipInput", XSLTZIP_URI_1);
-		WebserviceConfigPojo conf = renderAndLoadPojo(
-				configString.get(OmnomTestResources.TEMPLATE_BLANK_XSLTZIP), 
-				templMap,
-				client.getConfigWebResource(),
-				WebserviceConfigPojo.class);
-//		WebserviceConfigPojo conf = new WebserviceConfigPojo();
-//		conf.setWebservice(SERVICE_POJO);
+//		Map<String, String> templMap = new HashMap<String,String>();
+//		templMap.put("xmlInput", XML_URI_1);
+//		templMap.put("xsltZipInput", XSLTZIP_URI_1);
+//		WebserviceConfigPojo conf = renderAndLoadPojo(
+//				configString.get(OmnomTestResources.TEMPLATE_BLANK_XSLTZIP), 
+//				templMap,
+//				client.getConfigWebResource(),
+//				WebserviceConfigPojo.class);
+		WebserviceConfigPojo conf = new WebserviceConfigPojo();
+		conf.setWebservice(new XsltZipService().getWebServicePojo());
 //		conf.publishToService();
-//		conf.addParameterAssignment(XsltZipService.XSLTZIP_IN_PARAM_NAME, XSLTZIP_URI_1);
-//		conf.addParameterAssignment(XsltZipService.XML_IN_PARAM_NAME, XML_URI_1); 
+		conf.addParameterAssignment(XsltZipService.PARAM_XSLTZIP_IN, XSLTZIP_URI_1);
+		conf.addParameterAssignment(XsltZipService.PARAM_XML_IN, XML_URI_1); 
 //		conf.publishToService();
+		conf.addParameterAssignment(XsltZipService.PARAM_PROVIDER_ID_VALUE, "my-provider");
+		conf.addParameterAssignment(XsltZipService.PARAM_DATASET_ID_VALUE, "my-dataset");
+		conf.publishToService(client.getConfigWebResource());
+		
 		
 		ClientResponse confGETresp = client.resource(conf.getId()).get(ClientResponse.class);
 		assertEquals(200, confGETresp.getStatus());

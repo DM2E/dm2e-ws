@@ -20,12 +20,20 @@ import eu.dm2e.ws.services.AbstractTransformationService;
 @Path("/service/demo")
 public class DemoService extends AbstractTransformationService {
 	
+	public static final String PARAM_SLEEPTIME = "sleeptime";
+	public static final String PARAM_COUNTDOWN_PHRASE = "countdownPhrase";
+	public static final String PARAM_RANDOM_OUTPUT = "randomOutput";
+	
     public DemoService() {
-        ParameterPojo sleeptimeParam = getWebServicePojo().addInputParameter("sleeptime");
+        ParameterPojo sleeptimeParam = getWebServicePojo().addInputParameter(PARAM_SLEEPTIME);
         sleeptimeParam.setParameterType(NS.XSD.INT);
         sleeptimeParam.setIsRequired(true);
-        ParameterPojo countdownPhraseParam = getWebServicePojo().addInputParameter("countdownPhrase");
+        
+        ParameterPojo countdownPhraseParam = getWebServicePojo().addInputParameter(PARAM_COUNTDOWN_PHRASE);
         countdownPhraseParam.setIsRequired(false);
+        
+        ParameterPojo randomOutputParam = getWebServicePojo().addOutputParameter(PARAM_RANDOM_OUTPUT);
+        randomOutputParam.setIsRequired(false);
     }
 
     @Override
@@ -36,18 +44,18 @@ public class DemoService extends AbstractTransformationService {
         jobPojo.debug("wsConf: " + wsConf);
 
         int sleepTime = 0;
-        jobPojo.debug("sleeptime: " + wsConf.getParameterValueByName("sleeptime"));
-        jobPojo.debug("countdownPhrase: " + wsConf.getParameterValueByName("countdownPhrase"));
+        jobPojo.debug("sleeptime: " + wsConf.getParameterValueByName(PARAM_SLEEPTIME));
+        jobPojo.debug("countdownPhrase: " + wsConf.getParameterValueByName(PARAM_COUNTDOWN_PHRASE));
 
         try {
-            sleepTime = Integer.parseInt(wsConf.getParameterValueByName("sleeptime"));
+            sleepTime = Integer.parseInt(wsConf.getParameterValueByName(PARAM_SLEEPTIME));
         } catch(Exception e) {
-            jobPojo.warn(wsConf.getParameterValueByName("sleeptime") + " " + ErrorMsg.ILLEGAL_PARAMETER_VALUE.toString() + " " + e);
+            jobPojo.warn(wsConf.getParameterValueByName(PARAM_SLEEPTIME) + " " + ErrorMsg.ILLEGAL_PARAMETER_VALUE.toString() + " " + e);
         }
         log.info("Parsed sleeptime: " + sleepTime);
-        String countdownPhrase = (null == wsConf.getParameterValueByName("countdownPhrase"))
+        String countdownPhrase = (null == wsConf.getParameterValueByName(PARAM_COUNTDOWN_PHRASE))
         		? "bottles of beer on the wall."
-        		: wsConf.getParameterValueByName("countdownPhrase");
+        		: wsConf.getParameterValueByName(PARAM_COUNTDOWN_PHRASE);
 
         jobPojo.debug("DemoWorker will sleep for " + sleepTime + " seconds.");
         jobPojo.setStarted();

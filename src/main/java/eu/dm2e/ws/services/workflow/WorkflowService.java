@@ -461,7 +461,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 						ass = workflowConfig.getParameterAssignmentForParam(conn.getFromParam());
 					} else {
 						// if the connector is from a previous position, take the value from the corresponding previous job
-						ass = finishedJobs.get(conn.getFromPosition().getId()).getParameterAssignmentForParam(conn.getFromParam()); 
+						ass = finishedJobs.get(conn.getFromPosition().getId()).getOutputParameterAssignmentForParam(conn.getFromParam()); 
 						workflowJob.debug("Finished Jobs: " + finishedJobs.keySet());
 						workflowJob.debug("This connector fromPosition: " + conn.getFromPosition());
 					}

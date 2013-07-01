@@ -1,6 +1,22 @@
 package eu.dm2e.ws.services.workflow;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
+import java.net.URI;
+import java.util.logging.Logger;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.sun.jersey.api.client.ClientResponse;
+
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
@@ -10,17 +26,6 @@ import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.services.xslt.XsltService;
 import eu.dm2e.ws.services.xslt.XsltZipService;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
 
 /**
  * This file was created within the DM2E project.
@@ -63,13 +68,13 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
         if (null == XML_URI_1) { fail("Couldn't store test file."); }
         log.info("XML_URI_1: " + XML_URI_1);
 
-        Map<String, String> templMap = new HashMap<String,String>();
-            templMap.put("xmlInput", XML_URI_1);
-            templMap.put("xsltZipInput", XSLTZIP_URI_1);
+//        Map<String, String> templMap = new HashMap<String,String>();
+//            templMap.put(XsltZipService.PARAM_XML_IN, XML_URI_1);
+//            templMap.put("xsltZipInput", XSLTZIP_URI_1);
         WebservicePojo ws = new WebservicePojo();
         ws.loadFromURI(XSLTZIP_SERVICE_URI);
         WebserviceConfigPojo conf = new WebserviceConfigPojo();
-            conf.setWebservice(ws);
+        conf.setWebservice(ws);
         conf.addParameterAssignment(XsltZipService.PARAM_XML_IN, XML_URI_1);
         conf.addParameterAssignment(XsltZipService.PARAM_XSLTZIP_IN, XSLTZIP_URI_1);
         conf.addParameterAssignment(XsltZipService.PARAM_DATASET_ID_VALUE, "IngestionTest");
@@ -109,7 +114,7 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
                 }
 
             }
-        return jobPojo.getParameterValueByName(XsltZipService.PARAM_XML_OUT);
+        return jobPojo.getOutputParameterValueByName(XsltZipService.PARAM_XML_OUT);
     }
 
 
@@ -159,7 +164,7 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
             job.loadFromURI(jobUri);
             log.info(job.toLogString());
         }
-        String resultUri = job.getParameterValueByName(XsltService.PARAM_XML_OUT);
+        String resultUri = job.getOutputParameterValueByName(XsltService.PARAM_XML_OUT);
         assertNotNull(resultUri);
         log.info("Job finished. Result is at " + resultUri );
 
@@ -222,6 +227,7 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
              */
             log.info("Status: " + job.getStatus());
             assertEquals(JobStatus.FINISHED.name(), job.getStatus());
+            log.info("Log: " + job.toLogString());
 
         } catch (Exception e) {
             log.info("" + e);

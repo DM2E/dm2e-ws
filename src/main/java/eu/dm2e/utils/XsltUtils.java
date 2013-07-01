@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
@@ -57,11 +58,11 @@ public class XsltUtils {
 		this.client = client;
 	}
 	
-	public static class DEFAULT_PARAM_NAMES {
+	public static class DEFAULT_PARAMETER_NAMES {
 		public static final String PROVIDER_ID_KEY = "DATAPROVIDER_ABB";
-		public static final String PROVIDER_ID_VALUE = "PROVIDER_NOT_SET";
+		public static final String PROVIDER_ID_VALUE = "DATAPROVIDER_ABB_NOT_SET";
 		public static final String DATASET_ID_KEY = "REPOSITORY_ABB";
-		public static final String DATASET_ID_VALUE = "DATASET_ID_NOT_SET";
+		public static final String DATASET_ID_VALUE = "REPOSITORY_ABB_NOT_SET";
 	}
 
 	/**
@@ -108,41 +109,48 @@ public class XsltUtils {
 	 */
 	public StringWriter transformXsltUrl(String xmlUrl, String xsltUrl, Map<String,String> paramMap)
 			throws TransformerFactoryConfigurationError, Throwable {
-		StringWriter xslResultStrWriter = new StringWriter();
-		TransformerFactory tFactory = TransformerFactory.newInstance();
-		addErrorListenerToTFactory(tFactory);
 		StreamSource xmlSource = new StreamSource(new URL(xmlUrl).openStream());
 		StreamSource xslSource = new StreamSource(new URL(xsltUrl).openStream());
 		
-		Transformer transformer = tFactory.newTransformer(xslSource);
-
-		for (Entry<String,String> e: paramMap.entrySet())
-			transformer.setParameter(e.getKey(), e.getValue());
-
-		StreamResult xslResult = new StreamResult(xslResultStrWriter);
-
-		transformer.transform(xmlSource, xslResult);
-		
-		return xslResultStrWriter;
+		return doTransformXslt(xslSource, xmlSource, paramMap);
 	}
 	
 	public StringWriter transformXsltFile(String xmlUrl, String xsltPath, Map<String,String> paramMap) throws MalformedURLException, IOException, TransformerException {
-		StringWriter xslResultStrWriter = new StringWriter();
-		TransformerFactory tFactory = TransformerFactory.newInstance();
-		addErrorListenerToTFactory(tFactory);
 		StreamSource xslSource = new StreamSource(new File(xsltPath));
 		xslSource.setSystemId(new File(xsltPath));
-		
-		Transformer transformer = tFactory.newTransformer(xslSource);
-
-		StreamResult xslResult = new StreamResult(xslResultStrWriter);
-
 		StreamSource xmlSource = new StreamSource(new URL(xmlUrl).openStream());
-		for (Entry<String,String> e: paramMap.entrySet())
+		
+		return doTransformXslt(xslSource, xmlSource, paramMap);
+		
+	}
+
+	/**
+	 * @param xslSource
+	 * @param xmlSource
+	 * @param paramMap
+	 * @return
+	 * @throws TransformerFactoryConfigurationError
+	 * @throws TransformerConfigurationException
+	 * @throws TransformerException
+	 */
+	private StringWriter doTransformXslt(StreamSource xslSource,
+			StreamSource xmlSource,
+			Map<String, String> paramMap)
+			throws TransformerFactoryConfigurationError, TransformerConfigurationException,
+			TransformerException {
+		StringWriter xslResultStrWriter = new StringWriter();
+		StreamResult xslResult = new StreamResult(xslResultStrWriter);
+		TransformerFactory tFactory = TransformerFactory.newInstance();
+		addErrorListenerToTFactory(tFactory);
+		Transformer transformer = tFactory.newTransformer(xslSource);
+		
+		for (Entry<String,String> e: paramMap.entrySet()) {
+			jobPojo.debug(String.format("Setting XSLT parameter '%s' to '%s'", e.getKey(), e.getValue()));
 			transformer.setParameter(e.getKey(), e.getValue());
+		}
+
 		transformer.transform(xmlSource, xslResult);
 		return xslResultStrWriter;
-		
 	}
 	
 	

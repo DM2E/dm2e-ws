@@ -22,10 +22,10 @@ public class XsltZipService extends AbstractTransformationService {
 	public static final String PARAM_XML_IN = "xmlInput";
 	public static final String PARAM_XML_OUT = "xmlOutput";
 	public static final String PARAM_XSLT_PARAMETERS = "xslParams";
-	public static final String PARAM_PROVIDER_ID_VALUE = "provider-id";
-	public static final String PARAM_DATASET_ID_VALUE = "dataset-id";
 	public static final String PARAM_PROVIDER_ID_KEY = "provider-id-param";
+	public static final String PARAM_PROVIDER_ID_VALUE = "provider-id";
 	public static final String PARAM_DATASET_ID_KEY = "dataset-id-param";
+	public static final String PARAM_DATASET_ID_VALUE = "dataset-id";
 
 	@Override
 	public WebservicePojo getWebServicePojo() {
@@ -47,20 +47,20 @@ public class XsltZipService extends AbstractTransformationService {
 		xsltParameterString.setParameterType("xsd:string");
 		
 		ParameterPojo providerIdKeyParam = ws.addInputParameter(PARAM_PROVIDER_ID_KEY);
-		providerIdKeyParam.setDefaultValue(XsltUtils.DEFAULT_PARAM_NAMES.PROVIDER_ID_KEY);
+		providerIdKeyParam.setDefaultValue(XsltUtils.DEFAULT_PARAMETER_NAMES.PROVIDER_ID_KEY);
 		providerIdKeyParam.setComment("Provider ID Parameter used in XSLT");
 
 		ParameterPojo providerIdValueParam = ws.addInputParameter(PARAM_PROVIDER_ID_VALUE);
-		providerIdValueParam.setDefaultValue(XsltUtils.DEFAULT_PARAM_NAMES.PROVIDER_ID_VALUE);
+		providerIdValueParam.setDefaultValue(XsltUtils.DEFAULT_PARAMETER_NAMES.PROVIDER_ID_VALUE);
 		providerIdValueParam.setComment("Provider ID");
 
-		ParameterPojo datasetIdParam = ws.addInputParameter(PARAM_DATASET_ID_KEY);
-		datasetIdParam.setDefaultValue(XsltUtils.DEFAULT_PARAM_NAMES.DATASET_ID_KEY);
-		datasetIdParam.setComment("Dataset ID Parameter used in XSLT");
+		ParameterPojo datasetIdKeyParam = ws.addInputParameter(PARAM_DATASET_ID_KEY);
+		datasetIdKeyParam.setDefaultValue(XsltUtils.DEFAULT_PARAMETER_NAMES.DATASET_ID_KEY);
+		datasetIdKeyParam.setComment("Dataset ID Parameter used in XSLT");
 		
-		ParameterPojo datasetId = ws.addInputParameter(PARAM_DATASET_ID_VALUE);
-		providerIdKeyParam.setDefaultValue(XsltUtils.DEFAULT_PARAM_NAMES.DATASET_ID_VALUE);
-		datasetId.setComment("Dataset ID");
+		ParameterPojo datasetIdValueParam = ws.addInputParameter(PARAM_DATASET_ID_VALUE);
+		datasetIdValueParam.setDefaultValue(XsltUtils.DEFAULT_PARAMETER_NAMES.DATASET_ID_VALUE);
+		datasetIdValueParam.setComment("Dataset ID");
 
 		ParameterPojo xmlOutParam = ws.addOutputParameter(PARAM_XML_OUT);
 		xmlOutParam.setComment("XML output");
@@ -93,21 +93,21 @@ public class XsltZipService extends AbstractTransformationService {
 				throw new InvalidParameterException("Parameter error: " + e);
 			}
 			// PARAM_XSLT_PARAMETERS
-			String paramMapStr = jobPojo.getParameterValueByName(PARAM_XSLT_PARAMETERS);
+			String paramMapStr = jobPojo.getInputParameterValueByName(PARAM_XSLT_PARAMETERS);
 			paramMap = xsltUtils.parseXsltParameters(paramMapStr);
 			
-			// PROVIDER_ID
-			providerId = jobPojo.getParameterValueByName(PARAM_PROVIDER_ID_VALUE);
 			// PARAM_PROVIDER_ID_KEY
-			providerIdKey = jobPojo.getParameterValueByName(PARAM_PROVIDER_ID_KEY);
+			providerIdKey = jobPojo.getInputParameterValueByName(PARAM_PROVIDER_ID_KEY);
+			// PARAM_PROVIDER_ID_VALUE
+			providerId = jobPojo.getInputParameterValueByName(PARAM_PROVIDER_ID_VALUE);
 			jobPojo.debug("Provider XSLT Param: " + providerIdKey + ": "+ providerId);
 			paramMap.put(providerIdKey, providerId);
 			
 			// PARAM_DATASET_ID_KEY
-			datasetIdKey = jobPojo.getParameterValueByName(PARAM_DATASET_ID_KEY);
+			datasetIdKey = jobPojo.getInputParameterValueByName(PARAM_DATASET_ID_KEY);
 			// PARAM_DATASET_ID_VALUE
-			datasetId = jobPojo.getParameterValueByName(PARAM_DATASET_ID_VALUE);
-			jobPojo.debug("Dataset ID XSLT Param: " + providerIdKey + ": "+ providerId);
+			datasetId = jobPojo.getInputParameterValueByName(PARAM_DATASET_ID_VALUE);
+			jobPojo.debug("Dataset ID XSLT Param: " + datasetIdKey + ": "+ datasetId);
 			paramMap.put(datasetIdKey, datasetId);
 			
 			jobPojo.info("Preparing transformation");

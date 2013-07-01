@@ -334,7 +334,7 @@ public interface Grafeo {
 	Set<GResource> listResources();
 
 	/**
-	 * List all blank nodes that appear as objects in triples in the graph.
+	 * List all blank nodes that appear as subjects or objects in triples in the graph.
 	 * 
 	 * @return A Set of GResource representing blank nodes
 	 */

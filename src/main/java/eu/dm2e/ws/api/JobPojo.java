@@ -1,6 +1,7 @@
 package eu.dm2e.ws.api;
 
 import java.net.URI;
+import java.util.Set;
 
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
@@ -20,8 +21,13 @@ public class JobPojo extends AbstractJobPojo {
 	
 	@Override
 	public ParameterPojo getInputParamByName(String needle) {
-		if (null != this.getWebService())
-			return this.getWebService().getParamByName(needle);
+		return this.getOutputParamByName(needle);
+	}
+	
+	@Override
+	public Set<ParameterAssignmentPojo> getInputParameterAssignments() {
+		if (null != this.getWebserviceConfig())
+			return this.getWebserviceConfig().getParameterAssignments();
 		return null;
 	}
 	

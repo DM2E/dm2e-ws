@@ -208,10 +208,10 @@ public abstract class AbstractJobPojo extends AbstractPersistentPojo<AbstractJob
 		this.getOutputParameterAssignments().add(ass);
 		return ass;
 	}
-	public ParameterAssignmentPojo getParameterAssignmentForParam(ParameterPojo param) {
-		return this.getParameterAssignmentForParam(param.getId());
+	public ParameterAssignmentPojo getOutputParameterAssignmentForParam(ParameterPojo param) {
+		return this.getOutputParameterAssignmentForParam(param.getId());
 	}
-	public ParameterAssignmentPojo getParameterAssignmentForParam(String needle) {
+	public ParameterAssignmentPojo getOutputParameterAssignmentForParam(String needle) {
 		for (ParameterAssignmentPojo ass: this.getOutputParameterAssignments()) {
 			if (ass.getForParam().matchesParameterName(needle)) {
 				return ass;
@@ -220,13 +220,37 @@ public abstract class AbstractJobPojo extends AbstractPersistentPojo<AbstractJob
 		return null;
 	}
 	/**
-	 * Returns the value of a certain parameter, or its default value if no assignment is found.
+	 * Returns the value of an output parameter.
 	 * 
 	 * @param needle
 	 * @return
 	 */
-	public String getParameterValueByName(String needle) {
-		ParameterAssignmentPojo ass = getParameterAssignmentForParam(needle);
+	public String getOutputParameterValueByName(String needle) {
+		ParameterAssignmentPojo ass = getOutputParameterAssignmentForParam(needle);
+		if (ass != null) {
+			return ass.getParameterValue();
+		}
+		return null;
+	}
+	public ParameterAssignmentPojo getInputParameterAssignmentForParam(ParameterPojo param) {
+		return getInputParameterAssignmentForParam(param.getId());
+	}
+	public ParameterAssignmentPojo getInputParameterAssignmentForParam(String needle) {
+		for (ParameterAssignmentPojo ass: this.getInputParameterAssignments()) {
+			if (ass.getForParam().matchesParameterName(needle)) {
+				return ass;
+			}
+		}
+		return null;
+	}
+	/**
+	 * Returns the value of an input parameter, or its default value if no assignment is found.
+	 * 
+	 * @param needle
+	 * @return
+	 */
+	public String getInputParameterValueByName(String needle) {
+		ParameterAssignmentPojo ass = getInputParameterAssignmentForParam(needle);
 		if (ass != null) {
 			return ass.getParameterValue();
 		} else {
@@ -239,6 +263,7 @@ public abstract class AbstractJobPojo extends AbstractPersistentPojo<AbstractJob
 	}
 
 	abstract public ParameterPojo getInputParamByName(String needle);
+	abstract public Set<ParameterAssignmentPojo> getInputParameterAssignments();
 	abstract public ParameterPojo getOutputParamByName(String paramName);
 
 	/*********************

@@ -98,7 +98,7 @@ public class XsltServiceITCase extends OmnomTestCase {
 	    	job.loadFromURI(jobUri);
 	    	log.info(job.toLogString());
     	}
-    	String resultUri = job.getParameterValueByName(XsltService.PARAM_XML_OUT);
+    	String resultUri = job.getOutputParameterValueByName(XsltService.PARAM_XML_OUT);
     	assertNotNull(resultUri);
     	log.info("Job finished. Result is at " + resultUri );
     	log.info(job.getTerseTurtle());
