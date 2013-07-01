@@ -219,14 +219,26 @@ public abstract class AbstractJobPojo extends AbstractPersistentPojo<AbstractJob
 		}
 		return null;
 	}
+	/**
+	 * Returns the value of a certain parameter, or its default value if no assignment is found.
+	 * 
+	 * @param needle
+	 * @return
+	 */
 	public String getParameterValueByName(String needle) {
 		ParameterAssignmentPojo ass = getParameterAssignmentForParam(needle);
-		if (ass == null) {
-			return null;
+		if (ass != null) {
+			return ass.getParameterValue();
+		} else {
+			ParameterPojo param = getInputParamByName(needle);
+			if (null == param) 
+				return null;
+			String defaultValue = param.getDefaultValue();
+			return defaultValue;
 		}
-		return ass.getParameterValue();
 	}
 
+	abstract public ParameterPojo getInputParamByName(String needle);
 	abstract public ParameterPojo getOutputParamByName(String paramName);
 
 	/*********************

@@ -12,9 +12,15 @@ public class WorkflowJobPojo extends AbstractJobPojo {
 	
 	@Override
 	public ParameterPojo getOutputParamByName(String paramName) {
-		if (null == this.getWorkflow())
-			return null;
-		return this.getWorkflow().getParamByName(paramName);
+		if (null != this.getWorkflow())
+			return this.getWorkflow().getParamByName(paramName);
+		return null;
+	}
+	@Override
+	public ParameterPojo getInputParamByName(String needle) {
+		if (null != this.getWorkflow())
+			return this.getWorkflow().getParamByName(needle);
+		return null;
 	}
 	
 	/*******************************

@@ -58,6 +58,8 @@ public class XsltService extends AbstractTransformationService {
 		jobPojo.setStarted();
 		String xmlUrl, xsltUrl;
 		try {
+			XsltUtils xsltUtils = new XsltUtils(client, jobPojo);
+			
 			// TODO this should be refactored to a validation routine in the JobPojo
 			// PARAM_XML_IN
 			xmlUrl = jobPojo.getWebserviceConfig().getParameterValueByName(PARAM_XML_IN);
@@ -72,13 +74,13 @@ public class XsltService extends AbstractTransformationService {
 			// PARAM_XSLT_PARAMETERS
 			String paramMapStr = jobPojo.getWebserviceConfig().getParameterValueByName(PARAM_XSLT_PARAMETERS);
 			Map<String, String> paramMap;
-			paramMap = XsltUtils.parseXsltParameters(paramMapStr);
+			paramMap = xsltUtils.parseXsltParameters(paramMapStr);
 			
 			
 			jobPojo.info("Starting transformation");
 
 			StringWriter xslResultStrWriter = null;
-			xslResultStrWriter = XsltUtils.transformXslt(xmlUrl, xsltUrl, paramMap);
+			xslResultStrWriter = xsltUtils.transformXsltUrl(xmlUrl, xsltUrl, paramMap);
 			assert(null != xslResultStrWriter);
 			jobPojo.info("Getting the transformation result as a string.");
 			String xslResultStr = "";

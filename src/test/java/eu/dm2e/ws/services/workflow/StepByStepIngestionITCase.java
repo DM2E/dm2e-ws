@@ -70,10 +70,10 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
         ws.loadFromURI(XSLTZIP_SERVICE_URI);
         WebserviceConfigPojo conf = new WebserviceConfigPojo();
             conf.setWebservice(ws);
-        conf.addParameterAssignment(XsltZipService.XML_IN_PARAM_NAME, XML_URI_1);
-        conf.addParameterAssignment(XsltZipService.XSLTZIP_IN_PARAM_NAME, XSLTZIP_URI_1);
-        conf.addParameterAssignment(XsltZipService.DATASET_ID, "IngestionTest");
-        conf.addParameterAssignment(XsltZipService.PROVIDER_ID, "dm2edev");
+        conf.addParameterAssignment(XsltZipService.PARAM_XML_IN, XML_URI_1);
+        conf.addParameterAssignment(XsltZipService.PARAM_XSLTZIP_IN, XSLTZIP_URI_1);
+        conf.addParameterAssignment(XsltZipService.PARAM_DATASET_ID_VALUE, "IngestionTest");
+        conf.addParameterAssignment(XsltZipService.PARAM_PROVIDER_ID_VALUE, "dm2edev");
         conf.publishToService(client.getConfigWebResource());
 
 
@@ -109,7 +109,7 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
                 }
 
             }
-        return jobPojo.getParameterValueByName(XsltZipService.XML_OUT_PARAM_NAME);
+        return jobPojo.getParameterValueByName(XsltZipService.PARAM_XML_OUT);
     }
 
 

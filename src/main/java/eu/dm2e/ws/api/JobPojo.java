@@ -12,8 +12,17 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 public class JobPojo extends AbstractJobPojo {
 	
 	@Override
-	public ParameterPojo getOutputParamByName(String paramName) {
-		return this.getWebService().getParamByName(paramName);
+	public ParameterPojo getOutputParamByName(String needle) {
+		if (null != this.getWebService())
+			return this.getWebService().getParamByName(needle);
+		return null;
+	}
+	
+	@Override
+	public ParameterPojo getInputParamByName(String needle) {
+		if (null != this.getWebService())
+			return this.getWebService().getParamByName(needle);
+		return null;
 	}
 	
     public JobPojo() { 
@@ -43,5 +52,6 @@ public class JobPojo extends AbstractJobPojo {
     private WebserviceConfigPojo webserviceConfig;
 	public WebserviceConfigPojo getWebserviceConfig() { return webserviceConfig; }
 	public void setWebserviceConfig(WebserviceConfigPojo webserviceConfig) { this.webserviceConfig = webserviceConfig; }
+
 
 }
