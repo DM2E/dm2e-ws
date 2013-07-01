@@ -43,6 +43,12 @@ public class WebservicePojo extends AbstractPersistentPojo<WebservicePojo> imple
     	return param;
     }
     
+    public WebserviceConfigPojo createConfig() {
+    	WebserviceConfigPojo wsconf = new WebserviceConfigPojo();
+    	wsconf.setWebservice(this);
+    	return wsconf;
+    }
+    
     /* (non-Javadoc)
 	 * @see eu.dm2e.ws.api.IWebservicePojo#addInputParameter(java.lang.String)
 	 */
@@ -107,8 +113,5 @@ public class WebservicePojo extends AbstractPersistentPojo<WebservicePojo> imple
     private Set<ParameterPojo> outputParams = new HashSet<>();
 	@Override public Set<ParameterPojo> getOutputParams() { return outputParams; }
 	@Override public void setOutputParams(Set<ParameterPojo> outputParams) { this.outputParams = outputParams; }
-
-
-
 
 }
