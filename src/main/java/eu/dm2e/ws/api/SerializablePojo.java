@@ -18,7 +18,7 @@ import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
  */
 public abstract class SerializablePojo<T> {
 
-	protected Logger log = Logger.getLogger(getClass().getName());
+	protected transient Logger log = Logger.getLogger(getClass().getName());
 	
 	public SerializablePojo() {
 		super();
