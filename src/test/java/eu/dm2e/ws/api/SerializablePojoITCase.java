@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import eu.dm2e.ws.OmnomUnitTest;
@@ -14,6 +15,7 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
 import eu.dm2e.ws.grafeo.test.IntegerPojo;
+import eu.dm2e.ws.services.xslt.XsltService;
 
 public class SerializablePojoITCase extends OmnomUnitTest {
 	
@@ -72,4 +74,25 @@ public class SerializablePojoITCase extends OmnomUnitTest {
 		}
 	}	
 
+	@Ignore("Test with actual implementation")
+	@Test
+	public void testJson() {
+		{
+			MockPojo mock = new MockPojo();
+			mock.setId("http://foo");
+			mock.setFooProp("23");
+			log.info(mock.getFlatJson());
+		}
+		{
+			WebservicePojo ws = new XsltService().getWebServicePojo();
+			log.info(ws.getTerseTurtle());
+			log.info(ws.getFlatJson());
+		}
+		{
+			WebservicePojo ws = new XsltService().getWebServicePojo();
+			WebserviceConfigPojo wsconf = ws.createConfig();
+			wsconf.addParameterAssignment(XsltService.PARAM_XML_IN, "http://foo");
+			log.info(wsconf.getFlatJson());
+		}
+	}
 }
