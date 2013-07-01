@@ -110,7 +110,6 @@ public class DemoServiceITCase extends OmnomTestCase {
     	}
     }
 
-    @Ignore("Refactor this")
     @Test
     public void testDemo() {
     	
@@ -124,8 +123,8 @@ public class DemoServiceITCase extends OmnomTestCase {
         WebserviceConfigPojo config = new WebserviceConfigPojo();
         config.setWebservice(ws);
 //        config.setId(SERVICE_URI + "/" + )
-        client.publishPojoToConfigService(config);
-        config.addParameterAssignment("sleeptime", "2");
+//        client.publishPojoToConfigService(config);
+//        config.addParameterAssignment("sleeptime", "2");
         client.publishPojoToConfigService(config);
         
         log.info("Configuration created for Test: " + config.getTurtle());
@@ -156,6 +155,7 @@ public class DemoServiceITCase extends OmnomTestCase {
         job = g.getObjectMapper().getObject(JobPojo.class, joburi.toString());
         status =  job.getStatus();
         log.info("Status after 4 seconds: " + status);
+        log.info(job.toLogString());
         assert(status.equals(JobStatus.FINISHED.name()));
 
     }
