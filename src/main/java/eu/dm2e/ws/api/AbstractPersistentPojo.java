@@ -12,8 +12,7 @@ import eu.dm2e.ws.services.Client;
 
 public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
 	
-	protected static Client client = new Client();
-	
+	protected static transient Client client = new Client();
 	
 	public void loadFromURI(String uri) throws Exception {
 		this.loadFromURI(uri, 0);
