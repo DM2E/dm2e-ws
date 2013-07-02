@@ -22,9 +22,6 @@ public class WebserviceConfigPojo extends AbstractConfigPojo<WebserviceConfigPoj
 	/*********************
 	 * HELPERS
 	 ********************/
-    /* (non-Javadoc)
-	 * @see eu.dm2e.ws.api.ConfigPojo#validateConfig()
-	 */
     @Override
 	public void validate() throws Exception {
 		/*
@@ -32,7 +29,7 @@ public class WebserviceConfigPojo extends AbstractConfigPojo<WebserviceConfigPoj
 		 */
 		IWebservice ws = getWebservice();
 		if (null == ws) {
-			throw new RuntimeException("Can't validate without webservice description:\n" + this.getTurtle());
+			throw new RuntimeException(this + ": Can't validate without webservice description:\n" + this.getTerseTurtle());
 		}
 		for (ParameterPojo param : ws.getInputParams()) {
 			log.info("Validating param: " + param.getId());

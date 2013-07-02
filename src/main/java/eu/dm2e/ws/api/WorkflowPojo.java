@@ -190,6 +190,8 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
 		if (this.getPositions().isEmpty()) {
 			throw new RuntimeException("No positions in the workflow.");
 		}
+		for (WorkflowPositionPojo pos : this.getPositions())
+			pos.validate();
 	}
     
     

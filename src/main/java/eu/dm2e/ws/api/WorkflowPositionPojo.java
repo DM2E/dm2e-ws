@@ -7,8 +7,17 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/"})
 @RDFClass(NS.OMNOM.CLASS_WORKFLOW_POSITION)
-public class WorkflowPositionPojo extends SerializablePojo<WorkflowPositionPojo>{
+public class WorkflowPositionPojo extends SerializablePojo<WorkflowPositionPojo> implements IValidatable{
 	
+	@Override
+	public void validate() throws Exception {
+		if (null == workflow)
+			throw new AssertionError(this + " has no workflow");
+		if (null == webserviceConfig)
+			throw new AssertionError(this + " has no webserviceConfig");
+		else
+			webserviceConfig.validate();
+	}
 
     /*********************
      * CONSTRUCTORS
