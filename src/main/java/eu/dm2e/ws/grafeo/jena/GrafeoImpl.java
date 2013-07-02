@@ -643,9 +643,10 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         	.build()
         	.execute(this);
     }
-    @Override
-    public void putToEndpoint(String endpoint, String graph) {
-        GrafeoImpl gTest1 = new GrafeoImpl();
+    
+	@Override
+	public void putToEndpoint(String endpoint, String graph) {
+//        GrafeoImpl gTest1 = new GrafeoImpl();
 //        gTest1.readFromEndpoint(NS.ENDPOINT_SELECT, graph);
 //        log.info("Before Size: " + gTest1.size());
 //        log.info("Put to endpoint: " + endpoint + " / Graph: " + graph);
@@ -817,13 +818,16 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     		if (spo.get(i) == null) spo.set(i, "?var" + i);
     		else spo.set(i, spo.get(i).startsWith("?") 
 	    			? spo.get(i) 
-					: String.format("<%s>", expand(spo.get(i))));
+					: spo.get(i).startsWith("\"")
+		    			? spo.get(i) 
+						: String.format("<%s>", expand(spo.get(i))));
     	}
-        return new SparqlAsk.Builder()
+        SparqlAsk sparqlask = new SparqlAsk.Builder()
         	.ask(String.format("%s %s %s", spo.toArray()))
         	.grafeo(this)
-        	.build()
-        	.execute();
+        	.build();
+        log.fine("Contians Triple: " + sparqlask);
+        return sparqlask.execute();
     }
 
     @Override
