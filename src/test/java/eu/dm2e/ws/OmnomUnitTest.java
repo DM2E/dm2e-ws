@@ -6,10 +6,18 @@ import java.util.logging.Logger;
 
 import org.junit.ComparisonFailure;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import eu.dm2e.ws.api.json.OmnomJsonSerializer;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 public class OmnomUnitTest {
 	
 	protected Logger log = Logger.getLogger(getClass().getName());
+	protected Gson testGson = new GsonBuilder()
+									.setPrettyPrinting()
+									.create();
+	protected OmnomJsonSerializer jsonSerializer = new OmnomJsonSerializer();
 	static {
 		try {
 	        System.setProperty("org.eclipse.jetty.server.Request.maxFormContentSize", "100000000");

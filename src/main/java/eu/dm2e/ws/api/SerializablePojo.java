@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.json.OmnomJsonSerializer;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFId;
@@ -19,6 +20,8 @@ import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 public abstract class SerializablePojo<T> {
 
 	protected transient Logger log = Logger.getLogger(getClass().getName());
+	public static transient final String JSON_FIELD_ID = "id";
+	public static transient final String JSON_FIELD_RDF_TYPE = "rdf:type";
 	
 	public SerializablePojo() {
 		super();
@@ -38,11 +41,26 @@ public abstract class SerializablePojo<T> {
 	public String getRDFClassUri() {
         if (this.getClass().isAnnotationPresent(RDFClass.class)) {
         	String uri = this.getClass().getAnnotation(RDFClass.class).value();
-        	uri = this.getGrafeo().expand(uri);
+        	uri = new GrafeoImpl().expand(uri);
         	return uri;
         }
         return null;
 	}
+	/***************************************
+	 * 
+	 * JSON Serialization
+	 * 
+	 **************************************/
+	public String toJson() {
+		return OmnomJsonSerializer.serializeToJSON(this, getClass());
+	}
+	
+	
+	/***************************************
+	 * 
+	 * Grafeo / RDF Serialization
+	 * 
+	 **************************************/
 
 	/**
 	 * Get a new grafeo with all the statements of this class added as RDF.
@@ -54,21 +72,10 @@ public abstract class SerializablePojo<T> {
 		g.getObjectMapper().addObject(this);
 		return g;
 	}
-	public String getTerseTurtle() {
-		return getGrafeo().getTerseTurtle();
-	}
-
-	public String getTurtle() {
-		return getGrafeo().getTurtle();
-	}
-
-	public String getNTriples() {
-		return getGrafeo().getNTriples();
-	}
-
-	public String getCanonicalNTriples() {
-		return getGrafeo().getCanonicalNTriples();
-	}
+	public String getTerseTurtle() { return getGrafeo().getTerseTurtle(); }
+	public String getTurtle() { return getGrafeo().getTurtle(); }
+	public String getNTriples() { return getGrafeo().getNTriples(); }
+	public String getCanonicalNTriples() { return getGrafeo().getCanonicalNTriples(); }
 	
     /**
      * The format is Classname<URI or 'BLANK'>(label)
@@ -98,7 +105,9 @@ public abstract class SerializablePojo<T> {
     }
     
     /*********************************************
+     * 
      * GETTERS SETTERS PREDICATES
+     * 
      *********************************************/
 	
     /**
@@ -121,13 +130,21 @@ public abstract class SerializablePojo<T> {
 	}
 	
     /**
+     * 
      * Every Pojo can have a label, bridge between human-readable and machine-readable
+     * 
      */
     @RDFProperty(NS.RDFS.PROP_LABEL)
     private String label;
     public String getLabel() { return label; }
 	public void setLabel(String label) { this.label = label; }
 	public boolean hasLabel() { return this.label != null; }
+	
+	/***************************
+	 * 
+	 * equals & hashCode
+	 * 
+	 *************************/
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()

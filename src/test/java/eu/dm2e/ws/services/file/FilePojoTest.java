@@ -1,17 +1,69 @@
 package eu.dm2e.ws.services.file;
 
-import eu.dm2e.ws.api.FilePojo;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
-import org.junit.Test;
-
-import java.util.logging.Logger;
-
 import static org.junit.Assert.assertEquals;
 
-public class FilePojoTest {
-	Logger log = Logger.getLogger(getClass().getName());
+import org.junit.Test;
 
-//	@Test
+import com.google.gson.JsonObject;
+
+import eu.dm2e.ws.OmnomUnitTest;
+import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.api.SerializablePojo;
+import eu.dm2e.ws.api.json.OmnomJsonSerializer;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+
+public class FilePojoTest extends OmnomUnitTest{
+	
+	@Test
+	public void serializeToJson() {
+		
+		final String retUri = "http://foo/bar.ext";
+		final String editUri = "http://foo/bar.ext/edit";
+		final String fileStatus = "AVAILABLE";
+		final String jobId = "http://job/1";
+		
+		{
+			FilePojo fp = new FilePojo();
+			fp.setFileSize(100L);
+			fp.setFileRetrievalURI(retUri);
+			fp.setFileEditURI(editUri);
+			fp.setFileStatus(fileStatus);
+			
+			JsonObject expect = new JsonObject();
+			expect.addProperty("fileSize", 100L);
+			expect.addProperty("fileRetrievalURI", retUri);
+			expect.addProperty("fileEditURI", editUri);
+			expect.addProperty("fileStatus", fileStatus);
+			expect.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, fp.getRDFClassUri());
+			
+			assertEquals(testGson.toJson(expect), OmnomJsonSerializer.serializeToJSON(fp, FilePojo.class));
+			assertEquals(testGson.toJson(expect), fp.toJson());
+		}
+		{
+			JobPojo job = new JobPojo();
+			job.setId(jobId);
+			
+			FilePojo fp = new FilePojo();
+			fp.setFileSize(100L);
+			fp.setFileStatus(fileStatus);
+			fp.setGeneratorJob(job);
+			
+			JsonObject expect = new JsonObject();
+			expect.addProperty("fileSize", 100L);
+			expect.addProperty("fileStatus", fileStatus);
+			JsonObject jobObj = new JsonObject();
+			jobObj.addProperty(SerializablePojo.JSON_FIELD_ID, jobId);
+			expect.add("generatorJob", jobObj);
+			expect.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, fp.getRDFClassUri());
+			
+			assertEquals(testGson.toJson(expect), OmnomJsonSerializer.serializeToJSON(fp, FilePojo.class));
+			assertEquals(testGson.toJson(expect), fp.toJson());
+		}
+		
+	}
+
+	@Test
 	public void testReadFilePojo() {
 		GrafeoImpl g = new GrafeoImpl();
 		String fileUri = "http://foo.bar/baz";

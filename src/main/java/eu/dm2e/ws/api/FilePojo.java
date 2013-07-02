@@ -5,6 +5,7 @@ import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
+import eu.dm2e.ws.services.file.FileStatus;
 
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/",
 	 "dc", "http://purl.org/dc/elements/1.1/",
@@ -54,7 +55,7 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 	public void setFileEditURI(String fileEditURI) { this.fileEditURI = fileEditURI; }
 
 	@RDFProperty(NS.OMNOM.PROP_FILE_STATUS)
-	private String fileStatus;
+	private String fileStatus = FileStatus.AVAILABLE.name();
 	public String getFileStatus() { return fileStatus; }
 	public void setFileStatus(String fileStatus) { this.fileStatus = fileStatus; }
 	

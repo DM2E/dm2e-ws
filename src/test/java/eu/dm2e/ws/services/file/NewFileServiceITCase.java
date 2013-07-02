@@ -29,6 +29,7 @@ import eu.dm2e.ws.OmnomTestResources;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
 
 public class NewFileServiceITCase extends OmnomTestCase {
 	
@@ -249,9 +250,10 @@ public class NewFileServiceITCase extends OmnomTestCase {
 							.get(ClientResponse.class);
 					assertEquals(200, resp.getStatus());
 					String metaStr = resp.getEntity(String.class);
-//					log.info(metaStr);
+					log.info(metaStr);
 					Grafeo g = new GrafeoImpl(metaStr, true);
-					assertEquals(7, g.size());
+//					g.contains(g, fileURI, "omnom:fileLocation", );
+					assertEquals(6, g.size());
 				}
 			}
 		}

@@ -31,16 +31,16 @@ public class LogEntryPojo extends AbstractPersistentPojo<LogEntryPojo>{
 	public DateTime getTimestamp() { return timestamp; }
 	public void setTimestamp(DateTime timestamp) { this.timestamp = timestamp; }
 	
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(this.getTimestamp());
-		sb.append(" ");
-		sb.append(this.getLevel());
-		sb.append("> ");
-		sb.append(this.getMessage());
-		return sb.toString();
-	}
+//	@Override
+//	public String toString() {
+//		StringBuilder sb = new StringBuilder();
+//		sb.append(this.getTimestamp());
+//		sb.append(" ");
+//		sb.append(this.getLevel());
+//		sb.append("> ");
+//		sb.append(this.getMessage());
+//		return sb.toString();
+//	}
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
