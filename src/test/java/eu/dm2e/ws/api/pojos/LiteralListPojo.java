@@ -15,29 +15,5 @@ public class LiteralListPojo extends SerializablePojo<LiteralListPojo>{
 	public List<Long> getLongList() { return longList; }
 	public void setLongList(List<Long> longList) { this.longList = longList; }
 	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.baseHashCode();
-		result = prime * result + ((longList == null) ? 0 : longList.hashCode());
-		return result;
-	}
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (!super.baseEquals(obj)) return false;
-		if (!(obj instanceof LiteralListPojo)) return false;
-		LiteralListPojo other = (LiteralListPojo) obj;
-		if (longList == null) {
-			if (other.longList != null) return false;
-		} else if (!longList.equals(other.longList)) return false;
-		return true;
-	}
 
 }

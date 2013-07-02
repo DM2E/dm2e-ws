@@ -65,7 +65,7 @@ public class JobPojo extends AbstractJobPojo {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = super.baseHashCode();
+		int result = 1;
 		result = prime * result + ((webService == null) ? 0 : webService.hashCode());
 		result = prime * result + ((webserviceConfig == null) ? 0 : webserviceConfig.hashCode());
 		return result;
@@ -77,7 +77,7 @@ public class JobPojo extends AbstractJobPojo {
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
-		if (!super.baseEquals(obj)) return false;
+		if (obj == null) return false;
 		if (!(obj instanceof JobPojo)) return false;
 		JobPojo other = (JobPojo) obj;
 		if (webService == null) {

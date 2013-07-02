@@ -49,40 +49,4 @@ public class WorkflowJobPojo extends AbstractJobPojo {
 	private Set<JobPojo> finishedJobs = new HashSet<>();
 	public Set<JobPojo> getFinishedJobs() { return finishedJobs; }
 	public void setFinishedJobs(Set<JobPojo> finishedJobs) { this.finishedJobs = finishedJobs; }
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.baseHashCode();
-		result = prime * result + ((finishedJobs == null) ? 0 : finishedJobs.hashCode());
-		result = prime * result + ((finishedPositions == null) ? 0 : finishedPositions.hashCode());
-		result = prime * result + ((workflow == null) ? 0 : workflow.hashCode());
-		result = prime * result + ((workflowConfig == null) ? 0 : workflowConfig.hashCode());
-		return result;
-	}
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (!super.baseEquals(obj)) return false;
-		if (!(obj instanceof WorkflowJobPojo)) return false;
-		WorkflowJobPojo other = (WorkflowJobPojo) obj;
-		if (finishedJobs == null) {
-			if (other.finishedJobs != null) return false;
-		} else if (!finishedJobs.equals(other.finishedJobs)) return false;
-		if (finishedPositions == null) {
-			if (other.finishedPositions != null) return false;
-		} else if (!finishedPositions.equals(other.finishedPositions)) return false;
-		if (workflow == null) {
-			if (other.workflow != null) return false;
-		} else if (!workflow.equals(other.workflow)) return false;
-		if (workflowConfig == null) {
-			if (other.workflowConfig != null) return false;
-		} else if (!workflowConfig.equals(other.workflowConfig)) return false;
-		return true;
-	}
 }

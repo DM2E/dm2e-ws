@@ -23,9 +23,6 @@ public abstract class SerializablePojo<T> {
 	public static transient final String JSON_FIELD_ID = "id";
 	public static transient final String JSON_FIELD_RDF_TYPE = "rdf:type";
 	
-	public abstract boolean equals(Object other);
-	public abstract int hashCode();
-	
 	public SerializablePojo() {
 		super();
 	}
@@ -116,12 +113,13 @@ public abstract class SerializablePojo<T> {
     /**
      * Every Pojo needs and ID - though it can be null for a blank node
      */
-    @RDFId String id;
+    @RDFId
+	private String id;
 	public String getId() { return id; }
 	public void setId(String id) { this.id = id; }
 	public void setId(URI wsUri) { this.id = wsUri.toString(); }
-	public void resetId() { this.id = null; }
-	public boolean hasId() { return this.id != null; }
+	public void resetId() { this.setId((String)null); }
+	public boolean hasId() { return this.getId() != null; }
 	public URI getIdAsURI() {
 		URI uri = null;
 		try {
@@ -149,32 +147,34 @@ public abstract class SerializablePojo<T> {
 	 * 
 	 *************************/
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int baseHashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((label == null) ? 0 : label.hashCode());
-		return result;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean baseEquals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (!(obj instanceof SerializablePojo)) return false;
-		SerializablePojo other = (SerializablePojo) obj;
-		if (id == null) {
-			if (other.id != null) return false;
-		} else if (!id.equals(other.id)) return false;
-		if (label == null) {
-			if (other.label != null) return false;
-		} else if (!label.equals(other.label)) return false;
-		return true;
-	}
+//	/* (non-Javadoc)
+//	 * @see java.lang.Object#hashCode()
+//	 */
+//	@Override
+//	public int hashCode() {
+//		final int prime = 31;
+//		int result = 1;
+//		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
+////		result = prime * result + ((label == null) ? 0 : label.hashCode());
+//		return result;
+//	}
+//
+//	/* (non-Javadoc)
+//	 * @see java.lang.Object#equals(java.lang.Object)
+//	 */
+//	@Override
+//	public boolean equals(Object obj) {
+//		if (this == obj) return true;
+//		if (obj == null) return false;
+//		if (!(obj instanceof SerializablePojo)) return false;
+//		SerializablePojo other = (SerializablePojo) obj;
+//		if (getId() == null) {
+//			if (other.getId() != null) return false;
+//		} else if (!getId().equals(other.getId())) return false;
+////		if (label == null) {
+////			if (other.label != null) return false;
+////		} else if (!label.equals(other.label)) return false;
+//		return true;
+//	}
 
 }

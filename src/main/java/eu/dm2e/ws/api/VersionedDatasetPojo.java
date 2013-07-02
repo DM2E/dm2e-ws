@@ -87,46 +87,5 @@ public class VersionedDatasetPojo extends AbstractPersistentPojo<VersionedDatase
     public String getComment() { return comment; }
     public void setComment(String comment) { this.comment = comment; }
     
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.baseHashCode();
-		result = prime * result + ((comment == null) ? 0 : comment.hashCode());
-		result = prime * result + ((datasetID == null) ? 0 : datasetID.hashCode());
-		result = prime * result + ((jobURI == null) ? 0 : jobURI.hashCode());
-		result = prime * result + ((priorVersionURI == null) ? 0 : priorVersionURI.hashCode());
-		result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
-		return result;
-	}
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (!super.baseEquals(obj)) return false;
-		if (!(obj instanceof VersionedDatasetPojo)) return false;
-		VersionedDatasetPojo other = (VersionedDatasetPojo) obj;
-		if (comment == null) {
-			if (other.comment != null) return false;
-		} else if (!comment.equals(other.comment)) return false;
-		if (datasetID == null) {
-			if (other.datasetID != null) return false;
-		} else if (!datasetID.equals(other.datasetID)) return false;
-		if (jobURI == null) {
-			if (other.jobURI != null) return false;
-		} else if (!jobURI.equals(other.jobURI)) return false;
-		if (priorVersionURI == null) {
-			if (other.priorVersionURI != null) return false;
-		} else if (!priorVersionURI.equals(other.priorVersionURI)) return false;
-		if (timestamp == null) {
-			if (other.timestamp != null) return false;
-		} else if (!timestamp.equals(other.timestamp)) return false;
-		return true;
-	}
-
 
 }

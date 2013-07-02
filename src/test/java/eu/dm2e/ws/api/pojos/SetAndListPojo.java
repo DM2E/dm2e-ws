@@ -21,33 +21,5 @@ public class SetAndListPojo extends SerializablePojo<SetAndListPojo>{
 	private Set<IntegerPojo> set = new HashSet<>();
 	public Set<IntegerPojo> getSet() { return set; }
 	public void setSet(Set<IntegerPojo> set) { this.set = set; }
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.baseHashCode();
-		result = prime * result + ((list == null) ? 0 : list.hashCode());
-		result = prime * result + ((set == null) ? 0 : set.hashCode());
-		return result;
-	}
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (!super.baseEquals(obj)) return false;
-		if (!(obj instanceof SetAndListPojo)) return false;
-		SetAndListPojo other = (SetAndListPojo) obj;
-		if (list == null) {
-			if (other.list != null) return false;
-		} else if (!list.equals(other.list)) return false;
-		if (set == null) {
-			if (other.set != null) return false;
-		} else if (!set.equals(other.set)) return false;
-		return true;
-	}
 
 }
