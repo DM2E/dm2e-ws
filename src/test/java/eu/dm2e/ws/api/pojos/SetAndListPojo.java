@@ -1,16 +1,16 @@
-package eu.dm2e.ws.api;
+package eu.dm2e.ws.api.pojos;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import eu.dm2e.ws.api.SerializablePojo;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
-import eu.dm2e.ws.grafeo.test.IntegerPojo;
 
 @RDFClass("omnom:SetAndList")
-public class SetAndList extends SerializablePojo<SetAndList>{
+public class SetAndListPojo extends SerializablePojo<SetAndListPojo>{
 	
 	@RDFProperty("omnom:someList")
 	private List<IntegerPojo> list = new ArrayList<>();
@@ -39,8 +39,8 @@ public class SetAndList extends SerializablePojo<SetAndList>{
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (!super.baseEquals(obj)) return false;
-		if (!(obj instanceof SetAndList)) return false;
-		SetAndList other = (SetAndList) obj;
+		if (!(obj instanceof SetAndListPojo)) return false;
+		SetAndListPojo other = (SetAndListPojo) obj;
 		if (list == null) {
 			if (other.list != null) return false;
 		} else if (!list.equals(other.list)) return false;

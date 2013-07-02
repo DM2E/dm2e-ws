@@ -1,4 +1,4 @@
-package eu.dm2e.ws.grafeo.test;
+package eu.dm2e.ws.api.pojos;
 
 import java.util.ArrayList;
 import java.util.List;

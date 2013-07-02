@@ -1,4 +1,4 @@
-package eu.dm2e.ws.grafeo.gom;
+package eu.dm2e.ws.api.pojos;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -9,7 +9,6 @@ import java.util.Set;
 import eu.dm2e.ws.api.AbstractPersistentPojo;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
-import eu.dm2e.ws.grafeo.test.IntegerPojo;
 
 @RDFClass("omnom:UriResourceThing")
 public class UriResourcePojo extends AbstractPersistentPojo<UriResourcePojo> {

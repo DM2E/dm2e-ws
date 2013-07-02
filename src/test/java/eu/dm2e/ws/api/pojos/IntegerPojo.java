@@ -1,4 +1,4 @@
-package eu.dm2e.ws.grafeo.test;
+package eu.dm2e.ws.api.pojos;
 
 import eu.dm2e.ws.api.SerializablePojo;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
