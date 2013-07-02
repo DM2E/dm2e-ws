@@ -16,26 +16,27 @@ import org.junit.Test;
 
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.OmnomTestCase;
-import eu.dm2e.ws.api.SetAndList;
 import eu.dm2e.ws.api.WorkflowPojo;
 import eu.dm2e.ws.api.WorkflowPositionPojo;
+import eu.dm2e.ws.api.pojos.IntegerPojo;
+import eu.dm2e.ws.api.pojos.LiteralListPojo;
+import eu.dm2e.ws.api.pojos.NestedSetPojo;
+import eu.dm2e.ws.api.pojos.ResourceListPojo;
+import eu.dm2e.ws.api.pojos.SetAndListPojo;
+import eu.dm2e.ws.api.pojos.SetPojo;
+import eu.dm2e.ws.api.pojos.UriResourcePojo;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GResourceImpl;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
-import eu.dm2e.ws.grafeo.test.IntegerPojo;
-import eu.dm2e.ws.grafeo.test.LiteralList;
-import eu.dm2e.ws.grafeo.test.NestedSetPojo;
-import eu.dm2e.ws.grafeo.test.ResourceListPojo;
-import eu.dm2e.ws.grafeo.test.SetPojo;
 
 public class ObjectMapperITCase extends OmnomTestCase {
 	
 	@Test
 	public void testBlankLiteralList() {
 		
-		LiteralList list = new LiteralList();
+		LiteralListPojo list = new LiteralListPojo();
 		list.getLongList().add(5L);
 		list.getLongList().add(6L);
 		list.getLongList().add(7L);		log.info("Serializing");
@@ -48,7 +49,7 @@ public class ObjectMapperITCase extends OmnomTestCase {
 		
 		log.info("De-Serializing");
 		GResource topBlank = g.findTopBlank(list.getRDFClass().value());
-		LiteralList listPojo2 = g.getObjectMapper().getObject(LiteralList.class, topBlank);
+		LiteralListPojo listPojo2 = g.getObjectMapper().getObject(LiteralListPojo.class, topBlank);
 		GrafeoAssert.numberOfResourceStatements(listPojo2.getGrafeo(), 3, null, NS.RDF.PROP_TYPE, NS.CO.CLASS_ITEM);
 		log.info(listPojo2.getTerseTurtle());
 		assertThat(list.getLongList(), is(listPojo2.getLongList()));
@@ -57,7 +58,7 @@ public class ObjectMapperITCase extends OmnomTestCase {
 	
 	@Test
 	public void testCombinedSetAndListRename() {
-		SetAndList pojo = new SetAndList();
+		SetAndListPojo pojo = new SetAndListPojo();
 		pojo.getList().add(new IntegerPojo(0));
 		pojo.getList().add(new IntegerPojo(1));
 		pojo.getList().add(new IntegerPojo(2));
@@ -103,8 +104,7 @@ public class ObjectMapperITCase extends OmnomTestCase {
 		GResource topBlank = g.findTopBlank(list.getRDFClass().value());
 		ResourceListPojo listPojo2 = g.getObjectMapper().getObject(ResourceListPojo.class, topBlank);
 		GrafeoAssert.numberOfResourceStatements(listPojo2.getGrafeo(), 3, null, NS.RDF.PROP_TYPE, NS.CO.CLASS_ITEM);
-		log.info(listPojo2.getTerseTurtle());
-		assertThat(list.getIntegerResourceList(), is(listPojo2.getIntegerResourceList()));
+		assertThat(listPojo2.getIntegerResourceList(), is(list.getIntegerResourceList()));
 		GrafeoAssert.graphsAreEquivalent(list.getGrafeo(), listPojo2.getGrafeo());
 	}
 	
