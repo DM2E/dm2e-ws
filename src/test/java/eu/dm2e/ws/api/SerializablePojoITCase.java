@@ -74,25 +74,4 @@ public class SerializablePojoITCase extends OmnomUnitTest {
 		}
 	}	
 
-	@Ignore("Test with actual implementation")
-	@Test
-	public void testJson() {
-		{
-			MockPojo mock = new MockPojo();
-			mock.setId("http://foo");
-			mock.setFooProp("23");
-//			log.info(mock.getFlatJson());
-		}
-		{
-			WebservicePojo ws = new XsltService().getWebServicePojo();
-			log.info(ws.getTerseTurtle());
-//			log.info(ws.getFlatJson());
-		}
-		{
-			WebservicePojo ws = new XsltService().getWebServicePojo();
-			WebserviceConfigPojo wsconf = ws.createConfig();
-			wsconf.addParameterAssignment(XsltService.PARAM_XML_IN, "http://foo");
-//			log.info(wsconf.getFlatJson());
-		}
-	}
 }

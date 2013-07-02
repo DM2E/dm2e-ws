@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import org.junit.ComparisonFailure;
+
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 public class OmnomUnitTest {
 	
@@ -22,6 +24,12 @@ public class OmnomUnitTest {
 			e.printStackTrace();
 			System.exit(1);
 		}
+	}
+	
+	public static void assertStringsEqual(String s1, String s2) {
+		if (! s1.equals(s2))
+			throw new ComparisonFailure("Strings aren't equal", s1, s2);
+			
 	}
 
 }
