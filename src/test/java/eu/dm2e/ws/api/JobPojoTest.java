@@ -30,5 +30,25 @@ public class JobPojoTest extends OmnomUnitTest {
 		assertEquals(testGson.toJson(expect), OmnomJsonSerializer.serializeToJSON(job, JobPojo.class));
 		assertEquals(testGson.toJson(expect), job.toJson());
 	}
+	
+	@Test
+	public void testDeserializeFromJson() {
+
+		JobPojo expectedJob = new JobPojo();
+		
+		JsonObject expectedJson = new JsonObject();
+		expectedJson.addProperty("status", JobStatus.STARTED.name());
+		expectedJson.add("logEntries", new JsonArray());
+		expectedJson.add("outputParameterAssignments", new JsonArray());
+		expectedJson.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, new JobPojo().getRDFClassUri());
+		
+		JobPojo deserializedJob = OmnomJsonSerializer.deserializeFromJSON(expectedJson.toString(), JobPojo.class);
+		
+		log.info(expectedJson.toString());
+		
+		assertEquals(expectedJob, deserializedJob);
+		assertEquals(testGson.toJson(expectedJson), OmnomJsonSerializer.serializeToJSON(deserializedJob, LogEntryPojo.class));
+		assertEquals(testGson.toJson(expectedJson), deserializedJob.toJson());
+	}
 
 }
