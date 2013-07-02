@@ -42,7 +42,7 @@ public class OmnomJsonSerializer {
 	public static <T> String serializeToJSON(SerializablePojo pojo, Type T) {
 		 JsonElement jsonElem = gson.toJsonTree(pojo, T);
 		 if (! jsonElem.isJsonObject()) {
-			 throw new RuntimeException(pojo + " was serialized to something other than a JSON object.");
+			 throw new RuntimeException(pojo + " was serialized to something other than a JSON object: " + jsonElem.getClass());
 		 }
 		 JsonObject json = jsonElem.getAsJsonObject();
 		 if (pojo.hasId())

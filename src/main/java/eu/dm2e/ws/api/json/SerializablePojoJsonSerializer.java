@@ -67,6 +67,7 @@ public class SerializablePojoJsonSerializer
 			log.finer("JSON so far: " + jsonObj.toString());
 		}
 		return jsonObj;
+//		return jsonObj.entrySet().size() > 0 ? jsonObj : null;
 	}
 
 //	@Override
