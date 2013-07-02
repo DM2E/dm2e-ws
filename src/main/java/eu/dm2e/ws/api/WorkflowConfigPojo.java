@@ -113,4 +113,32 @@ public class WorkflowConfigPojo extends AbstractConfigPojo<WorkflowConfigPojo> {
 	public void setWorkflow(WorkflowPojo wf) { this.workflow = wf; }
 
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((workflow == null) ? 0 : workflow.hashCode());
+		return result;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (!super.equals(obj)) return false;
+		if (!(obj instanceof WorkflowConfigPojo)) return false;
+		WorkflowConfigPojo other = (WorkflowConfigPojo) obj;
+		if (workflow == null) {
+			if (other.workflow != null) return false;
+		} else if (!workflow.equals(other.workflow)) return false;
+		return true;
+	}
+
+
 }

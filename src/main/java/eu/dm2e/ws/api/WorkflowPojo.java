@@ -219,6 +219,47 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
 	public List<WorkflowPositionPojo> getPositions() { return positions; }
 	public void setPositions(List<WorkflowPositionPojo> positions) { this.positions = positions; }
 	public void addPosition(WorkflowPositionPojo it) { this.getPositions().add(it); }
+
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.baseHashCode();
+		result = prime * result + ((inputParams == null) ? 0 : inputParams.hashCode());
+		result = prime * result + ((outputParams == null) ? 0 : outputParams.hashCode());
+		result = prime * result
+				+ ((parameterConnectors == null) ? 0 : parameterConnectors.hashCode());
+		result = prime * result + ((positions == null) ? 0 : positions.hashCode());
+		return result;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (!super.baseEquals(obj)) return false;
+		if (!(obj instanceof WorkflowPojo)) return false;
+		WorkflowPojo other = (WorkflowPojo) obj;
+		if (inputParams == null) {
+			if (other.inputParams != null) return false;
+		} else if (!inputParams.equals(other.inputParams)) return false;
+		if (outputParams == null) {
+			if (other.outputParams != null) return false;
+		} else if (!outputParams.equals(other.outputParams)) return false;
+		if (parameterConnectors == null) {
+			if (other.parameterConnectors != null) return false;
+		} else if (!parameterConnectors.equals(other.parameterConnectors)) return false;
+		if (positions == null) {
+			if (other.positions != null) return false;
+		} else if (!positions.equals(other.positions)) return false;
+		return true;
+	}
     
 
 }

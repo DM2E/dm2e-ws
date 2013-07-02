@@ -59,5 +59,35 @@ public class JobPojo extends AbstractJobPojo {
 	public WebserviceConfigPojo getWebserviceConfig() { return webserviceConfig; }
 	public void setWebserviceConfig(WebserviceConfigPojo webserviceConfig) { this.webserviceConfig = webserviceConfig; }
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.baseHashCode();
+		result = prime * result + ((webService == null) ? 0 : webService.hashCode());
+		result = prime * result + ((webserviceConfig == null) ? 0 : webserviceConfig.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (!super.baseEquals(obj)) return false;
+		if (!(obj instanceof JobPojo)) return false;
+		JobPojo other = (JobPojo) obj;
+		if (webService == null) {
+			if (other.webService != null) return false;
+		} else if (!webService.equals(other.webService)) return false;
+		if (webserviceConfig == null) {
+			if (other.webserviceConfig != null) return false;
+		} else if (!webserviceConfig.equals(other.webserviceConfig)) return false;
+		return true;
+	}
+
 
 }

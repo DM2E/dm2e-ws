@@ -30,21 +30,29 @@ public class IntegerPojo extends SerializablePojo<IntegerPojo> {
 //		return super.toString();
 		return ""+this.getSomeNumber();
 	}
-	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
-	public boolean equals(Object that) {
-		if (that == null) return false;
-		if (that == this) return false;
-		if (!(that instanceof IntegerPojo)) return false;
-	    IntegerPojo thatIntegerPojo = (IntegerPojo) that;
-	    if (this.hasId() && thatIntegerPojo.hasId()
-	    		&&
-    		! this.getId().equals(thatIntegerPojo.getId())) {
-	    	return false;
-	    }
-	    return this.getSomeNumber() == thatIntegerPojo.getSomeNumber();
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.baseHashCode();
+		result = prime * result + someNumber;
+		return result;
 	}
-
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (!super.baseEquals(obj)) return false;
+		if (!(obj instanceof IntegerPojo)) return false;
+		IntegerPojo other = (IntegerPojo) obj;
+		if (someNumber != other.someNumber) return false;
+		return true;
+	}
+	
 	
 }
 

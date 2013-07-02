@@ -76,7 +76,7 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = super.hashCode();
+		int result = super.baseHashCode();
 		result = prime * result + ((fileEditURI == null) ? 0 : fileEditURI.hashCode());
 		result = prime * result + ((fileRetrievalURI == null) ? 0 : fileRetrievalURI.hashCode());
 		result = prime * result + (int) (fileSize ^ (fileSize >>> 32));
@@ -90,7 +90,7 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
-		if (!super.equals(obj)) return false;
+		if (!super.baseEquals(obj)) return false;
 		if (!(obj instanceof FilePojo)) return false;
 		FilePojo other = (FilePojo) obj;
 		if (fileEditURI == null) {

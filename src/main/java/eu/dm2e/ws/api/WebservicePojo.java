@@ -114,4 +114,34 @@ public class WebservicePojo extends AbstractPersistentPojo<WebservicePojo> imple
 	@Override public Set<ParameterPojo> getOutputParams() { return outputParams; }
 	@Override public void setOutputParams(Set<ParameterPojo> outputParams) { this.outputParams = outputParams; }
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.baseHashCode();
+		result = prime * result + ((inputParams == null) ? 0 : inputParams.hashCode());
+		result = prime * result + ((outputParams == null) ? 0 : outputParams.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (!super.baseEquals(obj)) return false;
+		if (!(obj instanceof WebservicePojo)) return false;
+		WebservicePojo other = (WebservicePojo) obj;
+		if (inputParams == null) {
+			if (other.inputParams != null) return false;
+		} else if (!inputParams.equals(other.inputParams)) return false;
+		if (outputParams == null) {
+			if (other.outputParams != null) return false;
+		} else if (!outputParams.equals(other.outputParams)) return false;
+		return true;
+	}
+
 }

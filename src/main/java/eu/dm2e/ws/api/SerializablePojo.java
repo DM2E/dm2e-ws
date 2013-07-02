@@ -23,6 +23,9 @@ public abstract class SerializablePojo<T> {
 	public static transient final String JSON_FIELD_ID = "id";
 	public static transient final String JSON_FIELD_RDF_TYPE = "rdf:type";
 	
+	public abstract boolean equals(Object other);
+	public abstract int hashCode();
+	
 	public SerializablePojo() {
 		super();
 	}
@@ -149,8 +152,7 @@ public abstract class SerializablePojo<T> {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
-	@Override
-	public int hashCode() {
+	public int baseHashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
@@ -161,8 +163,7 @@ public abstract class SerializablePojo<T> {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	@Override
-	public boolean equals(Object obj) {
+	public boolean baseEquals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (!(obj instanceof SerializablePojo)) return false;

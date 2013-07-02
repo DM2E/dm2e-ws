@@ -48,4 +48,34 @@ public class WorkflowPositionPojo extends SerializablePojo<WorkflowPositionPojo>
 	public WorkflowPojo getWorkflow() { return workflow; }
 	public void setWorkflow(WorkflowPojo workflow) { this.workflow = workflow; }
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.baseHashCode();
+		result = prime * result + ((webserviceConfig == null) ? 0 : webserviceConfig.hashCode());
+		result = prime * result + ((workflow == null) ? 0 : workflow.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (!super.baseEquals(obj)) return false;
+		if (!(obj instanceof WorkflowPositionPojo)) return false;
+		WorkflowPositionPojo other = (WorkflowPositionPojo) obj;
+		if (webserviceConfig == null) {
+			if (other.webserviceConfig != null) return false;
+		} else if (!webserviceConfig.equals(other.webserviceConfig)) return false;
+		if (workflow == null) {
+			if (other.workflow != null) return false;
+		} else if (!workflow.equals(other.workflow)) return false;
+		return true;
+	}
+
 }

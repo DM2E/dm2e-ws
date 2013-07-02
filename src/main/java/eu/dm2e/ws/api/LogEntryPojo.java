@@ -48,7 +48,7 @@ public class LogEntryPojo extends AbstractPersistentPojo<LogEntryPojo>{
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = super.hashCode();
+		int result = super.baseHashCode();
 		result = prime * result + ((level == null) ? 0 : level.hashCode());
 		result = prime * result + ((message == null) ? 0 : message.hashCode());
 		result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
@@ -60,7 +60,7 @@ public class LogEntryPojo extends AbstractPersistentPojo<LogEntryPojo>{
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
-		if (!super.equals(obj)) return false;
+		if (!super.baseEquals(obj)) return false;
 		if (!(obj instanceof LogEntryPojo)) return false;
 		LogEntryPojo other = (LogEntryPojo) obj;
 		if (level == null) {

@@ -39,5 +39,41 @@ public class UriResourcePojo extends AbstractPersistentPojo<UriResourcePojo> {
 	private List<URI> uriResourceList = new ArrayList<>();
 	public List<URI> getUriResourceList() { return uriResourceList; }
 	public void setUriResourceList(List<URI> uriResourceList) { this.uriResourceList = uriResourceList; }
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.baseHashCode();
+		result = prime * result + ((pojoResource == null) ? 0 : pojoResource.hashCode());
+		result = prime * result + ((uriResource == null) ? 0 : uriResource.hashCode());
+		result = prime * result + ((uriResourceList == null) ? 0 : uriResourceList.hashCode());
+		result = prime * result + ((uriResourceSet == null) ? 0 : uriResourceSet.hashCode());
+		return result;
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (!super.baseEquals(obj)) return false;
+		if (!(obj instanceof UriResourcePojo)) return false;
+		UriResourcePojo other = (UriResourcePojo) obj;
+		if (pojoResource == null) {
+			if (other.pojoResource != null) return false;
+		} else if (!pojoResource.equals(other.pojoResource)) return false;
+		if (uriResource == null) {
+			if (other.uriResource != null) return false;
+		} else if (!uriResource.equals(other.uriResource)) return false;
+		if (uriResourceList == null) {
+			if (other.uriResourceList != null) return false;
+		} else if (!uriResourceList.equals(other.uriResourceList)) return false;
+		if (uriResourceSet == null) {
+			if (other.uriResourceSet != null) return false;
+		} else if (!uriResourceSet.equals(other.uriResourceSet)) return false;
+		return true;
+	}
 	
 }

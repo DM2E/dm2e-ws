@@ -108,4 +108,50 @@ public class ParameterPojo extends SerializablePojo<ParameterPojo>{
 		this.parameterType = g.expand(parameterType); 
 	}
 
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.baseHashCode();
+		result = prime * result + ((comment == null) ? 0 : comment.hashCode());
+		result = prime * result + ((defaultValue == null) ? 0 : defaultValue.hashCode());
+		result = prime * result + (isRequired ? 1231 : 1237);
+		result = prime * result + ((parameterType == null) ? 0 : parameterType.hashCode());
+		result = prime * result + ((webservice == null) ? 0 : webservice.hashCode());
+		result = prime * result + ((workflow == null) ? 0 : workflow.hashCode());
+		return result;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (!super.baseEquals(obj)) return false;
+		if (!(obj instanceof ParameterPojo)) return false;
+		ParameterPojo other = (ParameterPojo) obj;
+		if (comment == null) {
+			if (other.comment != null) return false;
+		} else if (!comment.equals(other.comment)) return false;
+		if (defaultValue == null) {
+			if (other.defaultValue != null) return false;
+		} else if (!defaultValue.equals(other.defaultValue)) return false;
+		if (isRequired != other.isRequired) return false;
+		if (parameterType == null) {
+			if (other.parameterType != null) return false;
+		} else if (!parameterType.equals(other.parameterType)) return false;
+		if (webservice == null) {
+			if (other.webservice != null) return false;
+		} else if (!webservice.equals(other.webservice)) return false;
+		if (workflow == null) {
+			if (other.workflow != null) return false;
+		} else if (!workflow.equals(other.workflow)) return false;
+		return true;
+	}
+
 }
