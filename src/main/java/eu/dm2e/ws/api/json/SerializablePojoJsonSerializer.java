@@ -6,13 +6,9 @@ import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang.NotImplementedException;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
@@ -21,7 +17,10 @@ import eu.dm2e.utils.PojoUtils;
 import eu.dm2e.ws.api.SerializablePojo;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
-public class SerializablePojoJsonSerializer implements JsonSerializer<SerializablePojo>, JsonDeserializer<SerializablePojo>{
+public class SerializablePojoJsonSerializer 
+	implements JsonSerializer<SerializablePojo>
+//				, JsonDeserializer<SerializablePojo>
+{
 	
 	private transient Logger log = Logger.getLogger(getClass().getName());
 	
@@ -62,6 +61,7 @@ public class SerializablePojoJsonSerializer implements JsonSerializer<Serializab
 					jsonObj.add(field.getName(), subObj);
 				}
 			} else {
+				// RECURSION
 				jsonObj.add(field.getName(), context.serialize(value));
 			}
 			log.finer("JSON so far: " + jsonObj.toString());
@@ -69,14 +69,49 @@ public class SerializablePojoJsonSerializer implements JsonSerializer<Serializab
 		return jsonObj;
 	}
 
-	@Override
-	public SerializablePojo deserialize(JsonElement json,
-			Type typeOfT,
-			JsonDeserializationContext context)
-			throws JsonParseException {
-		log.info("Type: " + typeOfT);
-		throw new NotImplementedException();
-	}
+//	@Override
+//	public SerializablePojo deserialize(JsonElement json,
+//			Type typeOfT,
+//			JsonDeserializationContext context)
+//			throws JsonParseException {
+//		log.info("Type: " + typeOfT);
+//		Set<? extends SerializablePojo> loadedResources = new HashSet<>();
+//		return deserializeAndLoad(json, typeOfT, context, loadedResources);
+//	}
+//	
+//	public SerializablePojo deserializeAndLoad(JsonElement json,
+//			Type typeOfT,
+//			JsonDeserializationContext context,
+//			Set<? extends SerializablePojo> loadedResources
+//			)
+//			throws JsonParseException {
+//		log.info("Deserializing Type: " + typeOfT);
+//		JsonObject jsonObj = json.getAsJsonObject();
+//		try {
+//			typeOfT pojo = (typeOfT) typeOfT.getClass().newInstance();
+//		} catch (InstantiationException | IllegalAccessException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		for (Field field : PojoUtils.getAllFields(typeOfT.getClass())) {
+//			if (!field.isAnnotationPresent(RDFProperty.class)) 
+//				continue;
+//			final JsonElement value = jsonObj.get(field.getName());
+//			if (null == value)
+//				continue;
+//			if (SerializablePojo.class.isAssignableFrom(typeOfT.getClass())) {
+//				// TODO recursion
+//			} else if (List.class.isAssignableFrom(typeOfT.getClass())){
+//				// TODO List
+//			} else if (Set.class.isAssignableFrom(typeOfT.getClass())){
+//				// TODO Set
+//			} else {
+//				// TODO literal
+//			}
+//		}
+//		return null;
+//	}
+	
 
 }
 
