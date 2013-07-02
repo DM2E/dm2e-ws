@@ -62,4 +62,49 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 	private JobPojo generatorJob;
 	public JobPojo getGeneratorJob() { return generatorJob; }
 	public void setGeneratorJob(JobPojo generatorJob) { this.generatorJob = generatorJob; }
+	
+	/**********************
+	 * 
+	 * equals / hashCode()
+	 * 
+	 ********************/
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((fileEditURI == null) ? 0 : fileEditURI.hashCode());
+		result = prime * result + ((fileRetrievalURI == null) ? 0 : fileRetrievalURI.hashCode());
+		result = prime * result + (int) (fileSize ^ (fileSize >>> 32));
+		result = prime * result + ((generatorJob == null) ? 0 : generatorJob.hashCode());
+		result = prime * result + ((md5 == null) ? 0 : md5.hashCode());
+		return result;
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (!super.equals(obj)) return false;
+		if (!(obj instanceof FilePojo)) return false;
+		FilePojo other = (FilePojo) obj;
+		if (fileEditURI == null) {
+			if (other.fileEditURI != null) return false;
+		} else if (!fileEditURI.equals(other.fileEditURI)) return false;
+		if (fileRetrievalURI == null) {
+			if (other.fileRetrievalURI != null) return false;
+		} else if (!fileRetrievalURI.equals(other.fileRetrievalURI)) return false;
+		if (fileSize != other.fileSize) return false;
+		if (generatorJob == null) {
+			if (other.generatorJob != null) return false;
+		} else if (!generatorJob.equals(other.generatorJob)) return false;
+		if (md5 == null) {
+			if (other.md5 != null) return false;
+		} else if (!md5.equals(other.md5)) return false;
+		return true;
+	}
 }
