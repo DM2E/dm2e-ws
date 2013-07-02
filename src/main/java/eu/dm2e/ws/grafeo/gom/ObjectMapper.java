@@ -78,7 +78,6 @@ public class ObjectMapper {
     	log.fine("Adding object " + object);
         setAnnotatedNamespaces(object);
         GResource targetResource = getGResource(object);
-        objectCache.put(object, targetResource);
 
         String type = object.getClass().getAnnotation(RDFClass.class).value();
         log.fine("New Resource: " + targetResource + " a " + type + ".");
@@ -583,12 +582,10 @@ public class ObjectMapper {
             if (field.isAnnotationPresent(RDFId.class)) {
                 try {
                     Object id = PropertyUtils.getProperty(object, field.getName());
-                    if (null == id || "0".equals(id.toString()) ) {
-                    	// TODO BUG this must be unique per object
-                    	return grafeo.createBlank();
+                    if (!(null == id) && !("0".equals(id.toString())) ) {
+	                    // prepend prefix
+	                    uri = field.getAnnotation(RDFId.class).prefix() + id.toString();
                     }
-                    // prepend prefix
-                    uri = field.getAnnotation(RDFId.class).prefix() + id.toString();
                 } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                     throw new RuntimeException("An exception occurred: " + e, e);
                 }
@@ -596,11 +593,12 @@ public class ObjectMapper {
         }
         if (uri==null) {
         	// TODO BUG this must be unique per object
-            return grafeo.createBlank();
+        	objectCache.put(object, grafeo.createBlank());
         } else {
             uri = grafeo.expand(uri);
-            return grafeo.resource(uri);
+        	objectCache.put(object, grafeo.resource(uri));
         }
+        return objectCache.get(object);
 
     }
 
