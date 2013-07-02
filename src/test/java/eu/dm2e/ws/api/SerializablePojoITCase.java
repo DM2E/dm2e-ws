@@ -5,17 +5,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import eu.dm2e.ws.OmnomUnitTest;
+import eu.dm2e.ws.api.pojos.IntegerPojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
-import eu.dm2e.ws.grafeo.test.IntegerPojo;
-import eu.dm2e.ws.services.xslt.XsltService;
 
 public class SerializablePojoITCase extends OmnomUnitTest {
 	
