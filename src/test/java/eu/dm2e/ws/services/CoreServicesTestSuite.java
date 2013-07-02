@@ -6,7 +6,6 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import eu.dm2e.ws.services.data.ConfigServiceITCase;
 import eu.dm2e.ws.services.file.FileServiceITCase;
-import eu.dm2e.ws.services.file.NewFileServiceITCase;
 import eu.dm2e.ws.services.job.JobServiceITCase;
 import eu.dm2e.ws.services.workflow.WorkflowServiceITCase;
 
@@ -14,7 +13,6 @@ import eu.dm2e.ws.services.workflow.WorkflowServiceITCase;
 @RunWith(Suite.class)
 @SuiteClasses({
 	FileServiceITCase.class,
-	NewFileServiceITCase.class,
 	JobServiceITCase.class,
 	ConfigServiceITCase.class,
 	WorkflowServiceITCase.class,
