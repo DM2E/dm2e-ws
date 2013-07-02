@@ -1,18 +1,19 @@
 package eu.dm2e.ws.api;
 
-import java.util.logging.Logger;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import eu.dm2e.ws.OmnomUnitTest;
+import eu.dm2e.ws.api.json.OmnomJsonSerializer;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
 import eu.dm2e.ws.services.xslt.XsltService;
 
-public class WebservicePojoTest {
-	
-	private Logger log = Logger.getLogger(getClass().getName());
+public class WebservicePojoTest extends OmnomUnitTest {
 	
 	WebservicePojo ws;
 	ParameterPojo xsltInParam
@@ -55,10 +56,18 @@ public class WebservicePojoTest {
     }
 	
 	@Test
-	public void testRunXsltService() throws Exception {
+	public void testSerializeToJson() {
+		WebservicePojo wsNew = OmnomJsonSerializer.deserializeFromJSON(ws.toJson(), WebservicePojo.class);
+		log.info(ws.toJson());
+		log.info(wsNew.toJson());
+		assertEquals(ws.toJson(), wsNew.toJson());
+//		assertEquals(ws, wsNew);
+	}
+	@Test
+	public void testValidateXsltService() throws Exception {
 		WebservicePojo ws = new XsltService().getWebServicePojo();
 		WebserviceConfigPojo wsconf = new WebserviceConfigPojo();
-		GrafeoImpl g = new GrafeoImpl();
+//		GrafeoImpl g = new GrafeoImpl();
 		
 //		ParameterAssignmentPojo ass1 = new ParameterAssignmentPojo();
 //		ass1.setForParam(xmlInParam);
@@ -71,9 +80,11 @@ public class WebservicePojoTest {
 		wsconf.setWebservice(ws);
 		wsconf.addParameterAssignment(xmlInParam.getId(), "http://141.20.126.155/api/file/50c73992e18a91933e00001a/data");
 		wsconf.addParameterAssignment(xsltInParam.getId(), "http://141.20.126.155/api/file/50c7266ee18a91933e000003/data");
-		log.info("" + wsconf.getParameterAssignments());
-		g.getObjectMapper().addObject(wsconf);
-		log.info(g.getTurtle());
+		assertNotNull(wsconf.getParameterAssignmentForParam(xmlInParam.getId()));
+		assertNotNull(wsconf.getParameterAssignmentForParam(xsltInParam.getId()));
+//		log.info("" + wsconf.getParameterAssignmentForParam(xsltInParam.getId()));
+//		g.getObjectMapper().addObject(wsconf);
+//		log.info(g.getTerseTurtle());
 		wsconf.validate();
 		
 	}
