@@ -33,6 +33,7 @@ public class SparqlUpdateITCase extends OmnomTestCase {
 	private static final String SUB2  = BASE + "sub2";
 	private static final String SUB3  = BASE + "sub3";
 	
+	@SuppressWarnings("unused")
 	private static final String PROP_TYPE = BASE + "type";
 	private static final String PROP1 = BASE + "prop1";
 	private static final String PROP2 = BASE + "prop2";

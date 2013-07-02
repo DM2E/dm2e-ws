@@ -27,6 +27,7 @@ import com.sun.jersey.multipart.FormDataMultiPart;
 
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
 import eu.dm2e.ws.api.FilePojo;
@@ -254,8 +255,15 @@ public class FileServiceITCase extends OmnomTestCase {
 					String metaStr = resp.getEntity(String.class);
 					log.info(metaStr);
 					Grafeo g = new GrafeoImpl(metaStr, true);
-//					g.contains(g, fileURI, "omnom:fileLocation", );
-					assertEquals(6, g.size());
+					g.containsTriple(fileUriStr, NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_FILE);
+					g.containsTriple(fileUriStr, NS.OMNOM.PROP_FILE_LOCATION, "?x");
+					g.containsTriple(fileUriStr, NS.OMNOM.PROP_FILE_RETRIEVAL_URI, "?x");
+					g.containsTriple(fileUriStr, NS.OMNOM.PROP_FILE_STATUS, "\"STARTED\"");
+					g.containsTriple(fileUriStr, NS.OMNOM.PROP_MD5, "?x");
+					g.containsTriple(fileUriStr, NS.DCTERMS.PROP_EXTENT, "?x");
+					g.containsTriple(fileUriStr, NS.DCTERMS.PROP_FORMAT, "?x");
+					log.info(g.getTerseTurtle());
+					assertEquals(7, g.size());
 				}
 			}
 		}
