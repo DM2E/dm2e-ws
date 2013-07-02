@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.gson.JsonObject;
@@ -83,23 +82,26 @@ public class LogEntryPojoTest extends OmnomUnitTest{
 	
 	
 
-	@Ignore
 	@Test 
 	public void testDeserializeJson() {
 		DateTime dt = DateTime.now();
 		JsonObject asJson = new JsonObject();
+		asJson.addProperty("id", "http://foo/bar/quux");
 		asJson.addProperty("message", "foo");
 		asJson.addProperty("timestamp", dt.toString());
 		asJson.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, LogEntryPojo.class.getAnnotation(RDFClass.class).value());
-		log.info(asJson.toString());
 		LogEntryPojo logE = OmnomJsonSerializer.deserializeFromJSON(asJson.toString(), LogEntryPojo.class);
-		log.info("" + logE);
 		
 		LogEntryPojo expected = new LogEntryPojo();
+		expected.setId("http://foo/bar/quux");
 		expected.setMessage("foo");
 		expected.setTimestamp(dt);
+		
+		log.info(asJson.toString());
+		
 		assertEquals(expected, logE);
-		assertEquals(testGson.toJson(expected), OmnomJsonSerializer.serializeToJSON(logE, LogEntryPojo.class));
+		assertEquals(testGson.toJson(asJson), OmnomJsonSerializer.serializeToJSON(logE, LogEntryPojo.class));
+		assertEquals(testGson.toJson(asJson), logE.toJson());
 	}
 	
 //	@Test
