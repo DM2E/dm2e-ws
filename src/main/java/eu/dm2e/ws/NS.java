@@ -151,6 +151,8 @@ public final class NS {
 
 		public static final String FINISHED_JOB = BASE + "finishedJob";
 
+		public static final String PROP_FILE_TYPE = BASE + "fileType";
+
 	}
 	
 	/**

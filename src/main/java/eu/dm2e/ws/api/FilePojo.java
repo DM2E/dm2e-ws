@@ -1,5 +1,9 @@
 package eu.dm2e.ws.api;
 
+import java.net.URI;
+
+import org.joda.time.DateTime;
+
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
@@ -45,14 +49,27 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 	public void setFileSize(long fileSize) { this.fileSize = fileSize; }
 
 	@RDFProperty(NS.OMNOM.PROP_FILE_RETRIEVAL_URI)
-	private String fileRetrievalURI;
-	public String getFileRetrievalURI() { return fileRetrievalURI; }
-	public void setFileRetrievalURI(String fileRetrievalURI) { this.fileRetrievalURI = fileRetrievalURI; }
+	private URI fileRetrievalURI;
+	public URI getFileRetrievalURI() { return fileRetrievalURI; }
+	public void setFileRetrievalURI(URI fileRetrievalURI) { this.fileRetrievalURI = fileRetrievalURI; }
+	public void setFileRetrievalURI(String fileRetrievalURI) { this.fileRetrievalURI = URI.create(fileRetrievalURI) ; }
 
 	@RDFProperty(NS.OMNOM.PROP_FILE_EDIT_URI)
-	private String fileEditURI;
-	public String getFileEditURI() { return fileEditURI; }
-	public void setFileEditURI(String fileEditURI) { this.fileEditURI = fileEditURI; }
+	private URI fileEditURI;
+	public URI getFileEditURI() { return fileEditURI; }
+	public void setFileEditURI(URI fileEditURI) { this.fileEditURI = fileEditURI; }
+	public void setFileEditURI(String fileEditURI) { this.fileEditURI = URI.create(fileEditURI); }
+	
+	@RDFProperty(NS.OMNOM.PROP_FILE_TYPE)
+	private URI fileType;
+	public URI getFileType() { return fileType; }
+	public void setFileType(URI fileType) { this.fileType = fileType; }
+	public void setFileType(String fileType) { this.fileType = URI.create(fileType); }
+	
+	@RDFProperty(NS.DC.PROP_DATE)
+	private DateTime lastModified;
+	public DateTime getLastModified() { return lastModified; }
+	public void setLastModified(DateTime lastModified) { this.lastModified = lastModified; }
 
 	@RDFProperty(NS.OMNOM.PROP_FILE_STATUS)
 	private String fileStatus = FileStatus.AVAILABLE.name();

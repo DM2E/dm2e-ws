@@ -658,6 +658,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 //        gTest2.readFromEndpoint(NS.ENDPOINT_SELECT, graph);
 //        log.info("After Size: " + gTest2.size());
     }
+	
     @Override
     public void putToEndpoint(String endpoint, URI graph) {
     	putToEndpoint(endpoint, graph.toString());
