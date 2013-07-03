@@ -9,7 +9,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.net.URI;
-import java.util.logging.Logger;
 
 import org.junit.After;
 import org.junit.Before;
@@ -35,9 +34,6 @@ import eu.dm2e.ws.services.xslt.XsltZipService;
  * Author: Kai Eckert, Konstantin Baierer
  */
 public class StepByStepIngestionITCase extends OmnomTestCase {
-
-
-    Logger log = Logger.getLogger(getClass().getName());
 
     String XSLT_SERVICE_URI;
     String PUBLISH_SERVICE_URI;

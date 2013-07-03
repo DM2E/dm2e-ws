@@ -36,8 +36,6 @@ import static org.junit.matchers.JUnitMatchers.containsString;
 @SuppressWarnings("unused")
 public class DemoServiceITCase extends OmnomTestCase {
 
-    Logger log = Logger.getLogger(getClass().getName());
-    
     String SERVICE_URI;
 
     @Before

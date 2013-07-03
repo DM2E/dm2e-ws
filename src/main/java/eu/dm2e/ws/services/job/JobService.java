@@ -1,7 +1,6 @@
 package eu.dm2e.ws.services.job;
 
 import java.net.URI;
-import java.util.logging.Logger;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
@@ -24,8 +23,6 @@ import eu.dm2e.ws.services.AbstractJobService;
  */
 @Path("/job")
 public class JobService extends AbstractJobService {
-	
-	Logger log = Logger.getLogger(getClass().getName());
 	
 	@Override
 	public WebservicePojo getWebServicePojo() {

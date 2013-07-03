@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+	<Match>
+		<Class name="eu.dm2e.ws.api.AbstractJobPojo" />
+		<Method name="getLogEntriesSortedByDate" />
+		<Bug pattern="DE_MIGHT_IGNORE" />
+	</Match>
+	<Match>
+		<Class name="eu.dm2e.ws.api.AbstractJobPojo" />
+		<Method name="getLogEntries" />
+		<Bug pattern="DE_MIGHT_IGNORE" />
+	</Match>
+</FindBugsFilter>

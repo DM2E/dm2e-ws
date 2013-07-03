@@ -1,6 +1,18 @@
 package eu.dm2e.ws.services.publish;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.InputStream;
+import java.net.URI;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.sun.jersey.api.client.ClientResponse;
+
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.OmnomTestCase;
@@ -12,15 +24,6 @@ import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.model.JobStatus;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.io.InputStream;
-import java.net.URI;
-import java.util.logging.Logger;
-
-import static org.junit.Assert.*;
 
 /**
  * This file was created within the DM2E project.
@@ -30,8 +33,6 @@ import static org.junit.Assert.*;
  * Author: Kai Eckert, Konstantin Baierer
  */
 public class PublishServiceITCase extends OmnomTestCase {
-
-    Logger log = Logger.getLogger(getClass().getName());
 
     String SERVICE_URI;
 

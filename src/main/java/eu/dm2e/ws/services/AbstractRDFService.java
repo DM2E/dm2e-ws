@@ -405,7 +405,7 @@ public abstract class AbstractRDFService {
             u = u.replace("?" + query,"");
         }
         if (u.endsWith("/")) {
-        	u.replaceAll("/$", "");
+        	u = u.replaceAll("/$", "");
         }
         if (path != null) { 
 	        if (! u.endsWith("/" + path)) {

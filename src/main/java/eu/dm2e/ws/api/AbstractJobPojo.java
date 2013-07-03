@@ -101,9 +101,9 @@ public abstract class AbstractJobPojo extends AbstractPersistentPojo<AbstractJob
     	LogLevel minLevel = null,
     			 maxLevel = null;
     	try { minLevel = LogLevel.valueOf(minLevelStr);
-		} catch (Exception e) { /* this isn't really a problem */ }
+		} catch (Exception e) { /* this isn't a problem */ }
     	try { maxLevel = LogLevel.valueOf(maxLevelStr);
-		} catch (Exception e) { /* this isn't really a problem */ }
+		} catch (Exception e) { /* this isn't a problem */ }
     	return getLogEntriesSortedByDate(minLevel, maxLevel);
     }
     public String toLogString() {

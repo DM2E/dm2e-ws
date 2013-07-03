@@ -201,13 +201,17 @@ public class Client {
     	try {
 			 thePojo = clazz.newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
-			log.severe("Could reload job pojo." + e);
+			log.severe("Could not reload pojo "+id+":" + e);
 			e.printStackTrace();
 		}
+    	if (null == thePojo) {
+			log.severe("Could not reload pojo "+id+". Was null after instantiation.");
+    		return null;
+    	}
     	try {
 			thePojo.loadFromURI(id);
 		} catch (Exception e) {
-			log.severe("Could reload job pojo." + e);
+			log.severe("Could not reload pojo "+id+":" + e);
 			e.printStackTrace();
 		}
 		return thePojo;

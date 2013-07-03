@@ -80,10 +80,10 @@ public class XsltUtils {
 		for (String line : str.split("\\n")) {
 			newOffset = 1 + offset + line.length();
 			// remove comments
-			line.replaceAll("#.*$", "");
+			line = line.replaceAll("#.*$", "");
 			// strip trailing/leading whitespace
-			line.replaceAll("^\\s*", "");
-			line.replaceAll("\\s*$", "");
+			line = line.replaceAll("^\\s*", "");
+			line = line.replaceAll("\\s*$", "");
 			if (line.equals("")) continue;
 			String[] kvList = line.split("\\s*=\\s*");
 			try {

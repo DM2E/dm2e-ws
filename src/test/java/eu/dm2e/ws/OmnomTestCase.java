@@ -5,7 +5,6 @@ import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -21,7 +20,6 @@ import eu.dm2e.ws.services.Client;
 import eu.dm2e.ws.wsmanager.ManageService;
 
 public class OmnomTestCase extends OmnomUnitTest{
-	protected Logger log = Logger.getLogger(getClass().getName());
 	protected static Client client = new Client();
 	protected static String URI_BASE = "http://localhost:9998/";
 	protected static Map<OmnomTestResources, String> configString = new HashMap<>();
@@ -31,7 +29,7 @@ public class OmnomTestCase extends OmnomUnitTest{
 //	public void setUp() throws Exception {
 	public OmnomTestCase() {
 		for (OmnomTestResources res : OmnomTestResources.values()) { 
-			URL testConfigURL = this.getClass().getResource(res.getPath());
+			URL testConfigURL = OmnomTestCase.class.getResource(res.getPath());
 			try {
 				configFile.put(res, new File(testConfigURL.getFile()));
 				configString.put(res, IOUtils.toString(testConfigURL.openStream()));

@@ -9,7 +9,6 @@ import static org.junit.matchers.JUnitMatchers.containsString;
 
 import java.io.File;
 import java.net.URI;
-import java.util.logging.Logger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +28,6 @@ import eu.dm2e.ws.services.Client;
 public class ConfigServiceITCase extends OmnomTestCase{
 
 	private static final String BASE_URI = "http://localhost:9998";
-	Logger log = Logger.getLogger(getClass().getName());
 	private Client client;
 	private WebResource webResource;
 	
