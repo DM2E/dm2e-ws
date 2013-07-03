@@ -19,8 +19,6 @@ import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import com.hp.hpl.jena.sparql.core.DatasetGraphFactory;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.container.grizzly2.GrizzlyWebContainerFactory;
-import com.sun.jersey.server.impl.container.servlet.ServletAdaptor;
-import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 /**
  * This file was created within the DM2E project.
@@ -62,7 +60,7 @@ public class ManageService {
         try {
             manageServer = GrizzlyWebContainerFactory.create(UriBuilder.fromUri("http://localhost:" + MANAGE_PORT + "/").build(), initParams2);
             httpServer =  GrizzlyWebContainerFactory.create(UriBuilder.fromUri("http://localhost:" + OMNOM_PORT +"/").build(), initParams);
-            httpServer.getServerConfiguration().addHttpHandler(new StaticHttpHandler("varwww"), "/gui");
+            httpServer.getServerConfiguration().addHttpHandler(new StaticHttpHandler("static"), "/static");
         } catch (IOException e) {
             throw new RuntimeException("An exception occurred: " + e, e);
         }
