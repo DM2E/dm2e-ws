@@ -138,7 +138,7 @@ public class ObjectMapper {
      * @param <T>
      * @return An object of class T.
      */
-    public <T> T getObject(Class T, String resStr) {
+    public <T> T getObject(Class<T> T, String resStr) {
         return getObject(T, grafeo.resource(resStr));
     }
 
