@@ -1,5 +1,7 @@
 package eu.dm2e.ws;
 
+import java.net.URI;
+
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.ParameterAssignmentPojo;
 import eu.dm2e.ws.api.ParameterConnectorPojo;
@@ -153,6 +155,16 @@ public final class NS {
 
 		public static final String PROP_FILE_TYPE = BASE + "fileType";
 
+	}
+	
+	public static final class OMNOM_TYPES {
+		
+		public static final String BASE = "http://onto.dm2e.eu/omnom-types/";
+		
+		public static final String XSLT = BASE + "XSLT";
+
+		public static final String TGZ = BASE + "TGZ";
+		
 	}
 	
 	/**
