@@ -66,10 +66,15 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 	public void setFileType(URI fileType) { this.fileType = fileType; }
 	public void setFileType(String fileType) { this.fileType = URI.create(fileType); }
 	
-	@RDFProperty(NS.DC.PROP_DATE)
+	@RDFProperty(NS.DCTERMS.PROP_MODIFIED)
 	private DateTime lastModified;
 	public DateTime getLastModified() { return lastModified; }
 	public void setLastModified(DateTime lastModified) { this.lastModified = lastModified; }
+	
+	@RDFProperty(NS.DCTERMS.PROP_CREATED)
+	private DateTime created;
+	public DateTime getCreated() { return created; }
+	public void setCreated(DateTime created) { this.created = created; }
 
 	@RDFProperty(NS.OMNOM.PROP_FILE_STATUS)
 	private String fileStatus = FileStatus.AVAILABLE.name();

@@ -231,6 +231,10 @@ public final class NS {
 
 		public static final String PROP_EXTENT = BASE + "extent";
 		
+		public static final String PROP_MODIFIED = BASE + "modified";
+		
+		public static final String PROP_CREATED = BASE + "created";
+		
 	}
 		
 	/**
