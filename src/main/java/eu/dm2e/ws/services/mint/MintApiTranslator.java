@@ -134,7 +134,6 @@ public final class MintApiTranslator {
 		log.info("Add mappings");
 		{
 			String mappingListUri = mint_uri_list_mappings;
-			log.info("ME ALIVE");
 			ClientResponse resp = mintClient.resource(mappingListUri).get(ClientResponse.class);
 			final String respStr = resp.getEntity(String.class);
 			if (resp.getStatus() > 200) {

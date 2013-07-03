@@ -66,7 +66,7 @@ public class MintFileService extends AbstractRDFService {
 	Response getFile(URI uri) {
         log.info("File requested: " + uri);
 		// if the accept header is a RDF type, send metadata, otherwise data
-		if (DM2E_MediaType.expectsRdfResponse(headers)) {
+		if (DM2E_MediaType.expectsMetadataResponse(headers)) {
 			log.info("METADATA will be sent");
             return getFileMetaDataByUri(uri);
 		} else {
@@ -80,9 +80,19 @@ public class MintFileService extends AbstractRDFService {
 		FilePojo filePojo = mintApiTranslator.getFilePojoForUri(uri);
 		if (null == filePojo)
 			return Response.status(404).entity("No such file in MINT.").build();
-		Grafeo outG = new GrafeoImpl();
-		outG.getObjectMapper().addObject(filePojo);
-		return getResponse(outG);
+		Response resp;
+		if (DM2E_MediaType.expectsRdfResponse(headers)) {
+			Grafeo outG = new GrafeoImpl();
+			outG.getObjectMapper().addObject(filePojo);
+			resp = getResponse(outG);
+		} else {
+			resp = Response
+					.ok()
+					.type(MediaType.APPLICATION_JSON)
+					.entity(filePojo.toJson())
+					.build();
+		}
+		return resp	;
 	}
 
 	
