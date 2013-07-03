@@ -16,6 +16,6 @@ import org.junit.runners.Suite.SuiteClasses;
 	WorkflowJobPojoITCase.class,
 	WorkflowJobPojoTest.class,
 	WorkflowPojoTest.class })
-public class AllPojoTests {
+public class SuiteOfPojoTests {
 
 }
