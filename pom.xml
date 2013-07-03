@@ -167,6 +167,12 @@
         		</exclusion>
         	</exclusions>
         </dependency>
+        <!-- for ANSI coloring -->
+<!--         <dependency> -->
+<!--             <groupId>jlibs</groupId> -->
+<!--             <artifactId>jlibs-jdbc</artifactId> -->
+<!--             <version>1.0-SNAPSHOT</version> -->
+<!--         </dependency>  -->
 	</dependencies>
 	<build>
 
@@ -258,12 +264,12 @@
                             <goal>java</goal>
                         </goals>
                         <configuration>
-                            <mainClass>eu.dm2e.ws.Main</mainClass>
+                            <mainClass>${exec.mainClass.override}</mainClass>
                             <systemProperties>
-                                <property>
+                                <systemProperty>
                                     <key>java.util.logging.config.file</key>
-                                    <value>${project.build.outputDirectory}/logging.properties</value>
-                                </property>
+                                    <value>${logging.properties.main}</value>
+                                </systemProperty>
                             </systemProperties>
                         </configuration>
                     </execution>
@@ -278,7 +284,7 @@
                             <systemProperties>
                                 <property>
                                     <key>java.util.logging.config.file</key>
-                                    <value>${project.build.outputDirectory}/logging.properties</value>
+                                    <value>${logging.properties.test}</value>
                                 </property>
                             </systemProperties>
                         </configuration>
@@ -295,7 +301,7 @@
                             <systemProperties>
                                 <property>
                                     <key>java.util.logging.config.file</key>
-                                    <value>${project.build.outputDirectory}/logging.properties</value>
+                                    <value>${logging.properties.main}</value>
                                 </property>
                             </systemProperties>
                         </configuration>
@@ -317,7 +323,7 @@
                             <systemProperties>
                                 <property>
                                     <name>java.util.logging.config.file</name>
-                                    <value>${project.build.testOutputDirectory}/logging.properties</value>
+                                    <value>${logging.properties.test}</value>
                                 </property>
                             </systemProperties>
                         </configuration>
@@ -339,7 +345,7 @@
                     <systemProperties>
                         <property>
                             <name>java.util.logging.config.file</name>
-                            <value>${project.build.testOutputDirectory}/logging.properties</value>
+                            <value>${logging.properties.test}</value>
                         </property>
                     </systemProperties>
                 </configuration>
@@ -349,6 +355,10 @@
 	<properties>
 		<jersey-version>1.8</jersey-version>
 		<sesame.version>2.6.10</sesame.version>
+        <exec.mainClass.override>eu.dm2e.ws.Main</exec.mainClass.override>
+        <logging.properties.file>logging.properties</logging.properties.file>
+        <logging.properties.main>${project.build.outputDirectory}/${logging.properties.file}</logging.properties.main>
+        <logging.properties.test>${project.build.testOutputDirectory}/${logging.properties.file}</logging.properties.test>
 	</properties>
 	<repositories>
         <repository>
@@ -377,7 +387,12 @@
             <id>mvnrepository</id>
             <url>http://repo1.maven.org/maven2</url>
         </repository>
-
+<!--         <repository> -->
+<!--             <id>jlibs-repository</id> -->
+<!--             <name>JLibs Repository</name> -->
+<!--             <url>https://github.com/santhosh-tekuri/maven-repository/raw/master/</url> -->
+<!--             <layout>default</layout> -->
+<!--         </repository> -->
     </repositories>
 
 </project>
