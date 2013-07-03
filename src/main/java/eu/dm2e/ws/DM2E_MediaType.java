@@ -77,5 +77,10 @@ public class DM2E_MediaType {
 		}
 		return doesExpectRdf;
 	}
-
+	public static boolean expectsJsonResponse(HttpHeaders headers) {
+		for (MediaType thisType : headers.getAcceptableMediaTypes())
+			if (thisType.equals(MediaType.APPLICATION_JSON_TYPE))
+				return true;
+		return false;
+	}
 }
