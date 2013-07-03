@@ -1,0 +1,1671 @@
+{
+  "result":   [
+        {
+      "created": "2013-01-22T15:52:14+0200",
+      "dbID": 1061,
+      "edited": false,
+      "itemCount": 5,
+      "invalidItems": -1,
+      "validItems": 5,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-01-22T15:52:16+0200",
+      "organization":       {
+        "dbID": 1,
+        "name": "NTUA"
+      },
+      "creator":       {
+        "dbID": 1000,
+        "name": "DM2E Admin"
+      },
+      "name": "EDM+ many CHOs Transformation",
+      "mappingUsed": "ns-EDM+MC",
+      "parentDataset": "EuPhoto.zip",
+      "type": "Transformation"
+    },
+        {
+      "created": "2013-06-21T17:22:04+0300",
+      "dbID": 1136,
+      "edited": false,
+      "itemCount": 1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-06-21T17:22:08+0300",
+      "organization":       {
+        "dbID": 1,
+        "name": "NTUA"
+      },
+      "creator":       {
+        "dbID": 1000,
+        "name": "DM2E Admin"
+      },
+      "name": "MARC-IMPORTER xsl Transformation",
+      "mappingUsed": "MARC-IMPORTER",
+      "parentDataset": "marc.xml",
+      "type": "Transformation"
+    },
+        {
+      "created": "2013-05-21T16:56:48+0300",
+      "dbID": 1095,
+      "edited": false,
+      "itemCount": 71,
+      "invalidItems": 71,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-05-21T16:57:10+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1004,
+        "name": "Klaus Thoden"
+      },
+      "name": "EDM Transformation",
+      "mappingUsed": "mpiwg-im2.0-edm",
+      "targetSchema": "EDM",
+      "parentDataset": "rara_mpiwg_im2.xml",
+      "type": "Transformation"
+    },
+        {
+      "created": "2013-05-23T18:13:54+0300",
+      "dbID": 1101,
+      "edited": false,
+      "itemCount": 0,
+      "invalidItems": 0,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-05-23T18:14:30+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1004,
+        "name": "Klaus Thoden"
+      },
+      "name": "DM2E v1.0 Fixed Ranges Transformation",
+      "mappingUsed": "2013-02-13 Test Evelyn TEI Fixed Ranges",
+      "targetSchema": "DM2E v1.0 Fixed Ranges",
+      "parentDataset": "rara_mpiwg_im2.xml",
+      "type": "Transformation"
+    },
+        {
+      "created": "2013-05-23T18:13:25+0300",
+      "dbID": 1100,
+      "edited": false,
+      "itemCount": 1,
+      "invalidItems": 1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-05-23T18:13:56+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1014,
+        "name": "Doron Goldfarb"
+      },
+      "name": "DM2E v1.0 Fixed Ranges Transformation",
+      "mappingUsed": "ONB_Codices_MabXml_DM2E_v1",
+      "targetSchema": "DM2E v1.0 Fixed Ranges",
+      "parentDataset": "ONB_cod_mabxml_000144422_ID.xml",
+      "type": "Transformation"
+    },
+        {
+      "created": "2013-06-10T01:24:08+0300",
+      "dbID": 1108,
+      "edited": false,
+      "itemCount": 5,
+      "invalidItems": 0,
+      "validItems": 5,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-06-10T01:24:11+0300",
+      "organization":       {
+        "dbID": 1003,
+        "name": "Video and Multimedia Systems Laboratory"
+      },
+      "creator":       {
+        "dbID": 1021,
+        "name": "Nikos Simou"
+      },
+      "name": "DM2E v1.0 Fixed Ranges Transformation",
+      "mappingUsed": "DM2EWorkshop v2",
+      "targetSchema": "DM2E v1.0 Fixed Ranges",
+      "parentDataset": "EuPhoto.zip",
+      "type": "Transformation"
+    },
+        {
+      "created": "2013-06-12T16:52:57+0300",
+      "dbID": 1126,
+      "edited": false,
+      "itemCount": 5,
+      "invalidItems": 0,
+      "validItems": 5,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-06-12T16:53:02+0300",
+      "organization":       {
+        "dbID": 1003,
+        "name": "Video and Multimedia Systems Laboratory"
+      },
+      "creator":       {
+        "dbID": 1000,
+        "name": "DM2E Admin"
+      },
+      "name": "DM2E v1.0 Fixed Ranges Transformation",
+      "mappingUsed": "testWorkshop",
+      "targetSchema": "DM2E v1.0 Fixed Ranges",
+      "parentDataset": "EuPhoto-Extended.zip.tgz",
+      "type": "Transformation"
+    },
+        {
+      "created": "2013-02-25T16:24:56+0200",
+      "dbID": 1070,
+      "edited": false,
+      "itemCount": 71,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-02-25T16:41:30+0200",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1004,
+        "name": "Klaus Thoden"
+      },
+      "name": "rara_mpiwg_im2.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-11-29T12:21:44+0200",
+      "dbID": 1046,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2012-11-29T13:42:17+0200",
+      "organization":       {
+        "dbID": 1,
+        "name": "NTUA"
+      },
+      "creator":       {
+        "dbID": 1000,
+        "name": "DM2E Admin"
+      },
+      "name": "Ms-114_OA.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-06-12T13:37:22+0300",
+      "dbID": 1124,
+      "edited": false,
+      "itemCount": 5,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-06-12T13:46:01+0300",
+      "organization":       {
+        "dbID": 1003,
+        "name": "Video and Multimedia Systems Laboratory"
+      },
+      "creator":       {
+        "dbID": 1000,
+        "name": "DM2E Admin"
+      },
+      "name": "EuPhoto-Extended.zip.tgz",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-07-02T08:37:04+0300",
+      "dbID": 1174,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2013-07-02T08:37:14+0300",
+      "organization":       {
+        "dbID": 1002,
+        "name": "University Library Frankfurt am Main"
+      },
+      "creator":       {
+        "dbID": 1018,
+        "name": "Marko Knepper"
+      },
+      "name": "http://europeana.ub.uni-frankfurt.de:8080/OAIHandler - fra2",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-11-29T18:37:13+0200",
+      "dbID": 1048,
+      "edited": false,
+      "itemCount": 1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2012-11-29T18:44:41+0200",
+      "organization":       {
+        "dbID": 1,
+        "name": "NTUA"
+      },
+      "creator":       {
+        "dbID": 1000,
+        "name": "DM2E Admin"
+      },
+      "name": "Ms-139a_OA.zip",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-06-09T18:05:04+0300",
+      "dbID": 1105,
+      "edited": false,
+      "itemCount": 5,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-06-09T18:05:20+0300",
+      "organization":       {
+        "dbID": 1003,
+        "name": "Video and Multimedia Systems Laboratory"
+      },
+      "creator":       {
+        "dbID": 1021,
+        "name": "Nikos Simou"
+      },
+      "name": "EuPhoto.zip",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-07-01T17:08:00+0300",
+      "dbID": 1171,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2013-07-01T17:10:46+0300",
+      "organization":       {
+        "dbID": 1002,
+        "name": "University Library Frankfurt am Main"
+      },
+      "creator":       {
+        "dbID": 1018,
+        "name": "Marko Knepper"
+      },
+      "name": "http://sammlungen.ub.uni-frankfurt.de/jd/oai/",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-03-10T17:09:39+0200",
+      "dbID": 1071,
+      "edited": false,
+      "itemCount": 472,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-03-10T17:10:09+0200",
+      "organization":       {
+        "dbID": 1002,
+        "name": "University Library Frankfurt am Main"
+      },
+      "creator":       {
+        "dbID": 1018,
+        "name": "Marko Knepper"
+      },
+      "name": "EDM+ Transformation",
+      "type": "Transformation"
+    },
+        {
+      "created": "2012-04-23T10:53:00+0300",
+      "dbID": 1009,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2012-09-17T14:53:50+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1003,
+        "name": "Julia Iwanowa"
+      },
+      "name": "SBB_BF_P014779_D20120307_hauptmann.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-09-27T11:33:51+0300",
+      "dbID": 1031,
+      "edited": false,
+      "itemCount": 3179,
+      "invalidItems": -1,
+      "validItems": 3179,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2012-09-27T11:35:01+0300",
+      "organization":       {
+        "dbID": 1,
+        "name": "NTUA"
+      },
+      "creator":       {
+        "dbID": 1000,
+        "name": "DM2E Admin"
+      },
+      "name": "https://easy.dans.knaw.nl/oai - easy-collection:4",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-04-23T15:51:40+0300",
+      "dbID": 1019,
+      "edited": false,
+      "itemCount": 1107,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-06-20T13:57:56+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1002,
+        "name": "Steffen Hennicke"
+      },
+      "name": "mpiwg_index_meta_mpiwg-data_1107_Rara_2.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-04-18T16:33:47+0300",
+      "dbID": 1021,
+      "edited": false,
+      "itemCount": 12730,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2012-12-03T13:13:06+0200",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1004,
+        "name": "Klaus Thoden"
+      },
+      "name": "indexmetas.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-04-11T16:26:49+0300",
+      "dbID": 1003,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2012-09-17T14:53:46+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1000,
+        "name": "DM2E Admin"
+      },
+      "name": "nli_book_sample_mrcxml.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-06-07T15:36:15+0300",
+      "dbID": 1104,
+      "edited": false,
+      "itemCount": 71,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-06-07T15:39:01+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1004,
+        "name": "Klaus Thoden"
+      },
+      "name": "mint-test-indexmeta20-71entries.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-06-11T20:44:12+0300",
+      "dbID": 1117,
+      "edited": false,
+      "itemCount": 0,
+      "invalidItems": 0,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-06-11T20:44:12+0300",
+      "organization":       {
+        "dbID": 1002,
+        "name": "University Library Frankfurt am Main"
+      },
+      "creator":       {
+        "dbID": 1018,
+        "name": "Marko Knepper"
+      },
+      "name": "DM2E v 1.0 Transformation",
+      "type": "Transformation"
+    },
+        {
+      "created": "2013-06-11T13:56:10+0300",
+      "dbID": 1109,
+      "edited": false,
+      "itemCount": 0,
+      "invalidItems": 0,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-06-11T13:56:29+0300",
+      "organization":       {
+        "dbID": 1002,
+        "name": "University Library Frankfurt am Main"
+      },
+      "creator":       {
+        "dbID": 1018,
+        "name": "Marko Knepper"
+      },
+      "name": "DM2E v 1.0 Transformation",
+      "type": "Transformation"
+    },
+        {
+      "created": "2013-06-19T13:06:24+0300",
+      "dbID": 1134,
+      "edited": false,
+      "itemCount": 0,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-06-27T12:35:38+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1003,
+        "name": "Julia Iwanowa"
+      },
+      "name": "ar001005.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-07-02T08:42:35+0300",
+      "dbID": 1175,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2013-07-02T08:42:42+0300",
+      "organization":       {
+        "dbID": 1002,
+        "name": "University Library Frankfurt am Main"
+      },
+      "creator":       {
+        "dbID": 1018,
+        "name": "Marko Knepper"
+      },
+      "name": "http://europeana.ub.uni-frankfurt.de:8080/OAIHandler - ubffmbotzs",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-03-28T17:13:11+0300",
+      "dbID": 1014,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2012-09-17T14:53:58+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1003,
+        "name": "Julia Iwanowa"
+      },
+      "name": "marcxml.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-06-11T13:07:46+0300",
+      "dbID": 1026,
+      "edited": false,
+      "itemCount": 1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-04-08T11:06:14+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1006,
+        "name": "Konstantin Baierer"
+      },
+      "name": "vischer_aesthetik0301_1851.TEI-P5.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-04-16T13:24:44+0300",
+      "dbID": 1023,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2012-09-17T14:54:12+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1003,
+        "name": "Julia Iwanowa"
+      },
+      "name": "nli_mss_sample_mrcxml.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-04-11T15:18:11+0300",
+      "dbID": 1000,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2012-09-17T14:53:50+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1011,
+        "name": "Evelyn Dröge"
+      },
+      "name": "DM2E_BBAW_dataexampleskleist_krug_1811.TEI-P5.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-06-12T13:36:23+0300",
+      "dbID": 1123,
+      "edited": false,
+      "itemCount": 1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-06-12T13:53:16+0300",
+      "organization":       {
+        "dbID": 1006,
+        "name": "Org"
+      },
+      "creator":       {
+        "dbID": 1026,
+        "name": "alois pichler"
+      },
+      "name": "Ms-139a.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-06-30T00:46:52+0300",
+      "dbID": 1156,
+      "edited": false,
+      "itemCount": 1,
+      "invalidItems": 1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-06-30T00:46:54+0300",
+      "organization":       {
+        "dbID": 1002,
+        "name": "University Library Frankfurt am Main"
+      },
+      "creator":       {
+        "dbID": 1018,
+        "name": "Marko Knepper"
+      },
+      "name": "1759749-DM2E.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-04-16T16:05:47+0300",
+      "dbID": 1007,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2012-09-17T14:53:49+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1002,
+        "name": "Steffen Hennicke"
+      },
+      "name": "mpiwg_163127KK_index.meta.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-06-27T12:47:59+0300",
+      "dbID": 1137,
+      "edited": false,
+      "itemCount": 1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-06-27T14:27:36+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1011,
+        "name": "Evelyn Dröge"
+      },
+      "name": "ar001001.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-04-18T12:26:16+0300",
+      "dbID": 1011,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2012-09-17T14:53:59+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1002,
+        "name": "Steffen Hennicke"
+      },
+      "name": "mpiwg_ismi_entities_2012.03.20_mod.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-09-21T11:32:00+0300",
+      "dbID": 1029,
+      "edited": false,
+      "itemCount": 3179,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2012-09-21T11:41:26+0300",
+      "organization":       {
+        "dbID": 1,
+        "name": "NTUA"
+      },
+      "creator":       {
+        "dbID": 1000,
+        "name": "DM2E Admin"
+      },
+      "name": "http://easy.dans.knaw.nl/oai - easy-collection:4",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-03-22T18:56:18+0200",
+      "dbID": 1017,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2012-09-17T14:54:06+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1006,
+        "name": "Konstantin Baierer"
+      },
+      "name": "1940_2_18.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-04-18T11:57:31+0300",
+      "dbID": 1022,
+      "edited": false,
+      "itemCount": 1107,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2012-12-03T13:53:30+0200",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1004,
+        "name": "Klaus Thoden"
+      },
+      "name": "mpiwg-data_1107_Rara_2.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-06-21T17:16:26+0300",
+      "dbID": 1135,
+      "edited": false,
+      "itemCount": 1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-06-21T17:17:30+0300",
+      "organization":       {
+        "dbID": 1,
+        "name": "NTUA"
+      },
+      "creator":       {
+        "dbID": 1000,
+        "name": "DM2E Admin"
+      },
+      "name": "marc.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-05-27T12:08:42+0300",
+      "dbID": 1102,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2013-05-27T12:08:45+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1004,
+        "name": "Klaus Thoden"
+      },
+      "name": "indexmetarara.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-04-16T13:23:57+0300",
+      "dbID": 1006,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2012-09-17T14:53:47+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1003,
+        "name": "Julia Iwanowa"
+      },
+      "name": "nli_mss_sample_xmlgen.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-03-12T14:10:36+0200",
+      "dbID": 1091,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "FAILED",
+      "lastModified": "2013-03-12T14:10:36+0200",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1004,
+        "name": "Klaus Thoden"
+      },
+      "name": "EDM Transformation",
+      "type": "Transformation"
+    },
+        {
+      "created": "2012-04-26T14:11:54+0300",
+      "dbID": 1018,
+      "edited": false,
+      "itemCount": 1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-04-08T12:52:57+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1003,
+        "name": "Julia Iwanowa"
+      },
+      "name": "grundriss.kraeuterkunde.1792.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-06-30T00:47:59+0300",
+      "dbID": 1157,
+      "edited": false,
+      "itemCount": 1,
+      "invalidItems": 1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-06-30T00:48:03+0300",
+      "organization":       {
+        "dbID": 1002,
+        "name": "University Library Frankfurt am Main"
+      },
+      "creator":       {
+        "dbID": 1018,
+        "name": "Marko Knepper"
+      },
+      "name": "1759749-dm2e-p.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-06-29T12:34:13+0300",
+      "dbID": 1138,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "FAILED",
+      "lastModified": "2013-07-02T13:54:55+0300",
+      "organization":       {
+        "dbID": 1002,
+        "name": "University Library Frankfurt am Main"
+      },
+      "creator":       {
+        "dbID": 1018,
+        "name": "Marko Knepper"
+      },
+      "name": "msma-1-10-EDM.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-04-16T13:25:45+0300",
+      "dbID": 1005,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2012-09-17T14:53:47+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1003,
+        "name": "Julia Iwanowa"
+      },
+      "name": "nli_book_sample_mrcxml.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-05-23T17:20:43+0300",
+      "dbID": 1099,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2013-05-23T17:21:26+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1004,
+        "name": "Klaus Thoden"
+      },
+      "name": "libraryIndexMeta-format.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-04-11T16:26:28+0300",
+      "dbID": 1002,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2012-09-17T14:53:45+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1000,
+        "name": "DM2E Admin"
+      },
+      "name": "nli_book_sample_xmlgen.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-11-15T11:11:56+0200",
+      "dbID": 1040,
+      "edited": false,
+      "itemCount": 1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2012-12-05T14:36:18+0200",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1003,
+        "name": "Julia Iwanowa"
+      },
+      "name": "Ms-139a_OA.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-06-17T16:44:31+0300",
+      "dbID": 1130,
+      "edited": false,
+      "itemCount": 1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-06-17T16:52:04+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1004,
+        "name": "Klaus Thoden"
+      },
+      "name": "Add_MS_6782.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-12-06T12:43:48+0200",
+      "dbID": 1057,
+      "edited": false,
+      "itemCount": 1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-05-09T13:24:12+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1003,
+        "name": "Julia Iwanowa"
+      },
+      "name": "/cost-a32_xml/Ms-155_OA.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-05-21T18:51:49+0300",
+      "dbID": 1096,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2013-05-21T18:51:50+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1014,
+        "name": "Doron Goldfarb"
+      },
+      "name": "ONB_cod_mabxml_000144422.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-06-11T20:40:10+0300",
+      "dbID": 1115,
+      "edited": false,
+      "itemCount": 0,
+      "invalidItems": 0,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-06-11T20:40:11+0300",
+      "organization":       {
+        "dbID": 1002,
+        "name": "University Library Frankfurt am Main"
+      },
+      "creator":       {
+        "dbID": 1018,
+        "name": "Marko Knepper"
+      },
+      "name": "DM2E v 1.0 Transformation",
+      "type": "Transformation"
+    },
+        {
+      "created": "2013-06-07T15:35:23+0300",
+      "dbID": 1103,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2013-06-07T15:35:25+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1004,
+        "name": "Klaus Thoden"
+      },
+      "name": "rara_mpiwg_im2.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-04-16T17:45:17+0300",
+      "dbID": 1020,
+      "edited": false,
+      "itemCount": 1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2012-10-08T15:32:37+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1011,
+        "name": "Evelyn Dröge"
+      },
+      "name": "Ms-139a dm2e.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-06-03T12:05:14+0300",
+      "dbID": 1008,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2012-09-17T14:53:50+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1008,
+        "name": "Esther Guggenheim"
+      },
+      "name": "nli_mss_sample.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-04-11T17:05:57+0300",
+      "dbID": 1004,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2012-09-17T14:53:46+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1004,
+        "name": "Klaus Thoden"
+      },
+      "name": "index.metav1.2.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-06-18T12:18:25+0300",
+      "dbID": 1132,
+      "edited": false,
+      "itemCount": 1,
+      "invalidItems": 1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-06-18T12:18:42+0300",
+      "organization":       {
+        "dbID": 1,
+        "name": "NTUA"
+      },
+      "creator":       {
+        "dbID": 1000,
+        "name": "DM2E Admin"
+      },
+      "name": "EDM Transformation",
+      "type": "Transformation"
+    },
+        {
+      "created": "2012-04-18T12:10:09+0300",
+      "dbID": 1013,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2012-09-17T14:53:57+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1002,
+        "name": "Steffen Hennicke"
+      },
+      "name": "mpiwg_Harriot_Add_MS_6782.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-04-16T13:25:19+0300",
+      "dbID": 1025,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2012-09-17T14:54:13+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1003,
+        "name": "Julia Iwanowa"
+      },
+      "name": "nli_book_sample_xmlgen.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-06-30T00:48:29+0300",
+      "dbID": 1158,
+      "edited": false,
+      "itemCount": 1,
+      "invalidItems": 1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-06-30T00:55:18+0300",
+      "organization":       {
+        "dbID": 1002,
+        "name": "University Library Frankfurt am Main"
+      },
+      "creator":       {
+        "dbID": 1018,
+        "name": "Marko Knepper"
+      },
+      "name": "1759749-edm-p.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-06-11T14:05:04+0300",
+      "dbID": 1112,
+      "edited": false,
+      "itemCount": 472,
+      "invalidItems": 472,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-06-11T14:05:06+0300",
+      "organization":       {
+        "dbID": 1002,
+        "name": "University Library Frankfurt am Main"
+      },
+      "creator":       {
+        "dbID": 1018,
+        "name": "Marko Knepper"
+      },
+      "name": "EDM Transformation",
+      "type": "Transformation"
+    },
+        {
+      "created": "2013-06-30T00:36:19+0300",
+      "dbID": 1155,
+      "edited": false,
+      "itemCount": 742,
+      "invalidItems": 742,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-06-30T00:36:53+0300",
+      "organization":       {
+        "dbID": 1002,
+        "name": "University Library Frankfurt am Main"
+      },
+      "creator":       {
+        "dbID": 1018,
+        "name": "Marko Knepper"
+      },
+      "name": "http://europeana.ub.uni-frankfurt.de:8080/OAIHandler - fra2",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-06-03T12:04:58+0300",
+      "dbID": 1028,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2012-09-17T14:54:20+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1008,
+        "name": "Esther Guggenheim"
+      },
+      "name": "nli_book_sample.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-10-30T17:08:30+0200",
+      "dbID": 1038,
+      "edited": false,
+      "itemCount": 0,
+      "invalidItems": 0,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2012-10-30T17:08:30+0200",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1013,
+        "name": "Kilian Schmidtner"
+      },
+      "name": "EDM Transformation",
+      "type": "Transformation"
+    },
+        {
+      "created": "2012-11-02T11:04:10+0200",
+      "dbID": 1039,
+      "edited": false,
+      "itemCount": 5,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2012-11-02T11:04:36+0200",
+      "organization":       {
+        "dbID": 1,
+        "name": "NTUA"
+      },
+      "creator":       {
+        "dbID": 1000,
+        "name": "DM2E Admin"
+      },
+      "name": "EuPhoto.zip",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-05-21T19:51:20+0300",
+      "dbID": 1097,
+      "edited": false,
+      "itemCount": 1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-05-21T19:51:41+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1014,
+        "name": "Doron Goldfarb"
+      },
+      "name": "ONB_cod_mabxml_000144422_ID.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-03-28T17:13:34+0300",
+      "dbID": 1012,
+      "edited": false,
+      "itemCount": 20,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-04-16T11:59:18+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1003,
+        "name": "Julia Iwanowa"
+      },
+      "name": "marcxml_codices.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-12-11T14:14:54+0200",
+      "dbID": 1058,
+      "edited": false,
+      "itemCount": 1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2012-12-11T14:15:48+0200",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1006,
+        "name": "Konstantin Baierer"
+      },
+      "name": "example.pnx.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-04-23T17:23:10+0300",
+      "dbID": 1024,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2012-09-17T14:54:13+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1004,
+        "name": "Klaus Thoden"
+      },
+      "name": "ismi_indexmetas.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-04-17T11:52:52+0300",
+      "dbID": 1094,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2013-04-17T11:53:01+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1003,
+        "name": "Julia Iwanowa"
+      },
+      "name": "ar001001.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-06-11T13:07:18+0300",
+      "dbID": 1010,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2012-09-17T14:53:56+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1006,
+        "name": "Konstantin Baierer"
+      },
+      "name": "DM2E_BBAW_dataexampleskleist_krug_1811.TEI-P5.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-03-28T17:30:38+0300",
+      "dbID": 1016,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2012-09-17T14:54:06+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1004,
+        "name": "Klaus Thoden"
+      },
+      "name": "vischer_aesthetik0301_1851.TEI-P5.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-04-16T17:41:15+0300",
+      "dbID": 1015,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2012-09-17T14:54:07+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1002,
+        "name": "Steffen Hennicke"
+      },
+      "name": "mpiwg_163127KK_Benedetti_1585.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-12-12T13:11:54+0200",
+      "dbID": 1059,
+      "edited": false,
+      "itemCount": 19,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2012-12-12T13:19:22+0200",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1003,
+        "name": "Julia Iwanowa"
+      },
+      "name": "/cost-a32_xml/Ms-141_OA.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-06-30T00:57:30+0300",
+      "dbID": 1159,
+      "edited": false,
+      "itemCount": 1,
+      "invalidItems": 1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "OK",
+      "lastModified": "2013-06-30T00:58:12+0300",
+      "organization":       {
+        "dbID": 1002,
+        "name": "University Library Frankfurt am Main"
+      },
+      "creator":       {
+        "dbID": 1018,
+        "name": "Marko Knepper"
+      },
+      "name": "1759749-edm.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-04-30T15:30:48+0300",
+      "dbID": 1027,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "NOT APPLICABLE",
+      "lastModified": "2012-09-17T14:54:21+0300",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1007,
+        "name": "Jorge Urzúa"
+      },
+      "name": "ismi_entities_smaller_2012.03.20.xml",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2012-09-27T11:27:47+0300",
+      "dbID": 1030,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "FAILED",
+      "lastModified": "2012-09-27T11:31:56+0300",
+      "organization":       {
+        "dbID": 1,
+        "name": "NTUA"
+      },
+      "creator":       {
+        "dbID": 1000,
+        "name": "DM2E Admin"
+      },
+      "name": "https://easy.dans.knaw.nl/oai - easy-collection:4",
+      "type": "DataUpload"
+    },
+        {
+      "created": "2013-03-12T12:48:02+0200",
+      "dbID": 1088,
+      "edited": false,
+      "itemCount": -1,
+      "invalidItems": -1,
+      "validItems": 0,
+      "publishedItems": 0,
+      "itemizerStatus": "FAILED",
+      "lastModified": "2013-03-12T12:48:02+0200",
+      "organization":       {
+        "dbID": 1001,
+        "name": "Digitized Manuscripts to Europeana"
+      },
+      "creator":       {
+        "dbID": 1004,
+        "name": "Klaus Thoden"
+      },
+      "name": "EDM Transformation",
+      "type": "Transformation"
+    }
+  ],
+  "user":   {
+    "dbID": 1006,
+    "accountActive": true,
+    "jobRole": "WP2",
+    "workTelephone": "",
+    "organization":     {
+      "name": "Digitized Manuscripts to Europeana",
+      "dbId": 1001
+    }
+  }
+}

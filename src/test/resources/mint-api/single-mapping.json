@@ -1,0 +1,14 @@
+{
+	      "dbID": 1166,
+	      "name": "UBER-PolytechnischesJournal",
+	      "date": "2013-06-27T14:29:40+0300",
+	      "lastModified": "2013-06-27T18:33:54+0300",
+	      "organization": {
+	        "name": "Digitized Manuscripts to Europeana",
+	        "dbId": 1001
+	      },
+	      "Schema": {
+	        "name": "DM2E v1.0 Fixed Ranges",
+	        "dbId": 1006
+	      }
+	    }

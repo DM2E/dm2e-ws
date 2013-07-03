@@ -1,0 +1,718 @@
+{
+  "result":   [
+        {
+      "dbID": 1166,
+      "name": "UBER-PolytechnischesJournal",
+      "date": "2013-06-27T14:29:40+0300",
+      "lastModified": "2013-06-27T18:33:54+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "DM2E v1.0 Fixed Ranges",
+        "dbId": 1006
+      }
+    },
+        {
+      "dbID": 1162,
+      "name": "2013-06-21 JI HUB",
+      "date": "2013-06-21T10:11:26+0300",
+      "lastModified": "2013-06-24T16:08:14+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "DM2E v1.0 Fixed Ranges",
+        "dbId": 1006
+      }
+    },
+        {
+      "dbID": 1159,
+      "name": "harriot",
+      "date": "2013-06-17T16:52:52+0300",
+      "lastModified": "2013-06-21T12:44:56+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "DM2E v 1.0",
+        "dbId": 1007
+      }
+    },
+        {
+      "dbID": 1098,
+      "name": "2013-02-13 Test Evelyn TEI Fixed Ranges",
+      "date": "2013-05-13T12:28:41+0300",
+      "lastModified": "2013-06-21T12:44:55+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "DM2E v1.0 Fixed Ranges",
+        "dbId": 1006
+      }
+    },
+        {
+      "dbID": 1139,
+      "name": "2013-05-28 JI Test Short C",
+      "date": "2013-05-28T21:19:30+0300",
+      "lastModified": "2013-06-21T12:44:55+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1140,
+      "name": "ONB_Codices_MabXml_DM2E_V1_ShortC",
+      "date": "2013-05-29T13:01:01+0300",
+      "lastModified": "2013-06-21T12:44:55+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1133,
+      "name": "2013-05-23 JI Test Short B",
+      "date": "2013-05-27T12:26:00+0300",
+      "lastModified": "2013-06-21T12:44:55+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1123,
+      "name": "2013-05-23-mpiwg-71IM-dm2efixedranges",
+      "date": "2013-05-23T11:37:44+0300",
+      "lastModified": "2013-06-21T12:44:55+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "DM2E v1.0 Fixed Ranges",
+        "dbId": 1006
+      }
+    },
+        {
+      "dbID": 1121,
+      "name": "2013-05-23-mpiwg-71IM-dm2efixedranges",
+      "date": "2013-05-23T11:38:07+0300",
+      "lastModified": "2013-06-21T12:44:55+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "DM2E v1.0 Fixed Ranges",
+        "dbId": 1006
+      }
+    },
+        {
+      "dbID": 1119,
+      "name": "2013-05-23-mpiwg-71IM-dm2efixedranges",
+      "date": "2013-05-23T11:37:49+0300",
+      "lastModified": "2013-06-21T12:44:55+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "DM2E v1.0 Fixed Ranges",
+        "dbId": 1006
+      }
+    },
+        {
+      "dbID": 1116,
+      "name": "ONB_Codices_MabXml_DM2E_v1",
+      "date": "2013-05-21T19:52:46+0300",
+      "lastModified": "2013-06-21T12:44:55+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "DM2E v1.0 Fixed Ranges",
+        "dbId": 1006
+      }
+    },
+        {
+      "dbID": 1114,
+      "name": "ONB_Codices_MabXml_DM2E_v1",
+      "date": "2013-05-21T19:52:45+0300",
+      "lastModified": "2013-06-21T12:44:55+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "DM2E v1.0 Fixed Ranges",
+        "dbId": 1006
+      }
+    },
+        {
+      "dbID": 1112,
+      "name": "ONB_Codices_MabXml_DM2E_v1",
+      "date": "2013-05-21T19:52:37+0300",
+      "lastModified": "2013-06-21T12:44:54+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "DM2E v1.0 Fixed Ranges",
+        "dbId": 1006
+      }
+    },
+        {
+      "dbID": 1110,
+      "name": "2013-05-21-JI",
+      "date": "2013-05-21T10:12:31+0300",
+      "lastModified": "2013-06-21T12:44:54+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "DM2E v1.0 Fixed Ranges",
+        "dbId": 1006
+      }
+    },
+        {
+      "dbID": 1059,
+      "name": "DM2E 121214 Julia",
+      "date": "2012-12-14T10:08:02+0200",
+      "lastModified": "2013-06-21T12:44:54+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1136,
+      "name": "testit",
+      "date": "2013-05-27T18:16:48+0300",
+      "lastModified": "2013-06-21T12:44:54+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1049,
+      "name": "DM2E_v0.1",
+      "date": "2012-12-05T13:00:50+0200",
+      "lastModified": "2013-06-21T12:44:54+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1134,
+      "name": "ONB_Codices_MabXml_DM2E_v1 _ShortA",
+      "date": "2013-05-27T16:11:42+0300",
+      "lastModified": "2013-06-21T12:44:54+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1141,
+      "name": "20130607-questionnaire-mpiwg-im20",
+      "date": "2013-06-07T15:47:18+0300",
+      "lastModified": "2013-06-21T12:44:52+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "DM2E v1.0 Fixed Ranges",
+        "dbId": 1006
+      }
+    },
+        {
+      "dbID": 1075,
+      "name": "mpiwg-im2.0-edma1",
+      "date": "2013-03-11T20:25:03+0200",
+      "lastModified": "2013-06-21T12:44:52+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1111,
+      "name": "ONB_Codices_MabXml_DM2E_v1",
+      "date": "2013-05-21T19:52:31+0300",
+      "lastModified": "2013-06-21T12:44:52+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "DM2E v1.0 Fixed Ranges",
+        "dbId": 1006
+      }
+    },
+        {
+      "dbID": 1132,
+      "name": "2013-05-27 JI Test Short A",
+      "date": "2013-05-27T12:25:32+0300",
+      "lastModified": "2013-06-21T12:44:52+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1126,
+      "name": "ONB_Codices_fxeni",
+      "date": "2013-05-24T16:47:44+0300",
+      "lastModified": "2013-06-21T12:44:52+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "DM2E v1.0 Fixed Ranges",
+        "dbId": 1006
+      }
+    },
+        {
+      "dbID": 1122,
+      "name": "2013-05-23-mpiwg-71IM-dm2efixedranges",
+      "date": "2013-05-23T11:37:38+0300",
+      "lastModified": "2013-06-21T12:44:52+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "DM2E v1.0 Fixed Ranges",
+        "dbId": 1006
+      }
+    },
+        {
+      "dbID": 1120,
+      "name": "2013-05-23-mpiwg-71IM-dm2efixedranges",
+      "date": "2013-05-23T11:38:06+0300",
+      "lastModified": "2013-06-21T12:44:52+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "DM2E v1.0 Fixed Ranges",
+        "dbId": 1006
+      }
+    },
+        {
+      "dbID": 1095,
+      "name": "2013-08-05 TEI",
+      "date": "2013-05-08T13:28:14+0300",
+      "lastModified": "2013-06-21T12:44:52+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "DM2E v1.0 Fixed Ranges",
+        "dbId": 1006
+      }
+    },
+        {
+      "dbID": 1115,
+      "name": "ONB_Codices_MabXml_DM2E_v1",
+      "date": "2013-05-21T19:52:44+0300",
+      "lastModified": "2013-06-21T12:44:51+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "DM2E v1.0 Fixed Ranges",
+        "dbId": 1006
+      }
+    },
+        {
+      "dbID": 1113,
+      "name": "ONB_Codices_MabXml_DM2E_v1",
+      "date": "2013-05-21T19:52:46+0300",
+      "lastModified": "2013-06-21T12:44:51+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "DM2E v1.0 Fixed Ranges",
+        "dbId": 1006
+      }
+    },
+        {
+      "dbID": 1096,
+      "name": "2013-08-05 TEI-NTUA",
+      "date": "2013-05-09T13:16:32+0300",
+      "lastModified": "2013-06-21T12:44:51+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "DM2E v1.0 Fixed Ranges",
+        "dbId": 1006
+      }
+    },
+        {
+      "dbID": 1044,
+      "name": "neu",
+      "date": "2012-12-03T13:17:17+0200",
+      "lastModified": "2013-06-21T12:44:51+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1045,
+      "name": "neu",
+      "date": "2012-12-03T13:17:26+0200",
+      "lastModified": "2013-06-21T12:44:51+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1053,
+      "name": "DM2E 2 Julia",
+      "date": "2012-12-12T13:04:53+0200",
+      "lastModified": "2013-06-21T12:44:51+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1034,
+      "name": "EDM+_TEI_Test",
+      "date": "2012-11-28T15:04:57+0200",
+      "lastModified": "2013-06-21T12:44:51+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1035,
+      "name": "EDM+_TEI_Test",
+      "date": "2012-11-28T15:05:03+0200",
+      "lastModified": "2013-06-21T12:44:51+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1016,
+      "name": "Test_Evelyn",
+      "date": "2012-11-13T14:10:21+0200",
+      "lastModified": "2013-06-21T12:44:51+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1037,
+      "name": "KBA_OIB_EDMPLUS",
+      "date": "2012-11-29T15:46:40+0200",
+      "lastModified": "2013-06-21T12:44:51+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1036,
+      "name": "KBA_OIB_EDMPLUS",
+      "date": "2012-11-29T15:46:36+0200",
+      "lastModified": "2013-06-21T12:44:51+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1085,
+      "name": "2013-04-08 WITTGENSTEIN",
+      "date": "2013-04-08T14:58:37+0300",
+      "lastModified": "2013-06-21T12:44:51+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1019,
+      "name": "FOO_BAR",
+      "date": "2012-11-19T15:51:31+0200",
+      "lastModified": "2013-06-21T12:44:51+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1083,
+      "name": "2013-04-08 POLYTECHNISCH",
+      "date": "2013-04-08T12:57:59+0300",
+      "lastModified": "2013-06-21T12:44:50+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1131,
+      "name": "2013-05-27 JI Test",
+      "date": "2013-05-27T12:24:52+0300",
+      "lastModified": "2013-06-21T12:44:50+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "DM2E v1.0 Fixed Ranges",
+        "dbId": 1006
+      }
+    },
+        {
+      "dbID": 1066,
+      "name": "mpiwg-im2.0",
+      "date": "2013-02-25T17:42:36+0200",
+      "lastModified": "2013-06-21T12:44:50+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1077,
+      "name": "2013-04-08 BBAW 2 EDM",
+      "date": "2013-04-08T11:14:43+0300",
+      "lastModified": "2013-06-21T12:44:50+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1093,
+      "name": "2013-05-06 Codices",
+      "date": "2013-05-06T16:09:32+0300",
+      "lastModified": "2013-06-21T12:44:50+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "DM2E v1.0 Fixed Ranges",
+        "dbId": 1006
+      }
+    },
+        {
+      "dbID": 1109,
+      "name": "2013-05-21-JI",
+      "date": "2013-05-21T10:12:16+0300",
+      "lastModified": "2013-06-21T12:44:50+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "DM2E v1.0 Fixed Ranges",
+        "dbId": 1006
+      }
+    },
+        {
+      "dbID": 1060,
+      "name": "DM2E 121214 Julia",
+      "date": "2012-12-14T10:08:05+0200",
+      "lastModified": "2013-06-21T12:44:50+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1048,
+      "name": "kt_dezember",
+      "date": "2012-12-03T13:54:15+0200",
+      "lastModified": "2013-06-21T12:44:50+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1051,
+      "name": "PNX_TO_EDM",
+      "date": "2012-12-11T14:16:05+0200",
+      "lastModified": "2013-06-21T12:44:50+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1094,
+      "name": "2013-05-06 Codices 2",
+      "date": "2013-05-06T16:12:12+0300",
+      "lastModified": "2013-06-21T12:44:50+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "DM2E v 1.0",
+        "dbId": 1007
+      }
+    },
+        {
+      "dbID": 1118,
+      "name": "2013-05-23-mpiwg-71IM-dm2efixedranges",
+      "date": "2013-05-23T11:37:48+0300",
+      "lastModified": "2013-06-21T12:44:50+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "DM2E v1.0 Fixed Ranges",
+        "dbId": 1006
+      }
+    },
+        {
+      "dbID": 1161,
+      "name": "Test_sh-ibi",
+      "date": "2013-06-20T14:00:07+0300",
+      "lastModified": "2013-06-20T14:01:13+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "EDM",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1004,
+      "name": "UIB-TEI",
+      "date": "2012-10-30T14:39:01+0200",
+      "lastModified": "2013-06-20T12:20:53+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "EDM",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1074,
+      "name": "mpiwg-im2.0-edm",
+      "date": "2013-03-11T17:44:04+0200",
+      "lastModified": "2013-05-21T17:10:17+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "EDM",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1076,
+      "name": "2013-04-08",
+      "date": "2013-04-08T11:09:04+0300",
+      "lastModified": "2013-04-08T11:09:06+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "EDM",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1067,
+      "name": "mpiwg-im2.0-ext",
+      "date": "2013-02-27T17:19:30+0200",
+      "lastModified": "2013-02-27T17:19:30+0200",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1021,
+      "name": "FOO_BAR2",
+      "date": "2012-11-19T15:52:21+0200",
+      "lastModified": "2012-11-19T15:52:21+0200",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "EDM",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1020,
+      "name": "FOO_BAR1",
+      "date": "2012-11-19T15:52:02+0200",
+      "lastModified": "2012-11-19T15:52:02+0200",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      }
+    },
+        {
+      "dbID": 1001,
+      "name": "NSimouTest",
+      "date": "2012-10-08T15:33:14+0300",
+      "lastModified": "2012-10-08T15:33:14+0300",
+      "organization":       {
+        "name": "Digitized Manuscripts to Europeana",
+        "dbId": 1001
+      },
+      "Schema":       {
+        "name": "EDM",
+        "dbId": 1001
+      }
+    }
+  ],
+  "user":   {
+    "dbID": 1006,
+    "accountActive": true,
+    "jobRole": "WP2",
+    "workTelephone": "",
+    "organization":     {
+      "name": "Digitized Manuscripts to Europeana",
+      "dbId": 1001
+    }
+  }
+}
