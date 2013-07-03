@@ -478,4 +478,14 @@ public abstract class AbstractRDFService {
             output.flush();
         }
     }
+    
+    protected boolean expectsMetadataResponse() {
+    	return DM2E_MediaType.expectsMetadataResponse(headers);
+    }
+    protected boolean expectsJsonResponse() {
+    	return DM2E_MediaType.expectsJsonResponse(headers);
+    }
+    protected boolean expectsRdfResponse() {
+    	return DM2E_MediaType.expectsRdfResponse(headers);
+    }
 }

@@ -1,7 +1,5 @@
 package eu.dm2e.ws;
 
-import java.net.URI;
-
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.ParameterAssignmentPojo;
 import eu.dm2e.ws.api.ParameterConnectorPojo;

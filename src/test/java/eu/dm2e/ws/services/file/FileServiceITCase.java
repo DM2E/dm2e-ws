@@ -6,7 +6,6 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import static org.junit.matchers.JUnitMatchers.containsString;
 
 import java.io.IOException;
@@ -33,6 +32,7 @@ import eu.dm2e.ws.NS;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
 import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.api.json.OmnomJsonSerializer;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
@@ -64,8 +64,24 @@ public class FileServiceITCase extends OmnomTestCase {
     }
 	
 	@Test
-	public void testRandomfileRdf() {
-		fail("TODO");
+	public void testRandomfileRdf() throws IOException {
+		ClientResponse resp = client.resource(randomFileUri)
+				.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+				.get(ClientResponse.class);
+		Grafeo g = new GrafeoImpl();
+		g.readHeuristically(resp.getEntityInputStream());
+		FilePojo actualFilePojo = g.getObjectMapper().getObject(FilePojo.class, randomFileUri);
+		assertEquals(randomFilePojo.getId(), actualFilePojo.getId());
+	}
+	@Test
+	public void testRandomfileJson() throws IOException {
+		ClientResponse resp = client.resource(randomFileUri)
+				.accept(MediaType.APPLICATION_JSON_TYPE)
+				.get(ClientResponse.class);
+		String respStr = resp.getEntity(String.class);
+		log.info(respStr);
+		FilePojo actualFilePojo = OmnomJsonSerializer.deserializeFromJSON(respStr, FilePojo.class);
+		assertEquals(randomFilePojo.getId(), actualFilePojo.getId());
 	}
 
 	@Test

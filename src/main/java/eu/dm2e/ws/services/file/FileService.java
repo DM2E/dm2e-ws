@@ -430,7 +430,7 @@ public class FileService extends AbstractRDFService {
 	Response getFile(URI uri) {
         log.info("File requested: " + uri);
 		// if the accept header is a RDF type, send metadata, otherwise data
-		if (DM2E_MediaType.expectsRdfResponse(headers)) {
+		if (expectsMetadataResponse()) {
 			log.info("METADATA will be sent");
             return getFileMetaDataByUri(uri);
 		} else {
@@ -479,9 +479,17 @@ public class FileService extends AbstractRDFService {
 			return Response.status(404).entity("No such file in the triplestore.").build();
 		}
 		FilePojo filePojo = g.getObjectMapper().getObject(FilePojo.class, uri);
-		Grafeo outG = new GrafeoImpl();
-		outG.getObjectMapper().addObject(filePojo);
-		return getResponse(outG);
+		Response resp;
+		if (expectsRdfResponse()) {
+			Grafeo outG = new GrafeoImpl();
+			outG.getObjectMapper().addObject(filePojo);
+			resp = getResponse(outG);
+		} else if (expectsJsonResponse()) {
+			resp = Response.ok().entity(filePojo.toJson()).build();
+		} else {
+			return throwServiceError("Unknown metadata type requested.");
+		}
+		return resp;
 	}
 
 	/**

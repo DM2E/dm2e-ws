@@ -9,7 +9,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import eu.dm2e.ws.Config;
-import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -66,7 +65,7 @@ public class MintFileService extends AbstractRDFService {
 	Response getFile(URI uri) {
         log.info("File requested: " + uri);
 		// if the accept header is a RDF type, send metadata, otherwise data
-		if (DM2E_MediaType.expectsMetadataResponse(headers)) {
+		if (expectsMetadataResponse()) {
 			log.info("METADATA will be sent");
             return getFileMetaDataByUri(uri);
 		} else {
@@ -81,16 +80,18 @@ public class MintFileService extends AbstractRDFService {
 		if (null == filePojo)
 			return Response.status(404).entity("No such file in MINT.").build();
 		Response resp;
-		if (DM2E_MediaType.expectsRdfResponse(headers)) {
+		if (expectsRdfResponse()) {
 			Grafeo outG = new GrafeoImpl();
 			outG.getObjectMapper().addObject(filePojo);
 			resp = getResponse(outG);
-		} else {
+		} else if (expectsRdfResponse()) {
 			resp = Response
 					.ok()
 					.type(MediaType.APPLICATION_JSON)
 					.entity(filePojo.toJson())
 					.build();
+		} else {
+			return throwServiceError("Unhandled metadata type.");
 		}
 		return resp	;
 	}
