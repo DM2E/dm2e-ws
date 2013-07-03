@@ -2,6 +2,8 @@ package eu.dm2e.ws.services.file;
 
 import static org.junit.Assert.assertEquals;
 
+import java.net.URI;
+
 import org.junit.Test;
 
 import com.google.gson.JsonObject;
@@ -26,7 +28,7 @@ public class FilePojoTest extends OmnomUnitTest{
 		{
 			FilePojo fp = new FilePojo();
 			fp.setFileSize(100L);
-			fp.setFileRetrievalURI(retUri);
+			fp.setFileRetrievalURI(URI.create(retUri));
 			fp.setFileEditURI(editUri);
 			fp.setFileStatus(fileStatus);
 			
@@ -74,7 +76,7 @@ public class FilePojoTest extends OmnomUnitTest{
 		fileMetaStr.append("@prefix dct: <http://purl.org/dc/terms/>. \n");
 		fileMetaStr.append("@prefix xsd: <http://www.w3.org/2001/XMLSchema#>. \n");
 		fileMetaStr.append("<").append(fileUri).append("> omnom:fileLocation \"").append(fileLocationShouldBe).append("\". \n");
-		fileMetaStr.append("<").append(fileUri).append("> omnom:fileRetrievalURI \"").append(fileRetrievalURIShouldBe).append("\". \n");
+		fileMetaStr.append("<").append(fileUri).append("> omnom:fileRetrievalURI <").append(fileRetrievalURIShouldBe).append(">. \n");
 		fileMetaStr.append("<").append(fileUri).append("> dct:extent \"123456\". \n");
 		g.readHeuristically(fileMetaStr.toString());
 		FilePojo fp = g.getObjectMapper().getObject(FilePojo.class, fileUri);
@@ -96,7 +98,7 @@ public class FilePojoTest extends OmnomUnitTest{
 		
 		FilePojo fp1 = new FilePojo();
 		fp1.setId(fileUri);
-		fp1.setFileRetrievalURI(fileRetrievalURIShouldBe);
+		fp1.setFileRetrievalURI(URI.create(fileRetrievalURIShouldBe));
 		fp1.setFileLocation(fileLocationShouldBe);
 		
 		g1.getObjectMapper().addObject(fp1);
