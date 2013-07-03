@@ -124,9 +124,9 @@ public class ObjectMapper {
      * @param <T>
      * @return An object of class T.
      * 
-     * @see ObjectMapper#getObject(Class, GResource)
+     * @see ObjectMapper#getObject(Class<T>, GResource)
      */
-    public <T> T getObject(Class T, URI uri) {
+    public <T> T getObject(Class<T> T, URI uri) {
         return getObject(T, grafeo.resource(uri));
     }
 
@@ -151,7 +151,7 @@ public class ObjectMapper {
      * @param <T>
      * @return An object of class T.
      */
-    public <T> T getObject(Class T, GResource targetResource) {
+    public <T> T getObject(Class<T> T, GResource targetResource) {
         if (targetResource == null) throw new RuntimeException("Trying to get an object for an undefined resource.");
         String uri;
         if (targetResource.isAnon())
