@@ -22,7 +22,7 @@ public class Main {
 		}
 
 		// Grizzly 2 initialization
-		ManageService.startServer();
+		ManageService.startHttpServer();
 		System.out.println(String.format(
 				"OMNOM main services started (Data, Config, File). WADL at\n"
 				+"\n"

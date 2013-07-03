@@ -1,6 +1,7 @@
 package eu.dm2e.ws;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
@@ -29,6 +30,7 @@ public class OmnomUnitTest {
 			LogManager.getLogManager().readConfiguration();
 			Logger log = Logger.getLogger("LOGGING INIT");
 			log.info("Initialized logging.");
+			log.info("Logging Handlers: " + Arrays.asList(log.getHandlers()));
 			log.info(LogManager.getLogManager().getProperty("java.util.logging.ConsoleHandler.formatter"));
 		} catch (SecurityException | IOException e) {
 			// TODO Auto-generated catch block

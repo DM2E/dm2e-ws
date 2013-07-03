@@ -34,6 +34,14 @@ public class JobService extends AbstractJobService {
 	
 	@Override
 	public Response getJob(Grafeo g, GResource uriStr) {
+//		JobPojo jobPojo = g.getObjectMapper().getObject(JobPojo.class, uriStr);
+//		if (expectsJsonResponse()) {
+//			return Response.ok().entity(jobPojo.toJson()).build();
+//		} else if (expectsRdfResponse()) {
+//			return Response.ok().entity(jobPojo.getGrafeo()).build();
+//		} else {
+//            return Response.notAcceptable(supportedVariants).build();
+//        }
         try {
             return Response.ok().entity(getResponseEntity(g)).build();
         } catch (NullPointerException e) {
