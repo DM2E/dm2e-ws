@@ -357,12 +357,12 @@ public abstract class AbstractRDFService {
 //
 //	}
 	
-	protected URI appendPath(String path) {
+	protected URI appendPath(String... paths) {
 		URI uri = uriInfo.getRequestUri();
-		return this.appendPath(uri, path);
+		return this.appendPath(uri, paths);
 	}
 
-    protected URI appendPath(URI uri, String path) {
+    protected URI appendPath(URI uri, String... paths) {
         String query = uri.getQuery();
         String u = uri.toString();
         log.finest("URI: " + u);
@@ -370,8 +370,10 @@ public abstract class AbstractRDFService {
             log.fine("Query: " + query);
             u = u.replace("?" + query,"");
         }
-        if (!u.endsWith("/") && !path.startsWith("/")) u = u + "/";
-        u = u + path;
+        for (String path : paths) {
+	        if (!u.endsWith("/") && !path.startsWith("/")) u = u + "/";
+	        u = u + path;
+        }
         if (query!=null) {
             u = u + "?" + query;
         }
