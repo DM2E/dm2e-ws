@@ -6,6 +6,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.junit.matchers.JUnitMatchers.containsString;
 
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.util.Set;
 
 import javax.ws.rs.core.MediaType;
 
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,24 +38,36 @@ import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
 public class FileServiceITCase extends OmnomTestCase {
-	public class MockFileService extends FileService { }
 	
-	public FileService mockFileService = new MockFileService();
+	
+	private String randomFileUri;
+	private FilePojo randomFilePojo;
 	
 	@Before
-	public void setUp() throws Exception {
+	public void setUpFileServiceITCase() throws Exception {
+		uploadRandomFile();
 	}
-
+	
+	private void uploadRandomFile() {
+		randomFilePojo = new FilePojo();
+		randomFilePojo.setCreated(DateTime.now());
+		randomFilePojo.setOriginalName("foobar.ext");
+		randomFileUri = client.publishFile("ZE CONTENT", randomFilePojo);
+		randomFilePojo.setId(randomFileUri);
+		assertNotNull(randomFileUri);
+	}
+	
 	@Test
 	public void testFileService() {
 		FileService fs = new FileService();
 		assertNotNull(fs);
     }
+	
+	@Test
+	public void testRandomfileRdf() {
+		fail("TODO");
+	}
 
-	/**
-	 * @throws Exception 
-	 * 
-	 */
 	@Test
 	public void testPostEmptyFile() throws Exception {
 		// Minimal valid file

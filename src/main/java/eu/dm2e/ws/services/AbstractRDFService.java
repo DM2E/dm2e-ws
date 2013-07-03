@@ -55,6 +55,7 @@ import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 	DM2E_MediaType.TEXT_RDF_N3,
 	DM2E_MediaType.TEXT_TURTLE,
 	MediaType.TEXT_HTML,
+	MediaType.APPLICATION_JSON
 	})
 @Consumes({ 
 	DM2E_MediaType.APPLICATION_RDF_TRIPLES,

@@ -27,12 +27,16 @@ import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
 public final class MintApiTranslator {
 	
+	// TODO asUser in UrlApi um mich als User auszugeben
+	
 	Logger log = Logger.getLogger(getClass().getName());
 	
 	public static enum API_TYPE {
+		// Mappings, retrievable as XSLT
 		MAPPING,
 //		DATASET,
-		DATASET_DATAUPLOAD,
+		// Uploads, e.g. XML or XMLZIP
+		DATAUPLOAD,
 //		DATASET_TRANSFORMATION
 	}
 	
@@ -47,7 +51,7 @@ public final class MintApiTranslator {
 	private final String mint_uri_home;
 	private String mint_uri_login;
 	private String mint_uri_list_mappings;
-	private String mint_uri_list_dataset;
+	private String mint_uri_list_dataupload;
 		
 //	public MintApiTranslator() {
 //		mint_file_base = Config.getString("dm2e.service.mint-file.base_uri");
@@ -64,7 +68,7 @@ public final class MintApiTranslator {
 		mint_uri_home = mint_api_base + "Home.action";
 		mint_uri_login = mint_api_base + "Login.action";
 		mint_uri_list_mappings = mint_api_base + "UrlApi?isApi=true&action=list&type=Mapping";
-		mint_uri_list_dataset = mint_api_base + "UrlApi?isApi=true&action=list&type=Dataset";
+		mint_uri_list_dataupload = mint_api_base + "UrlApi?isApi=true&action=list&type=DataUpload";
 	}
 	
 	
@@ -124,6 +128,11 @@ public final class MintApiTranslator {
 		mintClient.addCookies(resp.getCookies());
 		
 	}
+//	public Grafeo buildGrafeoFromMapping(String id) {
+//		ensureLoggedIn();
+//		Grafeo g = new GrafeoImpl();
+//			ClientResponse resp = mintClient.resource(mappingListUri).get(ClientResponse.class);
+//	}
 	
 	/**
 	 * @return
@@ -134,7 +143,6 @@ public final class MintApiTranslator {
 		log.info("Add mappings");
 		{
 			String mappingListUri = mint_uri_list_mappings;
-			log.info("ME ALIVE");
 			ClientResponse resp = mintClient.resource(mappingListUri).get(ClientResponse.class);
 			final String respStr = resp.getEntity(String.class);
 			if (resp.getStatus() > 200) {
@@ -147,7 +155,7 @@ public final class MintApiTranslator {
 		log.info("Add uploads");
 		{
 			// http://mint-projects.image.ntua.gr/dm2e/UrlApi?isApi=true&action=list&type=Dataset
-			String datasetListUri = mint_uri_list_dataset;
+			String datasetListUri = mint_uri_list_dataupload;
 			ClientResponse resp = mintClient.resource(datasetListUri).get(ClientResponse.class);
 			final String respStr = resp.getEntity(String.class);
 			if (resp.getStatus() > 200)
@@ -180,7 +188,7 @@ public final class MintApiTranslator {
 		return fileListFromApiResponse(apiResonse, API_TYPE.MAPPING);
 	}
 	public List<FilePojo> fileListFromDatasetDataUpload(String apiResonse) {
-		return fileListFromApiResponse(apiResonse, API_TYPE.DATASET_DATAUPLOAD);
+		return fileListFromApiResponse(apiResonse, API_TYPE.DATAUPLOAD);
 	}
 	
 	public List<FilePojo> fileListFromApiResponse(String apiResponse, API_TYPE api_type ) {
@@ -209,7 +217,7 @@ public final class MintApiTranslator {
 			FilePojo fp = null;
 			if (api_type.equals(API_TYPE.MAPPING)) {
 				fp = createMappingFilePojoFromJsonObject(jsonFileObj);
-			} else if (api_type.equals(API_TYPE.DATASET_DATAUPLOAD)) {
+			} else if (api_type.equals(API_TYPE.DATAUPLOAD)) {
 				fp = createDatasetDatauploadFilePojoFromJsonObject(jsonFileObj);
 			}
 			if (null == fp)
