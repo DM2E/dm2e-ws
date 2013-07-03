@@ -66,6 +66,14 @@ public class DM2E_MediaType {
 		return !isRDF;
 	}
 	
+	public static boolean expectsMetadataResponse(HttpHeaders headers) {
+		return (
+				expectsJsonResponse(headers)
+				||
+				expectsRdfResponse(headers)
+				);
+	}
+	
 	public static boolean expectsRdfResponse(HttpHeaders headers) {
 		boolean doesExpectRdf = false;
 		for (MediaType thisType : headers.getAcceptableMediaTypes()) {
