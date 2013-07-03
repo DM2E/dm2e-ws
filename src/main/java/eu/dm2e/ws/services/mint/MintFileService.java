@@ -37,7 +37,7 @@ public class MintFileService extends AbstractRDFService {
 		MediaType.WILDCARD
 	})
 	@GET
-	@Path("/")
+	// @Path("/")
 	public Response getFileList() {
 		Grafeo g = mintApiTranslator.buildGrafeoFromMintFiles();
 		
