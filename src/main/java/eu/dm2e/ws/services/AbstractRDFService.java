@@ -183,7 +183,7 @@ public abstract class AbstractRDFService {
      * @return
      */
     @GET
-	@Consumes({
+	@Produces({
 		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
 		DM2E_MediaType.APPLICATION_RDF_XML,
 		DM2E_MediaType.APPLICATION_X_TURTLE,
@@ -191,7 +191,7 @@ public abstract class AbstractRDFService {
 		DM2E_MediaType.TEXT_RDF_N3,
 		DM2E_MediaType.TEXT_TURTLE
 	})
-    public Response getBase(@Context UriInfo uriInfo)  {
+    public Response getBase()  {
         URI uri = appendPath(uriInfo.getRequestUri(),"describe");
         return Response.seeOther(uri).build();
     }
