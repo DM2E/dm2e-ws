@@ -41,7 +41,7 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
 			return;
 		}
         log.finer("Instantiating " + this.getClass() + " Pojo from " + uri);
-		T theNewPojo = g.getObjectMapper().getObject(this.getClass(), uri);
+		T theNewPojo = (T) g.getObjectMapper().getObject(this.getClass(), uri);
         log.finer("DONE Instantiating " + this.getClass() + " Pojo from " + uri);
         try {
         	log.fine("Copying properties from Pojo " + uri);

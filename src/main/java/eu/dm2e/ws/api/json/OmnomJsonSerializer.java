@@ -51,7 +51,7 @@ public class OmnomJsonSerializer {
 			 json.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, pojo.getRDFClassUri());
 		 return gson.toJson(json);
 	}
-	public static <T> T deserializeFromJSON(String jsonStr, Class T) {
+	public static <T> T deserializeFromJSON(String jsonStr, Class<T> T) {
 		return (T) gson.fromJson(jsonStr, T);
 	}
 
