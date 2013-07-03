@@ -508,8 +508,9 @@ public class ObjectMapper {
 		log.fine(field.getName() + " is a fascinating " + field.getType());
 		GValue propValue = targetResource.get(prop);
 		if (propValue != null && ! propValue.isLiteral() && ! propValue.resource().isAnon()) {
+			URI theUri = URI.create(propValue.resource().getUri());
 			try {
-				PropertyUtils.setProperty(targetObject, field.getName(), propValue.resource().getUri());
+				PropertyUtils.setProperty(targetObject, field.getName(), theUri);
 			} catch (NoSuchMethodException e) {
 				log.severe(targetObject.getClass().getName() +": No getter/setters for " + field.getName() + " property: " + e);
 				return;
