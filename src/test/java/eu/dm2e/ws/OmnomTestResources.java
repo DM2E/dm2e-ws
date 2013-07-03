@@ -21,6 +21,8 @@ public enum OmnomTestResources {
     , INGESTION_XSL("/workflow/2013-05-21-JI.xsl")
     , METS2EDM("/mappings/xslt/METS2DM2Ev2.xsl")
     , METS_EXAMPLES("/provider-examples/ffm/msma-1-10.xml")
+    , MINT_MAPPING_LIST_JSON("/mint-api/mappings-list.json")
+    , MINT_MAPPING_SINGLE_JSON("/mint-api/single-mapping.json")
     ;
 
 	final String path;
