@@ -1,3 +1,4 @@
+
 package eu.dm2e.ws.services.file;
 
 import java.io.File;
@@ -13,7 +14,6 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
-import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -59,89 +59,36 @@ public class FileService extends AbstractRDFService {
 
 	// private static Configuration config = Config.getConfig();
 	private static final String 
-			SERVICE_URI = Config.getString("dm2e.service.file.base_uri"),
+//	SERVICE_URI = Config.getString("dm2e.service.file.base_uri"),
 			STORAGE_ENDPOINT = Config.getString("dm2e.ws.sparql_endpoint"),
 			STORAGE_ENDPOINT_STATEMENTS = Config.getString("dm2e.ws.sparql_endpoint_statements"),
 			
 			NS_DM2E = Config.getString("dm2e.ns.dm2e");
-
-	Logger log = Logger.getLogger(getClass().getName());
 
 
     public FileService() {
 
     }
 
-    /**
-	 * Saves the sent file to disk and stores derived metadata in the graph
-	 * {@code uri} of Grafeo {@code g}
+	/**
+	 * GET /{id}
+	 *  Retrieve metadata/file data for a locally stored file
 	 * 
-	 * @para FileInputStream 
-	 *            The file as an InputStream
-	 * @param oldG
-	 *            The graph this file should be stored in
-	 * @param uri
-	 *            The URI that represents this file
-	 * @return 
-	 * @throws FileNotFoundException
-	 * @throws IOException
-	 * @throws NoSuchAlgorithmException
-	 * 
+	 * @param fileId
+	 * @return
 	 */
-	private FilePojo storeAndDescribeFile(
-			InputStream fileInStream,
-			Grafeo oldG,
-			URI uri) throws FileNotFoundException, IOException {
-		// store the file
-		// TODO think about where to store
-		MessageDigest md = null;
-        byte[] mdBytes = null;
-		try {
-			md = MessageDigest.getInstance("MD5");
-            mdBytes = md.digest();
-		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException("MD5 algorithm not available: " + e, e);
-		}
-
-		DigestInputStream fileDigestInStream = new DigestInputStream(fileInStream, md);
-		// @formatter:off
-		// the file name will be the URI with everything non-alpha-numeric deleted
-		String uriStr = uri.toString();
-		String fileName = uriStr.replaceAll("[^A-Za-z0-9_]", "_");
-		fileName = fileName.replaceAll("__+", "_");
-		File f = new File(String.format(
-				"%s/%s",
-				Config.getString("dm2e.service.file.store_directory"), 
-				fileName));
-		IOUtils.copy(fileDigestInStream, new FileOutputStream(f));
-		// @formatter:on
-
-		// calculate and format checksum
-
-		StringBuilder mdStrBuilder = new StringBuilder();
-        for (byte mdByte : mdBytes) {
-            mdStrBuilder.append(Integer.toString((mdByte & 0xff) + 0x100, 16).substring(1));
-        }
-		String mdStr = mdStrBuilder.toString();
-
-		// TODO add right predicates here
-		// store file-based/implicit metadata
-		FilePojo filePojo = new FilePojo();
-		filePojo.setMd5(mdStr);
-		filePojo.setFileLocation(f.getAbsolutePath()); // TODO not a good "solution"
-		filePojo.setId(uri.toString());
-		filePojo.setFileRetrievalURI(uri.toString());
-		filePojo.setFileSize(f.length());
-
-		// these are only available if this is an upload field and not just a
-		// form field
-		oldG.getObjectMapper().addObject(filePojo);
-		
-		return filePojo;
+	@GET
+	@Path("{id}")
+	public Response getFileById() {
+		URI uri = getRequestUriWithoutQuery();
+		return getFileByUri(uri);
 	}
 	
 	/**
+	 * POST /empty
+	 * 
 	 * Posts an empty file
+	 * 
 	 * TODO This is meant to be used for placeholders, so that a service can
 	 * register a file and put it at the location later.
 	 * @return
@@ -152,14 +99,7 @@ public class FileService extends AbstractRDFService {
 	public Response postEmptyFile(
 			@FormDataParam("meta") FormDataBodyPart metaPart
 			) {
-		String uriStr = SERVICE_URI + "/" + createUniqueStr();;
-		URI uri;
-		try {
-			uri = new URI(uriStr);
-			uriStr = uri.toString();
-		} catch (URISyntaxException e) {
-			return throwServiceError(e);
-		}
+		URI uri = appendPath(popPath(getRequestUriWithoutQuery()), createUniqueStr());
 		Grafeo g = new GrafeoImpl();
 		Grafeo newG = new GrafeoImpl();
 		
@@ -193,12 +133,13 @@ public class FileService extends AbstractRDFService {
 		// save it
 		// set the status of the file to waiting
 		filePojo.setFileStatus(FileStatus.WAITING.toString());
-		filePojo.getGrafeo().putToEndpoint(STORAGE_ENDPOINT_STATEMENTS, uriStr);
+		filePojo.getGrafeo().putToEndpoint(STORAGE_ENDPOINT_STATEMENTS, uri.toString());
 		
 		return Response.created(uri).entity(getResponseEntity(filePojo.getGrafeo())).build();
 	}
 	
 	/**
+	 * PUT /
 	 * TODO
 	 * @param metaPart
 	 * @param filePart
@@ -277,9 +218,9 @@ public class FileService extends AbstractRDFService {
 		return Response.ok().location(uri).build();
 	}
 	
-	
 	/**
-	 * A file can be uploaded and/or meta-data for the/a file can be saved to
+	 * POST /
+	 *  A file can be uploaded and/or meta-data for the/a file can be saved to
 	 * the storage system. If no file is given, the metadata have to include the
 	 * location of the file where it can be found.
 	 * 
@@ -311,16 +252,9 @@ public class FileService extends AbstractRDFService {
 		// The model for this resource
 		GrafeoImpl g = new GrafeoImpl();
 		// Identifier for this resource (used in URI generation and for filename)
-		String uniqueStr = createUniqueStr();
 		// name of the new resource
-		String uriStr = SERVICE_URI + "/" + uniqueStr;
-		log.info("Its URI will be: " + uriStr);
-        URI uri;
-		try {
-			uri = getUriForString(uriStr);
-		} catch (URISyntaxException e) {
-			return throwServiceError(e);
-		}
+		URI uri = appendPath(getRequestUriWithoutQuery(), createUniqueStr());
+		log.info("Its URI will be: " + uri);
 		FilePojo filePojo = new FilePojo();
 		boolean metaPartIsEmpty = (metaPart == null) ? true : metaPart.getValueAs(String.class).equals("");
 		boolean filePartIsEmpty = (filePart == null) ? true : filePart.getValueAs(String.class).equals("");
@@ -408,91 +342,9 @@ public class FileService extends AbstractRDFService {
 		g.putToEndpoint(STORAGE_ENDPOINT_STATEMENTS, uri);
 		return Response.created(uri).entity(getResponseEntity(g)).build();
 	}
-
-	/**
-	 * Retrieve metadata/file data for a locally stored file
-	 * 
-	 * @param fileId
-	 * @return
-	 */
-	@GET
-	@Path("{id}")
-	public Response getFileById(@PathParam("id") String fileId) {
-		return getFile(getRequestUriWithoutQuery());
-	}
-
-	/**
-	 * Decides whether to fire the get method for file data or metadata.
-	 * 
-	 * @param uri
-	 * @return
-	 */
-	Response getFile(URI uri) {
-        log.info("File requested: " + uri);
-		// if the accept header is a RDF type, send metadata, otherwise data
-		if (expectsMetadataResponse()) {
-			log.info("METADATA will be sent");
-            return getFileMetaDataByUri(uri);
-		} else {
-            log.info("FILE will be sent");
-            return getFileDataByUri(uri);
-		}
-	}
 	
 	/**
-	 * Retrieve metadata/file data by passing a 'uri' parameter
-	 * 
-	 * @param uriStr
-	 * @return
-	 */
-	@GET
-    @Path("byURI")
-	public Response getFileByUri(@QueryParam("uri") String uriStr) {
-
-		URI uri;
-		try {
-			uri = getUriForString(uriStr);
-		} catch (URISyntaxException e) {
-			return throwServiceError(e);
-		}
-
-		// uri is required
-		return getFile(uri);
-	}
-
-	/**
-	 * Returns the metadata of a file identified by the given uri as RDF.
-	 * 
-	 * @param uri
-	 *            the file identifier
-	 * @return all stored meta-data about the file
-	 */
-	private Response getFileMetaDataByUri(URI uri) {
-		Grafeo g = new GrafeoImpl();
-		try {
-			g.readFromEndpoint(STORAGE_ENDPOINT, uri);
-		} catch (Exception e) {
-			log.info(STORAGE_ENDPOINT);
-			return throwServiceError(e);
-		}
-		if (!g.containsResource(uri)) {
-			return Response.status(404).entity("No such file in the triplestore.").build();
-		}
-		FilePojo filePojo = g.getObjectMapper().getObject(FilePojo.class, uri);
-		Response resp;
-		if (expectsRdfResponse()) {
-			Grafeo outG = new GrafeoImpl();
-			outG.getObjectMapper().addObject(filePojo);
-			resp = getResponse(outG);
-		} else if (expectsJsonResponse()) {
-			resp = Response.ok().entity(filePojo.toJson()).build();
-		} else {
-			return throwServiceError("Unknown metadata type requested.");
-		}
-		return resp;
-	}
-
-	/**
+	 * GET /dataByURI?uri=...
 	 * Returns the file. If the file is not stored by the file storage the
 	 * request is redirected. Otherwise the internal file is returned directly.
 	 * 
@@ -500,9 +352,9 @@ public class FileService extends AbstractRDFService {
 	 *            the identifier of the file.
 	 * @return the file or redirected to the location of the file.
 	 */
-	public Response getFileDataByUri(@QueryParam("uri") URI uriObject) {
-
-		String uri = uriObject.toString();
+	@GET
+	@Path("/dataByURI")
+	public Response getFileDataByUri(@QueryParam("uri") URI uri) {
 
 		// create model from graph at uri
 		GrafeoImpl g = new GrafeoImpl();
@@ -511,18 +363,14 @@ public class FileService extends AbstractRDFService {
 		} catch (RuntimeException t) {
 			return throwServiceError(ErrorMsg.BAD_RDF, t);
 		}
+		
+		URI baseUri = popPath(getRequestUriWithoutQuery());
 
 		// Unless the URI is prefixed with the URI prefix the @POST methods uses
 		// i.e. if the URI is external, do a redirect
-		if ( ! uri.startsWith(SERVICE_URI)) {
+		if ( ! uri.toString().startsWith(baseUri.toString())) {
 			// redirect
-			try {
-				return Response.temporaryRedirect(new URI(uri)).build();
-			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return null;
-			}
+			return Response.temporaryRedirect(uri).build();
 		}
 //		String path;
 //		try {
@@ -551,6 +399,7 @@ public class FileService extends AbstractRDFService {
 	}
 	
 	/**
+	 * DELETE /?uri=...
 	 * Delete a file from the metadata by marking it with dm2e:fileStatus @{link
 	 * {@link FileStatus} DELETED
 	 * 
@@ -585,6 +434,7 @@ public class FileService extends AbstractRDFService {
 	}
 
 	/**
+	 * DELETE /{id}
 	 * Delete a locally stored file. TODO Only wraps deleteFileByUri for now
 	 * without doing on-disk deletion.
 	 * 
@@ -610,6 +460,7 @@ public class FileService extends AbstractRDFService {
 	}
 
 	/**
+	 * POST /{id}/patch
 	 * Replace statements about a file with new statements.
 	 * @param uriStr
 	 * @param bodyInputStream
@@ -673,5 +524,165 @@ public class FileService extends AbstractRDFService {
 		
 		// return the updated version to the client
 		return getFileMetaDataByUri(uri);
+	}
+	
+	/**
+	 * GET /byURI?uri=...
+	 *  Retrieve metadata/file data by passing a 'uri' parameter
+	 * Decides whether to fire the get method for file data or metadata.
+	 * 
+	 * @param uriStr
+	 * @return
+	 */
+	@GET
+    @Path("byURI")
+	public Response getFileByUri(@QueryParam("uri") URI uri) {
+
+        log.info("File requested: " + uri);
+		// if the accept header is a RDF type, send metadata, otherwise data
+		if (expectsMetadataResponse()) {
+			log.info("METADATA will be sent");
+			return getFileMetaDataByUri(uri);
+		} else {
+            log.info("FILE will be sent");
+            return getFileDataByUri(uri);
+		}
+	}
+	
+	/**
+	 * GET /metadataByUri?uri=...
+	 * Returns the metadata of a file identified by the given uri as either RDF or JSON.
+	 */
+	@GET
+	@Path("/metadataByUri")
+	public Response getFileMetaDataByUri(@QueryParam("uri") URI uri) {
+		if (expectsJsonResponse()) {
+			return getFileMetaDataAsJsonByUri(uri);
+		} else if (expectsRdfResponse()) {
+			return getFileMetaDataAsRdfByUri(uri);
+		} else {
+			log.warning("No suitable metadata type could be determined, defaulting to RDF.");
+			return getFileMetaDataAsRdfByUri(uri);
+		}
+	}
+	
+	/**
+	 * GET /jsonByUri?uri=...
+	 * Returns the metadata of a file identified by the given uri as RDF.
+	 * 
+	 * @param uri
+	 *            the file identifier
+	 * @return all stored meta-data about the file
+	 */
+	@GET
+	@Path("/jsonByUri")
+	public Response getFileMetaDataAsJsonByUri(@QueryParam("uri") URI uri) {
+		Grafeo g = new GrafeoImpl();
+		try {
+			g.readFromEndpoint(STORAGE_ENDPOINT, uri);
+		} catch (Exception e) {
+			log.info(STORAGE_ENDPOINT);
+			return throwServiceError(e);
+		}
+		if (!g.containsResource(uri)) {
+			return Response.status(404).entity("No such file in the triplestore: " + uri).build();
+		}
+		FilePojo filePojo = g.getObjectMapper().getObject(FilePojo.class, uri);
+		return  Response.ok().entity(filePojo.toJson()).build();
+	}
+
+	/**
+	 * GET /rdfByUri?uri=...
+	 * Returns the metadata of a file identified by the given uri as RDF.
+	 * 
+	 * @param uri
+	 *            the file identifier
+	 * @return all stored meta-data about the file
+	 */
+	@GET
+	@Path("/rdfByUri")
+	public Response getFileMetaDataAsRdfByUri(@QueryParam("uri") URI uri) {
+		Grafeo g = new GrafeoImpl();
+		try {
+			g.readFromEndpoint(STORAGE_ENDPOINT, uri);
+		} catch (Exception e) {
+			log.info(STORAGE_ENDPOINT);
+			return throwServiceError(e);
+		}
+		if (!g.containsResource(uri)) {
+			return Response.status(404).entity("No such file in the triplestore: " + uri).build();
+		}
+		FilePojo filePojo = g.getObjectMapper().getObject(FilePojo.class, uri);
+		Grafeo outG = new GrafeoImpl();
+		outG.getObjectMapper().addObject(filePojo);
+		return getResponse(outG);
+	}
+
+    /**
+	 * Saves the sent file to disk and stores derived metadata in the graph
+	 * {@code uri} of Grafeo {@code g}
+	 * 
+	 * @para FileInputStream 
+	 *            The file as an InputStream
+	 * @param oldG
+	 *            The graph this file should be stored in
+	 * @param uri
+	 *            The URI that represents this file
+	 * @return 
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws NoSuchAlgorithmException
+	 * 
+	 */
+	private FilePojo storeAndDescribeFile(
+			InputStream fileInStream,
+			Grafeo oldG,
+			URI uri) throws FileNotFoundException, IOException {
+		// store the file
+		// TODO think about where to store
+		MessageDigest md = null;
+        byte[] mdBytes = null;
+		try {
+			md = MessageDigest.getInstance("MD5");
+            mdBytes = md.digest();
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException("MD5 algorithm not available: " + e, e);
+		}
+
+		DigestInputStream fileDigestInStream = new DigestInputStream(fileInStream, md);
+		// @formatter:off
+		// the file name will be the URI with everything non-alpha-numeric deleted
+		String uriStr = uri.toString();
+		String fileName = uriStr.replaceAll("[^A-Za-z0-9_]", "_");
+		fileName = fileName.replaceAll("__+", "_");
+		File f = new File(String.format(
+				"%s/%s",
+				Config.getString("dm2e.service.file.store_directory"), 
+				fileName));
+		IOUtils.copy(fileDigestInStream, new FileOutputStream(f));
+		// @formatter:on
+
+		// calculate and format checksum
+
+		StringBuilder mdStrBuilder = new StringBuilder();
+        for (byte mdByte : mdBytes) {
+            mdStrBuilder.append(Integer.toString((mdByte & 0xff) + 0x100, 16).substring(1));
+        }
+		String mdStr = mdStrBuilder.toString();
+
+		// TODO add right predicates here
+		// store file-based/implicit metadata
+		FilePojo filePojo = new FilePojo();
+		filePojo.setMd5(mdStr);
+		filePojo.setFileLocation(f.getAbsolutePath()); // TODO not a good "solution"
+		filePojo.setId(uri.toString());
+		filePojo.setFileRetrievalURI(uri.toString());
+		filePojo.setFileSize(f.length());
+
+		// these are only available if this is an upload field and not just a
+		// form field
+		oldG.getObjectMapper().addObject(filePojo);
+		
+		return filePojo;
 	}
 }

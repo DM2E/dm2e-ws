@@ -39,7 +39,6 @@ import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
 public class FileServiceITCase extends OmnomTestCase {
 	
-	
 	private String randomFileUri;
 	private FilePojo randomFilePojo;
 	
@@ -78,8 +77,10 @@ public class FileServiceITCase extends OmnomTestCase {
 		ClientResponse resp = client.resource(randomFileUri)
 				.accept(MediaType.APPLICATION_JSON_TYPE)
 				.get(ClientResponse.class);
+		log.info(randomFileUri);
 		String respStr = resp.getEntity(String.class);
 		log.info(respStr);
+		assertEquals(200, resp.getStatus());
 		FilePojo actualFilePojo = OmnomJsonSerializer.deserializeFromJSON(respStr, FilePojo.class);
 		assertEquals(randomFilePojo.getId(), actualFilePojo.getId());
 	}
@@ -309,7 +310,10 @@ public class FileServiceITCase extends OmnomTestCase {
 			assertEquals("File is available", FileStatus.AVAILABLE.toString(), fp.getFileStatus());
 		}
 		{
-			ClientResponse resp = client.resource(fileUri).delete(ClientResponse.class);
+			ClientResponse resp = client.resource(fileUri)
+//					.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+					.accept(MediaType.APPLICATION_JSON)
+					.delete(ClientResponse.class);
 			assertEquals("aaaaand it's gone :)", 200, resp.getStatus());
 		}
 		{
