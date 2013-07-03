@@ -5,6 +5,10 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 
 import org.joda.time.DateTime;
 
@@ -12,11 +16,18 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource.Builder;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
 public final class MintApiTranslator {
+	
+	Logger log = Logger.getLogger(getClass().getName());
 	
 	public static enum API_TYPE {
 		MAPPING,
@@ -27,15 +38,141 @@ public final class MintApiTranslator {
 	
 	private final String mint_file_base;
 	private final String mint_api_base;
+	private final String mint_username;
+	private final String mint_password;
+	
+	
+	protected MintClient mintClient = new MintClient();
+	
+	private final String mint_uri_home;
+	private String mint_uri_login;
+	private String mint_uri_list_mappings;
+	private String mint_uri_list_dataset;
 		
 //	public MintApiTranslator() {
 //		mint_file_base = Config.getString("dm2e.service.mint-file.base_uri");
 //		mint_api_base = Config.getString("dm2e.service.mint-file.mint_base");
+//		mint_username = Config.getString("dm2e.service.mint-file.username"),
+//		mint_password = Config.getString("dm2e.service.mint-file.password")
 //	}
-	public MintApiTranslator(String localBase, String mintBase) {
+	public MintApiTranslator(String localBase, String mintBase, String mintUsername, String mintPassword) {
 		mint_file_base = localBase;
 		mint_api_base = mintBase;
+		mint_username = mintUsername;
+		mint_password = mintPassword;
+		
+		mint_uri_home = mint_api_base + "Home.action";
+		mint_uri_login = mint_api_base + "Login.action";
+		mint_uri_list_mappings = mint_api_base + "UrlApi?isApi=true&action=list&type=Mapping";
+		mint_uri_list_dataset = mint_api_base + "UrlApi?isApi=true&action=list&type=Dataset";
 	}
+	
+	
+	/**
+	 * Ensures that the service is logged into MINT.
+	 * 
+	 * @return true if logged in, false otherwise
+	 */
+	protected boolean isLoggedIn() {
+		ClientResponse resp = mintClient
+				.resource(mint_uri_home)
+				.header("Origin", "http://mint-projects.image.ntua.gr")
+				.header("Referer", "http://mint-projects.image.ntua.gr/dm2e/Login.action")
+				.get(ClientResponse.class);
+		log.info("isLoggedIn response: " + resp);
+		if (resp.getStatus() != 200) {
+			return false;
+		}
+		final String respStr = resp.getEntity(String.class);
+		log.info("isLoggedIn response body: " + respStr);
+		if (respStr.contains("URL=./Login_input.action")) {
+			return false;
+		}
+		return true;
+		
+	}
+	
+	/**
+	 * Make sure that we're logged in into MINT so the UrlApi works.
+	 */
+	protected void ensureLoggedIn() {
+		Builder wr = mintClient.resource(mint_uri_login);
+		if (isLoggedIn())
+			return;
+		else 
+			mintClient.clearCookies();
+		
+		MultivaluedMap<String,String> form = new MultivaluedMapImpl();
+		form.add("username", mint_username);
+		form.add("password", mint_password);
+//		log.info("Logging in as " + mint_username + ":" + mint_password);
+		ClientResponse resp = wr
+				.type(MediaType.APPLICATION_FORM_URLENCODED)
+				.entity(form)
+				.post(ClientResponse.class);
+		
+		final URI location = resp.getLocation();
+		log.info("Login Response: " + resp);
+		if (resp.getStatus() != 302 || null == location) {
+			log.severe("Login failed :(");
+			return;
+		}
+		
+		log.info("Login redirect location: " + location);
+//		log.info("Login response: " + mintClient.resource(resp.getLocation()).get(String.class));
+		log.severe("Logged in now? " + isLoggedIn());
+		mintClient.addCookies(resp.getCookies());
+		
+	}
+	
+	/**
+	 * @return
+	 */
+	public Grafeo buildGrafeoFromMintFiles() {
+		ensureLoggedIn();
+		Grafeo g = new GrafeoImpl();
+		log.info("Add mappings");
+		{
+			String mappingListUri = mint_uri_list_mappings;
+			log.info("ME ALIVE");
+			ClientResponse resp = mintClient.resource(mappingListUri).get(ClientResponse.class);
+			final String respStr = resp.getEntity(String.class);
+			if (resp.getStatus() > 200) {
+				log.info(respStr);
+				throw new RuntimeException(respStr);
+			}
+			final List<FilePojo> list = this.fileListFromMappingList(respStr);
+			for (FilePojo fp : list) g.getObjectMapper().addObject(fp);
+		}
+		log.info("Add uploads");
+		{
+			// http://mint-projects.image.ntua.gr/dm2e/UrlApi?isApi=true&action=list&type=Dataset
+			String datasetListUri = mint_uri_list_dataset;
+			ClientResponse resp = mintClient.resource(datasetListUri).get(ClientResponse.class);
+			final String respStr = resp.getEntity(String.class);
+			if (resp.getStatus() > 200)
+				throw new RuntimeException(respStr);
+			final List<FilePojo> list = this.fileListFromDatasetDataUpload(respStr);
+			log.info("# of datauploads: " + list.size());
+			for (FilePojo fp : list) g.getObjectMapper().addObject(fp);
+		}
+		return g;
+	}
+	
+	/**
+	 * @param uri
+	 * @return
+	 */
+	public FilePojo getFilePojoForUri(URI uri) {
+		Grafeo g = this.buildGrafeoFromMintFiles();
+		if (!g.containsResource(uri)) {
+			return null;
+		}
+		FilePojo filePojo = g.getObjectMapper().getObject(FilePojo.class, uri);
+		return filePojo;
+	}
+	
+	
 		
 	
 	

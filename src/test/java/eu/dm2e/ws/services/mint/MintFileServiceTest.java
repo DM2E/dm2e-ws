@@ -4,7 +4,6 @@ package eu.dm2e.ws.services.mint;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -31,15 +30,6 @@ public class MintFileServiceTest extends OmnomTestCase {
 	@Before
 	public void setUp() throws Exception {
 //        System.setProperty("http.keepAlive", "false");
-	}
-	
-	@Test
-	public void testLogin() throws InterruptedException {
-		MintFileService s = new MintFileService();
-		assertFalse(s.isLoggedIn());
-		s.ensureLoggedIn();
-		log.info("Cookies: " + s.cookies);
-		assertTrue(s.isLoggedIn());
 	}
 	
 	@Test

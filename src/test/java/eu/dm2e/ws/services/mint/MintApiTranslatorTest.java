@@ -1,9 +1,12 @@
 package eu.dm2e.ws.services.mint;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.google.gson.JsonObject;
@@ -18,8 +21,29 @@ public class MintApiTranslatorTest extends OmnomTestCase {
 	
 	private MintApiTranslator mintApiTranslator = new MintApiTranslator(
 			Config.getString("dm2e.service.mint-file.base_uri"),
-			Config.getString("dm2e.service.mint-file.mint_base")
+			Config.getString("dm2e.service.mint-file.mint_base"),
+			Config.getString("dm2e.service.mint-file.username"),
+			Config.getString("dm2e.service.mint-file.password")
 	);
+	
+	@Before
+	public void setUpMintApiTranslatorTest() {
+        System.setProperty("http.keepAlive", "false");
+//		mintApiTranslator.mintClient.clearCookies();
+	}
+	
+	@Test
+	public void testLogin() throws InterruptedException {
+		log.info("Logging in as "
+			+ Config.getString("dm2e.service.mint-file.username")
+			+ ":"
+			+ Config.getString("dm2e.service.mint-file.password"));
+		assertFalse(mintApiTranslator.isLoggedIn());
+		mintApiTranslator.ensureLoggedIn();
+		log.info("Cookies: " + mintApiTranslator.mintClient.cookies);
+		assertTrue(mintApiTranslator.isLoggedIn());
+	}
+	
 	
 	@Test
 	public void testTranslateSingleMapping() {
