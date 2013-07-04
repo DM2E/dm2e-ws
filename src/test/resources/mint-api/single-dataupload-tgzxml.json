@@ -1,0 +1,24 @@
+{
+    "created": "2013-06-12T13:37:22+0300",
+    "dbID": 1124,
+    "edited": false,
+    "itemCount": 5,
+    "invalidItems": -1,
+    "validItems": 0,
+    "publishedItems": 0,
+    "itemizerStatus": "OK",
+    "lastModified": "2013-06-12T13:46:01+0300",
+    "organization":     {
+      "dbID": 1003,
+      "name": "Video and Multimedia Systems Laboratory"
+    },
+    "itemRootXpath": "/tns:ImageMetadata",
+    "itemLabelXpath": "/tns:ImageMetadata/tns:DescriptiveMetadata/tns:Title",
+    "creator":     {
+      "dbID": 1000,
+      "name": "DM2E Admin"
+    },
+    "name": "EuPhoto-Extended.zip.tgz",
+    "type": "DataUpload",
+    "format": "TGZ-XML"
+}

@@ -1,0 +1,24 @@
+{
+    "created": "2012-12-12T13:11:54+0200",
+    "dbID": 1059,
+    "edited": false,
+    "itemCount": 19,
+    "invalidItems": -1,
+    "validItems": 0,
+    "publishedItems": 0,
+    "itemizerStatus": "OK",
+    "lastModified": "2012-12-12T13:19:22+0200",
+    "organization":     {
+      "dbID": 1001,
+      "name": "Digitized Manuscripts to Europeana"
+    },
+    "itemRootXpath": "/tei:TEI/tei:text/tei:body/tei:ab",
+    "itemLabelXpath": "/tei:TEI/tei:text/tei:body/tei:ab/@xml:id",
+    "creator":     {
+      "dbID": 1003,
+      "name": "Julia Iwanowa"
+    },
+    "name": "/cost-a32_xml/Ms-141_OA.xml",
+    "type": "DataUpload",
+    "format": "XML"
+}
