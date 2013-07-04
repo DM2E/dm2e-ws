@@ -90,7 +90,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 			return throwServiceError(ErrorMsg.BAD_RDF);
 		}
 		
-		log.fine("Skolemizing");
+		log.trace("Skolemizing");
 		GResource blank = inputGrafeo.findTopBlank(NS.OMNOM.CLASS_WORKFLOW_JOB);
 		if (blank != null) {
 			blank.rename(uriStr);
@@ -103,7 +103,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		inputGrafeo.skolemizeUUID(uriStr, NS.OMNOM.PROP_LOG_ENTRY, "log");
 		inputGrafeo.skolemizeUUID(uriStr, NS.OMNOM.PROP_ASSIGNMENT, "assignment");
 		
-		log.warning("Instantiating " + uriStr);
+		log.warn("Instantiating " + uriStr);
 		GrafeoImpl outputGrafeo = new GrafeoImpl();
 		if (inputGrafeo.resource(uriStr).isa(NS.OMNOM.CLASS_WORKFLOW_JOB)) {
 			log.info("Will instantiate as WorkflowJobPojo : " + uriStr);
@@ -164,11 +164,11 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		blank.rename(uriStr);
 //		log.info(inputGrafeo.getNTriples());
 		
-		log.fine("Skolemizing");
+		log.trace("Skolemizing");
 		inputGrafeo.skolemizeUUID(uriStr, NS.OMNOM.PROP_ASSIGNMENT, "assignment");
 		inputGrafeo.skolemizeUUID(uriStr, NS.OMNOM.PROP_LOG_ENTRY, "log");
 		
-		log.warning("Instantiating " + uriStr);
+		log.warn("Instantiating " + uriStr);
 		GrafeoImpl outputGrafeo = new GrafeoImpl();
 		if (blank.isa(NS.OMNOM.CLASS_WORKFLOW_JOB)) {
 			log.info("Will instantiate as WorkflowJobPojo : " + uriStr);
@@ -351,7 +351,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		try {
 			jobPojo.loadFromURI(resourceUri);
 		} catch (Exception e) {
-			log.severe("Could reload job pojo." + e);
+			log.error("Could reload job pojo." + e);
 			throwServiceError(e);
 		}
 		Set<LogEntryPojo> logEntries = jobPojo.getLogEntries(minLevelStr, maxLevelStr);
@@ -371,7 +371,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		try {
 			jobPojo.loadFromURI(resourceUriStr);
 		} catch (Exception e) {
-			log.severe("Could reload job pojo." + e);
+			log.error("Could reload job pojo." + e);
 			throwServiceError(e);
 		}
 		return Response.ok().entity(jobPojo.toLogString(minLevelStr, maxLevelStr)).build();
@@ -420,7 +420,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
     @GET
     @Path("{id}/assignment/{assId}")
     public Response getAssignment( @PathParam("id") String id, @PathParam("assId") String assId) {
-        log.finest("Output Assignment " + assId + " of job requested: " + uriInfo.getRequestUri());
+        log.debug("Output Assignment " + assId + " of job requested: " + uriInfo.getRequestUri());
         URI uri = popPath(popPath());
         return Response.status(303).location(uri).build();
     }

@@ -2,7 +2,8 @@ package eu.dm2e.ws.api.json;
 
 import java.lang.reflect.Type;
 import java.util.Set;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.joda.time.DateTime;
 import org.reflections.Reflections;
@@ -18,7 +19,7 @@ import eu.dm2e.ws.grafeo.annotations.RDFClass;
 
 public class OmnomJsonSerializer {
 	
-	private transient static Logger log = Logger.getLogger(OmnomJsonSerializer.class.getName());
+	private transient static Logger log = LoggerFactory.getLogger(OmnomJsonSerializer.class.getName());
 	
 	private static Gson gson;
 	

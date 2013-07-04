@@ -3,7 +3,8 @@ package eu.dm2e.ws.api.json;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
@@ -22,7 +23,7 @@ public class SerializablePojoJsonSerializer
 //				, JsonDeserializer<SerializablePojo>
 {
 	
-	private transient Logger log = Logger.getLogger(getClass().getName());
+	private transient Logger log = LoggerFactory.getLogger(getClass().getName());
 	
 	@Override
 	public JsonElement serialize(SerializablePojo src, Type typeOfSrc, JsonSerializationContext context) {
@@ -41,7 +42,7 @@ public class SerializablePojoJsonSerializer
 			try {
 				value = PropertyUtils.getProperty(src, field.getName());
 			} catch (NoSuchMethodException e) {
-				log.severe(src.getClass().getName() +": No getter/setters for " + field.getName() + " property: " + e);
+				log.error(src.getClass().getName() +": No getter/setters for " + field.getName() + " property: " + e);
 				throw new RuntimeException(src.getClass().getName() +": No getter/setters for " + field.getName() + " property: " + e);
 			} catch (InvocationTargetException | IllegalAccessException e) {
 				throw new RuntimeException("An exception occurred: " + e, e);
@@ -51,7 +52,7 @@ public class SerializablePojoJsonSerializer
 			if (null == value)
 				continue;
 			
-			log.fine(src + " : Field " + field.getName() + " : " + value);
+			log.trace(src + " : Field " + field.getName() + " : " + value);
 			
 			if (SerializablePojo.class.isAssignableFrom(value.getClass())) {
 				SerializablePojo valueAsSP = (SerializablePojo) value;
@@ -64,7 +65,7 @@ public class SerializablePojoJsonSerializer
 				// RECURSION
 				jsonObj.add(field.getName(), context.serialize(value));
 			}
-			log.finer("JSON so far: " + jsonObj.toString());
+			log.trace("JSON so far: " + jsonObj.toString());
 		}
 		return jsonObj;
 //		return jsonObj.entrySet().size() > 0 ? jsonObj : null;

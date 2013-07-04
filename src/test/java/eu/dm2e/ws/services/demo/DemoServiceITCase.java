@@ -21,7 +21,8 @@ import org.junit.Test;
 
 import java.io.InputStream;
 import java.net.URI;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.*;
 import static org.junit.matchers.JUnitMatchers.containsString;
@@ -115,7 +116,7 @@ public class DemoServiceITCase extends OmnomTestCase {
         try {
 			ws.loadFromURI(SERVICE_URI);
 		} catch (Exception e1) {
-			log.severe("Could reload job pojo." + e1);
+			log.error("Could reload job pojo." + e1);
 			e1.printStackTrace();
 		}
         WebserviceConfigPojo config = new WebserviceConfigPojo();

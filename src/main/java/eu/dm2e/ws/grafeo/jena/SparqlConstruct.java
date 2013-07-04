@@ -2,7 +2,8 @@ package eu.dm2e.ws.grafeo.jena;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -13,7 +14,7 @@ public class SparqlConstruct {
 	
 	protected static final long DEFAULT_TIMEOUT=-1;
 	
-	private Logger log = Logger.getLogger(getClass().getName());
+	private Logger log = LoggerFactory.getLogger(getClass().getName());
 	
 	private String graph, endpoint, constructClause, whereClause;
 	private GrafeoImpl grafeo;
@@ -103,17 +104,17 @@ public class SparqlConstruct {
 		if (null == grafeo)
 			throw new IllegalArgumentException("Must set grafeo in the builder or use execute(GrafeoImpl g).");
 		long startTime = System.currentTimeMillis();
-        log.fine("CONSTRUCT query (built): " + toString());
+        log.trace("CONSTRUCT query (built): " + toString());
         Query query = QueryFactory.create(toString());
-        log.fine("CONSTRUCT query (Jena): " + query);
+        log.trace("CONSTRUCT query (Jena): " + query);
         QueryExecution exec = QueryExecutionFactory.create(query, grafeo.getModel());
         exec.execConstruct(grafeo.getModel());
         long estimatedTime = System.currentTimeMillis() - startTime;
         if (estimatedTime < 250) {
 	        log.info("CONSTRUCT took " + estimatedTime + "ms.");
         } else {
-	        log.severe("CONSTRUCT took " + estimatedTime + "ms.");
-//	        log.severe(grafeo.getTerseTurtle());
+	        log.error("CONSTRUCT took " + estimatedTime + "ms.");
+//	        log.error(grafeo.getTerseTurtle());
         }
 	}
 	
@@ -134,8 +135,8 @@ public class SparqlConstruct {
         if (estimatedTime < 250) {
 	        log.info("CONSTRUCT took " + estimatedTime + "ms.");
         } else {
-	        log.severe("CONSTRUCT took " + estimatedTime + "ms: " + query);
-//	        log.severe(g.getTerseTurtle());
+	        log.error("CONSTRUCT took " + estimatedTime + "ms: " + query);
+//	        log.error(g.getTerseTurtle());
         }
 	}
 }

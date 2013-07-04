@@ -180,7 +180,7 @@ public class ObjectMapperITCase extends OmnomTestCase {
 		GrafeoImpl g2 = new GrafeoImpl();
 		ResourceListPojo inPojo = g1.getObjectMapper().getObject(ResourceListPojo.class, res);
 		g2.getObjectMapper().addObject(inPojo);
-//		log.warning(g2.getCanonicalNTriples());
+//		log.warn(g2.getCanonicalNTriples());
 		GrafeoAssert.graphsAreEquivalent(g1, g2);
 //		assertEquals(g1.getCanonicalNTriples(), g2.getCanonicalNTriples());
 	}
@@ -316,7 +316,7 @@ public class ObjectMapperITCase extends OmnomTestCase {
 			uriRes.getUriResourceList().add(URI.create(uriName1));
 			uriRes.getUriResourceList().add(URI.create(uriName2));
 			
-			log.severe(g.getTerseTurtle());
+			log.error(g.getTerseTurtle());
 			GrafeoAssert.graphsAreEquivalent(g, uriRes.getGrafeo());
 		}
 		{

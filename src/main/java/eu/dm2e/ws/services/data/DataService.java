@@ -4,7 +4,8 @@ package eu.dm2e.ws.services.data;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -25,7 +26,7 @@ import eu.dm2e.ws.services.AbstractRDFService;
  */
 @Path("/data")
 public class DataService extends AbstractRDFService {
-    private Logger log = Logger.getLogger(getClass().getName());
+    private Logger log = LoggerFactory.getLogger(getClass().getName());
 
     public DataService() {
         ParameterPojo p1 = new ParameterPojo();

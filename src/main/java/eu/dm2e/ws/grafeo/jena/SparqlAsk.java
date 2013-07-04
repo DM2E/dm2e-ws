@@ -2,7 +2,8 @@ package eu.dm2e.ws.grafeo.jena;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -17,7 +18,7 @@ import com.hp.hpl.jena.query.QueryFactory;
  */
 public class SparqlAsk {
 	
-	private Logger log = Logger.getLogger(getClass().getName());
+	private Logger log = LoggerFactory.getLogger(getClass().getName());
 	
 	private String graph, endpoint, askClause;
 	private GrafeoImpl grafeo;
@@ -92,7 +93,7 @@ public class SparqlAsk {
 	
 	public boolean execute() {
         Query query = QueryFactory.create(this.toString());
-        log.fine("ASK query: " + query.toString());
+        log.trace("ASK query: " + query.toString());
         QueryExecution qe = null;
 		if (null != endpoint) {
 	        qe = QueryExecutionFactory.createServiceRequest(endpoint, query);

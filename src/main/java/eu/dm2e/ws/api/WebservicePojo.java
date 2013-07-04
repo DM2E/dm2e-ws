@@ -4,7 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.commons.beanutils.BeanUtils;
 
@@ -69,7 +70,7 @@ public class WebservicePojo extends AbstractPersistentPojo<WebservicePojo> imple
 	 */
     @Override
 	public ParameterPojo getParamByName(String needle) {
-    	Logger log = Logger.getLogger(getClass().getName());
+    	Logger log = LoggerFactory.getLogger(getClass().getName());
     	Set<ParameterPojo> allParams = new HashSet<>();
     	allParams.addAll(getInputParams());
     	allParams.addAll(getOutputParams());
@@ -79,7 +80,7 @@ public class WebservicePojo extends AbstractPersistentPojo<WebservicePojo> imple
     			return param;
     		}
     	}
-        log.warning("No parameter found for needle: " + needle);
+        log.warn("No parameter found for needle: " + needle);
     	return null;
     }
     

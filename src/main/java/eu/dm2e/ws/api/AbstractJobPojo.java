@@ -43,8 +43,8 @@ public abstract class AbstractJobPojo extends AbstractPersistentPojo<AbstractJob
     public void trace(String message) { log.info("Job " + getId() +": " + message);    this.addLogEntry(message, LogLevel.TRACE.toString()); }
     public void debug(String message) { log.info("Job " + getId() +": " + message);    this.addLogEntry(message, LogLevel.DEBUG.toString()); }
     public void info(String message)  { log.info("Job " + getId() +": " + message);    this.addLogEntry(message, LogLevel.INFO.toString());  }
-    public void warn(String message)  { log.warning("Job " + getId() +": " + message); this.addLogEntry(message, LogLevel.WARN.toString());  }
-    public void fatal(String message) { log.severe("Job " + getId() +": " + message);  this.addLogEntry(message, LogLevel.FATAL.toString()); }
+    public void warn(String message)  { log.warn("Job " + getId() +": " + message); this.addLogEntry(message, LogLevel.WARN.toString());  }
+    public void fatal(String message) { log.error("Job " + getId() +": " + message);  this.addLogEntry(message, LogLevel.FATAL.toString()); }
     
     public void trace(Throwable e) { String msg = this.exceptionToString(e); this.trace(msg); }
     public void debug(Throwable e) { String msg = this.exceptionToString(e); this.debug(msg); }

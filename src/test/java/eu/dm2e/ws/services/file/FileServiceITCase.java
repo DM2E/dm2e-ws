@@ -96,7 +96,7 @@ public class FileServiceITCase extends OmnomTestCase {
 				.entity(fdmp)
 				.type(MediaType.MULTIPART_FORM_DATA)
 				.post(ClientResponse.class);
-			log.severe(resp.getEntity(String.class));
+			log.error(resp.getEntity(String.class));
 			assertEquals("Empty file posted", 201, resp.getStatus());
 			URI fileLoc = resp.getLocation();
 			assertNotNull(fileLoc);
@@ -306,7 +306,7 @@ public class FileServiceITCase extends OmnomTestCase {
 		{
 			FilePojo fp = new FilePojo();
 			extracted(fileUri, fp);
-			log.severe(fp.getTurtle());
+			log.error(fp.getTurtle());
 			assertEquals("File is available", FileStatus.AVAILABLE.toString(), fp.getFileStatus());
 		}
 		{
@@ -337,7 +337,7 @@ public class FileServiceITCase extends OmnomTestCase {
 		{
 			FilePojo fp = new FilePojo();
 			extracted(fileUri, fp);
-			log.severe(fp.getTurtle());
+			log.error(fp.getTurtle());
 			assertEquals("File is available", FileStatus.AVAILABLE.toString(), fp.getFileStatus());
 			assertEquals(origFp.getOriginalName(), fp.getOriginalName());
 			assertEquals("d41d8cd98f00b204e9800998ecf8427e", fp.getMd5());

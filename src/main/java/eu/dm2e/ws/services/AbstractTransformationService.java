@@ -44,7 +44,7 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
 		try {
 			wsConf.loadFromURI(configURI, 1);
 		} catch (Exception e) {
-			log.severe("Exception: " + e);
+			log.error("Exception: " + e);
 			return throwServiceError(e);
 		}
 		
@@ -111,7 +111,7 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
     	WebResource webResource = client.getConfigWebResource();
     	ClientResponse resp = webResource.post(ClientResponse.class, g.getNTriples());
     	if (null == resp.getLocation()) {
-    		log.severe("Invalid RDF string posted as configuration.");
+    		log.error("Invalid RDF string posted as configuration.");
     		return throwServiceError(resp.getEntity(String.class));
     	}
         return this.putConfigToService(resp.getLocation().toString());

@@ -1,7 +1,8 @@
 package eu.dm2e.ws;
 
 import java.io.File;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -14,7 +15,7 @@ public final class Config {
 	
 	public static final Configuration config;
 	
-	private static Logger log = Logger.getLogger(Config.class.getName());
+	private static Logger log = LoggerFactory.getLogger(Config.class.getName());
 	
 	static {
 		Configuration c;
@@ -31,7 +32,7 @@ public final class Config {
 	public static String getString(String string) {
 		String conf =  config.getString(string);
 		if (null == conf) {
-			log.severe("Undefined config option " + string);
+			log.error("Undefined config option " + string);
 		}
 		return conf;
 	}

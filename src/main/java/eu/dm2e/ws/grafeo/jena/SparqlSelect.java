@@ -3,7 +3,8 @@ package eu.dm2e.ws.grafeo.jena;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -13,7 +14,7 @@ import com.hp.hpl.jena.query.ResultSet;
 
 public class SparqlSelect {
 	
-	private Logger log = Logger.getLogger(getClass().getName());
+	private Logger log = LoggerFactory.getLogger(getClass().getName());
 	
 	private String graph, endpoint, selectClause, orderBy, whereClause;
 	private long limit = 0;

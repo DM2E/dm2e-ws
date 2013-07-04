@@ -3,7 +3,8 @@ package eu.dm2e.ws.grafeo.jena;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.update.GraphStore;
 import com.hp.hpl.jena.update.GraphStoreFactory;
@@ -17,7 +18,7 @@ import eu.dm2e.ws.grafeo.Grafeo;
 
 public class SparqlUpdate {
 	
-	private Logger log = Logger.getLogger(getClass().getName());
+	private Logger log = LoggerFactory.getLogger(getClass().getName());
 	
 	private String graph, endpoint, deleteClause, insertClause, whereClause;
 	private boolean insertDataFlag, deleteDataFlag;
@@ -159,9 +160,9 @@ public class SparqlUpdate {
 //        for (Entry<String, String> namespaceMapping : new GrafeoImpl().getNamespacesUsed().entrySet()) {
 //        	update.setPrefix(namespaceMapping.getKey(), namespaceMapping.getValue());
 //        }
-        log.finest("UPDATE query (created): " + toString());
+        log.trace("UPDATE query (created): " + toString());
         update.add(toString());
-        log.finest("UPDATE query (parsed): " + update.toString());
+        log.trace("UPDATE query (parsed): " + update.toString());
         UpdateProcessor exec;
 		if (null != endpoint) {
 			exec = UpdateExecutionFactory.createRemoteForm(update, endpoint);
@@ -172,9 +173,9 @@ public class SparqlUpdate {
         exec.execute();
         long estimatedTime = System.currentTimeMillis() - startTime;
         if (estimatedTime < 2000) {
-	        log.fine("UPDATE took " + estimatedTime +"ms");
+	        log.debug("UPDATE took " + estimatedTime +"ms");
         } else { 
-	        log.severe("UPDATE took " + estimatedTime +"ms: " + toString());
+	        log.error("UPDATE took " + estimatedTime +"ms: " + toString());
         }
 	}
 }

@@ -68,7 +68,7 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
     			return param;
     		}
     	}
-        log.warning("No parameter found for needle: " + needle);
+        log.warn("No parameter found for needle: " + needle);
     	return null;
     }
     public ParameterConnectorPojo getConnectorToWorkflowOutputParam(ParameterPojo param) {
@@ -79,7 +79,7 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
     	for (ParameterConnectorPojo conn : this.getParameterConnectors()) {
     		if (! conn.hasToWorkflow())
     			continue;
-	    	log.fine("Checking " + conn.getToWorkflow() + ":" + conn.getToParam() + " in " + conn);
+	    	log.debug("Checking " + conn.getToWorkflow() + ":" + conn.getToParam() + " in " + conn);
     		if (conn.getToParam().hasId()
 					&&
 				conn.getToWorkflow().getId().equals(this.getId())
@@ -112,7 +112,7 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
     			return conn;
     		}
     	}
-    	log.warning("No connector for position " + pos + " and param " + needle);
+    	log.warn("No connector for position " + pos + " and param " + needle);
     	return null;
     }
     

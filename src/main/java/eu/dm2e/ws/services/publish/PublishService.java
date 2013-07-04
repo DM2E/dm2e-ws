@@ -2,8 +2,6 @@ package eu.dm2e.ws.services.publish;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-//import java.util.Date;
-import java.util.logging.Level;
 
 import javax.ws.rs.Path;
 
@@ -18,6 +16,7 @@ import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.AbstractTransformationService;
+//import java.util.Date;
 
 /**
  * This file was created within the DM2E project.
@@ -110,7 +109,7 @@ public class PublishService extends AbstractTransformationService {
             jobPojo.addOutputParameterAssignment(PARAM_RESULT_DATASET_ID, versionedURI);
 
         } catch (Throwable t) {
-            log.log(Level.SEVERE, "Exception during publishing: " + t, t);
+            log.error("Exception during publishing: " + t, t);
             jobPojo.fatal(t);
             jobPojo.setFailed();
             throw t;

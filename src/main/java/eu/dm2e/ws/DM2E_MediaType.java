@@ -6,7 +6,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DM2E_MediaType {
 	/**
@@ -30,7 +31,7 @@ public class DM2E_MediaType {
 		DM2E_MediaType.TEXT_TURTLE
 	})
 	 */
-    private static Logger log = Logger.getLogger(DM2E_MediaType.class.getName());
+    private static Logger log = LoggerFactory.getLogger(DM2E_MediaType.class.getName());
 	public static final String
 			// NTRIPLES
 			APPLICATION_RDF_TRIPLES = "application/rdf-triples",

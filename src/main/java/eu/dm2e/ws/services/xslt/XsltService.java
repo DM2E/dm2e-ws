@@ -52,7 +52,7 @@ public class XsltService extends AbstractTransformationService {
 	@Override
 	public void run() {
 		JobPojo jobPojo = getJobPojo();
-		log.warning("Starting to handle XSLT transformation job");
+		log.warn("Starting to handle XSLT transformation job");
 		jobPojo.debug("Starting to handle XSLT transformation job");
 		// update job status
 		jobPojo.setStarted();
@@ -104,7 +104,7 @@ public class XsltService extends AbstractTransformationService {
 			jobPojo.info("XSLT Transformation complete.");
 			jobPojo.setFinished();
 		} catch (Throwable t) {
-			log.severe("An error occured during XsltService.run: " + t);
+			log.error("An error occured during XsltService.run: " + t);
 			jobPojo.fatal("An error occured during XsltService.run: " + t);
 			jobPojo.setFailed();
 		} finally {

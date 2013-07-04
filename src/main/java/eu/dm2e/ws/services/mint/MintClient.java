@@ -4,7 +4,8 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.NewCookie;
@@ -22,7 +23,7 @@ import com.sun.jersey.api.client.WebResource.Builder;
  */
 public class MintClient {
 	
-	Logger log = Logger.getLogger(getClass().getName());
+	Logger log = LoggerFactory.getLogger(getClass().getName());
 	
 	private com.sun.jersey.api.client.Client jerseyClient = null;
 	public com.sun.jersey.api.client.Client getJerseyClient() {
@@ -38,7 +39,7 @@ public class MintClient {
 	
 	public void addCookie(Cookie cookie) { this.cookies.add(cookie); }
 	public void addCookies(List<NewCookie> theseCookies) {
-		log.fine("Adding cookies: " + theseCookies);
+		log.trace("Adding cookies: " + theseCookies);
 		for (Cookie thisCookie : theseCookies)
 			this.addCookie(thisCookie);
 	}

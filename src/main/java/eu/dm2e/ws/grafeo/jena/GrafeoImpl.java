@@ -25,7 +25,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.io.IOUtils;
@@ -63,7 +64,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     private static final long RETRY_INTERVAL = 500;
     private static final int RETRY_COUNT = 3;
     
-    private Logger log = Logger.getLogger(getClass().getName());
+    private Logger log = LoggerFactory.getLogger(getClass().getName());
     protected Model model;
     private Map<String, String> namespaces = new HashMap<>();
     private Map<String, String> namespacesUsed = new HashMap<>();;
@@ -99,7 +100,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         try {
 			this.readHeuristically(input);
 		} catch (IOException e) {
-			log.severe("Could not read from input stream.");
+			log.error("Could not read from input stream.");
 //			throw(e);
 		}
     }
@@ -245,7 +246,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     
     @Override
     public void load(String uri) {
-        log.fine("Load data from URI without any expansions");
+        log.debug("Load data from URI without any expansions");
     	this.load(uri, 0);
     }
 
@@ -255,10 +256,10 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 			&&
 			! uri.matches("https?://localhost.*")
 			) {
-    		log.warning("Skipping loading because "+ NO_EXTERNAL_URL_FLAG +" system property is set." );
+    		log.warn("Skipping loading because "+ NO_EXTERNAL_URL_FLAG +" system property is set." );
     		return;
     	}
-        log.fine("Load data from URI: " + uri);
+        log.debug("Load data from URI: " + uri);
         uri = expand(uri);
         int count = RETRY_COUNT;
         boolean success = false;
@@ -267,10 +268,10 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
             try {
                 // NOTE: read(String uri) does content-negotiation - sort of
                 this.model.read(uri);
-                log.fine("Content read.");
+                log.debug("Content read.");
                 success = true;
             } catch (Throwable t) {
-                    log.severe("Could not parse URI content: " + t.getMessage());
+                    log.error("Could not parse URI content: " + t.getMessage());
                     throw new RuntimeException("Could not parse uri content: " + uri + " : " + t.getMessage());
             }
             if (success) break;
@@ -285,42 +286,42 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         if (!success) throw new RuntimeException("After 3 tries I still couldn't make sense from this URI: " + uri);
         // Expand the graph by recursively loading additional resources
         Set<GResource> resourceCache = new HashSet<GResource>();
-        log.fine("Expansions to go: " + expansionSteps);
+        log.debug("Expansions to go: " + expansionSteps);
         for ( ; expansionSteps > 0 ; expansionSteps--) {
-        	log.finer("Expansion No. " + expansionSteps);
-        	log.fine("Size Before expansion: "+ this.size());
+        	log.debug("Expansion No. " + expansionSteps);
+        	log.debug("Size Before expansion: "+ this.size());
         	for (GResource gres : this.listURIResources()) {
         		if (resourceCache.contains(gres)){
         			continue;
         		}
 				resourceCache.add(gres);
 				try {
-					log.fine("Expansion: Trying to load resource " + gres.getUri());
+					log.debug("Expansion: Trying to load resource " + gres.getUri());
 					this.load(gres.getUri(), 0);
 				} catch (Throwable t) {
-					log.fine("Expansion: Failed to load resource " + gres.getUri() +".");
+					log.debug("Expansion: Failed to load resource " + gres.getUri() +".");
 //					t.printStackTrace();
 				}
     		}
-        	log.fine("Size After expansion: "+ this.size());
+        	log.debug("Size After expansion: "+ this.size());
         }
     }
 
     @Override
     public void loadWithoutContentNegotiation(String uri) {
-        log.fine("Load data from URI without content negotiation: " + uri);
+        log.debug("Load data from URI without content negotiation: " + uri);
         uri = expand(uri);
         try {
             this.model.read(uri, null, "N3");
-            log.fine("Content read, found N3.");
+            log.debug("Content read, found N3.");
         } catch (Throwable t) {
             try {
                 this.model.read(uri, null, "RDF/XML");
-                log.fine("Content read, found RDF/XML.");
+                log.debug("Content read, found RDF/XML.");
             } catch (Throwable t2) {
                 // TODO Throw proper exception that is converted to a proper
                 // HTTP response in DataService
-                log.warning("Could not parse URI content: " + t2.getMessage());
+                log.warn("Could not parse URI content: " + t2.getMessage());
                 throw new RuntimeException("Could not parse URI content: " + uri + "\n"
                 		+"N3 Parser croaked: " + t.getMessage()
                 		+"\nRDFXML parser croaked: " + t2.getMessage());
@@ -330,19 +331,19 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 
     @Override
     public void loadWithoutContentNegotiation(String uri, int expansionSteps) {
-        log.fine("Load data from URI without content negotiation: " + uri);
+        log.debug("Load data from URI without content negotiation: " + uri);
         uri = expand(uri);
         try {
             this.model.read(uri, null, "N3");
-            log.fine("Content read, found N3.");
+            log.debug("Content read, found N3.");
         } catch (Throwable t) {
             try {
                 this.model.read(uri, null, "RDF/XML");
-                log.fine("Content read, found RDF/XML.");
+                log.debug("Content read, found RDF/XML.");
             } catch (Throwable t2) {
                 // TODO Throw proper exception that is converted to a proper
                 // HTTP response in DataService
-                log.severe("Could not parse URI content: " + t2.getMessage());
+                log.error("Could not parse URI content: " + t2.getMessage());
                 throw new RuntimeException("Could not parse uri content: "
                         + uri, t2);
             }
@@ -350,8 +351,8 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         // Expand the graph by recursively loading additional resources
         Set<GResource> resourceCache = new HashSet<GResource>();
         for ( ; expansionSteps > 0 ; expansionSteps--) {
-            log.fine("Expansion No. " + expansionSteps);
-            log.fine("Size Before expansion: "+ this.size());
+            log.debug("Expansion No. " + expansionSteps);
+            log.debug("Size Before expansion: "+ this.size());
             for (GResource gres : this.listURIResources()) {
                 if (resourceCache.contains(gres)){
                     continue;
@@ -359,12 +360,12 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
                 try {
                     this.loadWithoutContentNegotiation(gres.getUri(), 0);
                 } catch (Throwable t) {
-                    log.fine("Failed to load resource " + gres.getUri() +".");
+                    log.debug("Failed to load resource " + gres.getUri() +".");
 //					t.printStackTrace();
                 }
                 resourceCache.add(gres);
             }
-            log.fine("After expansion: "+ this.size());
+            log.debug("After expansion: "+ this.size());
         }
     }
 
@@ -373,7 +374,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         String uri = null;
 
         for (Field field : object.getClass().getDeclaredFields()) {
-            log.fine("Field: " + field.getName());
+            log.debug("Field: " + field.getName());
             if (field.isAnnotationPresent(RDFId.class)) {
                 try {
                     Object id = PropertyUtils.getProperty(object, field.getName());
@@ -557,7 +558,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     		.endpoint(endpoint)
     		.build();
 //        Query query = QueryFactory.create(sparco.toString());
-        log.finer("CONSTRUCT Query: " + sparco.toString());
+        log.debug("CONSTRUCT Query: " + sparco.toString());
 
         long sizeBefore = size();
         long stmtsAdded = 0;
@@ -581,39 +582,39 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
             }
         }
         if (stmtsAdded == 0) {
-        	log.warning("No statements were addded from graph <" + graph + ">. It is either empty or contained no new statements.");
+        	log.warn("No statements were addded from graph <" + graph + ">. It is either empty or contained no new statements.");
 //        	throw new RuntimeException("Graph contained no statements: " + graph);
         }
-        log.fine("Added " + stmtsAdded + " statements to the graph.");
+        log.debug("Added " + stmtsAdded + " statements to the graph.");
         
         // Expand the graph by recursively loading additional resources
         Set<GResource> resourceCache = new HashSet<GResource>();
         for ( ; expansionSteps > 0 ; expansionSteps--) {
-        	log.fine("Expansion No. " + expansionSteps);
-        	log.fine("Size Before expansion: "+ this.size());
+        	log.debug("Expansion No. " + expansionSteps);
+        	log.debug("Size Before expansion: "+ this.size());
         	for (GResource gres : this.listURIResources()) {
         		if (resourceCache.contains(gres)){
         			continue;
         		}
         		try {
-        			log.fine("Reading graph " + graph + " from endpoint " + endpoint + ".");
+        			log.debug("Reading graph " + graph + " from endpoint " + endpoint + ".");
         			this.readFromEndpoint(endpoint, graph, 0);
         		} catch (Throwable t) {
-        			log.fine("Graph not found in endpoint: " + graph);
+        			log.debug("Graph not found in endpoint: " + graph);
         			try {
 						this.load(gres.getUri(), 0);
 	        		} catch (Throwable t2) {
-	        			log.warning("URI un-dereferenceable: " + graph);
-	        			log.warning("Continuing because this concerns only nested resources.");
+	        			log.warn("URI un-dereferenceable: " + graph);
+	        			log.warn("Continuing because this concerns only nested resources.");
 //	        			throw(t2);
 	        		}
         		}
 				resourceCache.add(gres);
     		}
-        	log.fine("Size After expansion: "+ this.size());
+        	log.debug("Size After expansion: "+ this.size());
         }
         log.info("Summary: \n" + summarizeClasses());
-        log.fine("Reading from endpoint finished.");
+        log.debug("Reading from endpoint finished.");
     }
     
     @Override
@@ -672,7 +673,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         	.graph(graph)
         	.endpoint(endpoint)
         	.build();
-//        log.fine("Post to endpoint SPARQL UPDATE query: " + sparul.toString());
+//        log.debug("Post to endpoint SPARQL UPDATE query: " + sparul.toString());
         sparul.execute();
 
     }
@@ -827,7 +828,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         	.ask(String.format("%s %s %s", spo.toArray()))
         	.grafeo(this)
         	.build();
-        log.fine("Contians Triple: " + sparqlask);
+        log.debug("Contians Triple: " + sparqlask);
         return sparqlask.execute();
     }
 
@@ -1005,34 +1006,34 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 //    		res.rename(this.resource("_blank_" + (i++) +"_"));
     		res.rename(this.createBlank());
     	}
-    	log.finest(this.getTerseTurtle());
+    	log.trace(this.getTerseTurtle());
     }
 
 	@Override
 	public void skolemize(String subject, String predicate, String template, SkolemizationMethod method) {
-		log.fine("Skolemizing " + stringifyResourcePattern(subject, predicate, null) + " with template '" + template + "'");
+		log.debug("Skolemizing " + stringifyResourcePattern(subject, predicate, null) + " with template '" + template + "'");
 		subject = expand(subject);
 		predicate = expand(predicate);
 		LinkedHashSet<GResource> anonRes = new LinkedHashSet<>();
 		GValue possiblyList = this.resource(subject).get(predicate);
 		if (null == possiblyList) {
-			log.fine("No statements fit " + this.stringifyResourcePattern(subject, predicate, null));
+			log.debug("No statements fit " + this.stringifyResourcePattern(subject, predicate, null));
 			return;
 		}
 		if (! possiblyList.isLiteral() && possiblyList.resource().isa(NS.CO.CLASS_LIST)) {
-			log.fine("This is a list.");
+			log.debug("This is a list.");
 			GResource listRes = possiblyList.resource();
 			GResource cur;
 			try {
 				cur = listRes.get(NS.CO.PROP_FIRST_ITEM).resource();
 			} catch (NullPointerException e) {
-				log.severe("List has no first item. Weird: " + listRes);
-				log.severe(listRes.getGrafeo().getTerseTurtle());
+				log.error("List has no first item. Weird: " + listRes);
+				log.error(listRes.getGrafeo().getTerseTurtle());
 				return;
 			}
 			while (null != cur) {
 				if (cur.isAnon()) {
-					log.fine("Adding " + cur);
+					log.debug("Adding " + cur);
 					anonRes.add(cur.get(NS.CO.PROP_ITEM_CONTENT).resource());
 				}
 				GValue next = cur.get(NS.CO.PROP_NEXT_ITEM);
@@ -1041,7 +1042,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 			}
 		}
 		else {
-			log.fine("This is NOT a list.");
+			log.debug("This is NOT a list.");
 			for (GValue val : this.resource(subject).getAll(predicate)) {
 				if (! val.isLiteral() && val.resource().isAnon()) {
 					anonRes.add(val.resource());
@@ -1050,10 +1051,10 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		}
 		
 		long i = 0;
-		log.fine("Skolemizing " + template + ": " + anonRes);
+		log.debug("Skolemizing " + template + ": " + anonRes);
 		for (GResource gres : anonRes) {
 			// start counting from 1;
-			log.fine("Resource before skolem: " + gres);
+			log.debug("Resource before skolem: " + gres);
 			i++;
 			String resId;
 			if (method.equals(SkolemizationMethod.RANDOM_UUID)) {
@@ -1072,7 +1073,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 				throw new RuntimeException("Unknown SkolemnizationMethod " + method.toString());
 			}
 			gres.rename(subject + "/" + template + "/" + resId);
-			log.fine("Resource after skolem: " + gres);
+			log.debug("Resource after skolem: " + gres);
 		}
 	}
 	

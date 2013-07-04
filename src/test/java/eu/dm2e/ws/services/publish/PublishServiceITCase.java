@@ -103,7 +103,7 @@ public class PublishServiceITCase extends OmnomTestCase {
 //            if (response.getStatus() > 299) {
 //            }
             URI joburi = response.getLocation();
-            log.severe("Job URI:" + joburi);
+            log.error("Job URI:" + joburi);
             
            /**
              * WAIT FOR JOB TO BE FINISHED

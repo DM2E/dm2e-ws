@@ -3,7 +3,8 @@ package eu.dm2e.ws.api;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.json.OmnomJsonSerializer;
@@ -19,7 +20,7 @@ import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
  */
 public abstract class SerializablePojo<T> {
 
-	protected transient Logger log = Logger.getLogger(getClass().getName());
+	protected transient Logger log = LoggerFactory.getLogger(getClass().getName());
 	public static transient final String JSON_FIELD_ID = "id";
 	public static transient final String JSON_FIELD_RDF_TYPE = "rdf:type";
 	

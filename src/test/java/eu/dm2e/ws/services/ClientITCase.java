@@ -43,7 +43,7 @@ public class ClientITCase extends OmnomTestCase {
 		try {
 			fp.loadFromURI(fileUri);
 		} catch (Exception e) {
-			log.severe("Could reload job pojo." + e);
+			log.error("Could reload job pojo." + e);
 			e.printStackTrace();
 			return false;
 		}

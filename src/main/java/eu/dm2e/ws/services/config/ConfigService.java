@@ -69,7 +69,7 @@ public class ConfigService extends AbstractRDFService {
         try {
         	g = new GrafeoImpl(input);
         } catch (Throwable t) {
-        	log.severe(ErrorMsg.BAD_RDF.toString());
+        	log.error(ErrorMsg.BAD_RDF.toString());
         	return throwServiceError(ErrorMsg.BAD_RDF, t);
         }
         log.info("Looking for top blank node.");
@@ -83,9 +83,9 @@ public class ConfigService extends AbstractRDFService {
         else {
         	res.rename(uri.toString());
         }
-        log.warning("Skolemnizing assignments ...");
+        log.warn("Skolemnizing assignments ...");
         g.skolemizeSequential(uri.toString(), NS.OMNOM.PROP_ASSIGNMENT, "assignment");
-        log.warning("DONE Skolemnizing ...");
+        log.warn("DONE Skolemnizing ...");
         
         g.putToEndpoint(Config.ENDPOINT_UPDATE, uri);
         
@@ -104,10 +104,10 @@ public class ConfigService extends AbstractRDFService {
         try {
         	g = new GrafeoImpl(input);
         } catch (Throwable t) {
-        	log.severe(ErrorMsg.BAD_RDF.toString());
+        	log.error(ErrorMsg.BAD_RDF.toString());
         	return throwServiceError(ErrorMsg.BAD_RDF, t);
         }
-        log.fine("Parsed config RDF.");
+        log.debug("Parsed config RDF.");
         GResource res = g.findTopBlank(NS.OMNOM.CLASS_WORKFLOW_CONFIG);
         if (null == res)  {
         	res = g.findTopBlank(NS.OMNOM.CLASS_WEBSERVICE_CONFIG);

@@ -3,9 +3,9 @@ package eu.dm2e.utils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import eu.dm2e.ws.wsmanager.ManageService;
 
@@ -14,10 +14,10 @@ public class GuiConsole {
 	static boolean isRunning = false;
 	
 	private static void startServer() {
-		Logger log = Logger.getLogger(GuiConsole.class.getName());
+		Logger log = LoggerFactory.getLogger(GuiConsole.class.getName());
 		log.info("Starting Servers.");
 		if (isRunning) {
-			log.severe("Servers Already running.");
+			log.error("Servers Already running.");
 			return;
 		}
 		ManageService.startAll();
@@ -25,7 +25,7 @@ public class GuiConsole {
 		isRunning = true;
 	}
 	private static void stopServer() {
-		Logger log = Logger.getLogger(GuiConsole.class.getName());
+//		Logger log = LoggerFactory.getLogger(GuiConsole.class.getName());
 		System.out.println("Stopping Servers.");
 		if (! isRunning) {
 			System.out.println("ERROR: Not running.");
@@ -37,7 +37,7 @@ public class GuiConsole {
 	}
 	
 	private static void restartServer() {
-		Logger log = Logger.getLogger(GuiConsole.class.getName());
+//		Logger log = LoggerFactory.getLogger(GuiConsole.class.getName());
 		System.out.println("Restarting Servers.");
 		stopServer();
 		startServer();
@@ -45,21 +45,6 @@ public class GuiConsole {
 	}
 	
 	public static void main(String[] args) throws SecurityException, IOException {
-		
-		Logger log = Logger.getLogger(GuiConsole.class.getName());
-		log.info("Logging Handlers: " + Arrays.asList(log.getHandlers()));
-		log.info(System.getProperty("java.util.logging.config.file"));
-		
-		LogManager.getLogManager().readConfiguration();
-		log.info(System.getProperty("java.util.logging.config.file"));
-//		System.setProperty("java.util.logging.config.file", "/home/kb/Dropbox/workspace/dm2e-ws/target/classes/logging.properties");
-		System.setProperty("java.util.logging.config.file", "logging.properties");
-		LogManager.getLogManager().readConfiguration();
-		log = Logger.getLogger(GuiConsole.class.getName());
-		log.info(System.getProperty("java.util.logging.config.file"));
-		log.info(LogManager.getLogManager().getProperty("java.util.logging.ConsoleHandler.formatter"));
-		log.info("Logging Handlers: " + Arrays.asList(log.getHandlers()));
-		if (true) return;
 		
 		startServer();
 		

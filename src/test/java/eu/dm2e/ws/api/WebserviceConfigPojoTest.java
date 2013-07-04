@@ -1,6 +1,7 @@
 package eu.dm2e.ws.api;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.junit.Test;
 
@@ -9,7 +10,7 @@ import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
 public class WebserviceConfigPojoTest {
 	
-	private Logger log = Logger.getLogger(getClass().getName());
+	private Logger log = LoggerFactory.getLogger(getClass().getName());
 	
 	
 	@Test 
@@ -42,7 +43,7 @@ public class WebserviceConfigPojoTest {
         config.setId("http://example.org/config1");
         Grafeo g = new GrafeoImpl();
         g.getObjectMapper().addObject(config);
-        log.fine("Serialized config: " + g.getTurtle());
+        log.trace("Serialized config: " + g.getTurtle());
         WebserviceConfigPojo config2 = g.getObjectMapper().getObject(WebserviceConfigPojo.class, "http://example.org/config1");
         assert (config.getId().equals(config2.getId()));
         assert (config.getWebservice().getId().equals(config2.getWebservice().getId()));

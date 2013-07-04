@@ -5,7 +5,8 @@ import static org.junit.Assert.assertNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -33,7 +34,7 @@ import eu.dm2e.ws.services.xslt.XsltService;
 
 public class WorkflowServiceITCase extends OmnomTestCase {
 
-	private Logger log = Logger.getLogger(getClass().getName());
+	private Logger log = LoggerFactory.getLogger(getClass().getName());
 	private WorkflowPojo wf = null;
 	final String _ws_label = "XML -> XMLRDF -> DM3E yay";
 	final String _ws_param_provider = "providerID";
@@ -138,7 +139,7 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 		try {
 			respStr = wf.publishToService(client.getWorkflowWebResource());
 		} catch (Exception e1) {
-			log.severe("FAILOR" + e1);
+			log.error("FAILOR" + e1);
 			throw new RuntimeException(e1);
 		}
 		

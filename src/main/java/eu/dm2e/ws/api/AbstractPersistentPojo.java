@@ -29,22 +29,22 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
 	public void loadFromURI(String uri, int expansionSteps) throws Exception {
         Grafeo g = new GrafeoImpl();
         try {
-        	log.fine("Loading from " + uri);
+        	log.debug("Loading from " + uri);
 			long timeStart = System.currentTimeMillis();
 			g.load(uri, expansionSteps);
 			long timeElapsed = System.currentTimeMillis() - timeStart;
 			log.info("Time spent: " + timeElapsed + "ms.");
-			log.fine("DONE Loading from " + uri);
-            log.fine("No of Triples loaded from URI " + uri + ": " + g.size());
+			log.debug("DONE Loading from " + uri);
+            log.debug("No of Triples loaded from URI " + uri + ": " + g.size());
 		} catch (Exception e1) {
-			log.warning("Failed to initialize Pojo from URI: " + e1);
+			log.warn("Failed to initialize Pojo from URI: " + e1);
 			return;
 		}
-        log.finer("Instantiating " + this.getClass() + " Pojo from " + uri);
+        log.debug("Instantiating " + this.getClass() + " Pojo from " + uri);
 		T theNewPojo = (T) g.getObjectMapper().getObject(this.getClass(), uri);
-        log.finer("DONE Instantiating " + this.getClass() + " Pojo from " + uri);
+        log.debug("DONE Instantiating " + this.getClass() + " Pojo from " + uri);
         try {
-        	log.fine("Copying properties from Pojo " + uri);
+        	log.debug("Copying properties from Pojo " + uri);
             PojoUtils.copyProperties(this, theNewPojo);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("An exception occurred: " + e, e);
@@ -52,9 +52,9 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
     }
 	
 	public String publishToService(WebResource wr) {
-		log.fine("Publishing myself (pojo) to " + wr.getURI());
+		log.debug("Publishing myself (pojo) to " + wr.getURI());
 		String loc = client.publishPojo(this, wr);
-		log.fine("Done Publishing myself (pojo) to " + wr.getURI());
+		log.debug("Done Publishing myself (pojo) to " + wr.getURI());
 		return loc;
 	}
 	public String publishToService(String serviceUri) {

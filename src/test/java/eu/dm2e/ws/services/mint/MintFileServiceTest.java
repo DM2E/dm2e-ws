@@ -84,7 +84,7 @@ public class MintFileServiceTest extends OmnomTestCase {
 	public void testGetFileMetadataByUriJson() {
 		log.info("Get file metadata as JSON");
         ClientResponse respMetadataJson = client.resource(randomFileUri.toString())
-        		.accept(MediaType.APPLICATION_JSON)
+        		.accept(MediaType.APPLICATION_JSON_TYPE)
         		.get(ClientResponse.class);
         assertEquals(200, respMetadataJson.getStatus());
         assertEquals(MediaType.APPLICATION_JSON_TYPE, respMetadataJson.getType());

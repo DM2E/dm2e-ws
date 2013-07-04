@@ -5,7 +5,8 @@ import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -30,7 +31,7 @@ import com.sun.jersey.api.container.grizzly2.GrizzlyWebContainerFactory;
 @Path("/manage")
 public class ManageService {
 	
-	static Logger log = Logger.getLogger(ManageService.class.getName());
+	static Logger log = LoggerFactory.getLogger(ManageService.class.getName());
 	
 	private static final int FUSEKI_PORT = 9997;
 	private static final int MANAGE_PORT = 9990;
@@ -73,7 +74,7 @@ public class ManageService {
 
     public static void startHttpServer() {
     	if (isPortInUse(OMNOM_PORT)) {
-    		log.severe(OMNOM_PORT + " is already in use");
+    		log.error(OMNOM_PORT + " is already in use");
     		return;
     	}
     	
@@ -94,14 +95,14 @@ public class ManageService {
         if (httpServer!=null) {
         	httpServer.stop();
         	if (isPortInUse(OMNOM_PORT)) {
-        		log.severe("Could not stop httpServer!");
+        		log.error("Could not stop httpServer!");
         	}
         	httpServer = null;
         }
     }
     public static void startFuseki() {
     	if (isPortInUse(FUSEKI_PORT)) {
-    		log.severe(FUSEKI_PORT + " is already in use");
+    		log.error(FUSEKI_PORT + " is already in use");
     		return;
     	}
     	System.setProperty("org.eclipse.jetty.server.Request.maxFormContentSize", "-1");
@@ -126,7 +127,7 @@ public class ManageService {
         if (sparqlServer!=null) {
         	sparqlServer.stop();
         	if (isPortInUse(FUSEKI_PORT)) {
-        		log.severe("Could not stop sparqlServer!");
+        		log.error("Could not stop sparqlServer!");
         	}
         	sparqlServer = null;
         }

@@ -18,6 +18,7 @@ import java.net.URISyntaxException;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -400,7 +401,7 @@ public class JobServiceITCase extends OmnomTestCase {
 			job.addOutputParameterAssignment("foo", "bar");
 			fail("This should fail, because 'foo' is not a valid output parameter.");
 		} catch (Exception e) {
-			log.severe("" + e);
+			log.error("" + e);
 		}
 		
 		ParameterAssignmentPojo ass = job.addOutputParameterAssignment(DemoService.PARAM_RANDOM_OUTPUT, "bar");

@@ -93,7 +93,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		/*
 		 * Resolve configURI to WebserviceConfigPojo
 		 */
-		log.warning("Loading workflow config wfConfig " + workflowConfigURI);
+		log.warn("Loading workflow config wfConfig " + workflowConfigURI);
 		WorkflowConfigPojo wfConf = new WorkflowConfigPojo();
 		try {
 			wfConf.loadFromURI(workflowConfigURI, 1);
@@ -104,7 +104,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		/*
 		 * Validate the configuration
 		 */
-		log.warning("Validating workflow config");
+		log.warn("Validating workflow config");
 		try {
 			wfConf.validate();
 		} catch (Exception e) {
@@ -139,10 +139,10 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 					InstantiationException |
 					IllegalAccessException 
 					e) {
-			log.severe("Could not initialize worker WorkflowService: " + e + ExceptionUtils.getFullStackTrace(e));
+			log.error("Could not initialize worker WorkflowService: " + e + ExceptionUtils.getFullStackTrace(e));
 			return throwServiceError(e);
 		} catch (Exception e) {
-			log.severe("Could not initialize worker WorkflowService: " + e + ExceptionUtils.getFullStackTrace(e));
+			log.error("Could not initialize worker WorkflowService: " + e + ExceptionUtils.getFullStackTrace(e));
 			return throwServiceError(e);
 		}
 
@@ -164,7 +164,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 	@Override
 	public Response postGrafeo(Grafeo g) {
 		GResource wfRes = g.findTopBlank(NS.OMNOM.CLASS_WORKFLOW);
-		log.fine("Workflow before Posting: " + g.getTerseTurtle());
+		log.trace("Workflow before Posting: " + g.getTerseTurtle());
 		log.info("Number of positions: " + g.listStatements(null, "omnom:hasPosition", null).size());
 
 		if (null == wfRes) {
@@ -449,7 +449,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 				nextParam:
 				for (ParameterPojo param : ws.getInputParams()) {
 					workflowJob.debug("Current param: " + param);
-					log.fine("Current param: " + param);
+					log.trace("Current param: " + param);
 					
 					// if there is a connector to this parameter at this position
 					ParameterConnectorPojo conn = workflow.getConnectorToPositionAndParam(pos, param);
@@ -532,7 +532,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 			// TODO
 			workflowJob.setFinished();
 		} catch (Throwable t) {
-			log.severe("Workflow " + workflowJob +  " FAILED: " + t + "\n" + ExceptionUtils.getStackTrace(t));
+			log.error("Workflow " + workflowJob +  " FAILED: " + t + "\n" + ExceptionUtils.getStackTrace(t));
 			workflowJob.fatal("Workflow " + workflowJob +  " FAILED: " + t + "\n" + ExceptionUtils.getStackTrace(t));
 			workflowJob.setFailed();
 			// TODO why can't I throw this here but in AbstractTransformationService??

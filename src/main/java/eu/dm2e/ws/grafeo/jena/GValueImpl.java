@@ -4,7 +4,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.Set;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -27,7 +28,7 @@ import eu.dm2e.ws.grafeo.Grafeo;
 public abstract class GValueImpl extends JenaImpl implements GValue {
     protected RDFNode value;
     protected Grafeo grafeo;
-    private Logger log = Logger.getLogger(getClass().getName());
+    private Logger log = LoggerFactory.getLogger(getClass().getName());
 
     protected GValueImpl() {
     }
@@ -86,34 +87,34 @@ public abstract class GValueImpl extends JenaImpl implements GValue {
         if (isLiteral()) {
             String toParse = value.asLiteral().getLexicalForm();
             if (T.equals(long.class) || T.equals(Long.class)) {
-                log.fine("Found long.");
+                log.trace("Found long.");
                 result = (T) new Long(Long.parseLong(toParse));
             } else if (T.equals(int.class) || T.equals(Integer.class)) {
-                log.fine("Found int.");
+                log.trace("Found int.");
                 result = (T) new Integer(Integer.parseInt(toParse));
             } else if (T.equals(float.class) || T.equals(Float.class)) {
-                log.fine("Found float.");
+                log.trace("Found float.");
                 result = (T) new Float(Float.parseFloat(toParse));
             } else if (T.equals(double.class) || T.equals(Double.class)) {
-                log.fine("Found double.");
+                log.trace("Found double.");
                 result = (T) new Double(Double.parseDouble(toParse));
             } else if (T.equals(boolean.class) || T.equals(Boolean.class)) {
-                log.fine("Found boolean.");
+                log.trace("Found boolean.");
                 result = (T) Boolean.valueOf(Boolean.parseBoolean(toParse));
             } else if (T.equals(String.class)) {
-                log.fine("Found String.");
+                log.trace("Found String.");
                 result = (T) toParse;
             } else if (T.equals(java.util.Date.class)) {
-                log.fine("Found Date.");
+                log.trace("Found Date.");
                 result = (T) DatatypeConverter.parseDateTime(toParse).getTime();
             } else if (T.equals(org.joda.time.DateTime.class)) {
-                log.fine("Found org.joda.time.DateTime.");
+                log.trace("Found org.joda.time.DateTime.");
                 result = (T) DateTime.parse(toParse);
             } else if (T.equals(Calendar.class)) {
-                log.fine("Found Calendar.");
+                log.trace("Found Calendar.");
                 result = (T) DatatypeConverter.parseDateTime(toParse);
             } else if (T.equals(URI.class)) {
-                log.fine("Found URI.");
+                log.trace("Found URI.");
                 try {
 					result = (T) new URI(toParse);
 				} catch (URISyntaxException e) {
@@ -121,7 +122,7 @@ public abstract class GValueImpl extends JenaImpl implements GValue {
 				}
             }
         } else {
-            log.fine("Found Resource.");
+            log.trace("Found Resource.");
             result = (T) grafeo.getObjectMapper().getObject(T, resource());
         }
         return result;

@@ -12,7 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -68,7 +69,7 @@ import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 	})
 public abstract class AbstractRDFService {
 
-	protected Logger log = Logger.getLogger(getClass().getName());
+	protected Logger log = LoggerFactory.getLogger(getClass().getName());
 	/**
 	 * Creating Jersey API clients is relatively expensive so we do it once per Service statically
 	 */
@@ -100,7 +101,7 @@ public abstract class AbstractRDFService {
 	}
  
 	protected Response throwServiceError(String msg, int status) {
-		log.warning("EXCEPTION: " + msg);
+		log.warn("EXCEPTION: " + msg);
 		return Response.status(status).entity(msg).build();
 	}
 	protected Response throwServiceError(String msg) {
@@ -224,7 +225,7 @@ public abstract class AbstractRDFService {
         WebservicePojo wsDesc = this.getWebServicePojo();
         URI wsUri = popPath();
         wsDesc.setId(wsUri);
-        log.finest(wsDesc.getTerseTurtle());
+        log.trace(wsDesc.getTerseTurtle());
         return Response.ok().entity(getResponseEntity(wsDesc.getGrafeo())).build();
 	}
     
@@ -349,7 +350,7 @@ public abstract class AbstractRDFService {
 //		for (ParameterPojo param : wsDesc.getInputParams()) {
 //			if (param.getIsRequired()) {
 //				if (! inputGrafeo.containsStatementPattern("?s", NS.OMNOM.PROP_FOR_PARAM, param.getId())) {
-//					log.severe(configUriStr + " does not contain '?s NS.OMNOM.PROP_FOR_PARAM " + param.getId());
+//					log.error(configUriStr + " does not contain '?s NS.OMNOM.PROP_FOR_PARAM " + param.getId());
 //					throw new RuntimeException(configUriStr + " does not contain '?s omnom:forParam " + param.getId());
 //				}
 //			}
@@ -365,9 +366,9 @@ public abstract class AbstractRDFService {
     protected URI appendPath(URI uri, String... paths) {
         String query = uri.getQuery();
         String u = uri.toString();
-        log.finest("URI: " + u);
+        log.trace("URI: " + u);
         if (query!=null) {
-            log.fine("Query: " + query);
+            log.trace("Query: " + query);
             u = u.replace("?" + query,"");
         }
         for (String path : paths) {
@@ -377,7 +378,7 @@ public abstract class AbstractRDFService {
         if (query!=null) {
             u = u + "?" + query;
         }
-        log.finest("After append: " + u);
+        log.trace("After append: " + u);
         try {
             return new URI(u);
         } catch (URISyntaxException e) {
@@ -399,9 +400,9 @@ public abstract class AbstractRDFService {
     protected URI popPath(URI uri, String path) {
         String query = uri.getQuery();
         String u = uri.toString();
-        log.finest("URI: " + u);
+        log.trace("URI: " + u);
         if (query!=null) {
-            log.fine("Query: " + query);
+            log.trace("Query: " + query);
             u = u.replace("?" + query,"");
         }
         if (u.endsWith("/")) {
@@ -419,7 +420,7 @@ public abstract class AbstractRDFService {
         if (query!=null) {
             u = u + "?" + query;
         }
-        log.finest("Result: " + u);
+        log.trace("Result: " + u);
         try {
             return new URI(u);
         } catch (URISyntaxException e) {
@@ -428,7 +429,7 @@ public abstract class AbstractRDFService {
     }
 
 	protected class RDFOutput implements StreamingOutput {
-		Logger log = Logger.getLogger(getClass().getName());
+		Logger log = LoggerFactory.getLogger(getClass().getName());
 		Model model;
 		MediaType mediaType;
 
@@ -440,13 +441,13 @@ public abstract class AbstractRDFService {
 		@Override
 		public void write(OutputStream output) throws IOException,
 				WebApplicationException {
-			log.finest("Media type: " + this.mediaType);
+			log.trace("Media type: " + this.mediaType);
 			model.write(output, mediaType2Language.get(this.mediaType));
 		}
 	}
 
     protected class HTMLOutput implements StreamingOutput {
-        Logger log = Logger.getLogger(getClass().getName());
+        Logger log = LoggerFactory.getLogger(getClass().getName());
         Model model;
 
         public HTMLOutput(Model model) {

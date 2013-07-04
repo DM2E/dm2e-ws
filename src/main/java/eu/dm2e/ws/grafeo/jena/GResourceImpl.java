@@ -13,7 +13,8 @@ import eu.dm2e.ws.grafeo.Grafeo;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This file was created within the DM2E project.
@@ -24,7 +25,7 @@ import java.util.logging.Logger;
  */
 public class GResourceImpl extends GValueImpl implements GResource {
     private Resource jenaResource;
-    private Logger log = Logger.getLogger(getClass().getName());
+    private Logger log = LoggerFactory.getLogger(getClass().getName());
 
     public GResourceImpl(Grafeo grafeo, String uri) {
         this.grafeo = grafeo;
@@ -89,15 +90,15 @@ public class GResourceImpl extends GValueImpl implements GResource {
 
     @Override
     public GValue get(String uri) {
-        log.fine("Check for property: " + uri);
+        log.trace("Check for property: " + uri);
         uri = grafeo.expand(uri);
         Statement st = jenaResource.getProperty(getGrafeoImpl(grafeo).model.createProperty(uri));
         if (st==null) {
-        	log.fine("Nothing found for " + uri);
+        	log.trace("Nothing found for " + uri);
         	return null;
         }
         RDFNode value = st.getObject();
-        log.fine("Found value: " + value.toString());
+        log.trace("Found value: " + value.toString());
         if (value.isResource()) return new GResourceImpl(grafeo, value.asResource());
         if (value.isLiteral()) return new GLiteralImpl(grafeo, value.asLiteral());
         throw new RuntimeException("Not a literal or a resource value: " + getUri() + " -> " + uri);
@@ -105,7 +106,7 @@ public class GResourceImpl extends GValueImpl implements GResource {
     
     @Override
     public Set<GValue> getAll(String uri) {
-        log.fine("Check for all values for property: " + uri);
+        log.trace("Check for all values for property: " + uri);
         uri = grafeo.expand(uri);
         Set<GValue> propSet = new HashSet<>();
         StmtIterator st = jenaResource.listProperties(getGrafeoImpl(grafeo).model.createProperty(uri));
@@ -114,17 +115,17 @@ public class GResourceImpl extends GValueImpl implements GResource {
         	RDFNode thisValue = stmt.getObject();
         	if (thisValue.isResource()) {
         		propSet.add(new GResourceImpl(grafeo, thisValue.asResource()));
-                log.fine("Found resource value: " + thisValue);
+                log.trace("Found resource value: " + thisValue);
         	}
         	else if (thisValue.isLiteral()) {
         		propSet.add(new GLiteralImpl(grafeo, thisValue.asLiteral()));
-                log.fine("Found literal value: " + thisValue);
+                log.trace("Found literal value: " + thisValue);
             }
         	else {
         		throw new RuntimeException("Not a literal or a resource value: " + getUri() + " -> " + uri);
         	}
         }
-        log.fine("Returning number of values: " + propSet.size());
+        log.trace("Returning number of values: " + propSet.size());
 		return propSet;
     }
 

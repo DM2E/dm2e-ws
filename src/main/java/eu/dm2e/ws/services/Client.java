@@ -5,7 +5,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 
@@ -33,10 +34,10 @@ import eu.dm2e.ws.grafeo.Grafeo;
  */
 public class Client {
 	
-	Logger log = Logger.getLogger(getClass().getName());
+	Logger log = LoggerFactory.getLogger(getClass().getName());
 
     private com.sun.jersey.api.client.Client jerseyClient = null;
-//    private Logger log = Logger.getLogger(getClass().getName());
+//    private Logger log = LoggerFactory.getLogger(getClass().getName());
     
     public ClientResponse putPojoToService(SerializablePojo pojo, String wr) {
     	return this.putPojoToService(pojo, this.resource(wr));
@@ -67,7 +68,7 @@ public class Client {
 		String method = "POST";
 //		log.info("Size of NTRIPLES before post/put: " + pojo.getNTriples().length());
 		if (null == pojo.getId()) {
-			log.warning(method + "ing " + pojo + " to service " + serviceEndpoint.getURI() + ": " + pojo.getTurtle());
+			log.warn(method + "ing " + pojo + " to service " + serviceEndpoint.getURI() + ": " + pojo.getTurtle());
 			resp = this.postPojoToService(pojo, serviceEndpoint);
 		} else {
 			method = "PUT";
@@ -104,7 +105,7 @@ public class Client {
 			long timeElapsed = System.currentTimeMillis() - timeStart;
 			log.info("Time spent: " + timeElapsed + "ms.");
 		} catch (Exception e) {
-			log.severe("Could reload pojo." + e);
+			log.error("Could reload pojo." + e);
 		}
 		return resp.getLocation().toString();
     }
@@ -201,17 +202,17 @@ public class Client {
     	try {
 			 thePojo = clazz.newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
-			log.severe("Could not reload pojo "+id+":" + e);
+			log.error("Could not reload pojo "+id+":" + e);
 			e.printStackTrace();
 		}
     	if (null == thePojo) {
-			log.severe("Could not reload pojo "+id+". Was null after instantiation.");
+			log.error("Could not reload pojo "+id+". Was null after instantiation.");
     		return null;
     	}
     	try {
 			thePojo.loadFromURI(id);
 		} catch (Exception e) {
-			log.severe("Could not reload pojo "+id+":" + e);
+			log.error("Could not reload pojo "+id+":" + e);
 			e.printStackTrace();
 		}
 		return thePojo;

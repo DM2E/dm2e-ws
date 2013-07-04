@@ -52,7 +52,7 @@ public class JobService extends AbstractJobService {
 	@Override
 	public Response postJob(Grafeo outputGrafeo, GResource jobRes) {
 		
-		log.fine("Putting job to endpoint.");
+		log.debug("Putting job to endpoint.");
 		
 		outputGrafeo.putToEndpoint(NS.ENDPOINT_UPDATE, jobRes.getUri());
 		
@@ -62,7 +62,7 @@ public class JobService extends AbstractJobService {
 	@Override
 	public Response putJob(Grafeo outputGrafeo, GResource jobRes) {
 		
-		log.fine("Putting job to endpoint.");
+		log.debug("Putting job to endpoint.");
 		
 		outputGrafeo.putToEndpoint(Config.ENDPOINT_UPDATE, jobRes.getUri());
 		

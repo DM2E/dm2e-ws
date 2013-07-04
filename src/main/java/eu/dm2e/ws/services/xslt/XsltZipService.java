@@ -3,7 +3,6 @@ package eu.dm2e.ws.services.xslt;
 import java.io.StringWriter;
 import java.security.InvalidParameterException;
 import java.util.Map;
-import java.util.logging.Level;
 
 import javax.ws.rs.Path;
 
@@ -71,7 +70,7 @@ public class XsltZipService extends AbstractTransformationService {
 	@Override
 	public void run() {
 		JobPojo jobPojo = getJobPojo();
-		log.warning("Starting to handle XSLT transformation job");
+		log.warn("Starting to handle XSLT transformation job");
 		jobPojo.debug("Starting to handle XSLT transformation job");
 		String xsltZipUrl, xmlUrl, providerId, datasetId, providerIdKey, datasetIdKey;
 		try {
@@ -157,7 +156,7 @@ public class XsltZipService extends AbstractTransformationService {
 			jobPojo.info("XSLT Transformation complete.");
 			jobPojo.setFinished();
 		} catch (Throwable t) {
-			log.log(Level.SEVERE, "Exception during publishing: " + t, t);
+			log.error("Exception during publishing: {}" + t, t);
 			jobPojo.fatal(t);
 			jobPojo.setFailed();
 		}

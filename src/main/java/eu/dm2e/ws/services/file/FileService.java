@@ -165,7 +165,7 @@ public class FileService extends AbstractRDFService {
 		try {
 			filePojo.loadFromURI(uriStr);
 		} catch (Exception e) {
-			log.severe("Could reload job pojo." + e);
+			log.error("Could reload job pojo." + e);
 			throwServiceError(e);
 		}
 		GrafeoImpl g = new GrafeoImpl();
@@ -263,7 +263,7 @@ public class FileService extends AbstractRDFService {
 		// Sanity check
 		//
 		if (filePartIsEmpty && metaPartIsEmpty) {
-			log.warning(ErrorMsg.NO_FILE_AND_NO_METADATA.toString());
+			log.warn(ErrorMsg.NO_FILE_AND_NO_METADATA.toString());
 			return throwServiceError(ErrorMsg.NO_FILE_AND_NO_METADATA);
 		}
 
@@ -304,7 +304,7 @@ public class FileService extends AbstractRDFService {
 			// if the file part is null, make sure that a
 			// dm2e:file_retrieval_uri is provided in meta
 			if (filePartIsEmpty && null == f.getFileRetrievalURI()) {
-				log.severe(ErrorMsg.NO_FILE_RETRIEVAL_URI + f.getId());
+				log.error(ErrorMsg.NO_FILE_RETRIEVAL_URI + f.getId());
 				return throwServiceError(f.getTurtle(), ErrorMsg.NO_FILE_RETRIEVAL_URI);
 			}
 		}
@@ -320,7 +320,7 @@ public class FileService extends AbstractRDFService {
 				FilePojo newFilePojo = storeAndDescribeFile(fileInStream, g, uri);
 				PojoUtils.copyProperties(filePojo, newFilePojo);
 				filePojo.setFileStatus(FileStatus.AVAILABLE.toString());
-				log.severe(filePojo.getFileStatus());
+				log.error(filePojo.getFileStatus());
 
 				if (!filePart.isSimple()) {
 					// TODO this is wrong most of the time
@@ -328,7 +328,7 @@ public class FileService extends AbstractRDFService {
 					filePojo.setOriginalName(fileDisposition.getFileName());
 				}
 			} catch (IOException | IllegalAccessException | InvocationTargetException e) {
-                log.severe("An exception occured during file reading: " + e);
+                log.error("An exception occured during file reading: " + e);
 				return throwServiceError(e);
 			}
 		}
@@ -561,7 +561,7 @@ public class FileService extends AbstractRDFService {
 		} else if (expectsRdfResponse()) {
 			return getFileMetaDataAsRdfByUri(uri);
 		} else {
-			log.warning("No suitable metadata type could be determined, defaulting to RDF.");
+			log.warn("No suitable metadata type could be determined, defaulting to RDF.");
 			return getFileMetaDataAsRdfByUri(uri);
 		}
 	}

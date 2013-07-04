@@ -1,12 +1,9 @@
 package eu.dm2e.ws;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
-
 import org.joda.time.DateTime;
 import org.junit.ComparisonFailure;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -16,27 +13,27 @@ import eu.dm2e.ws.api.json.OmnomJsonSerializer;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 public class OmnomUnitTest {
 	
-	protected Logger log = Logger.getLogger(getClass().getName());
+	protected Logger log = LoggerFactory.getLogger(getClass().getName());
 	protected Gson testGson = new GsonBuilder()
 			.registerTypeAdapter(DateTime.class, new JodaDateTimeSerializer())
 			.setPrettyPrinting()
 			.create();
 	protected OmnomJsonSerializer jsonSerializer = new OmnomJsonSerializer();
 	static {
-		try {
+//		try {
 	        System.setProperty("org.eclipse.jetty.server.Request.maxFormContentSize", "100000000");
-			System.setProperty("java.util.logging.config.file", "logging.properties");
+//			System.setProperty("java.util.logging.config.file", "logging.properties");
 			System.setProperty(GrafeoImpl.NO_EXTERNAL_URL_FLAG, "true");
-			LogManager.getLogManager().readConfiguration();
-			Logger log = Logger.getLogger("LOGGING INIT");
+//			LogManager.getLogManager().readConfiguration();
+			Logger log = LoggerFactory.getLogger("LOGGING INIT");
 			log.info("Initialized logging.");
-			log.info("Logging Handlers: " + Arrays.asList(log.getHandlers()));
-			log.info(LogManager.getLogManager().getProperty("java.util.logging.ConsoleHandler.formatter"));
-		} catch (SecurityException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.exit(1);
-		}
+//			log.info("Logging Handlers: " + Arrays.asList(log.getHandlers()));
+//			log.info(LogManager.getLogManager().getProperty("java.util.logging.ConsoleHandler.formatter"));
+//		} catch (SecurityException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			System.exit(1);
+//		}
 	}
 	
 	public static void assertStringsEqual(String s1, String s2) {

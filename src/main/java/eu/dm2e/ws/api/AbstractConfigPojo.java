@@ -16,7 +16,7 @@ public abstract class AbstractConfigPojo<T> extends AbstractPersistentPojo<T> im
 	public ParameterAssignmentPojo getParameterAssignmentForParam(String paramName) {
 		log.info("Access to param assignment by name: " + paramName);
         for (ParameterAssignmentPojo ass : this.getParameterAssignments()) {
-        	log.fine("Parameter being checked " + ass.getForParam());
+        	log.trace("Parameter being checked " + ass.getForParam());
         	if (ass.getForParam().matchesParameterName(paramName)) {
 				log.info("GOTCHA : " + ass.getParameterValue()); 
                 return ass;

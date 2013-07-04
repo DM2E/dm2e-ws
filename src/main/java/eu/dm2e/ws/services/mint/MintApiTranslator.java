@@ -5,7 +5,8 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -29,7 +30,7 @@ public final class MintApiTranslator {
 	
 	// TODO asUser in UrlApi um mich als User auszugeben
 	
-	Logger log = Logger.getLogger(getClass().getName());
+	Logger log = LoggerFactory.getLogger(getClass().getName());
 	
 	public static enum API_TYPE {
 		// Mappings, retrievable as XSLT
@@ -118,13 +119,13 @@ public final class MintApiTranslator {
 		final URI location = resp.getLocation();
 		log.info("Login Response: " + resp);
 		if (resp.getStatus() != 302 || null == location) {
-			log.severe("Login failed :(");
+			log.error("Login failed :(");
 			return;
 		}
 		
 		log.info("Login redirect location: " + location);
 //		log.info("Login response: " + mintClient.resource(resp.getLocation()).get(String.class));
-		log.severe("Logged in now? " + isLoggedIn());
+		log.error("Logged in now? " + isLoggedIn());
 		mintClient.addCookies(resp.getCookies());
 		
 	}

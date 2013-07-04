@@ -83,7 +83,7 @@ public class XsltZipServiceITCase extends OmnomTestCase {
 				Thread.sleep(2000);
 			} while (jobPojo.isStillRunning());
 		} catch (Exception e) {
-			log.severe("Could reload job pojo." + e);
+			log.error("Could reload job pojo." + e);
 			throw e;
 		}
 		log.info(jobPojo.toLogString());
