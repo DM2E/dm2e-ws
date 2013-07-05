@@ -561,14 +561,16 @@ public final class MintApiTranslator {
 		fp.setId(mint_file_base + "/mapping" + mappingID);
 		fp.setMediaType("application/xslt+xml");
 		fp.setFileType(NS.OMNOM_TYPES.XSLT);
-		fp.setFileRetrievalURI(URI.create(
-				String.format("%sUrlApi?type=Mappingxsl&id=%s", 
-						mint_api_base,
-						mappingID)));
 		fp.setLabel(json.get("name").getAsString());
 		fp.setLastModified(DateTime.parse(json.get("lastModified").getAsString()));
 		if (null != json.get("uploadId")) {
 			String uploadID = json.get("uploadId").getAsString();
+			// http://mint-projects.image.ntua.gr/dm2e/MappingOptions.action?selaction=downloadxsl&selectedMapping=1166&uploadId=1130&isApi=true
+			fp.setFileRetrievalURI(URI.create(
+					String.format("%s/MappingOptions?api=true&selaction=downloadxsl&selectedMapping=%s&uploadID=%s",
+							mint_api_base,
+							mappingID,
+							uploadID)));
 			try {
 				fp.setFileEditURI(URI.create(mint_api_base
 						+ "Home.action?kConnector=html.page&url=DoMapping.action"
@@ -579,7 +581,13 @@ public final class MintApiTranslator {
 				log.error("uploadID resulted in invalid UTF-8: ", e);
 				throw new RuntimeException(e);
 			}
+		} else {
+			fp.setFileRetrievalURI(URI.create(
+					String.format("%sUrlApi?type=Mappingxsl&id=%s", 
+							mint_api_base,
+							mappingID)));
 		}
+		
 		return fp;
 	}
 

@@ -23,6 +23,7 @@ public enum OmnomTestResources {
     , METS_EXAMPLES("/provider-examples/ffm/msma-1-10.xml")
     , MINT_MAPPING_LIST_JSON("/mint-api/mappings-list.json")
     , MINT_MAPPING_SINGLE_JSON("/mint-api/single-mapping.json")
+    , MINT_MAPPING_SINGLE_NO_UPLOAD_JSON("/mint-api/single-mapping-no-uploadid.json")
     , MINT_UPLOAD_LIST_JSON("/mint-api/dataset-list.json")
     , MINT_DATASET_SINGLE_DATAUPLOAD_JSON_XML("/mint-api/single-dataupload-xml.json")
     , MINT_DATASET_SINGLE_DATAUPLOAD_JSON_ZIPXML("/mint-api/single-dataupload-zipxml.json")

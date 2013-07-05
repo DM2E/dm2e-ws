@@ -1,5 +1,7 @@
 package eu.dm2e.ws.services.mint;
 
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -102,6 +104,9 @@ public class MintApiTranslatorTest extends OmnomTestCase {
 		FilePojo fp = mintApiTranslator.parseFilePojoFromMappingJson(jsonStr);
 		log.info(fp.getTerseTurtle());
 		assertEquals("UBER-PolytechnischesJournal", fp.getLabel());
+		assertNotNull(fp.getFileEditURI());
+		assertNotNull(fp.getFileRetrievalURI());
+		assertThat(fp.getFileRetrievalURI().toString(), containsString("MappingOptions"));
 		{
 			// TODO this takes waaaaaaaaay too long (~60 seconds and more)
 //			ClientResponse resp = mintApiTranslator.mintClient
@@ -117,6 +122,17 @@ public class MintApiTranslatorTest extends OmnomTestCase {
 			assertEquals(200, resp.getStatus());
 			assertEquals(DM2E_MediaType.TEXT_HTML_UTF8, resp.getType());
 		}
+	}
+	@Test
+	public void testParseSingleMappingNoUploadId() {
+		log.info("Test parsing a single mapping");
+		String jsonStr = configString.get(OmnomTestResources.MINT_MAPPING_SINGLE_NO_UPLOAD_JSON);
+		FilePojo fp = mintApiTranslator.parseFilePojoFromMappingJson(jsonStr);
+//		log.info(fp.getTerseTurtle());
+		assertEquals("UBER-PolytechnischesJournal", fp.getLabel());
+		assertNull(fp.getFileEditURI());
+		assertNotNull(fp.getFileRetrievalURI());
+		assertThat(fp.getFileRetrievalURI().toString(), containsString("UrlApi"));
 	}
 	
 	@Test

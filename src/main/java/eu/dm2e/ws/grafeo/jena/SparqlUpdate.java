@@ -176,9 +176,9 @@ public class SparqlUpdate {
         exec.execute();
         long estimatedTime = System.currentTimeMillis() - startTime;
         if (estimatedTime > WARN_TIME) {
-	        log.warn(LogbackMarkers.TRACE_TIME, "UPDATE took " + estimatedTime +"ms");
+	        log.warn(LogbackMarkers.TRACE_TIME, "UPDATE took {}ms", estimatedTime);
         } else { 
-	        log.trace(LogbackMarkers.TRACE_TIME, "UPDATE took " + estimatedTime +"ms");
+	        log.trace(LogbackMarkers.TRACE_TIME, "UPDATE took {}ms", estimatedTime);
         }
 	}
 }
