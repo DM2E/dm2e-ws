@@ -153,7 +153,8 @@ public final class NS {
 
 		public static final String PROP_FILE_TYPE = BASE + "fileType";
 		
-		public static final String PROP_ITEM_ROOT = BASE + "itemRoot";
+		public static final String PROP_ITEM_ROOT_XPATH = BASE + "itemRootXPath";
+		public static final String PROP_ITEM_LABEL_XPATH = BASE + "itemLabelXPath";
 
 	}
 	
