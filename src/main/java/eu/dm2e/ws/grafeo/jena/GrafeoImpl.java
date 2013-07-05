@@ -613,7 +613,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     		}
         	log.debug("Size After expansion: "+ this.size());
         }
-        log.info("Summary: \n" + summarizeClasses());
+        log.trace("Summary: \n{}", summarizeClasses());
         log.debug("Reading from endpoint finished.");
     }
     

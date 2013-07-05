@@ -18,6 +18,7 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
 
+import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.api.AbstractPersistentPojo;
@@ -67,12 +68,12 @@ public class Client {
 		ClientResponse resp;
 		String method = "POST";
 //		log.info("Size of NTRIPLES before post/put: " + pojo.getNTriples().length());
+		log.info(method + "ing " + pojo + " to service " + serviceEndpoint.getURI());
+		log.debug(LogbackMarkers.DATA_DUMP, pojo.getTurtle());
 		if (null == pojo.getId()) {
-			log.warn(method + "ing " + pojo + " to service " + serviceEndpoint.getURI() + ": " + pojo.getTurtle());
 			resp = this.postPojoToService(pojo, serviceEndpoint);
 		} else {
 			method = "PUT";
-			log.info(method + "ing " + pojo + " to service " + serviceEndpoint.getURI());
 			if (pojo.getId().startsWith(serviceEndpoint.getURI().toString())) {
 				 resp = resource(pojo.getId())
 					.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
@@ -103,9 +104,9 @@ public class Client {
 			long timeStart = System.currentTimeMillis();
 			pojo.loadFromURI(pojo.getId());
 			long timeElapsed = System.currentTimeMillis() - timeStart;
-			log.info("Time spent: " + timeElapsed + "ms.");
+			log.info(LogbackMarkers.TRACE_TIME, "Time spent: " + timeElapsed + "ms.");
 		} catch (Exception e) {
-			log.error("Could reload pojo." + e);
+			log.warn("Could reload pojo." + e);
 		}
 		return resp.getLocation().toString();
     }
@@ -202,17 +203,17 @@ public class Client {
     	try {
 			 thePojo = clazz.newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
-			log.error("Could not reload pojo "+id+":" + e);
+			log.warn("Could not reload pojo "+id+":" + e);
 			e.printStackTrace();
 		}
     	if (null == thePojo) {
-			log.error("Could not reload pojo "+id+". Was null after instantiation.");
+			log.warn("Could not reload pojo "+id+". Was null after instantiation.");
     		return null;
     	}
     	try {
 			thePojo.loadFromURI(id);
 		} catch (Exception e) {
-			log.error("Could not reload pojo "+id+":" + e);
+			log.warn("Could not reload pojo "+id+":" + e);
 			e.printStackTrace();
 		}
 		return thePojo;

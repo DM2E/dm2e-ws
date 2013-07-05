@@ -10,8 +10,12 @@ import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 
+import eu.dm2e.logback.LogbackMarkers;
+
 public class SparqlConstruct {
 	
+	private static final int WARN_TIME = 500;
+
 	protected static final long DEFAULT_TIMEOUT=-1;
 	
 	private Logger log = LoggerFactory.getLogger(getClass().getName());
@@ -104,24 +108,23 @@ public class SparqlConstruct {
 		if (null == grafeo)
 			throw new IllegalArgumentException("Must set grafeo in the builder or use execute(GrafeoImpl g).");
 		long startTime = System.currentTimeMillis();
-        log.trace("CONSTRUCT query (built): " + toString());
+        log.trace(LogbackMarkers.DATA_DUMP, "CONSTRUCT query (built): {}", toString());
         Query query = QueryFactory.create(toString());
-        log.trace("CONSTRUCT query (Jena): " + query);
+        log.trace(LogbackMarkers.DATA_DUMP, "CONSTRUCT query (Jena): {}", toString());
         QueryExecution exec = QueryExecutionFactory.create(query, grafeo.getModel());
         exec.execConstruct(grafeo.getModel());
         long estimatedTime = System.currentTimeMillis() - startTime;
-        if (estimatedTime < 250) {
-	        log.info("CONSTRUCT took " + estimatedTime + "ms.");
+        if (estimatedTime > WARN_TIME) {
+	        log.warn(LogbackMarkers.TRACE_TIME, "CONSTRUCT took " + estimatedTime + "ms.");
         } else {
-	        log.error("CONSTRUCT took " + estimatedTime + "ms.");
-//	        log.error(grafeo.getTerseTurtle());
+	        log.trace(LogbackMarkers.TRACE_TIME, "CONSTRUCT took " + estimatedTime + "ms: ");
         }
 	}
 	
 	public void execute(GrafeoImpl g) {
 		long startTime = System.currentTimeMillis();
         Query query = QueryFactory.create(toString());
-        log.info("CONSTRUCT query: " + query);
+        log.trace(LogbackMarkers.DATA_DUMP, "CONSTRUCT query {} ", query);
         QueryExecution exec;
 		if (null != endpoint) {
 			exec = QueryExecutionFactory.createServiceRequest(endpoint, query);
@@ -132,11 +135,10 @@ public class SparqlConstruct {
         exec.execConstruct(g.getModel());
         exec.close();
         long estimatedTime = System.currentTimeMillis() - startTime;
-        if (estimatedTime < 250) {
-	        log.info("CONSTRUCT took " + estimatedTime + "ms.");
+        if (estimatedTime > WARN_TIME) {
+	        log.warn(LogbackMarkers.TRACE_TIME, "CONSTRUCT took " + estimatedTime + "ms.");
         } else {
-	        log.error("CONSTRUCT took " + estimatedTime + "ms: " + query);
-//	        log.error(g.getTerseTurtle());
+	        log.trace(LogbackMarkers.TRACE_TIME, "CONSTRUCT took " + estimatedTime + "ms: ");
         }
 	}
 }

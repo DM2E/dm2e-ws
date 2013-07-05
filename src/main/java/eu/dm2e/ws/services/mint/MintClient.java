@@ -59,7 +59,7 @@ public class MintClient {
 			reqB.cookie(cookie);
 		}
 		reqB.header("User-Agent", "omnom/mint-client");
-		log.info("Built WebResource Builder for <{}>", uri);
+		log.trace("Built WebResource Builder for <{}>", uri);
 		return reqB;
 	}
 	

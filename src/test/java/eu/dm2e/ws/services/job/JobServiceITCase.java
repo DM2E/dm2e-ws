@@ -22,6 +22,7 @@ import org.junit.Test;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 
+import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
@@ -56,7 +57,7 @@ public class JobServiceITCase extends OmnomTestCase {
 //				.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
 //				.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
 				.post(ClientResponse.class, configString.get(OmnomTestResources.DEMO_JOB));
-		log.info(resp.getEntity(String.class));
+		log.info(LogbackMarkers.HTTP_RESPONSE_DUMP, resp.getEntity(String.class));
 		assertEquals(201, resp.getStatus());
 		globalJob = resp.getLocation();
 	}

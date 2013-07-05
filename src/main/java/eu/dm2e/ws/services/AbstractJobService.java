@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.DateTime;
 
+import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
@@ -103,10 +104,10 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		inputGrafeo.skolemizeUUID(uriStr, NS.OMNOM.PROP_LOG_ENTRY, "log");
 		inputGrafeo.skolemizeUUID(uriStr, NS.OMNOM.PROP_ASSIGNMENT, "assignment");
 		
-		log.warn("Instantiating " + uriStr);
+		log.debug("Instantiating " + uriStr);
 		GrafeoImpl outputGrafeo = new GrafeoImpl();
 		if (inputGrafeo.resource(uriStr).isa(NS.OMNOM.CLASS_WORKFLOW_JOB)) {
-			log.info("Will instantiate as WorkflowJobPojo : " + uriStr);
+			log.debug("Will instantiate as WorkflowJobPojo : " + uriStr);
 			WorkflowJobPojo workflowJobPojo;
 			try {
 				workflowJobPojo = inputGrafeo.getObjectMapper().getObject(WorkflowJobPojo.class, uriStr);
@@ -118,12 +119,12 @@ public abstract class AbstractJobService extends AbstractRDFService {
 			outputGrafeo.getObjectMapper().addObject(workflowJobPojo);
 		}
 		else {
-			log.info("Will instantiate as JobPojo : " + uriStr);
+			log.debug("Will instantiate as JobPojo : " + uriStr);
 			try {
 				JobPojo jobPojo = inputGrafeo.getObjectMapper().getObject(JobPojo.class, uriStr);
 				outputGrafeo.getObjectMapper().addObject(jobPojo);
 			} catch (Exception e) {
-				log.info("Instantiation exception: " + e);
+				log.warn("Instantiation exception: {}", e);
 				e.printStackTrace();
 				return throwServiceError(e);
 			}
@@ -146,7 +147,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		MediaType.WILDCARD
 	})
 	public Response postJobHandler(String bodyAsString) {
-		log.info("Job posted: " + bodyAsString);
+		log.trace(LogbackMarkers.DATA_DUMP, "Job posted: {}", bodyAsString);
 		Grafeo inputGrafeo;
 		try {
 			inputGrafeo = new GrafeoImpl();
@@ -168,19 +169,19 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		inputGrafeo.skolemizeUUID(uriStr, NS.OMNOM.PROP_ASSIGNMENT, "assignment");
 		inputGrafeo.skolemizeUUID(uriStr, NS.OMNOM.PROP_LOG_ENTRY, "log");
 		
-		log.warn("Instantiating " + uriStr);
+		log.debug("Instantiating " + uriStr);
 		GrafeoImpl outputGrafeo = new GrafeoImpl();
 		if (blank.isa(NS.OMNOM.CLASS_WORKFLOW_JOB)) {
-			log.info("Will instantiate as WorkflowJobPojo : " + uriStr);
+			log.debug("Will instantiate as WorkflowJobPojo : " + uriStr);
 			WorkflowJobPojo workflowJobPojo;
 			try {
 				workflowJobPojo = inputGrafeo.getObjectMapper().getObject(WorkflowJobPojo.class, uriStr);
 			} catch (Exception e) {
-				log.info("Instantiation exception: " + e);
+				log.warn("Instantiation exception: " + e);
 				e.printStackTrace();
 				return throwServiceError(e);
 			}
-			log.info("Instantiated");
+			log.debug("Instantiated");
 			// read workflow description
 			WorkflowPojo w = workflowJobPojo.getWorkflow();
 			if (null != w && null != w.getId())
@@ -188,7 +189,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 			outputGrafeo.getObjectMapper().addObject(workflowJobPojo);
 		}
 		else {
-			log.info("Will instantiate as JobPojo : " + uriStr);
+			log.debug("Will instantiate as JobPojo : " + uriStr);
 			JobPojo jobPojo = inputGrafeo.getObjectMapper().getObject(JobPojo.class, uriStr);
 			WebservicePojo w = jobPojo.getWebService();
 			if (null != w && null != w.getId())
@@ -212,7 +213,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 	public Response getJobHandler() {
         URI uri = getRequestUriWithoutQuery();
         Grafeo g = new GrafeoImpl();
-        log.info("Reading job from endpoint " + Config.ENDPOINT_QUERY);
+        log.debug("Reading job from endpoint " + Config.ENDPOINT_QUERY);
         try {
             g.readFromEndpoint(Config.ENDPOINT_QUERY, uri);
         } catch (Exception e1) {
@@ -274,7 +275,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 			.endpoint(Config.ENDPOINT_UPDATE)
 			.graph(jobUri)
 			.build();
-		log.info("Updating status with query: " + sparul);
+		log.debug(LogbackMarkers.DATA_DUMP, "Updating status with query: {}", sparul);
 		sparul.execute();
 		
 		return Response.created(getRequestUriWithoutQuery()).build();
@@ -303,7 +304,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		}
 		blank.rename(entryUri.toString());
 		gEntry.addTriple(jobUri, NS.OMNOM.PROP_LOG_ENTRY, entryUri.toString());
-		log.info(gEntry.getNTriples());
+		log.debug(LogbackMarkers.DATA_DUMP, gEntry.getNTriples());
 		gEntry.postToEndpoint(Config.ENDPOINT_UPDATE, jobUri);
 		return Response.created(entryUri).build();
 	}
@@ -351,7 +352,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		try {
 			jobPojo.loadFromURI(resourceUri);
 		} catch (Exception e) {
-			log.error("Could reload job pojo." + e);
+			log.warn("Could not reload job pojo.", e);
 			throwServiceError(e);
 		}
 		Set<LogEntryPojo> logEntries = jobPojo.getLogEntries(minLevelStr, maxLevelStr);
@@ -371,7 +372,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		try {
 			jobPojo.loadFromURI(resourceUriStr);
 		} catch (Exception e) {
-			log.error("Could reload job pojo." + e);
+			log.warn("Could not reload job pojo.", e);
 			throwServiceError(e);
 		}
 		return Response.ok().entity(jobPojo.toLogString(minLevelStr, maxLevelStr)).build();

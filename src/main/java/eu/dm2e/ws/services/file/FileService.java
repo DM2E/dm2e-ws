@@ -32,6 +32,7 @@ import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
 
+import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.utils.PojoUtils;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.DM2E_MediaType;
@@ -336,7 +337,7 @@ public class FileService extends AbstractRDFService {
         log.info("File is hopefully stored.");
 
         g.getObjectMapper().addObject(filePojo);
-        log.info("Final RDF to be stored for this file: " + g.getTurtle());
+        log.debug(LogbackMarkers.DATA_DUMP, "Final RDF to be stored for this file: {}", g.getTurtle());
         
 		// store RDF data
 		g.putToEndpoint(STORAGE_ENDPOINT_STATEMENTS, uri);
@@ -517,7 +518,7 @@ public class FileService extends AbstractRDFService {
 		.endpoint(STORAGE_ENDPOINT_STATEMENTS)
 		.build();
 			
-		log.info("About to replace: " + sparul.toString());
+		log.info(LogbackMarkers.DATA_DUMP, "About to replace: {}" + sparul.toString());
 			
 		// save the data
 		sparul.execute();

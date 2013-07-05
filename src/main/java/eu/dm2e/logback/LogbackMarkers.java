@@ -21,5 +21,9 @@ public final class LogbackMarkers {
 	 * To be used for passwords, users etc.
 	 */
 	public static final Marker SENSITIVE_INFORMATION = MarkerFactory.getMarker("SENSITIVE_INFORMATION");
+	/**
+	 * Used for tracing time, evaluating queries etc.
+	 */
+	public static final Marker TRACE_TIME = MarkerFactory.getMarker("TRACE_TIME");
 	
 }
