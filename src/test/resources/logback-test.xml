@@ -24,7 +24,8 @@
 	</turboFilter>
 	<turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
 		<Marker>DATA_DUMP</Marker>
-		<OnMatch>ACCEPT</OnMatch>
+<!-- 		<OnMatch>ACCEPT</OnMatch> -->
+		<OnMatch>DENY</OnMatch>
 	</turboFilter>
 	<turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
 		<Marker>SENSITIVE_INFORMATION</Marker>
@@ -32,6 +33,10 @@
 	</turboFilter>
 	<turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
 		<Marker>SERVER_COMMUNICATION</Marker>
+		<OnMatch>ACCEPT</OnMatch>
+	</turboFilter>
+	<turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
+		<Marker>TRACE_TIME</Marker>
 		<OnMatch>ACCEPT</OnMatch>
 	</turboFilter>
 
@@ -67,12 +72,13 @@
 		</encoder>
 	</appender>
 	
-	<root level="TRACE">
+	<root level="INFO">
 		<appender-ref ref="FILE" />
 		<appender-ref ref="STDOUT" />
 	</root>
 
 	<logger name="eu.dm2e.ws.grafeo.gom" level="DEBUG" />
+	<logger name="org.apache.jena.fuseki.Fuseki" level="WARN" />
 
 
 </configuration>
