@@ -146,16 +146,10 @@
         	<version>1.7.0</version>
         </dependency>
         <dependency>
-        	<groupId>commons-logging</groupId>
-        	<artifactId>commons-logging</artifactId>
-        	<version>1.1.1</version>
-        </dependency>
-        <dependency>
         	<groupId>commons-validator</groupId>
         	<artifactId>commons-validator</artifactId>
         	<version>1.4.0</version>
         </dependency>
-
         <dependency>
         	<groupId>com.googlecode.grep4j</groupId>
         	<artifactId>grep4j</artifactId>
@@ -197,6 +191,11 @@
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<version>1.0.9</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+			<version>1.4.1</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -290,12 +289,6 @@
                         </goals>
                         <configuration>
                             <mainClass>${exec.mainClass.override}</mainClass>
-                            <systemProperties>
-                                <systemProperty>
-                                    <key>java.util.logging.config.file</key>
-                                    <value>${logging.properties.main}</value>
-                                </systemProperty>
-                            </systemProperties>
                         </configuration>
                     </execution>
                     <execution>
@@ -306,12 +299,6 @@
                         </goals>
                         <configuration>
                             <mainClass>eu.dm2e.ws.SetUp</mainClass>
-                            <systemProperties>
-                                <property>
-                                    <key>java.util.logging.config.file</key>
-                                    <value>${logging.properties.test}</value>
-                                </property>
-                            </systemProperties>
                         </configuration>
                     </execution>
 
@@ -323,12 +310,6 @@
                         </goals>
                         <configuration>
                             <mainClass>eu.dm2e.ws.TearDown</mainClass>
-                            <systemProperties>
-                                <property>
-                                    <key>java.util.logging.config.file</key>
-                                    <value>${logging.properties.main}</value>
-                                </property>
-                            </systemProperties>
                         </configuration>
                     </execution>
                 </executions>
@@ -345,12 +326,6 @@
                         </goals>
                         <configuration>
                             <argLine>${failsafe.argLine}</argLine>
-                            <systemProperties>
-                                <property>
-                                    <name>java.util.logging.config.file</name>
-                                    <value>${logging.properties.test}</value>
-                                </property>
-                            </systemProperties>
                         </configuration>
                     </execution>
                     <execution>
@@ -366,14 +341,6 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.14.1</version>
-                <configuration>
-                    <systemProperties>
-                        <property>
-                            <name>java.util.logging.config.file</name>
-                            <value>${logging.properties.test}</value>
-                        </property>
-                    </systemProperties>
-                </configuration>
             </plugin>
         </plugins>
 	</build>
@@ -381,9 +348,6 @@
 		<jersey-version>1.8</jersey-version>
 		<sesame.version>2.6.10</sesame.version>
         <exec.mainClass.override>eu.dm2e.ws.Main</exec.mainClass.override>
-        <logging.properties.file>logging.properties</logging.properties.file>
-        <logging.properties.main>${project.build.outputDirectory}/${logging.properties.file}</logging.properties.main>
-        <logging.properties.test>${project.build.testOutputDirectory}/${logging.properties.file}</logging.properties.test>
 	</properties>
 	<repositories>
         <repository>
