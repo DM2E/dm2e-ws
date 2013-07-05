@@ -85,6 +85,12 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 	private JobPojo generatorJob;
 	public JobPojo getGeneratorJob() { return generatorJob; }
 	public void setGeneratorJob(JobPojo generatorJob) { this.generatorJob = generatorJob; }
+	
+	@RDFProperty(NS.OMNOM.PROP_ITEM_ROOT)
+	private String itemRoot;
+	public String getItemRoot() { return itemRoot; }
+	public void setItemRoot(String itemRoot) { this.itemRoot = itemRoot; }
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -101,8 +107,10 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 		result = prime * result + ((md5 == null) ? 0 : md5.hashCode());
 		result = prime * result + ((mediaType == null) ? 0 : mediaType.hashCode());
 		result = prime * result + ((originalName == null) ? 0 : originalName.hashCode());
+		result = prime * result + ((itemRoot == null) ? 0 : itemRoot.hashCode());
 		return result;
 	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
@@ -143,6 +151,9 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 		if (originalName == null) {
 			if (other.originalName != null) return false;
 		} else if (!originalName.equals(other.originalName)) return false;
+		if (itemRoot == null) {
+			if (other.itemRoot != null) return false;
+		} else if (!itemRoot.equals(other.itemRoot)) return false;
 		return true;
 	}
 	

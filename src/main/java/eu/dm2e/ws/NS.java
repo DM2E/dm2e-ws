@@ -152,6 +152,8 @@ public final class NS {
 		public static final String FINISHED_JOB = BASE + "finishedJob";
 
 		public static final String PROP_FILE_TYPE = BASE + "fileType";
+		
+		public static final String PROP_ITEM_ROOT = BASE + "itemRoot";
 
 	}
 	
@@ -265,6 +267,7 @@ public final class NS {
 
 		public static final String PROP_SPECIALIZATION_OF = BASE  + "specializationOf";
 		public static final String PROP_WAS_REVISION_OF = BASE  + "wasRevisionOf";
+
 	}
 	
 	public static final class XSD {

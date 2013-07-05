@@ -387,12 +387,12 @@ public class FileService extends AbstractRDFService {
 		
 		FileInputStream fis;
 		try {
-			log.info(filePojo.getFileLocation());
-			fis = new FileInputStream(filePojo.getFileLocation());
+			log.info(filePojo.getInternalFileLocation());
+			fis = new FileInputStream(filePojo.getInternalFileLocation());
 		} catch (FileNotFoundException e) {
 			log.info(e.toString());
 			return Response.status(404).entity(
-					"File '" + filePojo.getFileLocation() + "' not found on the server. " + e.toString()).build();
+					"File '" + filePojo.getInternalFileLocation() + "' not found on the server. " + e.toString()).build();
 		}
 		return Response.ok(fis).header("Content-Type", filePojo.getMediaType()).header("Content-Disposition",
 				"attachment; filename=" + filePojo.getOriginalName()).build();
@@ -674,7 +674,7 @@ public class FileService extends AbstractRDFService {
 		// store file-based/implicit metadata
 		FilePojo filePojo = new FilePojo();
 		filePojo.setMd5(mdStr);
-		filePojo.setFileLocation(f.getAbsolutePath()); // TODO not a good "solution"
+		filePojo.setInternalFileLocation(f.getAbsolutePath()); // TODO not a good "solution"
 		filePojo.setId(uri.toString());
 		filePojo.setFileRetrievalURI(uri.toString());
 		filePojo.setFileSize(f.length());
