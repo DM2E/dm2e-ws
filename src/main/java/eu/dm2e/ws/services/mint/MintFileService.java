@@ -4,11 +4,14 @@ import java.net.URI;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import eu.dm2e.ws.Config;
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -33,18 +36,22 @@ public class MintFileService extends AbstractRDFService {
 	}
 	
 	
+	/**
+	 * GET /
+	 * @return
+	 */
 	@Produces({
 		MediaType.WILDCARD
 	})
 	@GET
-	// @Path("/")
 	public Response getFileList() {
-		Grafeo g = mintApiTranslator.buildGrafeoFromMintFiles();
+		Grafeo g = mintApiTranslator.retrieveAllMappingsAndDataUploadsAsGrafeo();
 		
 		return Response.ok().entity(getResponseEntity(g)).build();
 	}
 
 	/**
+	 * GET /{id}
 	 * Retrieve metadata/file data for a file stored in MINT
 	 * 
 	 * @param fileId
@@ -52,56 +59,95 @@ public class MintFileService extends AbstractRDFService {
 	 */
 	@GET
 	@Path("{id}")
-	public Response getFileById() {
-		return getFile(getRequestUriWithoutQuery());
-	}
-
-	/**
-	 * Decides whether to fire the get method for file data or metadata.
-	 * 
-	 * @param uri
-	 * @return
-	 */
-	Response getFile(URI uri) {
+	public Response getFileById(@PathParam("id") String mintFileId) {
+		URI uri = getRequestUriWithoutQuery();
         log.info("File requested: " + uri);
-		// if the accept header is a RDF type, send metadata, otherwise data
+        
+		// if the accept header is a RDF or JSONtype, send metadata, otherwise data
 		if (expectsMetadataResponse()) {
 			log.info("METADATA will be sent");
-            return getFileMetaDataByUri(uri);
+            return getFileMetadataByUri(uri);
 		} else {
             log.info("FILE will be sent");
             return getFileDataByUri(uri);
 		}
 	}
+	
+	/**
+	 * GET /{id}/data
+	 * @param mintFileId
+	 * @return
+	 */
+	@GET
+	@Path("{id}/data")
+	public Response getFileDataById(@PathParam("id") String mintFileId) {
+		return getFileDataByUri(getRequestUriWithoutQuery());
+	}
 
-
-	private Response getFileMetaDataByUri(URI uri) {
-		FilePojo filePojo = mintApiTranslator.getFilePojoForUri(uri);
+	/**
+	 * GET /metadataByURI?uri...
+	 * TODO FIXME
+	 * @param uri
+	 * @return
+	 */
+	@GET
+	@Path("/metadataByURI")
+	public Response getFileMetadataByUri(@QueryParam("uri") URI uri) {
+		
+		FilePojo filePojo = mintApiTranslator.retrieveFilePojoForUri(uri);
 		if (null == filePojo)
 			return Response.status(404).entity("No such file in MINT.").build();
+		
 		Response resp;
 		if (expectsRdfResponse()) {
 			Grafeo outG = new GrafeoImpl();
 			outG.getObjectMapper().addObject(filePojo);
 			resp = getResponse(outG);
-		} else if (expectsRdfResponse()) {
+		} else if (expectsJsonResponse()) {
 			resp = Response
 					.ok()
 					.type(MediaType.APPLICATION_JSON)
 					.entity(filePojo.toJson())
 					.build();
 		} else {
-			return throwServiceError("Unhandled metadata type.");
+			log.warn("No metadata type could be detected, defaulting to RDF/N-TRIPLES.");
+			Grafeo outG = new GrafeoImpl();
+			outG.getObjectMapper().addObject(filePojo);
+			resp = getResponse(outG);
 		}
 		return resp	;
 	}
-
 	
-	private Response getFileDataByUri(URI uri) {
-		FilePojo filePojo = mintApiTranslator.getFilePojoForUri(uri);
+	/**
+	 * GET /dataByURI?uri=...
+	 * @param uri
+	 * @return
+	 */
+	@GET
+	@Path("/dataByURI")
+	public Response getFileDataByUri(@QueryParam("uri") URI uri) {
+		log.info("Requested data for URI " + uri);
+		FilePojo filePojo = mintApiTranslator.retrieveFilePojoForUri(uri);
 		if (null == filePojo)
 			return Response.status(404).entity("No such file in MINT.").build();
-		return Response.seeOther(filePojo.getFileRetrievalURI()).build();
+		
+		Response resp = null;
+		if (filePojo.getFileType().toString().equals(NS.OMNOM_TYPES.XML)) {
+			byte[] content = mintApiTranslator.convertTGZtoXML(filePojo);
+			if (null != content) {
+				resp = Response.ok()
+						.entity(content)
+						.type("application/xml")
+						.header("Content-Disposition","attachment; filename = " + filePojo.getOriginalName())
+						.build();
+			} else {
+				log.info("No content could be read from targ.gz");
+				resp = Response.seeOther(URI.create(filePojo.getInternalFileLocation())) .build();
+			}
+		}
+		if (null == resp)
+			resp = Response.seeOther(filePojo.getFileRetrievalURI()).build();
+		return resp;
 	}
 
 }

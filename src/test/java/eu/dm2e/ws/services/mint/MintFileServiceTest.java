@@ -8,6 +8,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import javax.ws.rs.core.MediaType;
 
@@ -16,6 +18,7 @@ import org.junit.Test;
 
 import com.hp.hpl.jena.query.ResultSet;
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.UniformInterfaceException;
 
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.NS;
@@ -64,20 +67,44 @@ public class MintFileServiceTest extends OmnomTestCase {
 		GrafeoImpl respG = new GrafeoImpl();
 		respG.readHeuristically(resp.getEntityInputStream());
 		assertThat(respG.findByClass(NS.OMNOM.CLASS_FILE).size(), greaterThan(10));
+		assertTrue("Contains at least one XML file", respG.containsTriple("?s", "?p", NS.OMNOM_TYPES.XML));
+		assertTrue("Contains at least one TGZ-XML file", respG.containsTriple("?s", "?p", NS.OMNOM_TYPES.TGZ_XML));
 		assertTrue("Contains at least one XSLT file", respG.containsTriple("?s", "?p", NS.OMNOM_TYPES.XSLT));
-		assertTrue("Contains at least one DataUpload", respG.containsTriple("?s", "?p", NS.OMNOM_TYPES.TGZ));
 	}
 	
-	
 	@Test
-	public void testGetFileDataByUri() {
-        log.info("Get file data");
+	public void testGetFileDataByUriConvert() throws UnsupportedEncodingException {
+        // http://mint-projects.image.ntua.gr/dm2e/Download?datasetId=1059
+        log.info("Get file data converting TGZ to XML");
+        
+        String reqUri = SERVICE_URI + "/dataByURI?uri=" + URLEncoder.encode(SERVICE_URI + "/upload" + 1059, "UTF-8");
+        log.info("REQUESTING: " + reqUri);
+        
         client.getJerseyClient().setFollowRedirects(false);
-        ClientResponse respData = client.resource(randomFileUri.toString())
+        ClientResponse resp = client.resource(reqUri)
         		.get(ClientResponse.class);
         client.getJerseyClient().setFollowRedirects(true);
-        assertEquals(303, respData.getStatus());
-        assertEquals(randomFilePojo.getFileRetrievalURI(), respData.getLocation());
+        
+        assertEquals(200, resp.getStatus());
+        assertEquals(MediaType.APPLICATION_XML_TYPE, resp.getType());
+	}
+	
+	@Test
+	public void testGetFileDataByUri() throws UniformInterfaceException, UnsupportedEncodingException {
+        log.info("Get file data 303");
+        
+        String reqUri = SERVICE_URI + "/dataByURI?uri=" + URLEncoder.encode(randomFileUri, "UTF-8");
+        log.info("REQUESTING: " + reqUri);
+        
+        client.getJerseyClient().setFollowRedirects(false);
+        ClientResponse resp = client.resource(reqUri)
+        		.get(ClientResponse.class);
+        client.getJerseyClient().setFollowRedirects(true);
+        
+        final String respStr = resp.getEntity(String.class);
+        log.info("" + respStr);
+        assertEquals(303, resp.getStatus());
+        assertEquals(randomFilePojo.getInternalFileLocation(), resp.getLocation().toString());
 	}
 
 	@Test
@@ -101,6 +128,7 @@ public class MintFileServiceTest extends OmnomTestCase {
 		GrafeoImpl fileG = new GrafeoImpl();
         fileG.readHeuristically(respMetadataRdf.getEntityInputStream());
         FilePojo actualFP = fileG.getObjectMapper().getObject(FilePojo.class, randomFileUri);
+        log.info(fileG.getTerseTurtle());
         assertEquals(randomFilePojo.getId(), actualFP.getId());
         assertEquals(randomFilePojo.getLabel(), actualFP.getLabel());
         assertEquals(randomFilePojo.getLastModified(), actualFP.getLastModified());
