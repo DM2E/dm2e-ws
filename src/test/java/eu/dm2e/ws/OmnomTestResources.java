@@ -24,7 +24,9 @@ public enum OmnomTestResources {
     , MINT_MAPPING_LIST_JSON("/mint-api/mappings-list.json")
     , MINT_MAPPING_SINGLE_JSON("/mint-api/single-mapping.json")
     , MINT_DATASET_LIST_JSON("/mint-api/dataset-list.json")
-    , MINT_DATASET_SINGLE_DATAUPLOAD_JSON("/mint-api/single-dataset-dataupload.json")
+    , MINT_DATASET_SINGLE_DATAUPLOAD_JSON_XML("/mint-api/single-dataupload-xml.json")
+    , MINT_DATASET_SINGLE_DATAUPLOAD_JSON_ZIPXML("/mint-api/single-dataupload-zipxml.json")
+    , MINT_DATASET_SINGLE_DATAUPLOAD_JSON_TGZXML("/mint-api/single-dataupload-tgzxml.json")
     ;
 
 	final String path;
