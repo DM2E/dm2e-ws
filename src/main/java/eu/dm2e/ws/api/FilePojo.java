@@ -24,9 +24,9 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 	 * 
 	 *********************/
 	@RDFProperty(NS.OMNOM.PROP_FILE_LOCATION)
-	private String fileLocation;
-	public String getFileLocation() { return fileLocation; }
-	public void setFileLocation(String fileLocation) { this.fileLocation = fileLocation; }
+	private String internalFileLocation;
+	public String getInternalFileLocation() { return internalFileLocation; }
+	public void setInternalFileLocation(String fileLocation) { this.internalFileLocation = fileLocation; }
 
 	@RDFProperty(NS.DCTERMS.PROP_FORMAT)
 	private String mediaType;
@@ -85,5 +85,65 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 	private JobPojo generatorJob;
 	public JobPojo getGeneratorJob() { return generatorJob; }
 	public void setGeneratorJob(JobPojo generatorJob) { this.generatorJob = generatorJob; }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
+		result = prime * result + ((created == null) ? 0 : created.hashCode());
+		result = prime * result + ((fileEditURI == null) ? 0 : fileEditURI.hashCode());
+		result = prime * result + ((internalFileLocation == null) ? 0 : internalFileLocation.hashCode());
+		result = prime * result + ((fileRetrievalURI == null) ? 0 : fileRetrievalURI.hashCode());
+		result = prime * result + (int) (fileSize ^ (fileSize >>> 32));
+		result = prime * result + ((fileStatus == null) ? 0 : fileStatus.hashCode());
+		result = prime * result + ((fileType == null) ? 0 : fileType.hashCode());
+		result = prime * result + ((lastModified == null) ? 0 : lastModified.hashCode());
+		result = prime * result + ((md5 == null) ? 0 : md5.hashCode());
+		result = prime * result + ((mediaType == null) ? 0 : mediaType.hashCode());
+		result = prime * result + ((originalName == null) ? 0 : originalName.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		FilePojo other = (FilePojo) obj;
+		if (created == null) {
+			if (other.created != null) return false;
+		} else if (!created.equals(other.created)) return false;
+		if (getId() == null) {
+			if (other.getId() != null) return false;
+		} else if (!getId().equals(other.getId())) return false;
+		if (fileEditURI == null) {
+			if (other.fileEditURI != null) return false;
+		} else if (!fileEditURI.equals(other.fileEditURI)) return false;
+		if (internalFileLocation == null) {
+			if (other.internalFileLocation != null) return false;
+		} else if (!internalFileLocation.equals(other.internalFileLocation)) return false;
+		if (fileRetrievalURI == null) {
+			if (other.fileRetrievalURI != null) return false;
+		} else if (!fileRetrievalURI.equals(other.fileRetrievalURI)) return false;
+		if (fileSize != other.fileSize) return false;
+		if (fileStatus == null) {
+			if (other.fileStatus != null) return false;
+		} else if (!fileStatus.equals(other.fileStatus)) return false;
+		if (fileType == null) {
+			if (other.fileType != null) return false;
+		} else if (!fileType.equals(other.fileType)) return false;
+		if (lastModified == null) {
+			if (other.lastModified != null) return false;
+		} else if (!lastModified.equals(other.lastModified)) return false;
+		if (md5 == null) {
+			if (other.md5 != null) return false;
+		} else if (!md5.equals(other.md5)) return false;
+		if (mediaType == null) {
+			if (other.mediaType != null) return false;
+		} else if (!mediaType.equals(other.mediaType)) return false;
+		if (originalName == null) {
+			if (other.originalName != null) return false;
+		} else if (!originalName.equals(other.originalName)) return false;
+		return true;
+	}
 	
 }
