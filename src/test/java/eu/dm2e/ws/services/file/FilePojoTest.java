@@ -82,7 +82,7 @@ public class FilePojoTest extends OmnomUnitTest{
 		FilePojo fp = g.getObjectMapper().getObject(FilePojo.class, fileUri);
 		assertEquals(fileUri, fp.getId());
 		assertEquals(123456L, fp.getFileSize());
-		assertEquals(fileLocationShouldBe, fp.getFileLocation());
+		assertEquals(fileLocationShouldBe, fp.getInternalFileLocation());
 		assertEquals(fileRetrievalURIShouldBe, fp.getFileRetrievalURI().toString());
 //		log.info(g.getNTriples());
 //		fail("Not yet implemented");
@@ -99,7 +99,7 @@ public class FilePojoTest extends OmnomUnitTest{
 		FilePojo fp1 = new FilePojo();
 		fp1.setId(fileUri);
 		fp1.setFileRetrievalURI(URI.create(fileRetrievalURIShouldBe));
-		fp1.setFileLocation(fileLocationShouldBe);
+		fp1.setInternalFileLocation(fileLocationShouldBe);
 		
 		g1.getObjectMapper().addObject(fp1);
 		FilePojo fp2 = g1.getObjectMapper().getObject(FilePojo.class, fileUri);

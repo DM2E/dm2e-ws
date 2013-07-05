@@ -35,7 +35,7 @@ public class MintClient {
 		return this.jerseyClient;
 	}
 	
-	protected Set<Cookie> cookies = new HashSet<>();
+	protected final Set<Cookie> cookies = new HashSet<>();
 	
 	public void addCookie(Cookie cookie) { this.cookies.add(cookie); }
 	public void addCookies(List<NewCookie> theseCookies) {
@@ -44,7 +44,7 @@ public class MintClient {
 			this.addCookie(thisCookie);
 	}
 	public void clearCookies() {
-		log.info("Clear cookies.");
+		log.debug("Clear cookies.");
 		this.cookies.clear(); 
 	}
 	
@@ -55,10 +55,11 @@ public class MintClient {
 	public Builder resource(String uri) {
 		Builder reqB = getJerseyClient().resource(uri).getRequestBuilder();
 		for (Cookie cookie : cookies) {
-			log.info("Adding cookie to web resource: " + cookie);
+			log.trace("Adding cookie to web resource: " + cookie);
 			reqB.cookie(cookie);
 		}
 		reqB.header("User-Agent", "omnom/mint-client");
+		log.info("Built WebResource Builder for <{}>", uri);
 		return reqB;
 	}
 	
