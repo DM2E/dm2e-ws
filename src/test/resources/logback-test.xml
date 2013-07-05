@@ -1,31 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<configuration debug="true">
+<configuration debug="true" scan="true" scanPeriod="2 minutes" >
+
+  <conversionRule conversionWord="markerWithSeparator" 
+                  converterClass="eu.dm2e.logback.SeparatorMarkerOrEmptyStringConverter" />
+                  
+  <conversionRule conversionWord="dm2eHighlight" 
+                  converterClass="eu.dm2e.logback.HighlightHighContrastConverter" />
+
+
+	<statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
+	
+	<!-- 
+		Filter messages with some Marker (see eu.dm2e.logback.LogbackMarkers)
+		DENY: deny it, even if other filters accept it
+		NEUTRAL: do nothing
+		ACCEPT: accept it, even if other filters deny it
+	 -->
+	<turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
+		<Marker>HTTP_RESPONSE_DUMP</Marker>
+	<!--<OnMatch>ACCEPT</OnMatch>-->
+		<OnMatch>DENY</OnMatch>
+	</turboFilter>
+	<turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
+		<Marker>DATA_DUMP</Marker>
+		<OnMatch>ACCEPT</OnMatch>
+	</turboFilter>
+	<turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
+		<Marker>SENSITIVE_INFORMATION</Marker>
+		<OnMatch>ACCEPT</OnMatch>
+	</turboFilter>
+	<turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
+		<Marker>SERVER_COMMUNICATION</Marker>
+		<OnMatch>ACCEPT</OnMatch>
+	</turboFilter>
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
-			by default -->
-		<!-- <encoder> -->
-		<!-- <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern> -->
-		<!-- </encoder> -->
-<!-- 		<encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder"> -->
-<!-- 			<layout class="eu.dm2e.utils.OmnomLogbackLayout" /> -->
-<!-- 		</encoder> -->
-
-<!-- 		See http://logback.qos.ch/manual/layouts.html -->
-		<layout class="ch.qos.logback.classic.PatternLayout">
-			<Pattern>%level [%logger{5}] %m%n</Pattern>
-		</layout>
+		<!--  ANSI coloring -->
+	    <withJansi>true</withJansi>
+		<!-- 
+		See http://logback.qos.ch/manual/layouts.html
+		encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder by default
+		 -->
+		<encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+			<layout class="eu.dm2e.logback.OmnomLogbackLayout">
+				<Pattern>%dm2eHighlight(%level [%logger{5}.%method:%line%markerWithSeparator] %m)</Pattern>
+			</layout>
+		</encoder>
 	</appender>
-
-	<!-- <logger name="com.lordofthejars.foo" level="INFO" additivity="false"> -->
-	<!-- <appender-ref ref="STDOUT" /> -->
-	<!-- </logger> -->
-
-	<!-- Strictly speaking, the level attribute is not necessary since -->
-	<!-- the level of the root level is set to DEBUG by default. -->
-	<root level="DEBUG">
+	
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>log-test/dm2e-ws.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- 
+				hourly rollover 
+				log-test/dm2e-ws.log
+				log-test/2013-07-05/dm2e-ws.2013-07-05_11.log
+				...
+			-->
+			<fileNamePattern>log-test/%d{yyyy-MM-dd,aux}/dm2e-ws.%d{yyyy-MM-dd_HH}.log</fileNamePattern>
+			<!-- keep 30 days' worth of history -->
+			<maxHistory>720</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<Pattern>%level [%logger.%method:%line%markerWithSeparator] %m%n</Pattern>
+		</encoder>
+	</appender>
+	
+	<root level="TRACE">
+		<appender-ref ref="FILE" />
 		<appender-ref ref="STDOUT" />
 	</root>
+
+	<logger name="eu.dm2e.ws.grafeo.gom" level="DEBUG" />
+
 
 </configuration>
