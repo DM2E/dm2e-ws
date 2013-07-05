@@ -1,11 +1,14 @@
 package eu.dm2e.ws;
 
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +50,17 @@ public class DM2E_MediaType {
 			TEXT_TURTLE = "text/turtle";
 	public static final String TEXT_X_LOG = "text/x-log";
 	public static final MediaType TEXT_LOG_TYPE = new MediaType("text", "x-log");
+	
+	public static final MediaType APPLICATION_X_TAR_UTF8;
+	public static final MediaType TEXT_HTML_UTF8;
+	public static final MediaType APPLICATION_XML_UTF8;
+	static {
+		HashMap<String, String> utf8mediaTypeProps = new HashMap<>();
+		utf8mediaTypeProps.put("charset", "UTF-8");
+		APPLICATION_X_TAR_UTF8 = new MediaType("application", "x-tar", utf8mediaTypeProps);
+		TEXT_HTML_UTF8 = new MediaType("text", "html", utf8mediaTypeProps);
+		APPLICATION_XML_UTF8 = new MediaType("application", "xml", utf8mediaTypeProps);
+	}
 	private static final String[] rdfMediaTypes = {
 		APPLICATION_RDF_TRIPLES,
 		APPLICATION_RDF_XML,
