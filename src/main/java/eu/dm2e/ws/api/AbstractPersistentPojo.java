@@ -14,11 +14,11 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
 	
 	protected static transient Client client = new Client();
 	
-	public void loadFromURI(String uri) throws Exception {
+	public void loadFromURI(String uri) {
 		this.loadFromURI(uri, 0);
 	}
 	
-	public void loadFromURI(URI uri) throws Exception {
+	public void loadFromURI(URI uri) {
 		this.loadFromURI(uri.toString(), 0);
 	}
 	
@@ -26,7 +26,7 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
 		this.loadFromURI(uri.toString(), expansionSteps);
 	}
 	
-	public void loadFromURI(String uri, int expansionSteps) throws Exception {
+	public void loadFromURI(String uri, int expansionSteps) {
         Grafeo g = new GrafeoImpl();
         try {
         	log.debug("Loading from " + uri);
