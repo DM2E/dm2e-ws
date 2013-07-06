@@ -27,6 +27,8 @@ AC_MULTI='Accept: multipart/form-data'
 CT_LOG='Content-Type: text/x-log'
 AC_LOG='Accept: text/x-log'
 
+CT_JSON='Content-Type: application/json'
+AC_JSON='Accept: application/json'
 
 alias POST="curl -v -X POST"
 alias GET="curl -v -X GET"
@@ -36,11 +38,14 @@ alias GET_TURTLE="GET -H '$AC_TURTLE'"
 alias GET_LOG="GET -H '$AC_LOG'"
 alias GETLOG="GET -H '$AC_LOG'"
 alias GETL="GET -H '$AC_LOG'"
+alias GET_JSON="GET -H '$AC_JSON'"
+alias GETJSON="GET -H '$AC_JSON'"
+alias GETJ="GET -H '$AC_JSON'"
 alias PUT="curl -v -X PUT"
 alias DELETE="curl -v -X DELETE"
 alias PATCH="curl -v -X PATCH"
 alias HEAD="curl -v -X HEAD"
 
 SRV_MAIN="http://localhost:9998"
-SRV="http://localhost:9998"
-SRV_TASK="http://localhost:9110"
+# SRV="http://localhost:9998"
+SRV="http://localhost:8080/dm2e-ws/api"
