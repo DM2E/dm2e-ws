@@ -1,47 +1,99 @@
 package eu.dm2e.utils;
+import static ch.qos.logback.core.pattern.color.ANSIConstants.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.BindException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
 
 import eu.dm2e.ws.wsmanager.ManageService;
 
 public class GuiConsole {
 	
-	static boolean isRunning = false;
+	static Logger log;
+	static Client client;
+	static WebResource manageResource;
+	static int[] ports = { 9997, 9998 };
+	final private static String SET_DEFAULT_COLOR = ESC_START+"0;"+DEFAULT_FG+ESC_END;
+
+	
+	static {
+		System.setProperty("logback.configurationFile", "logback-console.xml");
+		log = LoggerFactory.getLogger(GuiConsole.class.getName());
+		
+		client = new Client();
+		manageResource = client.resource("http://localhost:9990/manage");
+		
+		try {
+			ManageService.startManageServer();
+		} catch (RuntimeException e) {
+			log.warn("Manage server already running!", e);
+		} catch (BindException e) {
+			log.warn("Manage server already running!", e);
+		}
+	}
+	
+	
+	private static void sendStartCommand() {
+		manageResource.path("start").get(String.class);
+	}
+	private static void sendStopCommand() {
+		manageResource.path("stop").get(String.class);
+	}
+	private static String sendPortcheckCommand(int port) {
+		String resp = manageResource.path("port").path("" + port).get(String.class);
+		return resp;
+	}
 	
 	private static void startServer() {
-		Logger log = LoggerFactory.getLogger(GuiConsole.class.getName());
 		log.info("Starting Servers.");
-		if (isRunning) {
+		if (isRunning()) {
 			log.error("Servers Already running.");
 			return;
 		}
-		ManageService.startAll();
-		System.out.println("Started Servers.");
-		isRunning = true;
+		sendStartCommand();
+		log.info("Started Servers.");
 	}
 	private static void stopServer() {
-//		Logger log = LoggerFactory.getLogger(GuiConsole.class.getName());
-		System.out.println("Stopping Servers.");
-		if (! isRunning) {
-			System.out.println("ERROR: Not running.");
+		log.info("Stopping Servers.");
+		if (! isRunning()) {
+			log.warn("Servers aren't Not running.");
 			return;
 		}
-		ManageService.stopAll();
-		System.out.println("Stopped Servers.");
-		isRunning = false;
+		sendStopCommand();
+		log.info("Stopped Servers.");
 	}
 	
 	private static void restartServer() {
-//		Logger log = LoggerFactory.getLogger(GuiConsole.class.getName());
-		System.out.println("Restarting Servers.");
+		log.info("Restarting Servers.");
 		stopServer();
 		startServer();
-		System.out.println("Restarted Servers.");
+		if (isRunning()) 
+			log.info("Restarted Servers.");
+		else 
+			log.warn("Restart failed.");
+	}
+	
+	private static String getStatusString() {
+		if (isRunning()) {
+			return ESC_START + BOLD + CYAN_FG + ESC_END + "STARTED" + SET_DEFAULT_COLOR ;
+		} else {
+			return ESC_START + BOLD + RED_FG + ESC_END + "STOPPED" + SET_DEFAULT_COLOR;
+		}	
+					
+	}
+	private static boolean isRunning() {
+		for (int port : ports) {
+			if (Boolean.parseBoolean(sendPortcheckCommand(port)))
+				return true;
+		}
+		return false;
 	}
 	
 	public static void main(String[] args) throws SecurityException, IOException {
@@ -52,6 +104,7 @@ public class GuiConsole {
 			
 		    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
 		    String input;
+		    System.out.print("[ " + getStatusString() + " ] > ");
 		    try {
 				 input = bufferRead.readLine();
 			} catch (IOException e) {
@@ -59,7 +112,6 @@ public class GuiConsole {
 			}
 			if (null == input) continue;
 			if (input.matches("^q.*")) {
-				stopServer();
 				break;
 			} else if (input.matches("^r.*")) {
 				restartServer();
@@ -68,17 +120,16 @@ public class GuiConsole {
 			} else if (input.matches("^stop.*")) {
 				stopServer();
 			} else if (input.matches("^status.*")) {
-				if (isRunning) {
-					System.out.println("[RUNNING]");
-				} else {
-					System.out.println("[STOPPED]");
-				}
+				log.info("[{}]", getStatusString());
 			} else {
-				System.out.println("Huh?");
+				log.warn("Default to restart.");
+				restartServer();
 			}
-
 		}
-		System.out.println("Finished");
+		
+		stopServer();
+		
+		log.info("GuiConsole Finished");
 	}
 
 }

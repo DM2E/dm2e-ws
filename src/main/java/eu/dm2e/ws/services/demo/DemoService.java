@@ -1,5 +1,6 @@
 package eu.dm2e.ws.services.demo;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import eu.dm2e.ws.NS;
@@ -36,6 +37,12 @@ public class DemoService extends AbstractTransformationService {
         ParameterPojo randomOutputParam = getWebServicePojo().addOutputParameter(PARAM_RANDOM_OUTPUT);
         randomOutputParam.setIsRequired(false);
     }
+    
+//    @GET
+//    @Path("jsonp")
+//    public void getJsonWithPadding() {
+//    	
+//    }
 
     @Override
     public void run() {
