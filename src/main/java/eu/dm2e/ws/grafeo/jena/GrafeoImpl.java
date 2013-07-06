@@ -252,8 +252,10 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 
     @Override
     public void load(String uri, int expansionSteps) {
-    	if (System.getProperty(NO_EXTERNAL_URL_FLAG).equals("true")
-			&&
+    	if (null != System.getProperty(NO_EXTERNAL_URL_FLAG)
+    			&&
+			System.getProperty(NO_EXTERNAL_URL_FLAG).equals("true")
+				&&
 			! uri.matches("https?://localhost.*")
 			) {
     		log.warn("Skipping loading because "+ NO_EXTERNAL_URL_FLAG +" system property is set." );
@@ -272,7 +274,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
                 success = true;
             } catch (Throwable t) {
                     log.error("Could not parse URI content: " + t.getMessage());
-                    throw new RuntimeException("Could not parse uri content: " + uri + " : " + t.getMessage());
+//                    throw new RuntimeException("Could not parse uri content: " + uri + " : " + t.getMessage());
             }
             if (success) break;
             count--;
@@ -283,7 +285,10 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
                 throw new RuntimeException("An exception occurred: " + e, e);
             }
         }
-        if (!success) throw new RuntimeException("After 3 tries I still couldn't make sense from this URI: " + uri);
+        if (!success) {
+//        	throw new RuntimeException("After 3 tries I still couldn't make sense from this URI: " + uri);
+        	return;
+        }
         // Expand the graph by recursively loading additional resources
         Set<GResource> resourceCache = new HashSet<GResource>();
         log.debug("Expansions to go: " + expansionSteps);
