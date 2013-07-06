@@ -8,12 +8,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -22,12 +25,14 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
 
+import com.google.gson.reflect.TypeToken;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
@@ -39,6 +44,8 @@ import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.api.json.OmnomJsonSerializer;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
@@ -83,6 +90,31 @@ public class FileService extends AbstractRDFService {
 	public Response getFileById() {
 		URI uri = getRequestUriWithoutQuery();
 		return getFileByUri(uri);
+	}
+	/**
+	 * GET /list
+	 *  Retrieve metadata/file data for a locally stored file
+	 * 
+	 * @param fileId
+	 * @return
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("list")
+	public Response getFileList() {
+		List<FilePojo> fileList = new ArrayList<FilePojo>();
+        Grafeo g = new GrafeoImpl();
+        log.info(NS.ENDPOINT_SELECT);
+        g.readTriplesFromEndpoint(NS.ENDPOINT_SELECT, null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_FILE));
+        for (GResource fileUri : g.findByClass(NS.OMNOM.CLASS_FILE)) {
+        	log.info("Resource: " + fileUri.getUri());
+        	g.load(fileUri.getUri());
+        	FilePojo fp = new FilePojo();
+        	fp.loadFromURI(fileUri.getUri());
+        	fileList.add(fp);
+        }
+        String jsonStr = OmnomJsonSerializer.serializeToJSON(fileList, FilePojo.class);
+		return Response.ok(jsonStr).build();
 	}
 	
 	/**
@@ -385,6 +417,9 @@ public class FileService extends AbstractRDFService {
 //		String originalName = originalNameNode != null ? originalNameNode.toString() : "rdf_file_info";
 		
 		FilePojo filePojo = g.getObjectMapper().getObject(FilePojo.class, uri);
+		if (null == filePojo || null == filePojo.getInternalFileLocation()) {
+			return Response.status(404).entity(uri + " was not found.").build();
+		}
 		
 		FileInputStream fis;
 		try {
@@ -660,6 +695,7 @@ public class FileService extends AbstractRDFService {
 				"%s/%s",
 				Config.getString("dm2e.service.file.store_directory"), 
 				fileName));
+		log.info("Store file as: {}", f.getAbsolutePath());
 		IOUtils.copy(fileDigestInStream, new FileOutputStream(f));
 		// @formatter:on
 
