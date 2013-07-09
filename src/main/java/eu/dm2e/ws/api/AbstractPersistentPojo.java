@@ -10,7 +10,7 @@ import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.Client;
 
-public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
+public abstract class AbstractPersistentPojo<T> extends SerializablePojo<T> {
 	
 	protected static transient Client client = new Client();
 	

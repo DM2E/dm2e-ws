@@ -42,7 +42,7 @@ public class OmnomJsonSerializer {
 		gson = gsonBuilder.create();
 	}
 	
-	public static <T> String serializeToJSON(List<? extends SerializablePojo> pojoList, Type T) {
+	public static <T> String serializeToJSON(List<? extends SerializablePojo<T>> pojoList, Type T) {
 		JsonArray retArray = new JsonArray();
 		for (SerializablePojo<T> pojo : pojoList) {
 			retArray.add(serializeToJsonObject(pojo, T));
