@@ -3,8 +3,6 @@ package eu.dm2e.utils;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import eu.dm2e.ws.NS;
@@ -12,8 +10,6 @@ import eu.dm2e.ws.NS;
 public class NSExporter {
 	
 	public static String exportToJSON(Class clazz) {
-		
-		Gson gson = new Gson();
 		
 		JsonObject nsObj = new JsonObject();
 		

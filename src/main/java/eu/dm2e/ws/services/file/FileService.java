@@ -91,6 +91,11 @@ public class FileService extends AbstractRDFService {
 		URI uri = getRequestUriWithoutQuery();
 		return getFileByUri(uri);
 	}
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getFileListBaseAlias() {
+		return Response.seeOther(appendPath(getRequestUriWithoutQuery(), "list")).build();
+	}
 	/**
 	 * GET /list
 	 *  Retrieve metadata/file data for a locally stored file

@@ -1,6 +1,7 @@
 package eu.dm2e.ws.services.mint;
 
 import java.net.URI;
+import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -14,6 +15,7 @@ import eu.dm2e.ws.Config;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.WebservicePojo;
+import eu.dm2e.ws.api.json.OmnomJsonSerializer;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.AbstractRDFService;
@@ -41,6 +43,12 @@ public class MintFileService extends AbstractRDFService {
 	 * @return
 	 */
 	@Produces({
+//		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+//		DM2E_MediaType.APPLICATION_RDF_XML,
+//		DM2E_MediaType.APPLICATION_X_TURTLE,
+//		// DM2E_MediaType.TEXT_PLAIN,
+//		DM2E_MediaType.TEXT_RDF_N3,
+//		DM2E_MediaType.TEXT_TURTLE
 		MediaType.WILDCARD
 	})
 	@GET
@@ -48,6 +56,16 @@ public class MintFileService extends AbstractRDFService {
 		Grafeo g = mintApiTranslator.retrieveAllMappingsAndDataUploadsAsGrafeo();
 		
 		return Response.ok().entity(getResponseEntity(g)).build();
+	}
+	
+	@Produces({
+		MediaType.APPLICATION_JSON
+	})
+	@GET
+	public String getFileListJson() {
+		List<FilePojo> fileList = mintApiTranslator.retrieveAllMappingsAndDataUploads();
+        String jsonStr = OmnomJsonSerializer.serializeToJSON(fileList, FilePojo.class);
+        return jsonStr;
 	}
 
 	/**
