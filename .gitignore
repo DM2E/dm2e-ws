@@ -17,3 +17,7 @@ log-test
 /*.svg
 workflow.test.ttl
 .attach*
+WebContent/js/lib/jasny-bootstrap/jasny-bootstrap/
+WebContent/js/lib/jasny-bootstrap/jasny-bootstrap.zip
+WebContent/js/lib/log4javascript/log4javascript-*/
+WebContent/js/lib/log4javascript/log4javascript-1.4.6.tar.gz
