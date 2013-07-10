@@ -5,7 +5,6 @@ import eu.dm2e.utils.PojoUtils;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.Client;
-
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 
