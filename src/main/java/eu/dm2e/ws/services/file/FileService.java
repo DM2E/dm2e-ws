@@ -700,6 +700,9 @@ public class FileService extends AbstractRDFService {
 				"%s/%s",
 				Config.getString("dm2e.service.file.store_directory"), 
 				fileName));
+        if (!f.getParentFile().exists()) {
+            f.getParentFile().mkdirs();
+        }
 		log.info("Store file as: {}", f.getAbsolutePath());
 		IOUtils.copy(fileDigestInStream, new FileOutputStream(f));
 		// @formatter:on

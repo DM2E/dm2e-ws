@@ -1,16 +1,15 @@
 package eu.dm2e.ws.api;
 
-import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
-
 import com.sun.jersey.api.client.WebResource;
-
 import eu.dm2e.utils.PojoUtils;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.Client;
 
-public abstract class AbstractPersistentPojo<T> extends SerializablePojo {
+import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+
+public abstract class AbstractPersistentPojo<T> extends SerializablePojo<T> {
 	
 	protected static transient Client client = new Client();
 	

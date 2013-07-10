@@ -1,31 +1,25 @@
 package eu.dm2e.ws.services.mint;
 
 
-
-import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
-import javax.ws.rs.core.MediaType;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.hp.hpl.jena.query.ResultSet;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
-
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.jena.SparqlSelect;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.ws.rs.core.MediaType;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
+import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.*;
 
 public class MintFileServiceTest extends OmnomTestCase {
 	
@@ -59,7 +53,8 @@ public class MintFileServiceTest extends OmnomTestCase {
 	}
 	
 	@Test
-	public void testGetFileList() throws InterruptedException, IOException {
+
+    public void testGetFileList() throws InterruptedException, IOException {
 		log.info(SERVICE_URI);
 		ClientResponse resp = client.resource(SERVICE_URI).get(ClientResponse.class);
 		log.info("GET /mint-file response: " + resp);

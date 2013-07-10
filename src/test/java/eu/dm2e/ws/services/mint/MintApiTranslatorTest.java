@@ -1,37 +1,22 @@
 package eu.dm2e.ws.services.mint;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import com.sun.jersey.api.client.ClientResponse;
+import eu.dm2e.logback.LogbackMarkers;
+import eu.dm2e.ws.*;
+import eu.dm2e.ws.api.FilePojo;
+import org.junit.Before;
+import org.junit.ComparisonFailure;
+import org.junit.Test;
 
-import java.io.File;
+import javax.ws.rs.core.MediaType;
 import java.net.URI;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.ws.rs.core.MediaType;
-
-import org.apache.commons.fileupload.FileUpload;
-import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.ComparisonFailure;
-import org.junit.Test;
-
-import com.sun.jersey.api.client.ClientResponse;
-
-import eu.dm2e.logback.LogbackMarkers;
-import eu.dm2e.ws.Config;
-import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.NS;
-import eu.dm2e.ws.OmnomTestCase;
-import eu.dm2e.ws.OmnomTestResources;
-import eu.dm2e.ws.api.FilePojo;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.*;
 
 public class MintApiTranslatorTest extends OmnomTestCase {
 	

@@ -15,22 +15,26 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.sun.jersey.api.client.ClientResponse;
-
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
-import eu.dm2e.ws.api.ParameterConnectorPojo;
-import eu.dm2e.ws.api.WebserviceConfigPojo;
-import eu.dm2e.ws.api.WebservicePojo;
-import eu.dm2e.ws.api.WorkflowConfigPojo;
-import eu.dm2e.ws.api.WorkflowJobPojo;
-import eu.dm2e.ws.api.WorkflowPojo;
-import eu.dm2e.ws.api.WorkflowPositionPojo;
+import eu.dm2e.ws.api.*;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
 import eu.dm2e.ws.services.publish.PublishService;
 import eu.dm2e.ws.services.xslt.XsltService;
+import org.apache.commons.io.FileUtils;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class WorkflowServiceITCase extends OmnomTestCase {
 
