@@ -8,12 +8,9 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -32,6 +29,8 @@ import javax.ws.rs.core.Variant;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.validator.routines.UrlValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Statement;
@@ -82,7 +81,6 @@ public abstract class AbstractRDFService {
     protected WebservicePojo webservicePojo = new WebservicePojo();
 
 	protected List<Variant> supportedVariants;
-	Map<MediaType, String> mediaType2Language = new HashMap<MediaType, String>();
 	@Context
 	Request request;
 	@Context
@@ -279,19 +277,9 @@ public abstract class AbstractRDFService {
 	protected AbstractRDFService() {
 		this.supportedVariants = Variant
 				.mediaTypes(
-						MediaType.valueOf(DM2E_MediaType.APPLICATION_RDF_TRIPLES),
-						MediaType.valueOf(DM2E_MediaType.APPLICATION_RDF_XML),
-						MediaType.valueOf(DM2E_MediaType.APPLICATION_X_TURTLE),
-						MediaType.valueOf(DM2E_MediaType.TEXT_PLAIN),
-						MediaType.valueOf(DM2E_MediaType.TEXT_RDF_N3),
-						MediaType.valueOf(DM2E_MediaType.TEXT_TURTLE)
-						).add().build();
-		mediaType2Language.put(MediaType.valueOf(DM2E_MediaType.APPLICATION_RDF_TRIPLES), "N-TRIPLE");
-		mediaType2Language.put(MediaType.valueOf(DM2E_MediaType.APPLICATION_RDF_XML), "RDF/XML");
-		mediaType2Language.put(MediaType.valueOf(DM2E_MediaType.APPLICATION_X_TURTLE), "TURTLE");
-		mediaType2Language.put(MediaType.valueOf(DM2E_MediaType.TEXT_PLAIN), "N-TRIPLE");
-		mediaType2Language.put(MediaType.valueOf(DM2E_MediaType.TEXT_RDF_N3), "N3");
-		mediaType2Language.put(MediaType.valueOf(DM2E_MediaType.TEXT_TURTLE), "TURTLE");
+						DM2E_MediaType.SET_OF_RDF_TYPES
+								.toArray(new MediaType[DM2E_MediaType.SET_OF_RDF_TYPES.size()]))
+				.add().build();
 	}
 
 	protected Response getResponse(Model model) {
@@ -442,7 +430,7 @@ public abstract class AbstractRDFService {
 		public void write(OutputStream output) throws IOException,
 				WebApplicationException {
 			log.trace("Media type: " + this.mediaType);
-			model.write(output, mediaType2Language.get(this.mediaType));
+			model.write(output, DM2E_MediaType.getJenaLanguageForMediaType(this.mediaType));
 		}
 	}
 

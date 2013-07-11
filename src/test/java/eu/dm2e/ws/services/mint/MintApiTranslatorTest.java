@@ -138,7 +138,7 @@ public class MintApiTranslatorTest extends OmnomTestCase {
 					.target(fp.getFileRetrievalURI())
 					.get();
 			assertEquals(200, resp.getStatus());
-			assertEquals(DM2E_MediaType.APPLICATION_X_TAR_UTF8, resp.getMediaType());
+			assertEquals(DM2E_MediaType.APPLICATION_X_TAR_UTF8_TYPE, resp.getMediaType());
 		}
 		{
 			FilePojo fp = mintApiTranslator.parseFilePojoFromDataUploadJson(

@@ -216,9 +216,9 @@ public final class MintApiTranslator {
 		Response resp = mintClient
 			.target(fp.getInternalFileLocation())
 			.get();
-		if (!resp.getMediaType().equals(DM2E_MediaType.APPLICATION_X_TAR_UTF8)) {
+		if (!resp.getMediaType().equals(DM2E_MediaType.APPLICATION_X_TAR_UTF8_TYPE)) {
 			log.info("Expected {}, but received {}. Probably a rights issue.",
-					DM2E_MediaType.APPLICATION_X_TAR_UTF8,
+					DM2E_MediaType.APPLICATION_X_TAR_UTF8_TYPE,
 					resp.getMediaType());
 			return null;
 		}
