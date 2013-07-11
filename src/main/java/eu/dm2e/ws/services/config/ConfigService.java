@@ -2,7 +2,11 @@ package eu.dm2e.ws.services.config;
 
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+import javax.jws.WebService;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -22,12 +26,15 @@ import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
-import eu.dm2e.ws.SerializablePojoMessageBodyWriter;
+import eu.dm2e.ws.api.AbstractConfigPojo;
+import eu.dm2e.ws.api.SerializablePojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.api.WorkflowConfigPojo;
 import eu.dm2e.ws.grafeo.GResource;
+import eu.dm2e.ws.grafeo.GValue;
 import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.jena.SparqlUpdate;
 import eu.dm2e.ws.services.AbstractRDFService;
@@ -50,7 +57,16 @@ public class ConfigService extends AbstractRDFService {
      */
     @GET
     @Path("{id}")
-    public Response getConfig(@Context UriInfo uriInfo, @PathParam("id") String id) {
+	@Produces({
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML,
+		DM2E_MediaType.APPLICATION_X_TURTLE,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.TEXT_TURTLE
+		// , DM2E_MediaType.TEXT_PLAIN,
+		 , MediaType.APPLICATION_JSON
+	})
+    public Response getConfig() {
         log.info("Configuration requested: " + getRequestUriWithoutQuery());
         Grafeo g = new GrafeoImpl();
         URI configURI = getRequestUriWithoutQuery();
@@ -71,8 +87,6 @@ public class ConfigService extends AbstractRDFService {
         	return throwServiceError(configURI + " has an unknown rdf:type.", ErrorMsg.NOT_FOUND, 404);
         }
         return resp.build();
-//        return Response.ok(configPojo);
-//        return getResponse(g);
     }
     
     /**
@@ -83,10 +97,30 @@ public class ConfigService extends AbstractRDFService {
     @GET
     @Path("list")
     public Response getConfigList(@Context UriInfo uriInfo) {
-        Grafeo g = new GrafeoImpl();
-        g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_WEBSERVICE_CONFIG));
-        g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_WORKFLOW_CONFIG));
-        return getResponse(g);
+    	
+    	List<Class<? extends AbstractConfigPojo<?>>> pojoClasses = Arrays.asList(
+			WebserviceConfigPojo.class,
+			WorkflowConfigPojo.class
+		);
+        List<SerializablePojo> configList = new ArrayList<>();
+    	for (Class<? extends AbstractConfigPojo<?>> pojoClass  : pojoClasses) {
+    		GrafeoImpl g = new GrafeoImpl();
+    		String pojoRdfClass = pojoClass.getAnnotation(RDFClass.class).value();
+    		g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, NS.RDF.PROP_TYPE, g.resource(pojoRdfClass));
+    		for (GResource gres : g.listSubjects()) {
+    			if (gres.isAnon()) continue;
+    			AbstractConfigPojo<?> pojo = null;
+				try {
+					pojo = pojoClass.newInstance();
+				} catch (InstantiationException | IllegalAccessException e) {
+					log.error("Could not instantiate {} for URI {}", pojoClass, gres);
+					return throwServiceError("INTERNAL ERROR ");
+				}
+    			pojo.setId(gres.getUri());
+    			configList.add(pojo);
+    		}
+    	}
+    	return Response.ok(configList).build();
     }
 
     /**
@@ -108,23 +142,41 @@ public class ConfigService extends AbstractRDFService {
         	return throwServiceError(ErrorMsg.BAD_RDF, t);
         }
         log.info("Looking for top blank node.");
-        GResource res = g.findTopBlank(NS.OMNOM.CLASS_WORKFLOW_CONFIG);
+        GResource res = g.findTopBlank(NS.OMNOM.CLASS_WEBSERVICE_CONFIG);
         if (null == res) {
-        	res = g.findTopBlank(NS.OMNOM.CLASS_WEBSERVICE_CONFIG);
+        	res = g.findTopBlank(NS.OMNOM.CLASS_WORKFLOW_CONFIG);
         }
         if (null == res)  {
         	res = g.resource(uri);
-        }
-        else {
+        } else {
         	res.rename(uri.toString());
         }
+        String actualRdfType;
+		try {
+			actualRdfType = g.firstMatchingObject(uri.toString(), NS.RDF.PROP_TYPE).resource().getUri();
+		} catch (NullPointerException e) {
+			return throwServiceError(ErrorMsg.UNTYPED_RDF);
+		}
         log.warn("Skolemnizing assignments ...");
         g.skolemizeSequential(uri.toString(), NS.OMNOM.PROP_ASSIGNMENT, "assignment");
         log.warn("DONE Skolemnizing ...");
         
+        SerializablePojo pojo = null;
+        if (actualRdfType.equals(NS.OMNOM.CLASS_WEBSERVICE_CONFIG)) {
+        	pojo = g.getObjectMapper().getObject(WebserviceConfigPojo.class, res);
+        }
+        else if (actualRdfType.equals(NS.OMNOM.CLASS_WORKFLOW_CONFIG)) {
+        	pojo = g.getObjectMapper().getObject(WorkflowConfigPojo.class, res);
+        } else {
+        	return throwServiceError(ErrorMsg.WRONG_RDF_TYPE);
+        }
+
         g.putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), uri);
         
-        return Response.created(uri).entity(getResponseEntity(g)).build();
+        return Response.created(uri).entity(pojo).build();
+        
+//        return Response.created(uri).entity(getResponseEntity(g)).build();
+//        return Response.seeOther(uri).build();
     }
 
 	/**
@@ -148,8 +200,11 @@ public class ConfigService extends AbstractRDFService {
         	return throwServiceError(ErrorMsg.BAD_RDF, t);
         }
         log.debug("Parsed config RDF.");
+
+        boolean isWorkflow = true;
         GResource res = g.findTopBlank(NS.OMNOM.CLASS_WORKFLOW_CONFIG);
         if (null == res)  {
+        	isWorkflow = false;
         	res = g.findTopBlank(NS.OMNOM.CLASS_WEBSERVICE_CONFIG);
         	if (null == res)
 	        	return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE + ": " + g.getTurtle());
@@ -159,11 +214,20 @@ public class ConfigService extends AbstractRDFService {
         g.skolemizeSequential(uri.toString(), NS.OMNOM.PROP_ASSIGNMENT, "assignment");
         log.debug("Skolemnized assignments");
         
-        log.debug(Config.get(ConfigProp.ENDPOINT_QUERY));
+        SerializablePojo pojo;
+        if (isWorkflow) {
+        	pojo = g.getObjectMapper().getObject(WorkflowConfigPojo.class, res);
+        } else {
+        	pojo = g.getObjectMapper().getObject(WebserviceConfigPojo.class, res);
+        }
+        
+        log.warn("Webservice: " + ((WebserviceConfigPojo) pojo).getWebservice());
+
         g.putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), uri);
         log.info("Written data to endpoint.");
         log.debug(LogbackMarkers.DATA_DUMP, g.getTerseTurtle());
-        return Response.created(uri).entity(getResponseEntity(g)).build();
+
+        return Response.created(uri).entity(pojo).build();
     }
 
 	/**
