@@ -3,7 +3,7 @@ package eu.dm2e.ws.api;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 
-import com.sun.jersey.api.client.WebResource;
+import javax.ws.rs.client.WebTarget;
 
 import eu.dm2e.utils.PojoUtils;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -51,14 +51,14 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo<T> {
         }
     }
 	
-	public String publishToService(WebResource wr) {
-		log.debug("Publishing myself (pojo) to " + wr.getURI());
+	public String publishToService(WebTarget wr) {
+		log.debug("Publishing myself (pojo) to " + wr.getUri());
 		String loc = client.publishPojo(this, wr);
-		log.debug("Done Publishing myself (pojo) to " + wr.getURI());
+		log.debug("Done Publishing myself (pojo) to " + wr.getUri());
 		return loc;
 	}
 	public String publishToService(String serviceUri) {
-		return this.publishToService(client.resource(serviceUri));
+		return this.publishToService(client.target(serviceUri));
 	}
 	public String publishToService() {
 		if (this.getId() == null) {

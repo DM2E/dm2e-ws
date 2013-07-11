@@ -6,11 +6,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.BindException;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
 
 import eu.dm2e.ws.wsmanager.ManageService;
 
@@ -18,7 +19,7 @@ public class GuiConsole {
 	
 	static Logger log;
 	static Client client;
-	static WebResource manageResource;
+	static WebTarget manageResource;
 	static int[] ports = { 9997, 9998 };
 	final private static String SET_DEFAULT_COLOR = ESC_START+"0;"+DEFAULT_FG+ESC_END;
 
@@ -27,8 +28,8 @@ public class GuiConsole {
 		System.setProperty("logback.configurationFile", "logback-console.xml");
 		log = LoggerFactory.getLogger(GuiConsole.class.getName());
 		
-		client = new Client();
-		manageResource = client.resource("http://localhost:9990/manage");
+		client = ClientBuilder.newClient();
+		manageResource = client.target("http://localhost:9990/manage");
 		
 		try {
 			ManageService.startManageServer();
@@ -41,13 +42,13 @@ public class GuiConsole {
 	
 	
 	private static void sendStartCommand() {
-		manageResource.path("start").get(String.class);
+		manageResource.path("start").request().get();
 	}
 	private static void sendStopCommand() {
-		manageResource.path("stop").get(String.class);
+		manageResource.path("stop").request().get();
 	}
 	private static String sendPortcheckCommand(int port) {
-		String resp = manageResource.path("port").path("" + port).get(String.class);
+		String resp = manageResource.path("port").path("" + port).request().get(String.class);
 		return resp;
 	}
 	

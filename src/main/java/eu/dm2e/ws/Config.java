@@ -33,11 +33,18 @@ public final class Config {
 		String conf =  config.getString(string);
 		if (null == conf) {
 			log.error("Undefined config option " + string);
+			throw new RuntimeException("Undefined config option " + string);
 		}
 		return conf;
 	}
 	
-	public static String ENDPOINT_QUERY = getString("dm2e.ws.sparql_endpoint");
-	public static String ENDPOINT_UPDATE = getString("dm2e.ws.sparql_endpoint_statements");
+	public static String get(ConfigProp configProp) {
+		return config.getString(configProp.getPropertiesName());
+	}
+	
+//	public static String getEndpointQuery
+	
+//	public static String ENDPOINT_QUERY = getString("dm2e.ws.sparql_endpoint");
+//	public static String ENDPOINT_UPDATE = getString("dm2e.ws.sparql_endpoint_statements");
 	
 }

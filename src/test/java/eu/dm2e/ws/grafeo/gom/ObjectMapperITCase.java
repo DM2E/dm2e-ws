@@ -234,7 +234,7 @@ public class ObjectMapperITCase extends OmnomTestCase {
 			WorkflowPositionPojo pos1 = new WorkflowPositionPojo();
 			wf.addPosition(pos1);
 			
-			wf.publishToService(client.getWorkflowWebResource());
+			wf.publishToService(client.getWorkflowWebTarget());
 			assertNotNull(wf.getId());
 			initialSize = wf.getGrafeo().size();
 		}

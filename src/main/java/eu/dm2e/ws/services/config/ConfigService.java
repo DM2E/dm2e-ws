@@ -15,7 +15,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.Config;
+import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
@@ -37,28 +39,44 @@ public class ConfigService extends AbstractRDFService {
 		return ws;
 	}
 	
+    /**
+     * GET /{id}
+     * @param uriInfo
+     * @param id
+     * @return
+     */
     @GET
     @Path("{id}")
     public Response getConfig(@Context UriInfo uriInfo, @PathParam("id") String id) {
         log.info("Configuration requested: " + getRequestUriWithoutQuery());
         Grafeo g = new GrafeoImpl();
         try {
-	        g.readFromEndpoint(NS.ENDPOINT_SELECT, getRequestUriWithoutQuery());
+	        g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), getRequestUriWithoutQuery());
         } catch (RuntimeException e) {
         	return throwServiceError(getRequestUriWithoutQuery().toString(), ErrorMsg.NOT_FOUND, 404);
         }
         return getResponse(g);
     }
     
+    /**
+     * GET /list
+     * @param uriInfo
+     * @return
+     */
     @GET
     @Path("list")
     public Response getConfigList(@Context UriInfo uriInfo) {
         Grafeo g = new GrafeoImpl();
-        g.readTriplesFromEndpoint(NS.ENDPOINT_SELECT, null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_WEBSERVICE_CONFIG));
-        g.readTriplesFromEndpoint(NS.ENDPOINT_SELECT, null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_WORKFLOW_CONFIG));
+        g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_WEBSERVICE_CONFIG));
+        g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_WORKFLOW_CONFIG));
         return getResponse(g);
     }
 
+    /**
+     * PUT /{id}
+     * @param input
+     * @return
+     */
     @PUT
     @Consumes(MediaType.WILDCARD)
     @Path("{id}")
@@ -87,11 +105,16 @@ public class ConfigService extends AbstractRDFService {
         g.skolemizeSequential(uri.toString(), NS.OMNOM.PROP_ASSIGNMENT, "assignment");
         log.warn("DONE Skolemnizing ...");
         
-        g.putToEndpoint(Config.ENDPOINT_UPDATE, uri);
+        g.putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), uri);
         
         return Response.created(uri).entity(getResponseEntity(g)).build();
     }
 
+	/**
+	 * POST /
+	 * @param input
+	 * @return
+	 */
 	@POST
     @Consumes(MediaType.WILDCARD)
     public Response postConfig(File input) {
@@ -99,12 +122,12 @@ public class ConfigService extends AbstractRDFService {
 //        // TODO BUG this fails if newlines aren't correctly transmitted due to line-wide comments in turtle
         
     	URI uri = appendPath(createUniqueStr());
-    	log.info("Posting the config to " + uri.toString());
+    	log.debug("Posting the config to " + uri.toString());
         Grafeo g;
         try {
         	g = new GrafeoImpl(input);
         } catch (Throwable t) {
-        	log.error(ErrorMsg.BAD_RDF.toString());
+        	log.warn(ErrorMsg.BAD_RDF.toString());
         	return throwServiceError(ErrorMsg.BAD_RDF, t);
         }
         log.debug("Parsed config RDF.");
@@ -115,16 +138,19 @@ public class ConfigService extends AbstractRDFService {
 	        	return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE + ": " + g.getTurtle());
         }
         res.rename(uri);
-        log.info("Renamed top blank node.");
+        log.debug("Renamed top blank node.");
         g.skolemizeSequential(uri.toString(), NS.OMNOM.PROP_ASSIGNMENT, "assignment");
-        log.info("Skolemnized assignments");
+        log.debug("Skolemnized assignments");
         
-        g.putToEndpoint(Config.ENDPOINT_UPDATE, uri);
+        log.debug(Config.get(ConfigProp.ENDPOINT_QUERY));
+        g.putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), uri);
         log.info("Written data to endpoint.");
+        log.debug(LogbackMarkers.DATA_DUMP, g.getTerseTurtle());
         return Response.created(uri).entity(getResponseEntity(g)).build();
     }
 
 	/**
+	 * GET /{id}/validate
 	 * @param g
 	 * @param res
 	 */
@@ -147,6 +173,12 @@ public class ConfigService extends AbstractRDFService {
         return Response.ok().build();
 	}
 
+	/**
+	 * POST {id}/assignment
+	 * @param configId
+	 * @param rdfString
+	 * @return
+	 */
 	@POST
 	@Consumes({
 		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
@@ -164,10 +196,17 @@ public class ConfigService extends AbstractRDFService {
 		URI newUri = appendPath(createUniqueStr());
 		URI conifgUri = popPath();
 		blank.rename(newUri);
-		g.postToEndpoint(Config.ENDPOINT_UPDATE, conifgUri);
+		g.postToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), conifgUri);
 		return Response.created(newUri).build();
 	}
 	
+	/**
+	 * PUT {configId}/assignment/{assId}
+	 * @param configId
+	 * @param assId
+	 * @param rdfString
+	 * @return
+	 */
 	@PUT
 	@Consumes({
 		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
@@ -184,7 +223,7 @@ public class ConfigService extends AbstractRDFService {
 		SparqlUpdate sparul = new SparqlUpdate.Builder()
 			.delete(assUri + "?s ?o")
 			.insert(g.toString())
-			.endpoint(Config.ENDPOINT_UPDATE)
+			.endpoint(Config.get(ConfigProp.ENDPOINT_UPDATE))
 			.graph(configUri).build();
 		sparul.execute();
 		return getResponse(g);

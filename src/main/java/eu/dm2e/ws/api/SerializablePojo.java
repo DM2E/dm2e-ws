@@ -3,9 +3,13 @@ package eu.dm2e.ws.api;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
+
+import javax.ws.rs.client.Entity;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.json.OmnomJsonSerializer;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -76,6 +80,7 @@ public abstract class SerializablePojo<T> {
 	public String getTerseTurtle() { return getGrafeo().getTerseTurtle(); }
 	public String getTurtle() { return getGrafeo().getTurtle(); }
 	public String getNTriples() { return getGrafeo().getNTriples(); }
+	public Entity<String> getNTriplesEntity() { return Entity.entity(getGrafeo().getNTriples(), DM2E_MediaType.APPLICATION_RDF_TRIPLES); }
 	public String getCanonicalNTriples() { return getGrafeo().getCanonicalNTriples(); }
 	
     /**

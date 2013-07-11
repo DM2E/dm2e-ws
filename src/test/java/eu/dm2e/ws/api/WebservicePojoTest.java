@@ -11,7 +11,7 @@ import eu.dm2e.ws.api.json.OmnomJsonSerializer;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
-import eu.dm2e.ws.services.xslt.XsltService;
+//import eu.dm2e.ws.services.xslt.XsltService;
 
 public class WebservicePojoTest extends OmnomUnitTest {
 	
@@ -19,24 +19,28 @@ public class WebservicePojoTest extends OmnomUnitTest {
 	ParameterPojo xsltInParam
 				, xmlInParam
 				, xmlOutParam;
+	
+	static String 	WS_PARAM_XML_IN = "xmlIn",
+					WS_PARAM_XSLT_IN = "xsltIn",
+					WS_PARAM_XML_OUT = "xmlOut";
 
 	@Before
 	public void setUp() throws Exception {
 		
-		String serviceUri = "http://localhost:9998/service/xslt";
+		String serviceUri = "http://NON_RESOLVABLE/";
 		
 		ws = new WebservicePojo();
 		ws.setId(serviceUri);
 		
-		xsltInParam = ws.addInputParameter(XsltService.PARAM_XSLT_IN);
+		xsltInParam = ws.addInputParameter(WS_PARAM_XML_IN);
 		xsltInParam.setComment("XSLT input");
 		xsltInParam.setIsRequired(true);
 		
-		xmlInParam = ws.addInputParameter(XsltService.PARAM_XML_IN);
+		xmlInParam = ws.addInputParameter(WS_PARAM_XSLT_IN);
 		xmlInParam.setComment("XML input");
 		xmlInParam.setIsRequired(true); 
 		
-		xmlOutParam = ws.addInputParameter(XsltService.PARAM_XML_OUT);
+		xmlOutParam = ws.addOutputParameter(WS_PARAM_XML_OUT);
 		xmlOutParam.setComment("XML output");
 	}
 
@@ -65,17 +69,7 @@ public class WebservicePojoTest extends OmnomUnitTest {
 	}
 	@Test
 	public void testValidateXsltService() throws Exception {
-		WebservicePojo ws = new XsltService().getWebServicePojo();
 		WebserviceConfigPojo wsconf = new WebserviceConfigPojo();
-//		GrafeoImpl g = new GrafeoImpl();
-		
-//		ParameterAssignmentPojo ass1 = new ParameterAssignmentPojo();
-//		ass1.setForParam(xmlInParam);
-//		ass1.setParameterValue("http://141.20.126.155/api/file/50c73992e18a91933e00001a/data");
-//		
-//		ParameterAssignmentPojo ass2 = new ParameterAssignmentPojo();
-//		ass2.setForParam(xsltInParam);
-//		ass2.setParameterValue("http://141.20.126.155/api/file/50c7266ee18a91933e000003/data");
 		
 		wsconf.setWebservice(ws);
 		wsconf.addParameterAssignment(xmlInParam.getId(), "http://141.20.126.155/api/file/50c73992e18a91933e00001a/data");

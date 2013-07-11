@@ -2,13 +2,7 @@ package eu.dm2e.ws.services.mint;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
-import java.io.File;
 import java.net.URI;
 import java.util.List;
 import java.util.Random;
@@ -16,14 +10,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-import org.apache.commons.fileupload.FileUpload;
-import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.ComparisonFailure;
 import org.junit.Test;
-
-import com.sun.jersey.api.client.ClientResponse;
 
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.Config;
@@ -111,16 +102,16 @@ public class MintApiTranslatorTest extends OmnomTestCase {
 			// TODO this takes waaaaaaaaay too long (~60 seconds and more)
 //			ClientResponse resp = mintApiTranslator.mintClient
 //					.resource(fp.getFileRetrievalURI())
-//					.get(ClientResponse.class);
+//					.get();
 //			assertEquals(200, resp.getStatus());
 //			assertEquals(DM2E_MediaType.APPLICATION_XSLT, resp.getType());
 		}
 		{
-			ClientResponse resp = mintApiTranslator.mintClient
-					.resource(fp.getFileEditURI())
-					.get(ClientResponse.class);
+			Response resp = mintApiTranslator.mintClient
+					.target(fp.getFileEditURI())
+					.get();
 			assertEquals(200, resp.getStatus());
-			assertEquals(DM2E_MediaType.TEXT_HTML_UTF8, resp.getType());
+			assertEquals(DM2E_MediaType.TEXT_HTML_UTF8, resp.getMediaType());
 		}
 	}
 	@Test
@@ -142,31 +133,31 @@ public class MintApiTranslatorTest extends OmnomTestCase {
 					configString.get(OmnomTestResources.MINT_DATASET_SINGLE_DATAUPLOAD_JSON_ZIPXML));
 			assertEquals(NS.OMNOM_TYPES.ZIP_XML, fp.getFileType().toString());
 			assertEquals("vischer_aesthetik0301_1851.TEI-P5.xml", fp.getLabel());
-			ClientResponse resp = mintApiTranslator.mintClient
-					.resource(fp.getFileRetrievalURI())
-					.get(ClientResponse.class);
+			Response resp = mintApiTranslator.mintClient
+					.target(fp.getFileRetrievalURI())
+					.get();
 			assertEquals(200, resp.getStatus());
-			assertEquals(DM2E_MediaType.APPLICATION_X_TAR_UTF8, resp.getType());
+			assertEquals(DM2E_MediaType.APPLICATION_X_TAR_UTF8, resp.getMediaType());
 		}
 		{
 			FilePojo fp = mintApiTranslator.parseFilePojoFromDataUploadJson(
 					configString.get(OmnomTestResources.MINT_DATASET_SINGLE_DATAUPLOAD_JSON_XML));
 			assertEquals(NS.OMNOM_TYPES.XML, fp.getFileType().toString());
 			assertEquals("/cost-a32_xml/Ms-141_OA.xml", fp.getLabel());
-			ClientResponse resp = mintApiTranslator.mintClient
-					.resource(fp.getFileRetrievalURI())
-					.get(ClientResponse.class);
+			Response resp = mintApiTranslator.mintClient
+					.target(fp.getFileRetrievalURI())
+					.get();
 			assertEquals(200, resp.getStatus());
-			assertEquals(MediaType.APPLICATION_XML_TYPE, resp.getType());
+			assertEquals(MediaType.APPLICATION_XML_TYPE, resp.getMediaType());
 		}
 		{
 			FilePojo fp = mintApiTranslator.parseFilePojoFromDataUploadJson(
 					configString.get(OmnomTestResources.MINT_DATASET_SINGLE_DATAUPLOAD_JSON_TGZXML));
 			assertEquals(NS.OMNOM_TYPES.TGZ_XML, fp.getFileType().toString());
 			assertEquals("EuPhoto-Extended.zip.tgz", fp.getLabel());
-			ClientResponse resp = mintApiTranslator.mintClient
-					.resource(fp.getFileRetrievalURI())
-					.get(ClientResponse.class);
+			Response resp = mintApiTranslator.mintClient
+					.target(fp.getFileRetrievalURI())
+					.get();
 			assertEquals(200, resp.getStatus());
 			// TODO this doesn't work for some reason on the MINT side
 //			assertEquals(DM2E_MediaType.APPLICATION_X_TAR_UTF8, resp.getType());

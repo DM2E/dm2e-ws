@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.junit.ComparisonFailure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -19,6 +20,14 @@ public class OmnomUnitTest {
 			.setPrettyPrinting()
 			.create();
 	protected OmnomJsonSerializer jsonSerializer = new OmnomJsonSerializer();
+	static {
+		 // Optionally remove existing handlers attached to j.u.l root logger
+		 SLF4JBridgeHandler.removeHandlersForRootLogger();  // (since SLF4J 1.6.5)
+
+		 // add SLF4JBridgeHandler to j.u.l's root logger, should be done once during
+		 // the initialization phase of your application
+		 SLF4JBridgeHandler.install();
+	}
 	static {
 //		try {
 	        System.setProperty("org.eclipse.jetty.server.Request.maxFormContentSize", "100000000");

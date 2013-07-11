@@ -1,19 +1,17 @@
 package eu.dm2e.ws.services.publish;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.InputStream;
 import java.net.URI;
+
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.Response;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.sun.jersey.api.client.ClientResponse;
-
-import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
@@ -50,8 +48,8 @@ public class PublishServiceITCase extends OmnomTestCase {
 
         log.info(SERVICE_URI);
         Grafeo g = new GrafeoImpl(client
-                .resource(SERVICE_URI)
-                .accept("text/turtle")
+                .target(SERVICE_URI)
+                .request("text/turtle")
                 .get(InputStream.class));
         log.info(g.getNTriples());
         assertTrue(g.containsTriple(SERVICE_URI, NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_WEBSERVICE));
@@ -91,15 +89,16 @@ public class PublishServiceITCase extends OmnomTestCase {
             config.addParameterAssignment("comment", "This dataset can safely be deleted.");
             // config.addParameterAssignment("endpoint-update", "http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest/statements");
             // config.addParameterAssignment("endpoint-select", "http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest");
-            config.publishToService(client.getConfigWebResource());
+            config.publishToService(client.getConfigWebTarget());
 
             log.info("Configuration created for Test: " + config.getTurtle());
 
-            ClientResponse response = client
-                    .resource(SERVICE_URI)
-                    .type(DM2E_MediaType.TEXT_PLAIN)
-                    .put(ClientResponse.class, config.getId());
-            log.info("JOB STARTED WITH RESPONSE: " + response.getStatus() + " / Location: " + response.getLocation() + " / Content: " + response.getEntity(String.class));
+            Response response = client
+                    .target(SERVICE_URI)
+                    .request()
+                    .put(Entity.text(config.getId()));
+			log.info("JOB STARTED WITH RESPONSE: " + response.getStatus() + " / Location: "
+					+ response.getLocation() + " / Content: " + response.readEntity(String.class));
 //            if (response.getStatus() > 299) {
 //            }
             URI joburi = response.getLocation();
@@ -159,14 +158,14 @@ public class PublishServiceITCase extends OmnomTestCase {
             // config.addParameterAssignment("endpoint-update", "http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest/statements");
             // config.addParameterAssignment("endpoint-select", "http://lelystad.informatik.uni-mannheim.de:8080/openrdf-sesame/repositories/dm2etest");
             log.info("Configuration created for Test: " + config.getTurtle());
-            config.publishToService(client.getConfigWebResource());
+            config.publishToService(client.getConfigWebTarget());
 
 
-            ClientResponse response = client
-                    .resource(SERVICE_URI)
-                    .type(DM2E_MediaType.TEXT_PLAIN)
-                    .put(ClientResponse.class, config.getId());
-            log.info("JOB STARTED WITH RESPONSE: " + response.getStatus() + " / Location: " + response.getLocation() + " / Content: " + response.getEntity(String.class));
+            Response response = client
+                    .target(SERVICE_URI)
+                    .request()
+                    .put(Entity.text(config.getId()));
+            log.info("JOB STARTED WITH RESPONSE: " + response.getStatus() + " / Location: " + response.getLocation() + " / Content: " + response.readEntity(String.class));
             URI joburi = response.getLocation();
             /**
              * WAIT FOR JOB TO BE FINISHED

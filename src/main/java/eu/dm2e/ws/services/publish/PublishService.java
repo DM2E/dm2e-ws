@@ -8,7 +8,7 @@ import javax.ws.rs.Path;
 import org.joda.time.DateTime;
 
 import eu.dm2e.ws.Config;
-import eu.dm2e.ws.NS;
+import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.api.IWebservice;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.VersionedDatasetPojo;
@@ -63,8 +63,8 @@ public class PublishService extends AbstractTransformationService {
             String comment = wsConf.getParameterValueByName(PARAM_COMMENT);
             String endpoint = wsConf.getParameterValueByName(PARAM_ENDPOINT_UPDATE);
             String endpointSelect = wsConf.getParameterValueByName(PARAM_ENDPOINT_SELECT);
-            if (null == endpoint) endpoint = NS.ENDPOINT_UPDATE;
-            if (null == endpointSelect) endpointSelect = NS.ENDPOINT_SELECT;
+            if (null == endpoint) endpoint = Config.get(ConfigProp.ENDPOINT_UPDATE);
+            if (null == endpointSelect) endpointSelect = Config.get(ConfigProp.ENDPOINT_QUERY);
 
             jobPojo.debug("Dataset: " + dataset);
             jobPojo.debug("Input file: " + input);

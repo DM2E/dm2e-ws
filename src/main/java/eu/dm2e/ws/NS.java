@@ -288,13 +288,11 @@ public final class NS {
 		public static final String CLASS_DATASET = BASE + "Dataset";
 	}
 	
-	public static final String
-            NS_OMNOM = Config.getString("dm2e.ns.dm2e")
-//			, RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-			, DM2ELOG = "http://onto.dm2e.eu/logging#"
-			, ENDPOINT_SELECT = Config.getString("dm2e.ws.sparql_endpoint")
-			, ENDPOINT_UPDATE = Config.getString("dm2e.ws.sparql_endpoint_statements")
-			;
+//	public static final String
+////            NS_OMNOM = Config.getString("dm2e.ns.dm2e")
+////			, RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+//			, DM2ELOG = "http://onto.dm2e.eu/logging#"
+//			;
 //	public static final String[] NAMESPACE_MAP;
 //	
 //	static {

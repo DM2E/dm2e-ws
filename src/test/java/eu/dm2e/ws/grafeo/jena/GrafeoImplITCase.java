@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import eu.dm2e.ws.Config;
+import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
@@ -17,8 +18,6 @@ public class GrafeoImplITCase extends OmnomTestCase {
 	
 	public static final String BASE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 	public static final String RDF_TYPE = BASE + "type";
-	public static final String ENDPOINT_UPDATE = Config.ENDPOINT_UPDATE;
-	public static final String ENDPOINT_QUERY = Config.ENDPOINT_QUERY;
 	
 	
 	GrafeoImpl g = new GrafeoImpl();
@@ -45,11 +44,11 @@ public class GrafeoImplITCase extends OmnomTestCase {
 		g.addTriple(subjList.get(2), RDF_TYPE, objList.get(0));
 		GrafeoImpl gCompare = (GrafeoImpl) g.copy();
 		
-		g.putToEndpoint(ENDPOINT_UPDATE, graphList.get(0));
+		g.putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), graphList.get(0));
 		
 		
 		GrafeoImpl gLoaded = new GrafeoImpl();
-		gLoaded.readTriplesFromEndpoint(ENDPOINT_QUERY, null, RDF_TYPE, objList.get(0));
+		gLoaded.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, RDF_TYPE, objList.get(0));
 		
 		GrafeoAssert.graphsAreEquivalent(gCompare, gLoaded);
 		

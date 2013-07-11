@@ -1,26 +1,21 @@
 package eu.dm2e.ws.services.job;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+
+import org.glassfish.jersey.client.ClientProperties;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
 
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.DM2E_MediaType;
@@ -42,7 +37,7 @@ import eu.dm2e.ws.services.xslt.XsltService;
 
 public class JobServiceITCase extends OmnomTestCase {
 	private static final String BASE_URI = "http://localhost:9998";
-	private WebResource webResource;
+	private WebTarget webTarget;
 	private URI globalJob;
 	String[] logLevels = {"TRACE", "DEBUG", "INFO", "WARN", "FATAL"};
 	
@@ -50,14 +45,15 @@ public class JobServiceITCase extends OmnomTestCase {
 	@Before
 	public void setUp() throws Exception {
 
-		webResource = client.getJerseyClient().resource(BASE_URI + "/job");
+		webTarget = client.getJerseyClient().target(BASE_URI + "/job");
 //		log.info(configString.get(OmnomTestResources.DEMO_JOB));
 		globalJob = postConfigToJob(OmnomTestResources.DEMO_JOB).getIdAsURI();
-		ClientResponse resp = webResource
 //				.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
 //				.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
-				.post(ClientResponse.class, configString.get(OmnomTestResources.DEMO_JOB));
-		log.info(LogbackMarkers.HTTP_RESPONSE_DUMP, resp.getEntity(String.class));
+		Response resp = webTarget
+				.request()
+				.post(Entity.text(configString.get(OmnomTestResources.DEMO_JOB)));
+		log.info(LogbackMarkers.HTTP_RESPONSE_DUMP, resp.readEntity(String.class));
 		assertEquals(201, resp.getStatus());
 		globalJob = resp.getLocation();
 	}
@@ -66,7 +62,7 @@ public class JobServiceITCase extends OmnomTestCase {
 		return postConfigToJob(configString.get(testRes));
 	}
 	private static JobPojo postConfigToJob(String rdfString) {
-		ClientResponse resp = client.getJobWebResource().post(ClientResponse.class, rdfString);
+		Response resp = client.getJobWebTarget().request().post(Entity.text(rdfString));
 		assertEquals(201, resp.getStatus());
 		assertNotNull(resp.getLocation());
 		return new JobPojo(resp.getLocation());
@@ -75,8 +71,8 @@ public class JobServiceITCase extends OmnomTestCase {
 
 	@Test
 	public void testGetWebServicePojo() {
-		ClientResponse resp = webResource.get(ClientResponse.class);
-		Grafeo g = new GrafeoImpl(resp.getEntityInputStream());
+		Response resp = webTarget.request().get();
+		Grafeo g = new GrafeoImpl(resp.readEntity(InputStream.class));
 		log.info(g.getNTriples());
 		GrafeoAssert.sizeEquals(g, 2);
 	}
@@ -88,9 +84,9 @@ public class JobServiceITCase extends OmnomTestCase {
 	@Test
 	@Ignore("This will break randomly. Ignore it for now.")
 	public void testGetJob() throws InterruptedException {
-		WebResource wr = client.getJerseyClient().resource(globalJob);
-		ClientResponse resp = wr.get(ClientResponse.class);
-		Grafeo g = new GrafeoImpl(resp.getEntityInputStream());
+		WebTarget wr = client.getJerseyClient().target(globalJob);
+		Response resp = wr.request().get();
+		Grafeo g = new GrafeoImpl(resp.readEntity(InputStream.class));
 		// TODO wtf? this breaks randomly, returning no results when running the full test suite but not when running just this test case... WTF?
 		Thread.sleep(1000);
 		try {
@@ -102,76 +98,73 @@ public class JobServiceITCase extends OmnomTestCase {
 
 	@Test
 	public void testNewJob() {
-		ClientResponse resp = webResource.post(ClientResponse.class, configString.get(OmnomTestResources.DEMO_JOB));
+		Response resp = webTarget.request().post(Entity.text(configString.get(OmnomTestResources.DEMO_JOB)));
 		assertEquals(201, resp.getStatus());
 	}
 
 	@Test
 	public void testGetJobStatus() throws URISyntaxException {
-		WebResource wr = client.getJerseyClient().resource(globalJob).path("status");
-		ClientResponse resp = wr.get(ClientResponse.class);
-		assertEquals("NOT_STARTED", resp.getEntity(String.class));
+		WebTarget wr = client.getJerseyClient().target(globalJob).path("status");
+		Response resp = wr.request().get();
+		assertEquals("NOT_STARTED", resp.readEntity(String.class));
 	}
 
 	@Test
 	public void testUpdateJobStatus() throws URISyntaxException {
-		WebResource wr = client.getJerseyClient().resource(globalJob).path("status");
+		WebTarget wr = client.getJerseyClient().target(globalJob).path("status");
 		{
 //			String newStatus = "STARTED";
-//			ClientResponse resp1 = wr.put(ClientResponse.class, newStatus);
+//			Response resp1 = wr.request().put(, newStatus);
 //			log.info("Status response: " + resp1);
 //			assertEquals(201, resp1.getStatus());
-			ClientResponse resp2 = wr.get(ClientResponse.class);
-			log.info(resp2.getEntity(String.class));
-//			assertEquals(newStatus, resp2.getEntity(String.class));
+			Response resp2 = wr.request().get();
+			log.info(resp2.readEntity(String.class));
+//			assertEquals(newStatus, resp2.readEntity(String.class));
 		}
 		{
 			String badStatus = "";
-			ClientResponse resp1 = wr.put(ClientResponse.class, badStatus);
+			Response resp1 = wr.request().put(Entity.text( badStatus));
 			assertEquals(400, resp1.getStatus());
-			assertEquals(ErrorMsg.NO_JOB_STATUS.toString(), resp1.getEntity(String.class));
+			assertEquals(ErrorMsg.NO_JOB_STATUS.toString(), resp1.readEntity(String.class));
 		}
 		{
 			String badStatus = "XYZZY";
-			ClientResponse resp1 = wr.put(ClientResponse.class, badStatus);
+			Response resp1 = wr.request().put( Entity.text( badStatus));
 			assertEquals(400, resp1.getStatus());
-			assertEquals("XYZZY: " + ErrorMsg.INVALID_JOB_STATUS.toString(), resp1.getEntity(String.class));
+			assertEquals("XYZZY: " + ErrorMsg.INVALID_JOB_STATUS.toString(), resp1.readEntity(String.class));
 		}
 	}
 
 	@Test
 	public void testAddLogEntryAsRDF() throws URISyntaxException {
 //		URI logURI = new URI(globalJob.toString() + "/log");
-		ClientResponse resp = client.getJerseyClient()
-				.resource(globalJob)
+		Response resp = client.getJerseyClient()
+				.target(globalJob)
 				.path("log")
-				.entity(configString.get(OmnomTestResources.DEMO_LOG))
-				.type("text/turtle")
-				.post(ClientResponse.class);
+				.request()
+				.post(Entity.entity(configString.get(OmnomTestResources.DEMO_LOG), DM2E_MediaType.TEXT_TURTLE));
 		assertEquals(201, resp.getStatus());
 		URI logLoc = resp.getLocation();
 		
 		GrafeoImpl g = new GrafeoImpl(globalJob);
 		GrafeoAssert.containsLiteral(g, logLoc, "omnom:hasLogMessage", "I'ma log message in RDF");
 		
-		ClientResponse respBad = client.getJerseyClient()
-				.resource(globalJob)
+		Response respBad = client.getJerseyClient()
+				.target(globalJob)
 				.path("log")
-				.entity(configString.get(OmnomTestResources.DEMO_LOG_WITH_URI))
-				.type("text/turtle")
-				.post(ClientResponse.class);
+				.request()
+				.post(Entity.entity(configString.get(OmnomTestResources.DEMO_LOG_WITH_URI), DM2E_MediaType.TEXT_TURTLE));
 		assertEquals(400, respBad.getStatus());
-		assertEquals(ErrorMsg.NO_TOP_BLANK_NODE.toString(), respBad.getEntity(String.class));
+		assertEquals(ErrorMsg.NO_TOP_BLANK_NODE.toString(), respBad.readEntity(String.class));
 	}
 
 	@Test
 	public void testAddLogEntryAsText() throws URISyntaxException {
 //		URI logURI = new URI(globalJob.toString() + "/log");
-		ClientResponse resp = client.getJerseyClient()
-				.resource(globalJob)
+		Response resp = client.getJerseyClient()
+				.target(globalJob)
 				.path("log")
-				.type("text/plain")
-				.post(ClientResponse.class, "FOO BAR");
+				.request().post(Entity.text("FOO BAR"));
 		assertEquals(201, resp.getStatus());
 		URI logLoc = resp.getLocation();
 		
@@ -181,17 +174,16 @@ public class JobServiceITCase extends OmnomTestCase {
 	@Test
 	public void testAddLogEntryAsTextAndParse() throws URISyntaxException {
 		for (String level: logLevels) {
-			ClientResponse jobResp = client.getJerseyClient()
-					.resource(BASE_URI)
+			Response jobResp = client.getJerseyClient()
+					.target(BASE_URI)
 					.path("job")
-					.post(ClientResponse.class, configString.get(OmnomTestResources.DEMO_JOB));
+					.request().post(Entity.text( configString.get(OmnomTestResources.DEMO_JOB)));
 			assertEquals(201, jobResp.getStatus());
 			URI jobLoc = jobResp.getLocation();
-			ClientResponse logResp = client.getJerseyClient()
-					.resource(jobLoc)
+			Response logResp = client.getJerseyClient()
+					.target(jobLoc)
 					.path("log")
-					.type("text/plain")
-					.post(ClientResponse.class, level + ": FOO");
+					.request().post(Entity.text( level + ": FOO"));
 			assertEquals(201, logResp.getStatus());
 			URI logLoc = logResp.getLocation();
 			GrafeoImpl g = new GrafeoImpl(jobLoc);
@@ -204,20 +196,19 @@ public class JobServiceITCase extends OmnomTestCase {
 
 	@Test
 	public void testListLogEntries() throws IOException {
-		ClientResponse jobResp = client.getJerseyClient()
-				.resource(BASE_URI)
+		Response jobResp = client.getJerseyClient()
+				.target(BASE_URI)
 				.path("job")
-				.post(ClientResponse.class, configString.get(OmnomTestResources.DEMO_JOB));
+				.request().post(Entity.text(configString.get(OmnomTestResources.DEMO_JOB)));
 		assertEquals(201, jobResp.getStatus());
 		URI jobLoc = jobResp.getLocation();
 		
 		for (String level: logLevels) {
 			for (int i = 0; i < 2; i++) {
-				ClientResponse logResp = client.getJerseyClient()
-					.resource(jobLoc)
+				Response logResp = client.getJerseyClient()
+					.target(jobLoc)
 					.path("log")
-					.type("text/plain")
-					.post(ClientResponse.class, level + ": FOO");
+					.request().post(Entity.text(level + ": FOO"));
 				assertEquals(201, logResp.getStatus());
 			}
 		}
@@ -227,12 +218,12 @@ public class JobServiceITCase extends OmnomTestCase {
 			GrafeoAssert.numberOfResourceStatements(g, 10, jobLoc, "omnom:hasLogEntry", null);
 		}
 		{
-			 ClientResponse resp = client.resource(jobLoc)
+			 Response resp = client.target(jobLoc)
 					.path("log")
 					.queryParam("minLevel", "INFO")
-					.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
-					.get(ClientResponse.class);
-			 String respStr = resp.getEntity(String.class);
+					.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+					.get();
+			 String respStr = resp.readEntity(String.class);
 			 log.info("ERRRORRRR: " + resp  + respStr);
 			 GrafeoImpl g = new GrafeoImpl(respStr, true);
 //			 assertEquals("6 of them are larger than INFO.",
@@ -240,11 +231,11 @@ public class JobServiceITCase extends OmnomTestCase {
 		}
 		{
 			 InputStream logNT = client.getJerseyClient()
-					.resource(jobLoc)
+					.target(jobLoc)
 					.path("log")
 					.queryParam("minLevel", "INFO")
 					.queryParam("maxLevel", "WARN")
-					.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+					.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
 					.get(InputStream.class);
 			GrafeoImpl g = new GrafeoImpl(logNT);
 			log.info("4 of them are between INFO and WARN");
@@ -252,10 +243,10 @@ public class JobServiceITCase extends OmnomTestCase {
 		}
 		{
 			 InputStream logNT = client.getJerseyClient()
-					.resource(jobLoc)
+					.target(jobLoc)
 					.path("log")
 					.queryParam("maxLevel", "DEBUG")
-					.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+					.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
 					.get(InputStream.class);
 			GrafeoImpl g = new GrafeoImpl(logNT);
 			log.info("4 of them are smaller than INFO.");
@@ -265,25 +256,24 @@ public class JobServiceITCase extends OmnomTestCase {
 
 	@Test
 	public void testListLogEntriesAsLogFile() {
-		ClientResponse jobResp = client.getJerseyClient()
-				.resource(BASE_URI)
+		Response jobResp = client.getJerseyClient()
+				.target(BASE_URI)
 				.path("job")
-				.post(ClientResponse.class, configString.get(OmnomTestResources.DEMO_JOB));
+				.request().post(Entity.text( configString.get(OmnomTestResources.DEMO_JOB)));
 		assertEquals(201, jobResp.getStatus());
 		URI jobLoc = jobResp.getLocation();
 		log.info("JOB URI: " + jobLoc);
 		for (int i = 0; i < 10; i++) {
-			ClientResponse logResp = client.getJerseyClient()
-					.resource(jobLoc)
+			Response logResp = client.getJerseyClient()
+					.target(jobLoc)
 					.path("log")
-					.type(DM2E_MediaType.TEXT_PLAIN)
-					.post(ClientResponse.class, "FOO");
+					.request().post(Entity.text("FOO"));
 			log.info("Log post response: " + logResp);
 			assertEquals(201, logResp.getStatus());
 		}
-		String logStr = client.resource(jobLoc)
+		String logStr = client.target(jobLoc)
 				.path("log")
-				.accept(DM2E_MediaType.TEXT_X_LOG)
+				.request(DM2E_MediaType.TEXT_X_LOG)
 				.get(String.class);
 		String[] lines = logStr.split("\r\n|\r|\n");
 		log.info("Log: " + logStr);
@@ -292,20 +282,20 @@ public class JobServiceITCase extends OmnomTestCase {
 	
 	@Test
 	public void testListLogEntriesAsLogFileFromJob() {
-		ClientResponse jobResp = client.getJerseyClient()
-				.resource(BASE_URI)
+		Response jobResp = client.getJerseyClient()
+				.target(BASE_URI)
 				.path("job")
-				.post(ClientResponse.class, configString.get(OmnomTestResources.DEMO_JOB));
+				.request().post(Entity.text( configString.get(OmnomTestResources.DEMO_JOB)));
 		assertEquals(201, jobResp.getStatus());
 		URI jobLoc = jobResp.getLocation();
 		String logStr = client.getJerseyClient()
-				.resource(jobLoc)
+				.target(jobLoc)
 				.path("log")
-				.accept("text/x-log")
+				.request("text/x-log")
 				.get(String.class);
 		String logStrFromJob = client.getJerseyClient()
-				.resource(jobLoc)
-				.accept("text/x-log")
+				.target(jobLoc)
+				.request("text/x-log")
 				.get(String.class);
 		assertEquals("GET CT text/xlog on the job should yield the same", logStr, logStrFromJob);
 	}
@@ -313,16 +303,16 @@ public class JobServiceITCase extends OmnomTestCase {
 	@Test
 	public void testPojoPublishStatus() throws Exception {
 		JobPojo job = new JobPojo();
-		job.publishToService(client.getJobWebResource());
+		job.publishToService(client.getJobWebTarget());
 		{
 			job.setFailed();
-			String getJobNT = client.resource(job.getId()).accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES).get(String.class);
+			String getJobNT = client.target(job.getId()).request(DM2E_MediaType.APPLICATION_RDF_TRIPLES).get(String.class);
 			GrafeoImpl getjobGrafeo = new GrafeoImpl(getJobNT, true);
 			log.info(getjobGrafeo.getTurtle());
 			
 			AbstractJobPojo getjob = getjobGrafeo.getObjectMapper().getObject(JobPojo.class, job.getId());
 			assertEquals(JobStatus.FAILED.toString(), getjob.getStatus());
-			client.resource(job.getId()).path("status").entity("FINISHED").put();
+			client.target(job.getId()).path("status").request().put(Entity.text("FINISHED"));
 			getjob.loadFromURI(job.getId());
 			assertEquals(JobStatus.FINISHED.toString(), getjob.getStatus());
 		}
@@ -343,7 +333,7 @@ public class JobServiceITCase extends OmnomTestCase {
 			job.setFailed();
 			job.setFinished();
 			assertThat(job.getId(), is(nullValue()));
-			job.publishToService(client.getJobWebResource());
+			job.publishToService(client.getJobWebTarget());
 			assertThat(job.getId(), not(nullValue()));
 		}	
 		{
@@ -372,7 +362,7 @@ public class JobServiceITCase extends OmnomTestCase {
 			job.setFailed();
 			job.setFinished();
 			assertThat(job.getId(), is(nullValue()));
-			job.publishToService(client.getJobWebResource());
+			job.publishToService(client.getJobWebTarget());
 			assertThat(job.getId(), not(nullValue()));
 		}
 		
@@ -395,7 +385,7 @@ public class JobServiceITCase extends OmnomTestCase {
 		job.setWebserviceConfig(new WebserviceConfigPojo());
 		job.getWebserviceConfig().setWebservice(job.getWebService());
 		job.getWebserviceConfig().addParameterAssignment("sleeptime", "5");
-		job.getWebserviceConfig().publishToService(client.getConfigWebResource());
+		job.getWebserviceConfig().publishToService(client.getConfigWebTarget());
 
 		try {
 			job.addOutputParameterAssignment("foo", "bar");
@@ -413,7 +403,7 @@ public class JobServiceITCase extends OmnomTestCase {
 			.listAnonResources()
 			.size() > 0);
 		Grafeo gJobBefore = job.getGrafeo();
-		job.publishToService(client.getJobWebResource());
+		job.publishToService(client.getJobWebTarget());
 		Grafeo gJobAfter = job.getGrafeo();
 		GrafeoAssert.graphsAreStructurallyEquivalent(gJobBefore,gJobAfter);
 		
@@ -439,20 +429,20 @@ public class JobServiceITCase extends OmnomTestCase {
 		final String paramValue = "bar";
 		job.addOutputParameterAssignment(forParam, paramValue);
 		assertNull(job.getOutputParameterAssignments().iterator().next().getId());
-		job.publishToService(client.getJobWebResource());
+		job.publishToService(client.getJobWebTarget());
 		ParameterAssignmentPojo apiAss = job.getOutputParameterAssignments().iterator().next();
 		{
 			ParameterAssignmentPojo webAss = client.loadPojoFromURI(ParameterAssignmentPojo.class, apiAss.getId());
 			GrafeoAssert.graphsAreEquivalent(apiAss, webAss);
 		}
 		{
-			client.getJerseyClient().setFollowRedirects(false);
-			ClientResponse resp = client.resource(apiAss.getId()).get(ClientResponse.class);
+    		client.getJerseyClient().property(ClientProperties.FOLLOW_REDIRECTS, false);
+			Response resp = client.target(apiAss.getId()).request().get();
 			assertEquals(303, resp.getStatus());
 		}
 		{
-			client.getJerseyClient().setFollowRedirects(true);
-			ClientResponse resp = client.resource(apiAss.getId()).get(ClientResponse.class);
+    		client.getJerseyClient().property(ClientProperties.FOLLOW_REDIRECTS, true);
+			Response resp = client.target(apiAss.getId()).request().get();
 			assertEquals(200, resp.getStatus());
 		}
 			

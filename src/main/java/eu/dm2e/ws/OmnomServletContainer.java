@@ -2,7 +2,7 @@ package eu.dm2e.ws;
 
 import javax.servlet.ServletException;
 
-import com.sun.jersey.spi.container.servlet.ServletContainer;
+import org.glassfish.jersey.servlet.ServletContainer;
 
 import eu.dm2e.ws.wsmanager.ManageService;
 

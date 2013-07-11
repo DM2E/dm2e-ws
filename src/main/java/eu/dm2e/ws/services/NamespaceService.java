@@ -6,15 +6,32 @@ import javax.ws.rs.Produces;
 
 import eu.dm2e.utils.NSExporter;
 import eu.dm2e.ws.NS;
+import eu.dm2e.ws.model.JobStatus;
+import eu.dm2e.ws.services.file.FileStatus;
 
-@Path("/ns")
+@Path("/constants")
 public class NamespaceService {
 	
 	@GET
 	@Produces("application/json")
+	@Path("rdfns")
 	public String getNsAsJson() {
 		
-		return NSExporter.exportToJSON(NS.class);
+		return NSExporter.exportInnerClassConstantsToJSON(NS.class);
 	}
-
+	
+	@GET
+	@Produces("application/json")
+	@Path("/jobStatus")
+	public String getJobStatus() {
+		return NSExporter.exportEnumToJSON(JobStatus.class);
+	}
+	
+	@GET
+	@Produces("application/json")
+	@Path("/fileStatus")
+	public String getFileStatus() {
+		return NSExporter.exportEnumToJSON(FileStatus.class);
+	}
+	
 }

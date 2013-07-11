@@ -1,12 +1,12 @@
 package eu.dm2e.ws.services.xslt;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
+
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.Response;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import com.sun.jersey.api.client.ClientResponse;
 
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.OmnomTestCase;
@@ -47,7 +47,7 @@ public class XsltZipServiceITCase extends OmnomTestCase {
 //		WebserviceConfigPojo conf = renderAndLoadPojo(
 //				configString.get(OmnomTestResources.TEMPLATE_BLANK_XSLTZIP), 
 //				templMap,
-//				client.getConfigWebResource(),
+//				client.getConfigWebTarget(),
 //				WebserviceConfigPojo.class);
 		WebserviceConfigPojo conf = new WebserviceConfigPojo();
 		conf.setWebservice(new XsltZipService().getWebServicePojo());
@@ -57,20 +57,19 @@ public class XsltZipServiceITCase extends OmnomTestCase {
 //		conf.publishToService();
 		conf.addParameterAssignment(XsltZipService.PARAM_PROVIDER_ID_VALUE, "my-provider");
 		conf.addParameterAssignment(XsltZipService.PARAM_DATASET_ID_VALUE, "my-dataset");
-		conf.publishToService(client.getConfigWebResource());
+		conf.publishToService(client.getConfigWebTarget());
 		
 		
-		ClientResponse confGETresp = client.resource(conf.getId()).get(ClientResponse.class);
+		Response confGETresp = client.target(conf.getId()).request().get();
 		assertEquals(200, confGETresp.getStatus());
 //		GrafeoImpl g = new GrafeoImpl(confGETresp.getEntityInputStream());
 //		assertEquals(g.getCanonicalNTriples(), conf.getCanonicalNTriples());
 //		assertTrue(g.isGraphEquivalent(conf.getGrafeo()));
 		
-		ClientResponse resp = client.resource(SERVICE_URI)
-			.entity(conf.getId())
-			.accept(DM2E_MediaType.TEXT_TURTLE)
-			.put(ClientResponse.class);
-		log.info(resp.getEntity(String.class));
+		Response resp = client.target(SERVICE_URI)
+			.request(DM2E_MediaType.TEXT_TURTLE)
+			.put(Entity.text(conf.getId()));
+		log.info(resp.readEntity(String.class));
 		assertEquals(202, resp.getStatus());
 		log.info("JOB uri: " + resp.getLocation());
 		

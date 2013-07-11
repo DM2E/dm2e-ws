@@ -1,6 +1,5 @@
 package eu.dm2e.ws.services.demo;
 
-import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import eu.dm2e.ws.NS;

@@ -75,7 +75,7 @@ public class WebservicePojo extends AbstractPersistentPojo<WebservicePojo> imple
     	allParams.addAll(getInputParams());
     	allParams.addAll(getOutputParams());
     	for (ParameterPojo param : allParams) {
-    		log.info(""+param);
+    		log.info("Checking whether {} matches '{}'", param, needle);
     		if (param.matchesParameterName(needle)) {
     			return param;
     		}

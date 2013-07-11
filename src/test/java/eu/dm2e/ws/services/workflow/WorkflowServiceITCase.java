@@ -1,20 +1,20 @@
 package eu.dm2e.ws.services.workflow;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import com.sun.jersey.api.client.ClientResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.OmnomTestCase;
@@ -62,13 +62,13 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 	}
 
 	private void testGetWebserviceDescription() {
-		ClientResponse resp = client.getWorkflowWebResource().get(ClientResponse.class);
+		Response resp = client.getWorkflowWebTarget().request().get();
 		Assert.assertEquals(200, resp.getStatus());
 	}
 
 	//@Test
 	public void testGetWorkflow() {
-		// ClientResponse resp2 =
+		// Response resp2 =
 		// client.resource(wf.getId()).get(ClientResponse.class);
 		// GrafeoImpl g = new GrafeoImpl(resp2.getEntityInputStream());
 		// GrafeoAssert.graphsAreStructurallyEquivalent(g, wf.getGrafeo());
@@ -137,7 +137,7 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 
 		String respStr = null;
 		try {
-			respStr = wf.publishToService(client.getWorkflowWebResource());
+			respStr = wf.publishToService(client.getWorkflowWebTarget());
 		} catch (Exception e1) {
 			log.error("FAILOR" + e1);
 			throw new RuntimeException(e1);
@@ -158,10 +158,9 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 		GrafeoAssert.graphContainsGraph(gAfter, gBefore);
 		// log.info("testsimple: DONE Publishing the workflow.");
 		{
-			ClientResponse resp = client.resource(respStr).accept(DM2E_MediaType.TEXT_TURTLE).get(
-					ClientResponse.class);
+			Response resp = client.target(respStr).request(DM2E_MediaType.TEXT_TURTLE).get();
 			Assert.assertEquals(200, resp.getStatus());
-			String respStr2 = resp.getEntity(String.class);
+			String respStr2 = resp.readEntity(String.class);
 			log.info("And here is the answer: \n" + respStr2);
 		}
 		// wf.loadFromURI(wf.getId());
@@ -284,7 +283,7 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 		log.info("<VALIDATE>");
 		wfconf.validate();
 		log.info("</VALIDATE>");
-		wfconf.publishToService(client.getConfigWebResource());
+		wfconf.publishToService(client.getConfigWebTarget());
 		log.info("<VALIDATE>");
 		wfconf.validate();
 		log.info("</VALIDATE>");
@@ -295,11 +294,10 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 		GrafeoAssert.graphsAreEquivalent(wfconf.getGrafeo(), wfconf2.getGrafeo());
 		
 		log.info("RUNNING WORKFLOW");
-		ClientResponse resp = client
-			.resource(wf.getId())
-			.entity(wfconf.getId())
-			.type(DM2E_MediaType.TEXT_PLAIN)
-			.put(ClientResponse.class);
+		Response resp = client
+			.target(wf.getId())
+			.request()
+			.put(Entity.text(wfconf.getId()));
 		log.info("RESPONSE FROM WORKFLOW " + wf.getId() +": "+ resp);
 		Assert.assertEquals(202, resp.getStatus());
 		log.info("Location: " + resp.getLocation());

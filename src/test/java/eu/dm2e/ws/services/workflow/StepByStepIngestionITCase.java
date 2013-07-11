@@ -1,21 +1,18 @@
 package eu.dm2e.ws.services.workflow;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 import java.net.URI;
+
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.Response;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.sun.jersey.api.client.ClientResponse;
-
+import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
@@ -75,20 +72,19 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
         conf.addParameterAssignment(XsltZipService.PARAM_XSLTZIP_IN, XSLTZIP_URI_1);
         conf.addParameterAssignment(XsltZipService.PARAM_DATASET_ID_VALUE, "IngestionTest");
         conf.addParameterAssignment(XsltZipService.PARAM_PROVIDER_ID_VALUE, "dm2edev");
-        conf.publishToService(client.getConfigWebResource());
+        conf.publishToService(client.getConfigWebTarget());
 
 
-            ClientResponse confGETresp = client.resource(conf.getId()).get(ClientResponse.class);
+             Response confGETresp = client.target(conf.getId()).request().get();
             assertEquals(200, confGETresp.getStatus());
 //		GrafeoImpl g = new GrafeoImpl(confGETresp.getEntityInputStream());
 //		assertEquals(g.getCanonicalNTriples(), conf.getCanonicalNTriples());
 //		assertTrue(g.isGraphEquivalent(conf.getGrafeo()));
 
-            ClientResponse resp = client.resource(XSLTZIP_SERVICE_URI)
-                    .entity(conf.getId())
-                    .accept(DM2E_MediaType.TEXT_TURTLE)
-                    .put(ClientResponse.class);
-            log.info(resp.getEntity(String.class));
+            Response resp = client.target(XSLTZIP_SERVICE_URI)
+                    .request(DM2E_MediaType.TEXT_TURTLE)
+                    .put(Entity.text(conf.getId()));
+            log.info(resp.readEntity(String.class));
             assertEquals(202, resp.getStatus());
             log.info("JOB uri: " + resp.getLocation());
 
@@ -128,7 +124,7 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
         ws.loadFromURI(XSLT_SERVICE_URI);
         WebserviceConfigPojo tC = new WebserviceConfigPojo();
         assertThat(tC.getId(), is(nullValue()));
-        tC.publishToService(client.getConfigWebResource());
+        tC.publishToService(client.getConfigWebTarget());
         assertThat(tC.getId(), not(nullValue()));
         log.info("config uri: " + tC.getId());
         tC.setWebservice(ws);
@@ -136,9 +132,9 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
         tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, xsltUri);
         tC.publishToService();
 
-        ClientResponse resp = client.putPojoToService(tC, XSLT_SERVICE_URI);
+         Response resp = client.putPojoToService(tC, XSLT_SERVICE_URI);
         log.info(tC.getTurtle());
-        log.info(resp.getEntity(String.class));
+        log.info(resp.readEntity(String.class));
         assertEquals(202, resp.getStatus());
         assertNotNull(resp.getLocation());
         URI jobUri = resp.getLocation();
@@ -164,7 +160,7 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
         assertNotNull(resultUri);
         log.info("Job finished. Result is at " + resultUri );
 
-        String xmlContent = client.resource(resultUri).get(String.class);
+        String xmlContent = client.target(resultUri).request().get(String.class);
         log.info(xmlContent);
         return resultUri;
     }
@@ -184,15 +180,15 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
             config.addParameterAssignment("comment", "This dataset can safely be deleted.");
             // config.addParameterAssignment("endpoint-update", "http://lelystad.informatik.uni-mannheim.de:3030/dm2etest/update");
             // config.addParameterAssignment("endpoint-select", "http://lelystad.informatik.uni-mannheim.de:3030/dm2etest/sparql");
-            config.publishToService(client.getConfigWebResource());
+            config.publishToService(client.getConfigWebTarget());
 
             log.info("Configuration created for Test: " + config.getTurtle());
 
-            ClientResponse response = client
-                    .resource(PUBLISH_SERVICE_URI)
-                    .type(DM2E_MediaType.TEXT_PLAIN)
-                    .put(ClientResponse.class, config.getId());
-            log.info("JOB STARTED WITH RESPONSE: " + response.getStatus() + " / Location: " + response.getLocation() + " / Content: " + response.getEntity(String.class));
+            Response response = client
+                    .target(PUBLISH_SERVICE_URI)
+                    .request()
+                    .put(Entity.text(config.getId()));
+            log.info("JOB STARTED WITH RESPONSE: " + response.getStatus() + " / Location: " + response.getLocation() + " / Content: " + response.readEntity(String.class));
             URI joburi = response.getLocation();
 
             /**
@@ -209,7 +205,8 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
                 }
 
                 log.info("Check for status: " + job.getStatus());
-                log.info("Loop [# " + i + "] JOB SO FAR: " + job.getTurtle());
+                log.info("Loop [# " + i + "]");
+                log.info(LogbackMarkers.DATA_DUMP, "JOB SO FAR: {}", job.getTerseTurtle());
                 try {
                     Thread.sleep(sleeptime);
                 } catch (InterruptedException e) {

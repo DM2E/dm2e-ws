@@ -1,16 +1,14 @@
 package eu.dm2e.utils;
 
-import static org.grep4j.core.Grep4j.constantExpression;
-import static org.grep4j.core.Grep4j.grep;
-import static org.grep4j.core.fluent.Dictionary.on;
-import static org.grep4j.core.fluent.Dictionary.option;
-import static org.grep4j.core.fluent.Dictionary.with;
-import static org.grep4j.core.options.Option.filesMatching;
+import static org.grep4j.core.Grep4j.*;
+import static org.grep4j.core.fluent.Dictionary.*;
+import static org.grep4j.core.options.Option.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -20,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.ws.rs.core.Response;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -36,8 +35,6 @@ import org.grep4j.core.model.Profile;
 import org.grep4j.core.model.ProfileBuilder;
 import org.grep4j.core.result.GrepResult;
 import org.grep4j.core.result.GrepResults;
-
-import com.sun.jersey.api.client.ClientResponse;
 
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.services.Client;
@@ -160,9 +157,9 @@ public class XsltUtils {
 	 * @return
 	 */
 	public java.nio.file.Path downloadAndExtractZip(String xsltZipUrl) {
-		ClientResponse resp = client.resource(xsltZipUrl).get(ClientResponse.class);
+		Response resp = client.target(xsltZipUrl).request().get();
 		if (resp.getStatus() >= 400) {
-			jobPojo.fatal("Could not download XML/ZIP: " + resp.getEntity(String.class));
+			jobPojo.fatal("Could not download XML/ZIP: " + resp.readEntity(String.class));
 			jobPojo.setFailed();
 			return null;
 		}
@@ -174,7 +171,7 @@ public class XsltUtils {
 		try {
 			zipfile = Files.createTempFile("omnom_xsltzip_", ".zip");
 		} catch (IOException e1) {
-			jobPojo.fatal("Could not download XML/ZIP: " + resp.getEntity(String.class));
+			jobPojo.fatal("Could not download XML/ZIP: " + resp.readEntity(String.class));
 			jobPojo.setFailed();
 			return null;
 		}
@@ -184,12 +181,12 @@ public class XsltUtils {
 		try {
 			zipfile_fos = new FileOutputStream(zipfile.toFile());
 		} catch (FileNotFoundException e1) {
-			jobPojo.fatal("Could not write out XML/ZIP: " + resp.getEntity(String.class));
+			jobPojo.fatal("Could not write out XML/ZIP: " + resp.readEntity(String.class));
 			jobPojo.setFailed();
 			return null;
 		}
 		try {
-			IOUtils.copy(resp.getEntityInputStream(), zipfile_fos);
+			IOUtils.copy(resp.readEntity(InputStream.class), zipfile_fos);
 		} catch (IOException e) {
 			jobPojo.fatal("Could not store XML/ZIP: " + e);
 			jobPojo.setFailed();

@@ -5,11 +5,9 @@ import java.lang.reflect.Method;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
 
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
@@ -66,7 +64,7 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
         job.setWebserviceConfig(wsConf);
         job.addLogEntry("JobPojo constructed by AbstractTransformationService", "TRACE");
         try {
-			job.publishToService(client.getJobWebResource());
+			job.publishToService(client.getJobWebTarget());
 		} catch (Exception e1) {
 			return throwServiceError(e1);
 		}
@@ -108,11 +106,11 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
 //    @Consumes(MediaType.WILDCARD)
     @Override
     public Response postGrafeo(Grafeo g) {
-    	WebResource webResource = client.getConfigWebResource();
-    	ClientResponse resp = webResource.post(ClientResponse.class, g.getNTriples());
+    	WebTarget webResource = client.getConfigWebTarget();
+    	Response resp = webResource.request().post(g.getNTriplesEntity());
     	if (null == resp.getLocation()) {
     		log.error("Invalid RDF string posted as configuration.");
-    		return throwServiceError(resp.getEntity(String.class));
+    		return throwServiceError(resp.readEntity(String.class));
     	}
         return this.putConfigToService(resp.getLocation().toString());
     }

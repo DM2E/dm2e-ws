@@ -34,7 +34,7 @@ public class OmnomJsonSerializer {
 		Reflections reflections = new Reflections("eu.dm2e.ws.api");
 		Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(RDFClass.class);
 		for (Class<?> clazz : annotated) {
-			log.info("Class : " + clazz);
+			log.debug("Registering JSON serializer for class : " + clazz);
 			gsonBuilder.registerTypeAdapter(clazz, new SerializablePojoJsonSerializer());
 		}
 		

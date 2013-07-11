@@ -11,11 +11,11 @@ import static org.junit.Assert.assertTrue;
 import java.io.InputStream;
 import java.net.URI;
 
+import javax.ws.rs.core.Response;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import com.sun.jersey.api.client.ClientResponse;
 
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
@@ -45,8 +45,8 @@ public class XsltServiceITCase extends OmnomTestCase {
     public void testDescription() {
     	log.info(SERVICE_URI);
     	Grafeo g = new GrafeoImpl(client.getJerseyClient()
-    			.resource(SERVICE_URI)
-    			.accept("text/turtle")
+    			.target(SERVICE_URI)
+    			.request("text/turtle")
     			.get(InputStream.class));
     	log.info(g.getTurtle());
     	assertTrue(g.containsTriple(SERVICE_URI, "rdf:type", "omnom:Webservice"));
@@ -70,17 +70,17 @@ public class XsltServiceITCase extends OmnomTestCase {
     	
     	WebserviceConfigPojo tC = new WebserviceConfigPojo();
     	assertThat(tC.getId(), is(nullValue()));
-    	tC.publishToService(client.getConfigWebResource());
+    	tC.publishToService(client.getConfigWebTarget());
     	assertThat(tC.getId(), not(nullValue()));
     	log.info("config uri: " + tC.getId());
     	tC.setWebservice(SERVICE_POJO);
     	tC.addParameterAssignment(XsltService.PARAM_XML_IN, xmlUri);
     	tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, xsltUri);
-    	tC.publishToService(client.getConfigWebResource());
+    	tC.publishToService(client.getConfigWebTarget());
     	
-    	ClientResponse resp = client.putPojoToService(tC, SERVICE_URI);
+    	Response resp = client.putPojoToService(tC, SERVICE_URI);
     	log.info(tC.getTurtle());
-    	log.info(resp.getEntity(String.class));
+    	log.info(resp.readEntity(String.class));
     	assertEquals(202, resp.getStatus());
     	assertNotNull(resp.getLocation());
     	URI jobUri = resp.getLocation();
@@ -94,16 +94,17 @@ public class XsltServiceITCase extends OmnomTestCase {
     		if (i++ == maxWait) {
     			break;
     		}
-	    	Thread.sleep(1000);
 	    	job.loadFromURI(jobUri);
 	    	log.info(job.toLogString());
+	    	Thread.sleep(1000);
     	}
+    	job.loadFromURI(jobUri);
     	String resultUri = job.getOutputParameterValueByName(XsltService.PARAM_XML_OUT);
     	assertNotNull(resultUri);
     	log.info("Job finished. Result is at " + resultUri );
     	log.info(job.getTerseTurtle());
     	
-    	String xmlContent = client.resource(resultUri).get(String.class);
+    	String xmlContent = client.target(resultUri).request().get(String.class);
     	log.info(xmlContent);
     }
 		

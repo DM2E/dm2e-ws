@@ -2,9 +2,8 @@ package eu.dm2e.ws.grafeo.jena;
 
 
 
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -16,6 +15,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import eu.dm2e.ws.Config;
+import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -23,9 +23,9 @@ import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
 
 public class SparqlUpdateITCase extends OmnomTestCase {
 	
-	private static final String ENDPOINT_QUERY = Config.ENDPOINT_QUERY;
+	private static final String ENDPOINT_QUERY = Config.get(ConfigProp.ENDPOINT_QUERY);
 
-	private static final String ENDPOINT_UPDATE = Config.ENDPOINT_UPDATE;
+	private static final String ENDPOINT_UPDATE = Config.get(ConfigProp.ENDPOINT_UPDATE);
 
 	public static final String BASE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 	

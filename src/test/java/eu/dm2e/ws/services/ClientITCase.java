@@ -1,25 +1,25 @@
 package eu.dm2e.ws.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-
 import eu.dm2e.ws.Config;
+import eu.dm2e.ws.ConfigProp;
+import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -34,7 +34,7 @@ public class ClientITCase extends OmnomTestCase {
 	private File TEMP_FILE;
 	
 	private boolean isCorrectlyPosted(String uri) {
-		String respStr = client.resource(uri).get(String.class);
+		String respStr = client.target(uri).request().get(String.class);
 		return respStr.equals(FILE_CONTENTS);
 	}
 
@@ -64,25 +64,25 @@ public class ClientITCase extends OmnomTestCase {
 
 	@Test
 	public void testGetJerseyClient() {
-		com.sun.jersey.api.client.Client jc = client.getJerseyClient();
+		javax.ws.rs.client.Client jc = client.getJerseyClient();
 		assertNotNull(jc);
 	}
 
 	@Test
 	public void testConfigJobFile() {
-		Map<String, WebResource>uriToWR = new HashMap<>();
-		uriToWR.put(Config.getString("dm2e.service.config.base_uri"), client.getConfigWebResource());
-		uriToWR.put(Config.getString("dm2e.service.file.base_uri"), client.getFileWebResource());
-		uriToWR.put(Config.getString("dm2e.service.job.base_uri"), client.getJobWebResource());
-		for (Map.Entry<String, WebResource> entry : uriToWR.entrySet()) {
+		Map<String, WebTarget>uriToWR = new HashMap<>();
+		uriToWR.put(Config.get(ConfigProp.CONFIG_BASEURI), client.getConfigWebTarget());
+		uriToWR.put(Config.get(ConfigProp.FILE_BASEURI), client.getFileWebTarget());
+		uriToWR.put(Config.get(ConfigProp.JOB_BASEURI), client.getJobWebTarget());
+		for (Map.Entry<String, WebTarget> entry : uriToWR.entrySet()) {
 			String uri = entry.getKey();
-			WebResource wr = entry.getValue();
+			WebTarget wr = entry.getValue();
 			assertNotNull(wr);
 			assertNotNull(uri);
-			ClientResponse resp = wr.get(ClientResponse.class);
+			Response resp = wr.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES).get();
 			assertEquals(200, resp.getStatus());
-			Grafeo g = new GrafeoImpl(resp.getEntityInputStream());
-			log.info(g.getTurtle());
+			Grafeo g = new GrafeoImpl(resp.readEntity(InputStream.class));
+			log.info(g.getTerseTurtle());
 			assertTrue(
 					g.containsTriple(uri,
 					"rdf:type",

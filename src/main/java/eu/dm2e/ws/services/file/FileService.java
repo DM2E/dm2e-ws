@@ -30,14 +30,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
-
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataParam;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.utils.PojoUtils;
 import eu.dm2e.ws.Config;
+import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
@@ -62,15 +62,6 @@ import eu.dm2e.ws.services.AbstractRDFService;
 public class FileService extends AbstractRDFService {
 
 
-	// private static Configuration config = Config.getConfig();
-	private static final String 
-//	SERVICE_URI = Config.getString("dm2e.service.file.base_uri"),
-			STORAGE_ENDPOINT = Config.getString("dm2e.ws.sparql_endpoint"),
-			STORAGE_ENDPOINT_STATEMENTS = Config.getString("dm2e.ws.sparql_endpoint_statements"),
-			
-			NS_DM2E = Config.getString("dm2e.ns.dm2e");
-
-
     public FileService() {
 
     }
@@ -88,7 +79,13 @@ public class FileService extends AbstractRDFService {
 		URI uri = getRequestUriWithoutQuery();
 		return getFileByUri(uri);
 	}
+
+	/**
+	 * GET /	{*}
+	 * @return
+	 */
 	@GET
+	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getFileListBaseAlias() {
 		return Response.seeOther(appendPath(getRequestUriWithoutQuery(), "list")).build();
@@ -106,8 +103,8 @@ public class FileService extends AbstractRDFService {
 	public Response getFileList() {
 		List<FilePojo> fileList = new ArrayList<FilePojo>();
         Grafeo g = new GrafeoImpl();
-        log.info(NS.ENDPOINT_SELECT);
-        g.readTriplesFromEndpoint(NS.ENDPOINT_SELECT, null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_FILE));
+        log.info(Config.get(ConfigProp.ENDPOINT_QUERY));
+        g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_FILE));
         for (GResource fileUri : g.findByClass(NS.OMNOM.CLASS_FILE)) {
         	log.info("Resource: " + fileUri.getUri());
         	g.load(fileUri.getUri());
@@ -168,7 +165,7 @@ public class FileService extends AbstractRDFService {
 		// save it
 		// set the status of the file to waiting
 		filePojo.setFileStatus(FileStatus.WAITING.toString());
-		filePojo.getGrafeo().putToEndpoint(STORAGE_ENDPOINT_STATEMENTS, uri.toString());
+		filePojo.getGrafeo().putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), uri.toString());
 		
 		return Response.created(uri).entity(getResponseEntity(filePojo.getGrafeo())).build();
 	}
@@ -241,7 +238,7 @@ public class FileService extends AbstractRDFService {
 				.graph(uriStr)
 				.delete("?s ?p ?o.")
 				.insert(newFilePojo.getNTriples())
-				.endpoint(STORAGE_ENDPOINT_STATEMENTS)
+				.endpoint(Config.get(ConfigProp.ENDPOINT_UPDATE))
 				.build();
 			
 			log.info("About to replace: " + sparul.toString());
@@ -374,7 +371,7 @@ public class FileService extends AbstractRDFService {
         log.debug(LogbackMarkers.DATA_DUMP, "Final RDF to be stored for this file: {}", g.getTurtle());
         
 		// store RDF data
-		g.putToEndpoint(STORAGE_ENDPOINT_STATEMENTS, uri);
+		g.putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), uri);
 		return Response.created(uri).entity(getResponseEntity(g)).build();
 	}
 	
@@ -394,7 +391,7 @@ public class FileService extends AbstractRDFService {
 		// create model from graph at uri
 		GrafeoImpl g = new GrafeoImpl();
 		try {
-			g.readFromEndpoint(STORAGE_ENDPOINT, uri);
+			g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), uri);
 		} catch (RuntimeException t) {
 			return throwServiceError(ErrorMsg.BAD_RDF, t);
 		}
@@ -432,8 +429,11 @@ public class FileService extends AbstractRDFService {
 			return Response.status(404).entity(
 					"File '" + filePojo.getInternalFileLocation() + "' not found on the server. " + e.toString()).build();
 		}
-		return Response.ok(fis).header("Content-Type", filePojo.getMediaType()).header("Content-Disposition",
-				"attachment; filename=" + filePojo.getOriginalName()).build();
+		return Response
+			.ok(fis)
+			.header("Content-Type", filePojo.getMediaType())
+			.header("Content-Disposition", "attachment; filename=" + filePojo.getOriginalName())
+			.build();
 	}
 	
 	/**
@@ -458,11 +458,18 @@ public class FileService extends AbstractRDFService {
 		// replace all fileStatus statements
 //		@formatter:off
 		SparqlUpdate s = new SparqlUpdate.Builder()
-			.graph(uri.toString())
-			.delete("<"+uri+"> <"+NS_DM2E+"fileStatus> ?s")
-			.insert("<"+uri+"> <"+NS_DM2E+"fileStatus> \"" + FileStatus.DELETED.toString() +"\"")
-			.endpoint(STORAGE_ENDPOINT_STATEMENTS)
-			.build();
+				.graph(uri.toString())
+				.delete(String.format(
+						"<%s> <%s> ?oldStatus",
+						uri,
+						NS.OMNOM.PROP_FILE_STATUS))
+				.insert(String.format(
+						"<%s> <%s> \"%s\"", 
+						uri, 
+						NS.OMNOM.PROP_FILE_STATUS,
+						FileStatus.DELETED.toString()))
+				.endpoint(Config.get(ConfigProp.ENDPOINT_UPDATE))
+				.build();
 //		@formatter:on
 		log.info(s.toString());
 		s.execute();
@@ -552,7 +559,7 @@ public class FileService extends AbstractRDFService {
 		.graph(uri.toString())
 		.delete("?s ?p ?o.")
 		.insert(filePojo.getNTriples())
-		.endpoint(STORAGE_ENDPOINT_STATEMENTS)
+		.endpoint(Config.get(ConfigProp.ENDPOINT_UPDATE))
 		.build();
 			
 		log.info(LogbackMarkers.DATA_DUMP, "About to replace: {}" + sparul.toString());
@@ -617,12 +624,14 @@ public class FileService extends AbstractRDFService {
 	public Response getFileMetaDataAsJsonByUri(@QueryParam("uri") URI uri) {
 		Grafeo g = new GrafeoImpl();
 		try {
-			g.readFromEndpoint(STORAGE_ENDPOINT, uri);
+			g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), uri);
 		} catch (Exception e) {
-			log.info(STORAGE_ENDPOINT);
+			log.info("Failed to read from " + Config.get(ConfigProp.ENDPOINT_QUERY));
 			return throwServiceError(e);
+//			throw new WebApplicationException(e);
 		}
 		if (!g.containsResource(uri)) {
+//			throw new WebApplicationException(404);
 			return Response.status(404).entity("No such file in the triplestore: " + uri).build();
 		}
 		FilePojo filePojo = g.getObjectMapper().getObject(FilePojo.class, uri);
@@ -642,9 +651,9 @@ public class FileService extends AbstractRDFService {
 	public Response getFileMetaDataAsRdfByUri(@QueryParam("uri") URI uri) {
 		Grafeo g = new GrafeoImpl();
 		try {
-			g.readFromEndpoint(STORAGE_ENDPOINT, uri);
+			g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), uri);
 		} catch (Exception e) {
-			log.info(STORAGE_ENDPOINT);
+			log.info(Config.get(ConfigProp.ENDPOINT_QUERY));
 			return throwServiceError(e);
 		}
 		if (!g.containsResource(uri)) {

@@ -5,18 +5,20 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NotImplementedException;
-
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataMultiPart;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.Config;
@@ -37,54 +39,64 @@ public class Client {
 	
 	Logger log = LoggerFactory.getLogger(getClass().getName());
 
-    private com.sun.jersey.api.client.Client jerseyClient = null;
+    private javax.ws.rs.client.Client jerseyClient = null;
 //    private Logger log = LoggerFactory.getLogger(getClass().getName());
     
-    public ClientResponse putPojoToService(SerializablePojo pojo, String wr) {
-    	return this.putPojoToService(pojo, this.resource(wr));
+    public Response putPojoToService(SerializablePojo pojo, String wr) {
+    	return this.putPojoToService(pojo, this.target(wr));
     }
-    public ClientResponse putPojoToService(SerializablePojo pojo, WebResource wr) {
+    public Response putPojoToService(SerializablePojo pojo, WebTarget wr) {
     	if (null == pojo.getId()) {
     		throw new RuntimeException("Can't PUT a Pojo without id.");
     	}
+//	    return wr
+//	    		.type(DM2E_MediaType.TEXT_PLAIN)
+//				.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+//				.entity(pojo.getId())
+//				.put(Response.class);	
 	    return wr
-	    		.type(DM2E_MediaType.TEXT_PLAIN)
-				.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
-				.entity(pojo.getId())
-				.put(ClientResponse.class);	
+				.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+				.put(Entity.text(pojo.getId()));
     }
     
-    public ClientResponse postPojoToService(SerializablePojo pojo, String wr) {
-    	return this.postPojoToService(pojo, this.resource(wr));
+    public Response postPojoToService(SerializablePojo pojo, String wr) {
+    	return this.postPojoToService(pojo, this.target(wr));
     }
-    public ClientResponse postPojoToService(SerializablePojo pojo, WebResource wr) {
-		    return wr.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
-				.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
-				.entity(pojo.getNTriples())
-				.post(ClientResponse.class);	
+    public Response postPojoToService(SerializablePojo pojo, WebTarget wr) {
+//	    return wr.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+//			.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+//			.entity(pojo.getNTriples())
+//			.post(Response.class);	
+	    return wr
+			.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+			.post(pojo.getNTriplesEntity());
     }
     
-    public String publishPojo(AbstractPersistentPojo pojo, WebResource serviceEndpoint) {
-		ClientResponse resp;
+    public String publishPojo(AbstractPersistentPojo pojo, WebTarget serviceEndpoint) {
+		Response resp;
 		String method = "POST";
 //		log.info("Size of NTRIPLES before post/put: " + pojo.getNTriples().length());
-		log.info(method + "ing " + pojo + " to service " + serviceEndpoint.getURI());
 		log.debug(LogbackMarkers.DATA_DUMP, pojo.getTurtle());
-		if (null == pojo.getId()) {
+		if ( ! pojo.hasId()) {
+			log.info(method + "ing " + pojo + " to service " + serviceEndpoint.getUri());
 			resp = this.postPojoToService(pojo, serviceEndpoint);
 		} else {
 			method = "PUT";
-			if (pojo.getId().startsWith(serviceEndpoint.getURI().toString())) {
-				 resp = resource(pojo.getId())
-					.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
-					.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
-					.entity(pojo.getNTriples())
-					.put(ClientResponse.class);
+			log.info(method + "ing " + pojo + " to service " + serviceEndpoint.getUri());
+			if (pojo.getId().startsWith(serviceEndpoint.getUri().toString())) {
+				 resp = target(pojo.getId())
+					.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+					.put(pojo.getNTriplesEntity());
+//				 resp = target(pojo.getId())
+//					.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+//					.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+//					.entity(pojo.getNTriples())
+//					.put(Response.class);
 			} else {
-				throw new NotImplementedException("Putting a config to a non-local web service isn't implemented yet.");
+				throw new NotImplementedException("Putting a config to a non-local web service currently is not implemented.");
 			}
 		}
-		final String respStr = resp.getEntity(String.class);
+		final String respStr = resp.readEntity(String.class);
 		if (resp.getStatus() >= 400) {
 			throw new RuntimeException(method + ": Failed to publish pojo <"
 					+ pojo.getId()
@@ -110,9 +122,9 @@ public class Client {
 		}
 		return resp.getLocation().toString();
     }
-    public String publishPojo(AbstractPersistentPojo pojo, String serviceURI) { return this.publishPojo(pojo, this.resource(serviceURI)); }
-    public String publishPojoToJobService(AbstractPersistentPojo pojo) { return this.publishPojo(pojo, this.getJobWebResource()); }
-    public String publishPojoToConfigService(AbstractPersistentPojo pojo) { return this.publishPojo(pojo, this.getConfigWebResource()); }
+    public String publishPojo(AbstractPersistentPojo pojo, String serviceURI) { return this.publishPojo(pojo, this.target(serviceURI)); }
+    public String publishPojoToJobService(AbstractPersistentPojo pojo) { return this.publishPojo(pojo, this.getJobWebTarget()); }
+    public String publishPojoToConfigService(AbstractPersistentPojo pojo) { return this.publishPojo(pojo, this.getConfigWebTarget()); }
     
     public String publishFile(String file) { return this.publishFile(file, (String)null); }
     public String publishFile(String is, Grafeo metadata) { return this.publishFile(is, metadata.getNTriples()); }
@@ -127,16 +139,19 @@ public class Client {
     public String publishFile(File file, FilePojo metadata) throws IOException { FileInputStream fis = new FileInputStream(file); return this.publishFile(IOUtils.toString(fis), metadata.getNTriples()); }
     public String publishFile(String file, String metadata) { FormDataMultiPart fdmp = createFileFormDataMultiPart(metadata, file); return this.publishFile(fdmp); }
     public String publishFile(FormDataMultiPart fdmp) {
-        ClientResponse resp = getFileWebResource()
-                .type(MediaType.MULTIPART_FORM_DATA)
-                .accept(DM2E_MediaType.TEXT_TURTLE)
-                .entity(fdmp)
-                .post(ClientResponse.class);
+//        Response resp = getFileWebTarget()
+//                .type(MediaType.MULTIPART_FORM_DATA)
+//                .accept(DM2E_MediaType.TEXT_TURTLE)
+//                .entity(fdmp)
+//                .post(Response.class);
+    	Response resp = getFileWebTarget()
+    			.request(DM2E_MediaType.TEXT_TURTLE)
+    			.post(Entity.entity(fdmp, fdmp.getMediaType()));
         if (resp.getStatus() >= 400) {
-            throw new RuntimeException("File storage failed with status " + resp.getStatus() + ": " + resp.getEntity(String.class));
+            throw new RuntimeException("File storage failed with status " + resp.getStatus() + ": " + resp.readEntity(String.class));
         }
         if (null == resp.getLocation()) {
-            throw new RuntimeException("File storage failed with status " + resp.getStatus() + ": " + resp.getEntity(String.class));
+            throw new RuntimeException("File storage failed with status " + resp.getStatus() + ": " + resp.readEntity(String.class));
         }
         return resp.getLocation().toString();
     }
@@ -186,16 +201,16 @@ public class Client {
 		return createFileFormDataMultiPart(meta.getNTriples(), content);
 	}
     
-    public WebResource getConfigWebResource() { return this.resource(Config.getString("dm2e.service.config.base_uri")); }
-    public WebResource getFileWebResource() { return this.resource(Config.getString("dm2e.service.file.base_uri")); }
-    public WebResource getJobWebResource() { return this.resource(Config.getString("dm2e.service.job.base_uri")); }
-    public WebResource getWorkflowWebResource() { return this.resource(Config.getString("dm2e.service.workflow.base_uri")); }
+    public WebTarget getConfigWebTarget() { return this.target(Config.getString("dm2e.service.config.base_uri")); }
+    public WebTarget getFileWebTarget() { return this.target(Config.getString("dm2e.service.file.base_uri")); }
+    public WebTarget getJobWebTarget() { return this.target(Config.getString("dm2e.service.job.base_uri")); }
+    public WebTarget getWorkflowWebTarget() { return this.target(Config.getString("dm2e.service.workflow.base_uri")); }
     
-    public WebResource resource(String URI) {
-    	return this.getJerseyClient().resource(URI);
+    public WebTarget target(String URI) {
+    	return this.getJerseyClient().target(URI);
     }
-    public WebResource resource(URI URI) {
-    	return this.resource(URI.toString());
+    public WebTarget target(URI URI) {
+    	return this.target(URI.toString());
     }
     
     public <U extends AbstractPersistentPojo>U loadPojoFromURI(Class<U> clazz, String id) {
@@ -222,12 +237,14 @@ public class Client {
     /*******************
      * GETTERS/SETTERS
      ********************/
-	public com.sun.jersey.api.client.Client getJerseyClient() {
+	public javax.ws.rs.client.Client getJerseyClient() {
     	if (null == this.jerseyClient) { 
-    		 this.setJerseyClient(new com.sun.jersey.api.client.Client());
+    		javax.ws.rs.client.Client client = ClientBuilder.newClient();
+    		client.register(MultiPartFeature.class);
+    		this.setJerseyClient(client);
     	}
 		return this.jerseyClient;
 	}
-	public void setJerseyClient(com.sun.jersey.api.client.Client jerseyClient) { this.jerseyClient = jerseyClient; }
+	public void setJerseyClient(javax.ws.rs.client.Client jerseyClient) { this.jerseyClient = jerseyClient; }
 
 }

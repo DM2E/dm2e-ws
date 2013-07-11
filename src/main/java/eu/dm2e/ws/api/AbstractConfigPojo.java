@@ -27,7 +27,7 @@ public abstract class AbstractConfigPojo<T> extends AbstractPersistentPojo<T> im
 	}
 	
 	public void addParameterAssignment(String paramName, String paramValue) {
-		log.info("adding parameter assignment");
+		log.info("Adding parameter assignment for {}", paramName);
 		ParameterPojo param = this.getParamByName(paramName);
 		if (null == param) {
 			throw new RuntimeException("Webservice/Workflow contains no such parameter: " + paramName);

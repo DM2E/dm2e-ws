@@ -25,12 +25,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.ws.rs.client.Entity;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.AnonId;
@@ -45,6 +47,8 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
+import eu.dm2e.logback.LogbackMarkers;
+import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.GLiteral;
 import eu.dm2e.ws.grafeo.GResource;
@@ -258,7 +262,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 				&&
 			! uri.matches("https?://localhost.*")
 			) {
-    		log.warn("Skipping loading because "+ NO_EXTERNAL_URL_FLAG +" system property is set." );
+    		log.warn("Skipping loading if <{}> because {} system property is set.", uri, NO_EXTERNAL_URL_FLAG );
     		return;
     	}
         log.debug("Load data from URI: " + uri);
@@ -273,7 +277,8 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
                 log.debug("Content read.");
                 success = true;
             } catch (Throwable t) {
-                    log.error("Could not parse URI content: " + t.getMessage());
+                    log.error("Could not parse URI content of {}: {}", uri,  t.getMessage());
+                    log.debug("", t);
 //                    throw new RuntimeException("Could not parse uri content: " + uri + " : " + t.getMessage());
             }
             if (success) break;
@@ -563,7 +568,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     		.endpoint(endpoint)
     		.build();
 //        Query query = QueryFactory.create(sparco.toString());
-        log.debug("CONSTRUCT Query: " + sparco.toString());
+        log.debug(LogbackMarkers.DATA_DUMP, "CONSTRUCT Query: " + sparco.toString());
 
         long sizeBefore = size();
         long stmtsAdded = 0;
@@ -618,7 +623,8 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
     		}
         	log.debug("Size After expansion: "+ this.size());
         }
-        log.trace("Summary: \n{}", summarizeClasses());
+        if(log.isTraceEnabled())
+	        log.trace("Summary: \n{}", summarizeClasses());
         log.debug("Reading from endpoint finished.");
     }
     
@@ -707,6 +713,17 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         model.write(sw, "N-TRIPLE");
         return sw.toString();
     }
+    
+    @Override
+    public Entity<String> getNTriplesEntity(){
+    	return Entity.entity(getNTriples(), DM2E_MediaType.APPLICATION_RDF_TRIPLES);
+    }
+
+	@Override
+	public Entity<String> getTurtleEntity() {
+    	return Entity.entity(getTurtle(), DM2E_MediaType.TEXT_TURTLE);
+	}
+	
     
     @Override
     public String getCanonicalNTriples() {
@@ -1341,5 +1358,4 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 			this.addTriple(stmt);
 		}
 	}
-	
 }

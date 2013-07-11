@@ -7,12 +7,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.Response;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 
-import com.sun.jersey.api.client.ClientResponse;
-
-import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 import eu.dm2e.ws.model.JobStatus;
@@ -164,11 +164,11 @@ public abstract class AbstractJobPojo extends AbstractPersistentPojo<AbstractJob
 
 	protected void publishJobStatus(String status) {
 		if (this.hasId()) {
-			ClientResponse resp = client
-					.resource(this.getId())
+			Response resp = client
+					.target(this.getId())
 					.path("status")
-					.entity(status)
-					.put(ClientResponse.class);
+					.request()
+					.put(Entity.text(status));
 			if (resp.getStatus() != 201) {
 				throw new RuntimeException("Couldn update status " + resp);
 			}
@@ -177,12 +177,11 @@ public abstract class AbstractJobPojo extends AbstractPersistentPojo<AbstractJob
 
 	protected void publishLogEntry(LogEntryPojo entry) {
 		if (null != this.getId()) {
-			ClientResponse resp = client
-				.resource(this.getId())
+			Response resp = client
+				.target(this.getId())
 				.path("log")
-				.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
-				.entity(entry.getNTriples())
-				.post(ClientResponse.class);
+				.request()
+				.post(entry.getNTriplesEntity());
 			if (resp.getStatus() != 201) {
 				throw new RuntimeException("Couldn post log " + resp);
 			}

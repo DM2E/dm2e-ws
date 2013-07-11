@@ -15,13 +15,13 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 
-import com.sun.jersey.api.client.ClientResponse;
-
 import eu.dm2e.ws.Config;
+import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
@@ -120,7 +120,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		log.info("WorkflowJobPojo constructed by WorkflowService");
 		jobPojo.addLogEntry("WorkflowJobPojo constructed by WorkflowService", "TRACE");
 		try {
-			jobPojo.publishToService(client.getJobWebResource());
+			jobPojo.publishToService(client.getJobWebTarget());
 		} catch (Exception e1) {
 			return throwServiceError(e1);
 		}
@@ -158,7 +158,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 	public Response getWorkflow() {
 		URI wfUri = getRequestUriWithoutQuery();
 		GrafeoImpl g = new GrafeoImpl();
-		g.readFromEndpoint(NS.ENDPOINT_SELECT, wfUri);
+		g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), wfUri);
 		return getResponse(g);
 	}
 	@Override
@@ -227,7 +227,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 
 		log.info("Writing workflow to config.");
 		try {
-			g.putToEndpoint(NS.ENDPOINT_UPDATE, wfUri);
+			g.putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), wfUri);
 		} catch (Exception e) {
 			return throwServiceError(e);
 		}
@@ -250,7 +250,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		URI workflowUri = popPath("position");
 		blank.rename(newUri);
 		// TODO rename blank sub-resources
-		g.postToEndpoint(Config.ENDPOINT_UPDATE, workflowUri);
+		g.postToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), workflowUri);
 		return Response.created(newUri).build();
 	}
 	@PUT
@@ -262,7 +262,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		SparqlUpdate sparul = new SparqlUpdate.Builder()
 			.delete(posUri + "?s ?o")
 			.insert(g)
-			.endpoint(Config.ENDPOINT_UPDATE)
+			.endpoint(Config.get(ConfigProp.ENDPOINT_UPDATE))
 			.graph(workflowUri)
 			.build();
 		sparul.execute();
@@ -300,7 +300,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		URI workflowUri = popPath("connector");
 		blank.rename(newUri);
 		// TODO rename blank sub-resources
-		g.postToEndpoint(Config.ENDPOINT_UPDATE, workflowUri);
+		g.postToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), workflowUri);
 		return Response.created(newUri).build();
 	}
 	@PUT
@@ -319,7 +319,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		SparqlUpdate sparul = new SparqlUpdate.Builder()
 			.delete(conUri + "?s ?o")
 			.insert(g.toString())
-			.endpoint(Config.ENDPOINT_UPDATE)
+			.endpoint(Config.get(ConfigProp.ENDPOINT_UPDATE))
 			.graph(workflowUri).build();
 		sparul.execute();
 		return getResponse(g);
@@ -357,7 +357,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		URI workflowUri = popPath();
 		blank.rename(newUri);
 		// TODO rename blank sub-resources
-		g.postToEndpoint(Config.ENDPOINT_UPDATE, workflowUri);
+		g.postToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), workflowUri);
 		return Response.created(newUri).build();
 	}
 	@PUT
@@ -369,7 +369,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		SparqlUpdate sparul = new SparqlUpdate.Builder()
 			.delete(conUri + "?s ?o")
 			.insert(g.toString())
-			.endpoint(Config.ENDPOINT_UPDATE)
+			.endpoint(Config.get(ConfigProp.ENDPOINT_UPDATE))
 			.graph(workflowUri).build();
 		sparul.execute();
 		return getResponse(g);
@@ -476,7 +476,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 				 * Publish the WebserviceConfig, so it becomes stable
 				 */
 				wsconf.resetId();
-				wsconf.publishToService(client.getConfigWebResource());
+				wsconf.publishToService(client.getConfigWebTarget());
 				if (null == wsconf.getId()) {
 					throw new RuntimeException("Could not publish webservice config " + wsconf);
 				}
@@ -484,11 +484,9 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 				/*
 				 * Run the webservice
 				 */
-				ClientResponse resp = client.resource(ws.getId())
-						.type(DM2E_MediaType.TEXT_PLAIN)
-						.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
-						.entity(wsconf.getId())
-						.put(ClientResponse.class);
+				Response resp = client.target(ws.getId())
+						.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+						.put(Entity.text(wsconf.getId()));
 				if (202 != resp.getStatus() || null == resp.getLocation()) {
 //					workflowJob.debug(wsconf.getTerseTurtle());
 					throw new RuntimeException("Request to start web service " + ws + " with config " + wsconf + "failed: " + resp);

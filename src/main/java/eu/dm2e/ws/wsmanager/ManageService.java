@@ -1,11 +1,8 @@
 package eu.dm2e.ws.wsmanager;
 
-import java.io.IOException;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -17,11 +14,15 @@ import org.apache.jena.fuseki.server.SPARQLServer;
 import org.apache.jena.fuseki.server.ServerConfig;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
+import org.glassfish.jersey.filter.LoggingFilter;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.sparql.core.DatasetGraphFactory;
-import com.sun.jersey.api.container.grizzly2.GrizzlyWebContainerFactory;
+//import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 /**
  * This file was created within the DM2E project.
@@ -59,16 +60,18 @@ public class ManageService {
     }
 
     public static void startManageServer() throws BindException {
-        final Map<String, String> initParams = new HashMap<>();
+//        final Map<String, String> initParams = new HashMap<>();
         
-        initParams.put("com.sun.jersey.config.property.packages", "eu.dm2e.ws.wsmanager");
+//        initParams.put("com.sun.jersey.config.property.packages", "eu.dm2e.ws.wsmanager");
+        // create a resource config that scans for JAX-RS resources and providers
+        // in com.example package
+        final ResourceConfig rc = new ResourceConfig()
+	        .packages("eu.dm2e.ws.wsmanager");
+
         
         System.out.println("Starting manageServer");
-        try {
-            manageServer = GrizzlyWebContainerFactory.create(UriBuilder.fromUri("http://localhost:" + MANAGE_PORT + "/").build(), initParams);
-        } catch (IOException e) {
-            throw new RuntimeException("An exception occurred: " + e, e);
-        }
+        manageServer = GrizzlyHttpServerFactory.createHttpServer(UriBuilder.fromUri("http://localhost:" + MANAGE_PORT + "/").build(), rc);
+
     }
 
     public static void startHttpServer() {
@@ -77,17 +80,21 @@ public class ManageService {
     		return;
     	}
     	
-        final Map<String, String> initParams = new HashMap<>();
-        initParams.put("com.sun.jersey.config.property.packages", "eu.dm2e.ws.services");
+//        final Map<String, String> initParams = new HashMap<>();
+//        initParams.put("com.sun.jersey.config.property.packages", "eu.dm2e.ws.services");
+    	final ResourceConfig resourceConfig = new ResourceConfig()
+        	.packages("eu.dm2e.ws.services")
+	        .register(MultiPartFeature.class)
+	        .register(LoggingFilter.class);
+
         
         log.info("Starting httpServer");
         
-        try {
-            httpServer =  GrizzlyWebContainerFactory.create(UriBuilder.fromUri("http://localhost:" + OMNOM_PORT +"/").build(), initParams);
-            httpServer.getServerConfiguration().addHttpHandler(new StaticHttpHandler("static"), "/static");
-        } catch (IOException e) {
-            throw new RuntimeException("An exception occurred: " + e, e);
-        }
+        httpServer = GrizzlyHttpServerFactory.createHttpServer(
+        		UriBuilder.fromUri("http://localhost:" + OMNOM_PORT + "/").build(),
+        		resourceConfig);
+        //            httpServer =  GrizzlyWebContainerFactory.create(UriBuilder.fromUri("http://localhost:" + OMNOM_PORT +"/").build(), initParams);
+        httpServer.getServerConfiguration().addHttpHandler(new StaticHttpHandler("static"), "/static");
 
     }
     public static void stopHttpServer() {

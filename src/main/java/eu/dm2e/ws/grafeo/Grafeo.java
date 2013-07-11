@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.ws.rs.client.Entity;
+
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 import eu.dm2e.ws.grafeo.gom.ObjectMapper;
@@ -463,6 +465,10 @@ public interface Grafeo {
 	String summarizeClasses();
 
 	void merge(Grafeo that);
+
+	Entity<String> getNTriplesEntity();
+	
+	Entity<String> getTurtleEntity();
 
 
 

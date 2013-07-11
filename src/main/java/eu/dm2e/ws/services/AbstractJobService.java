@@ -22,6 +22,7 @@ import org.joda.time.DateTime;
 
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.Config;
+import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
@@ -60,13 +61,13 @@ public abstract class AbstractJobService extends AbstractRDFService {
 	})
 	public Response getJobList() {
 		Grafeo g = new GrafeoImpl();
-		g.readTriplesFromEndpoint(Config.ENDPOINT_QUERY, null, "rdf:type", g.resource(NS.OMNOM.CLASS_JOB));
-		g.readTriplesFromEndpoint(Config.ENDPOINT_QUERY, null, "rdf:type", g.resource(NS.OMNOM.CLASS_WORKFLOW_JOB));
+		g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, "rdf:type", g.resource(NS.OMNOM.CLASS_JOB));
+		g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, "rdf:type", g.resource(NS.OMNOM.CLASS_WORKFLOW_JOB));
 		return getResponse(g);
 	}
 	
 	@PUT
-	@Path("/{resourceID}")
+	@Path("{resourceID}")
 	@Consumes({
 		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
 		DM2E_MediaType.APPLICATION_RDF_XML,
@@ -79,9 +80,19 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		MediaType.WILDCARD
 	})
 	public Response putJobHandler(@PathParam("resourceID") String resourceID, File bodyAsFile) {
-		log.info("Access to job: " + resourceID);
+		log.info("Access to job: " + getRequestUriWithoutQuery());
+		// FIXME BUG FIXME Why oh Why Does this fail randomly? resourceID is
+		// often 'null' for no reason :( Using workaround now by parsing the URL.
+		log.warn("Job ID of the job to PUT: " + resourceID);
 		if (null == resourceID) {
-			return throwServiceError("resourceID is null");
+			log.warn("Jersey thinks resourceID is null. Parsing the URL. ");
+			resourceID = getRequestUriWithoutQuery().toString().replace(
+					popPath(getRequestUriWithoutQuery()).toString(), "");
+			log.warn("Parsed the resourceID as " + resourceID);
+			if (null == resourceID) {
+				throw new RuntimeException(new NullPointerException("resourceID is null"));
+			}
+//			return throwServiceError("resourceID is null");
 		}
 		String uriStr = uriInfo.getRequestUri().toString();
 		Grafeo inputGrafeo;
@@ -213,13 +224,13 @@ public abstract class AbstractJobService extends AbstractRDFService {
 	public Response getJobHandler() {
         URI uri = getRequestUriWithoutQuery();
         Grafeo g = new GrafeoImpl();
-        log.debug("Reading job from endpoint " + Config.ENDPOINT_QUERY);
+        log.debug("Reading job from endpoint " + Config.get(ConfigProp.ENDPOINT_QUERY));
         try {
-            g.readFromEndpoint(Config.ENDPOINT_QUERY, uri);
+            g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), uri);
         } catch (Exception e1) {
             // if we couldn't read the job, try again once in a second
             try { Thread.sleep(1000); } catch (InterruptedException e) { }
-            try { g.readFromEndpoint(Config.ENDPOINT_QUERY, uri);
+            try { g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), uri);
             } catch (Exception e) {
                 return throwServiceError(e);
             }
@@ -272,7 +283,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		SparqlUpdate sparul = new SparqlUpdate.Builder()
 			.delete("?s <" + NS.OMNOM.PROP_JOB_STATUS + "> ?p")
 			.insert("<" + jobUri + "> <" + NS.OMNOM.PROP_JOB_STATUS + "> \"" + newStatus.toString() + "\"")
-			.endpoint(Config.ENDPOINT_UPDATE)
+			.endpoint(Config.get(ConfigProp.ENDPOINT_UPDATE))
 			.graph(jobUri)
 			.build();
 		log.debug(LogbackMarkers.DATA_DUMP, "Updating status with query: {}", sparul);
@@ -305,7 +316,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		blank.rename(entryUri.toString());
 		gEntry.addTriple(jobUri, NS.OMNOM.PROP_LOG_ENTRY, entryUri.toString());
 		log.debug(LogbackMarkers.DATA_DUMP, gEntry.getNTriples());
-		gEntry.postToEndpoint(Config.ENDPOINT_UPDATE, jobUri);
+		gEntry.postToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), jobUri);
 		return Response.created(entryUri).build();
 	}
 
@@ -334,7 +345,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		entry.setTimestamp(DateTime.now());
 		Grafeo outG = entry.getGrafeo();
 		outG.addTriple(jobUri, NS.OMNOM.PROP_LOG_ENTRY, entry.getId());
-		outG.postToEndpoint(Config.ENDPOINT_UPDATE, jobUri);
+		outG.postToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), jobUri);
 		return Response.created(entry.getIdAsURI()).build();
 	}
 
@@ -412,7 +423,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 				.delete("?s ?p ?o.")
 				.insert(outputGrafeo.getNTriples())
 				.graph(jobUri)
-				.endpoint(Config.ENDPOINT_UPDATE)
+				.endpoint(Config.get(ConfigProp.ENDPOINT_UPDATE))
 				.build();
 		sparul.execute();
 		return Response.created(assUri).entity(getResponseEntity(ass.getGrafeo())).build();

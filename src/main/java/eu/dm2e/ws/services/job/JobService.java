@@ -6,7 +6,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 import eu.dm2e.ws.Config;
-import eu.dm2e.ws.NS;
+import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -21,7 +21,7 @@ import eu.dm2e.ws.services.AbstractJobService;
  * @author kb
  *
  */
-@Path("/job")
+@Path("job")
 public class JobService extends AbstractJobService {
 	
 	@Override
@@ -54,7 +54,7 @@ public class JobService extends AbstractJobService {
 		
 		log.debug("Putting job to endpoint.");
 		
-		outputGrafeo.putToEndpoint(NS.ENDPOINT_UPDATE, jobRes.getUri());
+		outputGrafeo.putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), jobRes.getUri());
 		
 		return Response.created(URI.create(jobRes.getUri())).entity(getResponseEntity(outputGrafeo)).build();
 	}
@@ -64,7 +64,7 @@ public class JobService extends AbstractJobService {
 		
 		log.debug("Putting job to endpoint.");
 		
-		outputGrafeo.putToEndpoint(Config.ENDPOINT_UPDATE, jobRes.getUri());
+		outputGrafeo.putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), jobRes.getUri());
 		
 		return Response.created(URI.create(jobRes.getUri())).entity(getResponseEntity(outputGrafeo)).build();
 	}

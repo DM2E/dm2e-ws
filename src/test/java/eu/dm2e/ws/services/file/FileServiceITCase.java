@@ -1,31 +1,29 @@
 package eu.dm2e.ws.services.file;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.matchers.JUnitMatchers.containsString;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+import static org.junit.matchers.JUnitMatchers.*;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataMultiPart;
-
+import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
@@ -64,21 +62,21 @@ public class FileServiceITCase extends OmnomTestCase {
 	
 	@Test
 	public void testRandomfileRdf() throws IOException {
-		ClientResponse resp = client.resource(randomFileUri)
-				.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
-				.get(ClientResponse.class);
+		Response resp = client.target(randomFileUri)
+				.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+				.get();
 		Grafeo g = new GrafeoImpl();
-		g.readHeuristically(resp.getEntityInputStream());
+		g.readHeuristically(resp.readEntity(InputStream.class));
 		FilePojo actualFilePojo = g.getObjectMapper().getObject(FilePojo.class, randomFileUri);
 		assertEquals(randomFilePojo.getId(), actualFilePojo.getId());
 	}
 	@Test
 	public void testRandomfileJson() throws IOException {
-		ClientResponse resp = client.resource(randomFileUri)
-				.accept(MediaType.APPLICATION_JSON_TYPE)
-				.get(ClientResponse.class);
+		Response resp = client.target(randomFileUri)
+				.request(MediaType.APPLICATION_JSON_TYPE)
+				.get();
 		log.info(randomFileUri);
-		String respStr = resp.getEntity(String.class);
+		String respStr = resp.readEntity(String.class);
 		log.info(respStr);
 		assertEquals(200, resp.getStatus());
 		FilePojo actualFilePojo = OmnomJsonSerializer.deserializeFromJSON(respStr, FilePojo.class);
@@ -91,12 +89,11 @@ public class FileServiceITCase extends OmnomTestCase {
 		{
 			Grafeo metaGrafeo = new GrafeoImpl(configFile.get(OmnomTestResources.MINIMAL_FILE));
 			FormDataMultiPart fdmp = client.createFileFormDataMultiPart(metaGrafeo, null);
-			ClientResponse resp = client.getFileWebResource()
+			Response resp = client.getFileWebTarget()
 				.path("empty")
-				.entity(fdmp)
-				.type(MediaType.MULTIPART_FORM_DATA)
-				.post(ClientResponse.class);
-			log.error(resp.getEntity(String.class));
+				.request()
+				.post(Entity.entity(fdmp, MediaType.MULTIPART_FORM_DATA));
+			log.error(resp.readEntity(String.class));
 			assertEquals("Empty file posted", 201, resp.getStatus());
 			URI fileLoc = resp.getLocation();
 			assertNotNull(fileLoc);
@@ -113,25 +110,13 @@ public class FileServiceITCase extends OmnomTestCase {
 			assertNotNull("Should have metadata created by the service", fp.getMd5());
 			
 		}
-		// Minimal invalid file
-		{
-			Grafeo metaGrafeo = new GrafeoImpl(configFile.get(OmnomTestResources.ILLEGAL_EMPTY_FILE));
-			FormDataMultiPart fdmp = client.createFileFormDataMultiPart(metaGrafeo, null);
-			ClientResponse resp = client.getFileWebResource()
-				.path("empty")
-				.entity(fdmp)
-				.type(MediaType.MULTIPART_FORM_DATA)
-				.post(ClientResponse.class);
-			assertEquals("Empty file is also okay ", 201, resp.getStatus());
-		}
 		// Neither metadata nor file data
 		{
 			FormDataMultiPart fdmp = client.createFileFormDataMultiPart((String)null, (String)null);
-			ClientResponse resp = client.getFileWebResource()
+			Response resp = client.getFileWebTarget()
 				.path("empty")
-				.entity(fdmp)
-				.type(MediaType.MULTIPART_FORM_DATA)
-				.post(ClientResponse.class);
+				.request()
+				.post(Entity.entity(fdmp, MediaType.MULTIPART_FORM_DATA));
 			assertEquals("Empty file posted", 201, resp.getStatus());
 			URI fileLoc = resp.getLocation();
 			assertNotNull(fileLoc);
@@ -139,6 +124,19 @@ public class FileServiceITCase extends OmnomTestCase {
 			fp.loadFromURI(fileLoc.toString());
 			assertEquals(FileStatus.WAITING.toString(), fp.getFileStatus());
 		}
+	}
+
+	@Test
+	public void testPostEmptyFileMinimalInvalid() {
+		Grafeo metaGrafeo = new GrafeoImpl(configFile.get(OmnomTestResources.ILLEGAL_EMPTY_FILE));
+		FormDataMultiPart fdmp = client.createFileFormDataMultiPart(metaGrafeo, null);
+		Response resp = client.getFileWebTarget()
+			.path("empty")
+			.request()
+			.post(Entity.entity(fdmp, MediaType.MULTIPART_FORM_DATA));
+		final String respStr = resp.readEntity(String.class);
+		log.debug(LogbackMarkers.DATA_DUMP, respStr);
+		assertEquals("Empty file is also okay ", 201, resp.getStatus());
 	}
 
 	@Test
@@ -153,11 +151,10 @@ public class FileServiceITCase extends OmnomTestCase {
 			FilePojo replacementFP = new FilePojo();
 			replacementFP.setMd5("987");
 			FormDataMultiPart fdmp = client.createFileFormDataMultiPart(replacementFP, null);
-			ClientResponse resp = client.getFileWebResource()
+			Response resp = client.getFileWebTarget()
 					.queryParam("uri", fileUriStr)
-					.type(MediaType.MULTIPART_FORM_DATA)
-					.entity(fdmp)
-					.put(ClientResponse.class);
+					.request()
+					.put(Entity.entity(fdmp, MediaType.MULTIPART_FORM_DATA));
 			assertEquals(200, resp.getStatus());
 			FilePojo curFP = new FilePojo();
 			extracted(fileUriStr, curFP);
@@ -170,19 +167,19 @@ public class FileServiceITCase extends OmnomTestCase {
 			String fileUriStr = client.publishFile(configFile.get(res), origFP);
 			String newFileContents = "NEW FILE CONTENT";
 			FormDataMultiPart fdmp = client.createFileFormDataMultiPart("", newFileContents);
-			ClientResponse resp = client.getFileWebResource()
+			Response resp = client.getFileWebTarget()
 					.queryParam("uri", fileUriStr)
-					.type(MediaType.MULTIPART_FORM_DATA)
-					.entity(fdmp)
-					.put(ClientResponse.class);
+					.request()
+					.put(Entity.entity(fdmp, MediaType.MULTIPART_FORM_DATA));
 			assertEquals(200, resp.getStatus());
 			
-			ClientResponse respData = client
-					.resource(fileUriStr)
-					.get(ClientResponse.class);
+			Response respData = client
+					.target(fileUriStr)
+					.request()
+					.get();
 			assertThat(respData.getStatus(), is(200));
 			
-			String respDataStr = respData.getEntity(String.class);
+			String respDataStr = respData.readEntity(String.class);
 			assertThat("file is updated", respDataStr, is(newFileContents));
 			FilePojo curFP = new FilePojo();
 			extracted(fileUriStr, curFP);
@@ -200,24 +197,22 @@ public class FileServiceITCase extends OmnomTestCase {
 		// Neither metadata nor file data
 		{
 			FormDataMultiPart fdmp = client.createFileFormDataMultiPart((String)null, (String)null);
-			ClientResponse resp = client.getFileWebResource()
-				.entity(fdmp)
-				.type(MediaType.MULTIPART_FORM_DATA)
-				.post(ClientResponse.class);
+			Response resp = client.getFileWebTarget()
+					.request()
+					.post(Entity.entity(fdmp, MediaType.MULTIPART_FORM_DATA));
 			assertEquals("Should be an error", 400, resp.getStatus());
-			String respStr = resp.getEntity(String.class);
+			String respStr = resp.readEntity(String.class);
 			assertEquals(ErrorMsg.NO_FILE_AND_NO_METADATA.toString(), respStr);
 		}
 		// minimal valid file
 		{
 			Grafeo metaGrafeo = new GrafeoImpl(configFile.get(OmnomTestResources.MINIMAL_FILE));
 			FormDataMultiPart fdmp = client.createFileFormDataMultiPart(metaGrafeo, null);
-			ClientResponse resp = client.getFileWebResource()
-				.entity(fdmp)
-				.type(MediaType.MULTIPART_FORM_DATA)
-				.post(ClientResponse.class);
+			Response resp = client.getFileWebTarget()
+					.request()
+					.post(Entity.entity(fdmp, MediaType.MULTIPART_FORM_DATA));
 //			log.info(configString.get(OmnomTestResources.MINIMAL_FILE));
-			log.info(resp.getEntity(String.class));
+			log.info(resp.readEntity(String.class));
 			assertEquals("Empty file posted", 201, resp.getStatus());
 			URI fileLoc = resp.getLocation();
 			assertNotNull(fileLoc);
@@ -226,23 +221,21 @@ public class FileServiceITCase extends OmnomTestCase {
 		{
 			Grafeo metaGrafeo = new GrafeoImpl(configFile.get(OmnomTestResources.MINIMAL_FILE_WITH_URI));
 			FormDataMultiPart fdmp = client.createFileFormDataMultiPart(metaGrafeo, null);
-			ClientResponse resp = client.getFileWebResource()
-				.entity(fdmp)
-				.type(MediaType.MULTIPART_FORM_DATA)
-				.post(ClientResponse.class);
+			Response resp = client.getFileWebTarget()
+					.request()
+					.post(Entity.entity(fdmp, MediaType.MULTIPART_FORM_DATA));
 			log.info(configString.get(OmnomTestResources.MINIMAL_FILE_WITH_URI));
-			log.info(resp.getEntity(String.class));
+			log.info(resp.readEntity(String.class));
 			assertEquals("posting rdf data with a uri", 201, resp.getStatus());
 		}
 		// minimal invalid file
 		{
 			Grafeo metaGrafeo = new GrafeoImpl(configFile.get(OmnomTestResources.ILLEGAL_EMPTY_FILE));
 			FormDataMultiPart fdmp = client.createFileFormDataMultiPart(metaGrafeo, null);
-			ClientResponse resp = client.getFileWebResource()
-				.entity(fdmp)
-				.type(MediaType.MULTIPART_FORM_DATA)
-				.post(ClientResponse.class);
-			String respStr = resp.getEntity(String.class);
+			Response resp = client.getFileWebTarget()
+					.request()
+					.post(Entity.entity(fdmp, MediaType.MULTIPART_FORM_DATA));
+			String respStr = resp.readEntity(String.class);
 			assertEquals("No fileRetrievalURI is an error here ", 400, resp.getStatus());
 			assertThat(respStr, containsString(ErrorMsg.NO_FILE_RETRIEVAL_URI.toString()));
 		}
@@ -250,11 +243,10 @@ public class FileServiceITCase extends OmnomTestCase {
 		{
 			String asciiNoise = configString.get(OmnomTestResources.ASCII_NOISE);
 			FormDataMultiPart fdmp = client.createFileFormDataMultiPart(asciiNoise, (String)null);
-			ClientResponse resp = client.getFileWebResource()
-				.entity(fdmp)
-				.type(MediaType.MULTIPART_FORM_DATA)
-				.post(ClientResponse.class);
-			String respStr = resp.getEntity(String.class);
+			Response resp = client.getFileWebTarget()
+					.request()
+					.post(Entity.entity(fdmp, MediaType.MULTIPART_FORM_DATA));
+			String respStr = resp.readEntity(String.class);
 			assertEquals("BAD RDF!", 400, resp.getStatus());
 			assertThat(respStr, containsString(ErrorMsg.BAD_RDF.toString()));
 		}
@@ -271,19 +263,18 @@ public class FileServiceITCase extends OmnomTestCase {
 			String fileUriStr = client.publishFile(configFile.get(res), filePojo);
 			URI fileURI = new URI(fileUriStr);
 			{
-				ClientResponse resp = client.resource(fileURI)
-						.get(ClientResponse.class);
+				Response resp = client.target(fileURI).request().get();
 				assertEquals("No Accept header, file data", 200, resp.getStatus());
-				assertEquals(configString.get(res), resp.getEntity(String.class));
+				assertEquals(configString.get(res), resp.readEntity(String.class));
 			}
 			{
 				for (String mediaType : DM2E_MediaType.SET_OF_RDF_TYPES) {
 					log.info("Getting file metadata as " + mediaType);
-					ClientResponse resp = client.resource(fileURI)
-							.accept(mediaType)
-							.get(ClientResponse.class);
+					Response resp = client.target(fileURI)
+							.request(mediaType)
+							.get();
 					assertEquals(200, resp.getStatus());
-					String metaStr = resp.getEntity(String.class);
+					String metaStr = resp.readEntity(String.class);
 					log.info(metaStr);
 					Grafeo g = new GrafeoImpl(metaStr, true);
 					g.containsTriple(fileUriStr, NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_FILE);
@@ -310,17 +301,17 @@ public class FileServiceITCase extends OmnomTestCase {
 			assertEquals("File is available", FileStatus.AVAILABLE.toString(), fp.getFileStatus());
 		}
 		{
-			ClientResponse resp = client.resource(fileUri)
-//					.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
-					.accept(MediaType.APPLICATION_JSON)
-					.delete(ClientResponse.class);
+			Response resp = client.target(fileUri)
+//					.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+					.request(MediaType.APPLICATION_JSON)
+					.delete();
 			assertEquals("aaaaand it's gone :)", 200, resp.getStatus());
 		}
 		{
-			ClientResponse resp = client.resource(fileUri)
-					.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
-					.get(ClientResponse.class);
-			GrafeoImpl g = new GrafeoImpl(resp.getEntityInputStream());
+			Response resp = client.target(fileUri)
+					.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+					.get();
+			GrafeoImpl g = new GrafeoImpl(resp.readEntity(InputStream.class));
 			g.containsTriple(fileUri, "omnom:fileStatus", "DELETED");
 			FilePojo fp = new FilePojo();
 			extracted(fileUri, fp);
@@ -345,10 +336,10 @@ public class FileServiceITCase extends OmnomTestCase {
 		{
 			FilePojo patchFp = new FilePojo();
 			patchFp.setOriginalName("quux.zoot");
-			ClientResponse resp = client.resource(fileUri)
+			Response resp = client.target(fileUri)
 					.path("patch")
-					.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
-					.post(ClientResponse.class, patchFp.getNTriples());
+					.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+					.post(patchFp.getNTriplesEntity());
 			assertEquals(200, resp.getStatus());
 			FilePojo fp = new FilePojo();
 			extracted(fileUri, fp);
@@ -362,7 +353,7 @@ public class FileServiceITCase extends OmnomTestCase {
 	public void testFileOnly() {
 		// fail("Not yet implemented");
         String URI_BASE = "http://localhost:9998";
-        WebResource webResource = client.resource(URI_BASE + "/file");
+        WebTarget webResource = client.target(URI_BASE + "/file");
 		String turtleString = "<a> <b> <c>.";
 		FormDataMultiPart mp = new FormDataMultiPart();
 		FormDataBodyPart p = new FormDataBodyPart(FormDataContentDisposition
@@ -371,15 +362,15 @@ public class FileServiceITCase extends OmnomTestCase {
 				.build(),
 				turtleString);
 		mp.bodyPart(p);
-		String s = webResource.type(MediaType.MULTIPART_FORM_DATA_TYPE).post(String.class, mp);
+		String s = webResource.request().post(Entity.entity(mp, MediaType.MULTIPART_FORM_DATA_TYPE), String.class);
         GrafeoImpl g = new GrafeoImpl();
         g.readHeuristically(s);
         for (GResource r: g.findByClass("omnom:File")) {
             log.info("RESPONSE: " + r.getUri());
             log.info("RESPONSE: " + r.getUri());
-            // WebResource wr = client.resource("http://localhost:8000/test/sparql?query=select%20%3Fs%20%3Fp%20%3Fo%20where%20%7B%3Fs%20%3Fp%20%3Fo%7D");
-            WebResource wr = client.resource(r.getUri());
-            String resp = wr.get(String.class);
+            // WebTarget wr = client.resource("http://localhost:8000/test/sparql?query=select%20%3Fs%20%3Fp%20%3Fo%20where%20%7B%3Fs%20%3Fp%20%3Fo%7D");
+            WebTarget wr = client.target(r.getUri());
+            String resp = wr.request().get(String.class);
             assertEquals(turtleString, resp);
             log.info("RESPONSE 2: " + resp);
             Grafeo g2 = new GrafeoImpl(r.getUri());
@@ -394,7 +385,7 @@ public class FileServiceITCase extends OmnomTestCase {
 		String uri = client.publishFile(fdmp);
 		assertNotNull(uri);
 		log.info("File stored as: " + uri);
-		String resp = client.resource(uri).get(String.class);
+		String resp = client.target(uri).request().get(String.class);
 		assertEquals(configString.get(OmnomTestResources.TEI2EDM_20130129), resp);
 	}
 }

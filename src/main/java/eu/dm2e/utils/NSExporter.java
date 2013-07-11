@@ -5,11 +5,9 @@ import java.lang.reflect.Modifier;
 
 import com.google.gson.JsonObject;
 
-import eu.dm2e.ws.NS;
-
 public class NSExporter {
 	
-	public static String exportToJSON(Class clazz) {
+	public static String exportInnerClassConstantsToJSON(Class clazz) {
 		
 		JsonObject nsObj = new JsonObject();
 		
@@ -44,10 +42,25 @@ public class NSExporter {
 	}
 	
 	public static void main(String[] args) {
-		String x = exportToJSON(NS.class);
-		System.out.println(x);
+//		String x = exportInnerClassConstantsToJSON(NS.class);
+//		String x = exportEnumToJSON(JobStatus.class);
+//		System.out.println(x);
 //		System.out.println(
 				
+	}
+
+	public static String exportEnumToJSON(Class clazz) {
+		if (! clazz.isEnum()) {
+			return "{}";
+		}
+		JsonObject enumObj = new JsonObject();
+		for (Field field : clazz.getDeclaredFields()) {
+			if (! field.isEnumConstant()) {
+				continue;
+			}
+			enumObj.addProperty(field.getName(), field.getName());
+		}
+		return enumObj.toString();
 	}
 
 }
