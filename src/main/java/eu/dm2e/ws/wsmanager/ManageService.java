@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import com.hp.hpl.jena.sparql.core.DatasetGraphFactory;
 
 import eu.dm2e.ws.SerializablePojoListMessageBodyWriter;
-import eu.dm2e.ws.SerializablePojoMessageBodyWriter;
+import eu.dm2e.ws.SerializablePojoProvider;
 import eu.dm2e.ws.grafeo.jaxrs.GrafeoMessageBodyWriter;
 //import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
@@ -91,7 +91,7 @@ public class ManageService {
         	// multipart/form-data
 	        .register(MultiPartFeature.class)
 	        // setting pojos as response entity
-	        .register(SerializablePojoMessageBodyWriter.class)
+	        .register(SerializablePojoProvider.class)
 	        // setting a list of pojos as response entity
 	        .register(SerializablePojoListMessageBodyWriter.class)
 	        // setting Grafeos as response entity

@@ -124,9 +124,9 @@ public class DM2E_MediaType {
 
 	public static boolean expectsMetadataResponse(MediaType mediaType) {
 		return (
-				expectsJsonResponse(mediaType)
+				isJsonMediaType(mediaType)
 				||
-				expectsRdfResponse(mediaType)
+				isRdfMediaType(mediaType)
 				);
 	}
 	
@@ -138,7 +138,7 @@ public class DM2E_MediaType {
 				);
 	}
 	
-	public static boolean expectsRdfResponse(MediaType mediaType) {
+	public static boolean isRdfMediaType(MediaType mediaType) {
 		return SET_OF_RDF_TYPES_STRING.contains(mediaType.toString());
 	}
 	
@@ -146,7 +146,7 @@ public class DM2E_MediaType {
 		boolean doesExpectRdf = false;
 		for (MediaType thisType : headers.getAcceptableMediaTypes()) {
             log.info("Accept header: " + thisType.toString());
-			if (expectsRdfResponse(thisType)) {
+			if (isRdfMediaType(thisType)) {
 				doesExpectRdf = true;
 				break;
 			}
@@ -154,12 +154,12 @@ public class DM2E_MediaType {
 		return doesExpectRdf;
 	}
 
-	public static boolean expectsJsonResponse(MediaType thisType) {
+	public static boolean isJsonMediaType(MediaType thisType) {
 		return thisType.equals(MediaType.APPLICATION_JSON_TYPE);
 	}
 	public static boolean expectsJsonResponse(HttpHeaders headers) {
 		for (MediaType thisType : headers.getAcceptableMediaTypes())
-			if (expectsJsonResponse(thisType))
+			if (isJsonMediaType(thisType))
 				return true;
 		return false;
 	}

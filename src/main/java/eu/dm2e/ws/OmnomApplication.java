@@ -18,7 +18,7 @@ public class OmnomApplication extends Application {
 		// register resources and features
 		classes.add(MultiPartFeature.class);
 		classes.add(LoggingFilter.class);
-		classes.add(SerializablePojoMessageBodyWriter.class);
+		classes.add(SerializablePojoProvider.class);
 		classes.add(SerializablePojoListMessageBodyWriter.class);
 		classes.add(GrafeoMessageBodyWriter.class);
 		return classes;

@@ -27,7 +27,7 @@ public class GrafeoMessageBodyWriter implements MessageBodyWriter<Grafeo> {
 			Type genericType,
 			Annotation[] annotations,
 			MediaType mediaType) {
-		return DM2E_MediaType.expectsRdfResponse(mediaType);
+		return DM2E_MediaType.isRdfMediaType(mediaType);
 	}
 
 	@Override

@@ -66,11 +66,11 @@ public class SerializablePojoListMessageBodyWriter implements MessageBodyWriter<
 			MultivaluedMap<String, Object> httpHeaders,
 			OutputStream entityStream)
 			throws IOException, WebApplicationException {
-		if (DM2E_MediaType.expectsJsonResponse(mediaType)) {
+		if (DM2E_MediaType.isJsonMediaType(mediaType)) {
 			String jsonStr = OmnomJsonSerializer.serializeToJSON(t);
 			log.debug(LogbackMarkers.DATA_DUMP, "Serializing to JSON: {}", jsonStr);
 			entityStream.write(jsonStr.getBytes("UTF-8"));
-		} else if (DM2E_MediaType.expectsRdfResponse(mediaType)) {
+		} else if (DM2E_MediaType.isRdfMediaType(mediaType)) {
 			// TODO FIXME this is duplicated in GrafeoMessageBodyWriter
 			GrafeoImpl g = new GrafeoImpl();
 			for (SerializablePojo pojo : t) {

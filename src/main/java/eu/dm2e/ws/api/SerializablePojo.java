@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.util.UUID;
 
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +64,11 @@ public abstract class SerializablePojo<T> {
 	}
 	public JsonObject toJsonObject() {
 		return OmnomJsonSerializer.serializeToJsonObject(this, getClass());
+	}
+	public Entity toJsonEntity() {
+		return Entity.entity(
+			OmnomJsonSerializer.serializeToJSON(this, getClass()),
+					MediaType.APPLICATION_JSON_TYPE);
 	}
 	
 	
