@@ -9,15 +9,15 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.DefaultConfigurationBuilder;
 
 
-public final class Config {
+public enum Config {
+	INSTANCE
+	;
 	
-	private static final String DM2E_WS_CONFIG = "config.xml";
+	private static final String DM2E_WS_CONFIG = "/config.xml";
+	private final Configuration config;
+	private Logger log = LoggerFactory.getLogger(Config.class.getName());
 	
-	public static final Configuration config;
-	
-	private static Logger log = LoggerFactory.getLogger(Config.class.getName());
-	
-	static {
+	private Config() {
 		Configuration c;
 		DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
 		builder.setFile(new File(DM2E_WS_CONFIG));
@@ -25,21 +25,28 @@ public final class Config {
 			c =  builder.getConfiguration();
 		} catch (ConfigurationException e) {
 			c = null;
+			throw new RuntimeException(e);
 		}
 		config = c;
 	}
 
-	public static String getString(String string) {
-		String conf =  config.getString(string);
-		if (null == conf) {
-			log.error("Undefined config option " + string);
-			throw new RuntimeException("Undefined config option " + string);
-		}
-		return conf;
-	}
+//	public static String getString(String string) {
+//		String conf =  config.getString(string);
+//		if (null == conf) {
+//			log.error("Undefined config option " + string);
+//			throw new RuntimeException("Undefined config option " + string);
+//		}
+//		return conf;
+//	}
 	
 	public static String get(ConfigProp configProp) {
-		return config.getString(configProp.getPropertiesName());
+		return INSTANCE.config.getString(configProp.getPropertiesName());
+	}
+	public static void set(ConfigProp configProp, String value) {
+		INSTANCE.config.setProperty(configProp.getPropertiesName(), value);
+	}
+	public static boolean isNull() {
+		return INSTANCE.config == null;
 	}
 	
 //	public static String getEndpointQuery

@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
@@ -66,8 +67,8 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 		Assert.assertEquals(200, resp.getStatus());
 	}
 
-	@Test
-	public void testGetWorkflow() {
+//	@Test
+//	public void testGetWorkflow() {
 		// Response resp2 =
 		// client.resource(wf.getId()).get(ClientResponse.class);
 		// GrafeoImpl g = new GrafeoImpl(resp2.getEntityInputStream());
@@ -96,9 +97,9 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 
 		// Assert.assertEquals("No more blank nodes", 0,
 		// g.listAnonStatements(null, null).size() );
-	}
+//	}
 
-	//@Test
+	@Test
 	public void testValidate()
 			throws IOException {
 		{
@@ -111,11 +112,7 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 			wfconf.addParameterAssignment(_ws_param_provider, "onb");
 			FileUtils.writeStringToFile(new File("workflow.test.ttl"), wfconf.getTurtle());
 //			log.info(wfconf.getTurtle());
-			try {
-				wfconf.validate();
-			} catch (AssertionError e) {
-				Assert.fail("Invalid Workflow" + e);
-			}
+			wfconf.validate();
 		}
 	}
 
@@ -237,7 +234,7 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 				_ws_param_datasetID,
 				step2_pos, 
 				PublishService.PARAM_DATASET_ID);
-		log.info(x.getTerseTurtle());
+		log.debug(LogbackMarkers.DATA_DUMP, x.getTerseTurtle());
 
 		// workflow:providerID => publish:providerID
 		wf.addConnectorFromWorkflowToPosition(
@@ -272,7 +269,7 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 	public void testRunWorkflow() throws Exception {
 		WorkflowConfigPojo wfconf = new WorkflowConfigPojo();
 		wfconf.setWorkflow(wf);
-		log.info(wf.getTerseTurtle());
+		log.debug(LogbackMarkers.DATA_DUMP, wf.getTerseTurtle());
 		wfconf.addParameterAssignment(_ws_param_xmlinput, _file_xml_in);
 		wfconf.addParameterAssignment(_ws_param_xsltinput, _file_xslt_in);
 		wfconf.addParameterAssignment(_ws_param_datasetLabel, "A fascinating dataset indeed.");
@@ -309,7 +306,7 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 		} while (workflowJob.isStillRunning());
 		Thread.sleep(5000);
 		workflowJob.loadFromURI(resp.getLocation());
-		log.info(workflowJob.getTerseTurtle());
+		log.info(LogbackMarkers.DATA_DUMP, workflowJob.getTerseTurtle());
 		String compLog = workflowJob.getOutputParameterValueByName(WorkflowService.PARAM_COMPLETE_LOG);
 		assertNotNull(compLog);
 		log.info(compLog);

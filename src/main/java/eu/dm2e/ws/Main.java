@@ -16,7 +16,7 @@ public class Main {
 	public static void main(String[] args)
 			throws IOException {
 
-		if (null == Config.config) {
+		if (Config.isNull()) {
 			System.err.println("No config was found. Create 'config.xml'.");
 			System.exit(1);
 		}

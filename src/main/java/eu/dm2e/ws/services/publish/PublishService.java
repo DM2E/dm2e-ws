@@ -78,7 +78,7 @@ public class PublishService extends AbstractTransformationService {
 //            	dataset = createUniqueStr();
 //            }
             String datasetURI = dataset;
-            if (!dataset.startsWith("http")) datasetURI = Config.getString("dm2e.service.publish.graph_prefix") + provider + "/" + dataset;
+            if (!dataset.startsWith("http")) datasetURI = Config.get(ConfigProp.PUBLISH_GRAPH_PREFIX) + provider + "/" + dataset;
 
             String versionedURI = datasetURI;
             if (!versionedURI.endsWith("/")) versionedURI = versionedURI + "/";

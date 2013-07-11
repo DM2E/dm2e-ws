@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.Config;
+import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.api.AbstractPersistentPojo;
 import eu.dm2e.ws.api.FilePojo;
@@ -201,10 +202,10 @@ public class Client {
 		return createFileFormDataMultiPart(meta.getNTriples(), content);
 	}
     
-    public WebTarget getConfigWebTarget() { return this.target(Config.getString("dm2e.service.config.base_uri")); }
-    public WebTarget getFileWebTarget() { return this.target(Config.getString("dm2e.service.file.base_uri")); }
-    public WebTarget getJobWebTarget() { return this.target(Config.getString("dm2e.service.job.base_uri")); }
-    public WebTarget getWorkflowWebTarget() { return this.target(Config.getString("dm2e.service.workflow.base_uri")); }
+    public WebTarget getConfigWebTarget() { return this.target(Config.get(ConfigProp.CONFIG_BASEURI)); }
+    public WebTarget getFileWebTarget() { return this.target(Config.get(ConfigProp.FILE_BASEURI)); }
+    public WebTarget getJobWebTarget() { return this.target(Config.get(ConfigProp.JOB_BASEURI)); }
+    public WebTarget getWorkflowWebTarget() { return this.target(Config.get(ConfigProp.WORKFLOW_BASEURI)); }
     
     public WebTarget target(String URI) {
     	return this.getJerseyClient().target(URI);

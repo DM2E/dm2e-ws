@@ -30,14 +30,13 @@ import eu.dm2e.ws.services.Client;
 
 public class ConfigServiceITCase extends OmnomTestCase {
 
-	private static final String BASE_URI = "http://localhost:9998";
 	private Client client;
 	private WebTarget webTarget;
 
 	@Before
 	public void setUp() throws Exception {
 		client = new Client();
-		webTarget = client.getJerseyClient().target(BASE_URI + "/config");
+		webTarget = client.getJerseyClient().target(URI_BASE).path("config");
 	}
 
 	public void testGetConfig() {

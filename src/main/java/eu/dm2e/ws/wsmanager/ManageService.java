@@ -40,6 +40,10 @@ public class ManageService {
 	
 	static Logger log = LoggerFactory.getLogger(ManageService.class.getName());
 	
+	static {
+		System.setProperty("dm2e-ws.test.properties_file", "dm2e-ws.test.properties");
+	}
+	
 	private static final int FUSEKI_PORT = 9997;
 	private static final int MANAGE_PORT = 9990;
 	private static final int OMNOM_PORT = 9998;
@@ -103,10 +107,8 @@ public class ManageService {
         log.info("Starting httpServer");
         
         httpServer = GrizzlyHttpServerFactory.createHttpServer(
-        		UriBuilder.fromUri("http://localhost:" + OMNOM_PORT + "/").build(),
-        		resourceConfig);
-        //            httpServer =  GrizzlyWebContainerFactory.create(UriBuilder.fromUri("http://localhost:" + OMNOM_PORT +"/").build(), initParams);
-        httpServer.getServerConfiguration().addHttpHandler(new StaticHttpHandler("static"), "/static");
+        		UriBuilder.fromUri("http://localhost:" + OMNOM_PORT + "/api").build(), resourceConfig);
+        httpServer.getServerConfiguration().addHttpHandler(new StaticHttpHandler("WebContent"), "/");
 
     }
     public static void stopHttpServer() {

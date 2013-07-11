@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import eu.dm2e.ws.Config;
+import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.WebservicePojo;
@@ -23,11 +24,11 @@ import eu.dm2e.ws.services.AbstractRDFService;
 @Path("/mint-file")
 public class MintFileService extends AbstractRDFService {
 	
-	protected MintApiTranslator mintApiTranslator = new MintApiTranslator(
-			Config.getString("dm2e.service.mint-file.base_uri"),
-			Config.getString("dm2e.service.mint-file.mint_base"),
-			Config.getString("dm2e.service.mint-file.username"),
-			Config.getString("dm2e.service.mint-file.password")
+	private MintApiTranslator mintApiTranslator = new MintApiTranslator(
+			Config.get(ConfigProp.MINT_BASE_URI),
+			Config.get(ConfigProp.MINT_REMOTE_BASE_URI),
+			Config.get(ConfigProp.MINT_USERNAME),
+			Config.get(ConfigProp.MINT_PASSWORD)
 	);
 	
 	@Override

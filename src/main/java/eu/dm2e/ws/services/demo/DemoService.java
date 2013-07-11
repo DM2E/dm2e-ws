@@ -1,8 +1,13 @@
 package eu.dm2e.ws.services.demo;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
@@ -37,11 +42,14 @@ public class DemoService extends AbstractTransformationService {
         randomOutputParam.setIsRequired(false);
     }
     
-//    @GET
-//    @Path("jsonp")
-//    public void getJsonWithPadding() {
-//    	
-//    }
+    @POST
+    @Path("test")
+    @Consumes(MediaType.WILDCARD)
+    @Produces(MediaType.WILDCARD)
+    public FilePojo postTestReader(FilePojo p) {
+    	log.warn("Server received: " + p);
+    	return p;
+    }
 
     @Override
     public void run() {

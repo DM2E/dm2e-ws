@@ -6,6 +6,7 @@ import static org.junit.matchers.JUnitMatchers.*;
 import java.net.URI;
 
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.junit.Before;
@@ -18,6 +19,7 @@ import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
 import eu.dm2e.ws.api.AbstractJobPojo;
+import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
@@ -41,6 +43,34 @@ public class DemoServiceITCase extends OmnomTestCase {
 	public void setUp() throws Exception {
 		SERVICE_URI = URI_BASE + "service/demo";
 		ManageService.startAll();
+	}
+
+	@Test
+	public void testPostReader() {
+		FilePojo fp = new FilePojo();
+		fp.setId("http://foo");
+		{
+			Response resp = client
+					.target(SERVICE_URI)
+					.path("test")
+					.request(MediaType.APPLICATION_JSON)
+					.post(fp.toJsonEntity());
+			log.debug(resp.getStatusInfo().getReasonPhrase());
+			assertEquals(200, resp.getStatus());
+			final String respStr = resp.readEntity(String.class);
+			log.debug("Response body: " + respStr);
+		}
+		{
+			Response resp = client
+					.target(SERVICE_URI)
+					.path("test")
+					.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+					.post(fp.getNTriplesEntity());
+			log.debug(resp.getStatusInfo().getReasonPhrase());
+			assertEquals(200, resp.getStatus());
+			final String respStr = resp.readEntity(String.class);
+			log.debug("Response body: " + respStr);
+		}
 	}
 
 	@Test
@@ -85,14 +115,13 @@ public class DemoServiceITCase extends OmnomTestCase {
 					.request()
 					.put(Entity.text(confLoc.toString()));
 			SparqlConstruct sparco = new SparqlConstruct.Builder()
-				.endpoint(Config.get(ConfigProp.ENDPOINT_QUERY))
-				.graph("?g")
-				.construct("?s ?p ?o")
-				.build();
+					.endpoint(Config.get(ConfigProp.ENDPOINT_QUERY))
+					.graph("?g")
+					.construct("?s ?p ?o")
+					.build();
 			GrafeoImpl testG = new GrafeoImpl();
 			sparco.execute(testG);
 			log.error(testG.getTerseTurtle());
-
 
 			assertEquals(202, serviceResp.getStatus());
 			log.info("PUT finished");

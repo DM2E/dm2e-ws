@@ -23,21 +23,21 @@ import eu.dm2e.ws.wsmanager.ManageService;
 
 public class OmnomTestCase extends OmnomUnitTest{
 	
+	protected static String URI_BASE;
 	static {
-		Config.config.setProperty("dm2e.ws.sparql_endpoint", "http://localhost:9997/test/sparql");
-		Config.config.setProperty("dm2e.ws.sparql_endpoint_statements", "http://localhost:9997/test/update");
-		Config.config.setProperty("dm2e.ws.base_uri", "http://localhost:9998/");
+		URI_BASE = "http://localhost:9998/api/";
+		System.setProperty("dm2e-ws.test.properties_file", "dm2e-ws.test.properties");
+		Config.set(ConfigProp.ENDPOINT_QUERY, "http://localhost:9997/test/sparql");
+		Config.set(ConfigProp.ENDPOINT_UPDATE, "http://localhost:9997/test/update");
+		Config.set(ConfigProp.BASE_URI, URI_BASE);
 	}
 	protected static Client client = new Client();
-	protected static String URI_BASE;
 	protected static Map<OmnomTestResources, String> configString = new HashMap<>();
 	protected Map<OmnomTestResources, File> configFile = new HashMap<>();;
 	
 //	@Before
 //	public void setUp() throws Exception {
 	public OmnomTestCase() {
-		
-		URI_BASE = Config.config.getString("dm2e.ws.base_uri");
 		
 		for (OmnomTestResources res : OmnomTestResources.values()) { 
 			URL testConfigURL = OmnomTestCase.class.getResource(res.getPath());

@@ -36,7 +36,6 @@ import eu.dm2e.ws.services.demo.DemoService;
 import eu.dm2e.ws.services.xslt.XsltService;
 
 public class JobServiceITCase extends OmnomTestCase {
-	private static final String BASE_URI = "http://localhost:9998";
 	private WebTarget webTarget;
 	private URI globalJob;
 	String[] logLevels = {"TRACE", "DEBUG", "INFO", "WARN", "FATAL"};
@@ -45,7 +44,7 @@ public class JobServiceITCase extends OmnomTestCase {
 	@Before
 	public void setUp() throws Exception {
 
-		webTarget = client.getJerseyClient().target(BASE_URI + "/job");
+		webTarget = client.getJerseyClient().target(URI_BASE).path("job");
 //		log.info(configString.get(OmnomTestResources.DEMO_JOB));
 		globalJob = postConfigToJob(OmnomTestResources.DEMO_JOB).getIdAsURI();
 //				.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
@@ -79,20 +78,21 @@ public class JobServiceITCase extends OmnomTestCase {
 
 	/**
 	 *  TODO BUG what's the deal with this test breaking randomly???
+	 *  I guess the bug is in passing an InputStream to GrafeoImpl constructor [kb, Jul 12, 2013 12:11:34 AM]
+	 *  
 	 * @throws InterruptedException 
 	 */
+//	@Ignore("This will break randomly. Ignore it for now.")
 	@Test
-	@Ignore("This will break randomly. Ignore it for now.")
 	public void testGetJob() throws InterruptedException {
 		WebTarget wr = client.getJerseyClient().target(globalJob);
-		Response resp = wr.request().get();
-		Grafeo g = new GrafeoImpl(resp.readEntity(InputStream.class));
+		Response resp = wr.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES).get();
+		Grafeo g = new GrafeoImpl(resp.readEntity(String.class), true);
 		// TODO wtf? this breaks randomly, returning no results when running the full test suite but not when running just this test case... WTF?
-		Thread.sleep(1000);
 		try {
 			GrafeoAssert.containsLiteral(g, globalJob, NS.OMNOM.PROP_JOB_STATUS, "NOT_STARTED");
 		} catch (Throwable e) {
-			throw new RuntimeException(g.getTurtle() + e);
+			throw new RuntimeException(g.getTerseTurtle() + e);
 		}
 	}
 
@@ -175,7 +175,7 @@ public class JobServiceITCase extends OmnomTestCase {
 	public void testAddLogEntryAsTextAndParse() throws URISyntaxException {
 		for (String level: logLevels) {
 			Response jobResp = client.getJerseyClient()
-					.target(BASE_URI)
+					.target(URI_BASE)
 					.path("job")
 					.request().post(Entity.text( configString.get(OmnomTestResources.DEMO_JOB)));
 			assertEquals(201, jobResp.getStatus());
@@ -197,7 +197,7 @@ public class JobServiceITCase extends OmnomTestCase {
 	@Test
 	public void testListLogEntries() throws IOException {
 		Response jobResp = client.getJerseyClient()
-				.target(BASE_URI)
+				.target(URI_BASE)
 				.path("job")
 				.request().post(Entity.text(configString.get(OmnomTestResources.DEMO_JOB)));
 		assertEquals(201, jobResp.getStatus());
@@ -257,7 +257,7 @@ public class JobServiceITCase extends OmnomTestCase {
 	@Test
 	public void testListLogEntriesAsLogFile() {
 		Response jobResp = client.getJerseyClient()
-				.target(BASE_URI)
+				.target(URI_BASE)
 				.path("job")
 				.request().post(Entity.text( configString.get(OmnomTestResources.DEMO_JOB)));
 		assertEquals(201, jobResp.getStatus());
@@ -283,7 +283,7 @@ public class JobServiceITCase extends OmnomTestCase {
 	@Test
 	public void testListLogEntriesAsLogFileFromJob() {
 		Response jobResp = client.getJerseyClient()
-				.target(BASE_URI)
+				.target(URI_BASE)
 				.path("job")
 				.request().post(Entity.text( configString.get(OmnomTestResources.DEMO_JOB)));
 		assertEquals(201, jobResp.getStatus());

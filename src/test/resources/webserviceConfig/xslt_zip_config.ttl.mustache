@@ -26,12 +26,12 @@
         a                 omnom:WebserviceConfig ;
         omnom:assignment  [
             a                     omnom:ParameterAssignment ;
-            omnom:forParam        <http://localhost:9998/service/xslt-zip/param/xmlInput> ;
+            omnom:forParam        <http://localhost:9998/api/service/xslt-zip/param/xmlInput> ;
             omnom:parameterValue  "{{ xmlInput }}"^^xsd:string 
         ];
         omnom:assignment  [
         a                     omnom:ParameterAssignment ;
-        omnom:forParam        <http://localhost:9998/service/xslt-zip/param/xsltZipInput> ;
+        omnom:forParam        <http://localhost:9998/api/service/xslt-zip/param/xsltZipInput> ;
         omnom:parameterValue  "{{ xsltZipInput }}"^^xsd:string
         ];
-        omnom:webservice  <http://localhost:9998/service/xslt-zip> .
+        omnom:webservice  <http://localhost:9998/api/service/xslt-zip> .

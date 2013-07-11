@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<configuration
-    debug="true"
-    scan="true"
-    scanPeriod="2 minutes">
+<configuration debug="true" scan="true" scanPeriod="2 minutes">
     
     <!--
         Translating java.util.logging log events to slf4j is very expensive especially
@@ -16,12 +13,10 @@
         <resetJUL>true</resetJUL>
     </contextListener>
 
-    <conversionRule
-        conversionWord="markerWithSeparator"
+    <conversionRule conversionWord="markerWithSeparator"
         converterClass="eu.dm2e.logback.SeparatorMarkerOrEmptyStringConverter" />
 
-    <conversionRule
-        conversionWord="dm2eHighlight"
+    <conversionRule conversionWord="dm2eHighlight"
         converterClass="eu.dm2e.logback.HighlightHighContrastConverter" />
 
 
@@ -41,7 +36,7 @@
     <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
         <Marker>DATA_DUMP</Marker>
 <!--         <OnMatch>ACCEPT</OnMatch> -->
-		<OnMatch>DENY</OnMatch>
+        <OnMatch>DENY</OnMatch>
     </turboFilter>
     <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
         <Marker>SENSITIVE_INFORMATION</Marker>
@@ -56,28 +51,30 @@
         <OnMatch>ACCEPT</OnMatch>
     </turboFilter>
 
-    <appender
-        name="STDOUT"
-        class="ch.qos.logback.core.ConsoleAppender">
-		<!--  ANSI coloring -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+
+		<!--  
+        ANSI coloring 
+        -->
         <withJansi>true</withJansi>
+
 		<!-- 
 		See http://logback.qos.ch/manual/layouts.html
 		encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder by default
 		 -->
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
             <layout class="eu.dm2e.logback.OmnomLogbackLayout">
+                <!-- Example:
+                "INFO [e.d.w.g.j.GrafeoImpl.load:287] Trying again in 500ms"
+                 -->
                 <Pattern>%dm2eHighlight(%level [%logger{5}.%method:%line%markerWithSeparator] %m)</Pattern>
             </layout>
         </encoder>
     </appender>
 
-    <appender
-        name="FILE"
-        class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>log-test/dm2e-ws.log</file>
-        <rollingPolicy
-            class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- 
 				hourly rollover 
 				log-test/dm2e-ws.log
@@ -85,37 +82,32 @@
 				...
 			-->
             <fileNamePattern>log-test/%d{yyyy-MM-dd,aux}/dm2e-ws.%d{yyyy-MM-dd_HH}.log</fileNamePattern>
-			<!-- keep 30 days' worth of history -->
+
+			<!--
+                 keep 30 days' worth of history 
+             -->
             <maxHistory>720</maxHistory>
+
         </rollingPolicy>
         <encoder>
             <Pattern>%level [%logger.%method:%line%markerWithSeparator] %m%n</Pattern>
         </encoder>
     </appender>
 
-    <logger
-        name="eu.dm2e.ws.grafeo.gom"
-        level="DEBUG" />
-    <logger
-        name="org.apache.jena.fuseki"
-        level="WARN" />
-    <logger
-        name="com.hp.hpl.jena.shared"
-        level="WARN" />
-    <logger
-        name="org.apache.http"
-        level="INFO" />
-    <logger
-        name="org.glassfish.jersey.filter.LoggingFilter"
-        level="WARN" />
-    <logger
-        name="org.eclipse.jetty"
-        level="INFO" />
-    <logger
-        name="org.glassfish.grizzly.filterchain"
-        level="INFO" />
+    <logger level="DEBUG" name="eu.dm2e.ws.grafeo.gom" />
+    <logger level="WARN" name="org.apache.jena.fuseki" />
+    <logger level="WARN" name="com.hp.hpl.jena.shared" />
+    <logger level="INFO" name="org.apache.http" />
+    <logger level="INFO" name="org.eclipse.jetty" />
+    <logger level="INFO" name="sun.net" />
+    <logger level="INFO" name="org.glassfish.grizzly.filterchain" />
+    <logger level="INFO" name="org.glassfish.grizzly.nio.transport" />
 
-    <root level="INFO">
+    
+    <!-- Set this to WARN or higher to disable Jersey logging -->
+    <logger level="WARN" name="org.glassfish.jersey.filter.LoggingFilter" />
+
+    <root level="DEBUG">
         <appender-ref ref="FILE" />
         <appender-ref ref="STDOUT" />
     </root>

@@ -704,7 +704,7 @@ public class FileService extends AbstractRDFService {
 		fileName = fileName.replaceAll("__+", "_");
 		File f = new File(String.format(
 				"%s/%s",
-				Config.getString("dm2e.service.file.store_directory"), 
+				Config.get(ConfigProp.FILE_STOREDIR),
 				fileName));
         if (!f.getParentFile().exists()) {
             f.getParentFile().mkdirs();

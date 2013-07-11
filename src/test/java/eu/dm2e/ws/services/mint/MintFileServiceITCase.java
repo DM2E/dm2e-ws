@@ -24,7 +24,7 @@ import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.jena.SparqlSelect;
 
-public class MintFileServiceTest extends OmnomTestCase {
+public class MintFileServiceITCase extends OmnomTestCase {
 
 	public static String SERVICE_URI;
 
@@ -46,8 +46,13 @@ public class MintFileServiceTest extends OmnomTestCase {
 		assertEquals(200, resp.getStatus());
 		listG.readHeuristically(resp.readEntity(InputStream.class));
 		log.info("Choose random file");
-		ResultSet iter = new SparqlSelect.Builder().select("?s").where("?s <" + NS.RDF.PROP_TYPE
-				+ "> <" + NS.OMNOM.CLASS_FILE + ">").grafeo(listG).limit(1).build().execute();
+		ResultSet iter = new SparqlSelect.Builder()
+				.select("?s")
+				.where("?s <" + NS.RDF.PROP_TYPE + "> <" + NS.OMNOM.CLASS_FILE + ">")
+				.grafeo(listG)
+				.limit(1)
+				.build()
+				.execute();
 		randomFileUri = listG.resource(iter.next().get("?s").asResource().toString()).toString();
 		log.info("Random file chosen: " + randomFileUri);
 		randomFilePojo = listG.getObjectMapper().getObject(FilePojo.class, randomFileUri);
@@ -105,7 +110,7 @@ public class MintFileServiceTest extends OmnomTestCase {
 		final String respStr = resp.readEntity(String.class);
 		log.info("" + respStr);
 		assertEquals(303, resp.getStatus());
-		assertEquals(randomFilePojo.getInternalFileLocation(), resp.getLocation().toString());
+		assertEquals(randomFilePojo.getFileRetrievalURI(), resp.getLocation());
 	}
 
 	@Test
@@ -117,7 +122,8 @@ public class MintFileServiceTest extends OmnomTestCase {
 			.get();
 		assertEquals(200, respMetadataJson.getStatus());
 		assertEquals(MediaType.APPLICATION_JSON_TYPE, respMetadataJson.getMediaType());
-		log.info(respMetadataJson.readEntity(String.class));
+		assertEquals(randomFilePojo.toJson(), respMetadataJson.readEntity(String.class));
+//		log.info(respMetadataJson.readEntity(String.class));
 	}
 
 	@Test

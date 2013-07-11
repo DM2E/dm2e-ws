@@ -37,6 +37,7 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 import eu.dm2e.ws.Config;
+import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.api.WebservicePojo;
@@ -167,7 +168,7 @@ public abstract class AbstractRDFService {
      */
     public  WebservicePojo getWebServicePojo() {
         if (webservicePojo.getId()==null)    {
-            String base = Config.config.getString("dm2e.ws.base_uri");
+            String base = Config.get(ConfigProp.BASE_URI);
             String path = this.getClass().getAnnotation(Path.class).value();
             if (base.endsWith("/") && path.startsWith("/")) base = base.substring(0,base.length()-1);
             webservicePojo.setId(base + path);

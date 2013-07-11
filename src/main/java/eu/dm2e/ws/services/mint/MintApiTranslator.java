@@ -87,12 +87,20 @@ public final class MintApiTranslator {
 	 * @param mintPassword
 	 *            MINT password of the API user
 	 */
-	public MintApiTranslator(String localBase, String mintBase, String mintUsername,
-			String mintPassword) {
+	public MintApiTranslator(String localBase, String mintBase, String mintUsername, String mintPassword) {
+		
 		mint_file_base = localBase;
 		mint_api_base = mintBase;
 		mint_username = mintUsername;
 		mint_password = mintPassword;
+
+		if (null == mint_file_base
+				|| null == mint_api_base
+				|| null == mint_username
+				|| null == mint_password) {
+			throw new RuntimeException(
+					"MintApiTranslator initialized with null values. Check the config.xml");
+		}
 
 		mint_uri_home = mint_api_base + "Home.action";
 		mint_uri_login = mint_api_base + "Login.action";
@@ -108,10 +116,12 @@ public final class MintApiTranslator {
 	 * @return true if logged in, false otherwise
 	 */
 	protected boolean isLoggedIn() {
-		Response resp = mintClient.target(mint_uri_home).header("Origin",
-				"http://mint-projects.image.ntua.gr").header("Referer",
-				"http://mint-projects.image.ntua.gr/dm2e/Login.action").get();
-		log.debug("isLoggedIn response: " + resp);
+		Response resp = mintClient
+				.target(mint_uri_home)
+				.header("Origin", "http://mint-projects.image.ntua.gr")
+				.header("Referer", "http://mint-projects.image.ntua.gr/dm2e/Login.action")
+				.get();
+		log.debug("isLoggedIn response: " + resp.getStatusInfo().toString());
 		log.trace("Location: " + resp.getLocation());
 
 		final String respStr = resp.readEntity(String.class);
@@ -133,7 +143,8 @@ public final class MintApiTranslator {
 	protected void ensureLoggedIn() {
 
 		log.trace("Cookies: " + mintClient.cookies);
-		if (isLoggedIn()) return;
+		if (isLoggedIn())
+			return;
 		else {
 			log.debug("Clearing cookies, trying to login.");
 			mintClient.clearCookies();
@@ -145,10 +156,10 @@ public final class MintApiTranslator {
 		log.info(LogbackMarkers.SENSITIVE_INFORMATION, "Logging in as " + mint_username + ":"
 				+ mint_password);
 		Response resp = mintClient
-			.target(mint_uri_login)
-			.header("Origin", "http://mint-projects.image.ntua.gr")
-			.header("Referer", "http://mint-projects.image.ntua.gr/dm2e/Login.action")
-			.post(Entity.form(form));
+				.target(mint_uri_login)
+				.header("Origin", "http://mint-projects.image.ntua.gr")
+				.header("Referer", "http://mint-projects.image.ntua.gr/dm2e/Login.action")
+				.post(Entity.form(form));
 
 		final URI location = resp.getLocation();
 		log.debug("Login Response: " + resp);
@@ -214,8 +225,8 @@ public final class MintApiTranslator {
 
 		log.debug("Downloading from {}", fp.getInternalFileLocation());
 		Response resp = mintClient
-			.target(fp.getInternalFileLocation())
-			.get();
+				.target(fp.getInternalFileLocation())
+				.get();
 		if (!resp.getMediaType().equals(DM2E_MediaType.APPLICATION_X_TAR_UTF8_TYPE)) {
 			log.info("Expected {}, but received {}. Probably a rights issue.",
 					DM2E_MediaType.APPLICATION_X_TAR_UTF8_TYPE,
@@ -262,7 +273,8 @@ public final class MintApiTranslator {
 		String datasetListUri = mint_uri_list_dataupload;
 		Response resp = mintClient.target(datasetListUri).get();
 		final String respStr = resp.readEntity(String.class);
-		if (resp.getStatus() > 200) throw new RuntimeException(respStr);
+		if (resp.getStatus() > 200)
+			throw new RuntimeException(respStr);
 		log.debug(LogbackMarkers.DATA_DUMP, respStr);
 		final List<FilePojo> list = this.parseFileListFromDataUploadList(respStr);
 		log.trace("Number of DataUploads: " + list.size());
@@ -316,7 +328,8 @@ public final class MintApiTranslator {
 	 * @param apiType
 	 * @return
 	 */
-	private FilePojo retrieveAnyMintFileById(String id, API_TYPE apiType) {
+	private FilePojo retrieveAnyMintFileById(String id,
+			API_TYPE apiType) {
 		if (null == id) {
 			throw new RuntimeException("Can't retrieve a file without an ID.");
 		}
@@ -373,7 +386,8 @@ public final class MintApiTranslator {
 	 * @param api_type
 	 * @return
 	 */
-	protected List<FilePojo> parseFileListFromApiResponse(String apiResponse, API_TYPE api_type) {
+	protected List<FilePojo> parseFileListFromApiResponse(String apiResponse,
+			API_TYPE api_type) {
 
 		List<FilePojo> retList = new ArrayList<>();
 
@@ -402,7 +416,8 @@ public final class MintApiTranslator {
 			} else if (api_type.equals(API_TYPE.DATA_UPLOAD)) {
 				fp = parseFilePojoFromDataUploadJson(jsonFileObj);
 			}
-			if (null == fp) continue;
+			if (null == fp)
+				continue;
 			retList.add(fp);
 		}
 		return retList;
@@ -435,7 +450,8 @@ public final class MintApiTranslator {
 	 * @param api_type
 	 * @return
 	 */
-	protected FilePojo parseFilePojoFromApiResponse(String apiResponse, API_TYPE api_type) {
+	protected FilePojo parseFilePojoFromApiResponse(String apiResponse,
+			API_TYPE api_type) {
 
 		log.trace(LogbackMarkers.HTTP_RESPONSE_DUMP, "Parsing API response: {}", apiResponse);
 
@@ -490,7 +506,8 @@ public final class MintApiTranslator {
 
 		final String uploadID = json.get("dbID").getAsString();
 		final String datasetType = json.get("type").getAsString();
-		if (!datasetType.equals("DataUpload")) return null;
+		if (!datasetType.equals("DataUpload"))
+			return null;
 
 		FilePojo fp = new FilePojo();
 
@@ -510,9 +527,12 @@ public final class MintApiTranslator {
 		// http://mint-projects.image.ntua.gr/dm2e/Download?datasetId=1026
 		if (null != json.get("format")) {
 			String mintFormat = json.get("format").getAsString();
-			if ("TGZ-XML".equals(mintFormat)) fp.setFileType(NS.OMNOM_TYPES.TGZ_XML);
-			else if ("ZIP-XML".equals(mintFormat)) fp.setFileType(NS.OMNOM_TYPES.ZIP_XML);
-			else if ("XML".equals(mintFormat)) fp.setFileType(NS.OMNOM_TYPES.XML);
+			if ("TGZ-XML".equals(mintFormat))
+				fp.setFileType(NS.OMNOM_TYPES.TGZ_XML);
+			else if ("ZIP-XML".equals(mintFormat))
+				fp.setFileType(NS.OMNOM_TYPES.ZIP_XML);
+			else if ("XML".equals(mintFormat))
+				fp.setFileType(NS.OMNOM_TYPES.XML);
 			else {
 				String msg = "Unknown format of this DataUpload: " + mintFormat;
 				log.error(msg);
@@ -525,7 +545,7 @@ public final class MintApiTranslator {
 
 		// Set internalFileLocation to the Download?datasetId=... URI
 		fp.setInternalFileLocation(String
-			.format("%sDownload?datasetId=%s", mint_api_base, uploadID));
+				.format("%sDownload?datasetId=%s", mint_api_base, uploadID));
 
 		// If the file is a single XML, let our convertTGZtoXML logic
 		// dereference it (/{id}/data path in MintFileService, otherwise just
@@ -575,19 +595,19 @@ public final class MintApiTranslator {
 			String uploadID = json.get("uploadId").getAsString();
 			// http://mint-projects.image.ntua.gr/dm2e/MappingOptions.action?selaction=downloadxsl&selectedMapping=1166&uploadId=1130&isApi=true
 			fp
-				.setFileRetrievalURI(URI
-					.create(String
-						.format("%s/MappingOptions?api=true&selaction=downloadxsl&selectedMapping=%s&uploadID=%s",
-								mint_api_base,
-								mappingID,
-								uploadID)));
+					.setFileRetrievalURI(URI
+							.create(String
+									.format("%s/MappingOptions?api=true&selaction=downloadxsl&selectedMapping=%s&uploadID=%s",
+											mint_api_base,
+											mappingID,
+											uploadID)));
 			try {
 				fp.setFileEditURI(URI.create(mint_api_base
 						+ "Home.action?kConnector=html.page&url=DoMapping.action"
 						+ URLEncoder.encode(String
-							.format("?mapid=%s&uploadid=%s&kTitle=Mapping+Tool",
-									mappingID,
-									uploadID), "UTF-8")));
+								.format("?mapid=%s&uploadid=%s&kTitle=Mapping+Tool",
+										mappingID,
+										uploadID), "UTF-8")));
 			} catch (UnsupportedEncodingException e) {
 				log.error("uploadID resulted in invalid UTF-8: ", e);
 				throw new RuntimeException(e);

@@ -18,6 +18,7 @@ import org.junit.Test;
 
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.Config;
+import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.OmnomTestCase;
@@ -59,10 +60,10 @@ public class MintApiTranslatorTest extends OmnomTestCase {
 	}
 	
 	private MintApiTranslator mintApiTranslator = new MintApiTranslator(
-			Config.getString("dm2e.service.mint-file.base_uri"),
-			Config.getString("dm2e.service.mint-file.mint_base"),
-			Config.getString("dm2e.service.mint-file.username"),
-			Config.getString("dm2e.service.mint-file.password")
+			Config.get(ConfigProp.MINT_BASE_URI),
+			Config.get(ConfigProp.MINT_REMOTE_BASE_URI),
+			Config.get(ConfigProp.MINT_USERNAME),
+			Config.get(ConfigProp.MINT_PASSWORD)
 	);
 	
 	private FilePojo randomMappingFP;
@@ -80,8 +81,8 @@ public class MintApiTranslatorTest extends OmnomTestCase {
 		log.info("Testing login");
 		mintApiTranslator.mintClient.clearCookies();
 		log.info(LogbackMarkers.SENSITIVE_INFORMATION, "Logging in as {}:{}"
-			, Config.getString("dm2e.service.mint-file.username")
-			, Config.getString("dm2e.service.mint-file.password"));
+			, Config.get(ConfigProp.MINT_USERNAME)
+			, Config.get(ConfigProp.MINT_PASSWORD));
 		assertFalse(mintApiTranslator.isLoggedIn());
 		mintApiTranslator.ensureLoggedIn();
 		log.info("Cookies: " + mintApiTranslator.mintClient.cookies);
@@ -215,7 +216,7 @@ public class MintApiTranslatorTest extends OmnomTestCase {
 
 	@Test
 	public void testRetrieveFilePojoForUriUpload() throws Exception {
-		URI uri = URI.create(Config.getString("dm2e.service.mint-file.base_uri") + "/upload" + randomDataUploadMintId);
+		URI uri = URI.create(Config.get(ConfigProp.MINT_BASE_URI) + "/upload" + randomDataUploadMintId);
 		FilePojo retFP = mintApiTranslator.retrieveFilePojoForUri(uri);
 		try {
 			assertEquals(randomDataUploadFP, retFP);
@@ -226,7 +227,7 @@ public class MintApiTranslatorTest extends OmnomTestCase {
 	
 	@Test
 	public void testRetrieveFilePojoForUriMapping() throws Exception {
-		URI uri = URI.create(Config.getString("dm2e.service.mint-file.base_uri") + "/mapping" + randomMappingMintId);
+		URI uri = URI.create(Config.get(ConfigProp.MINT_BASE_URI) + "/mapping" + randomMappingMintId);
 		FilePojo retFP = mintApiTranslator.retrieveFilePojoForUri(uri);
 		try {
 			assertEquals(randomMappingFP, retFP);
