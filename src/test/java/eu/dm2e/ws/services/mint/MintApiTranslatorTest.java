@@ -24,6 +24,7 @@ import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
 import eu.dm2e.ws.api.FilePojo;
 
+
 public class MintApiTranslatorTest extends OmnomTestCase {
 	
 	public MintApiTranslatorTest() {

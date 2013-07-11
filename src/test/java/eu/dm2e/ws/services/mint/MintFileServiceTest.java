@@ -54,8 +54,7 @@ public class MintFileServiceTest extends OmnomTestCase {
 	}
 
 	@Test
-	public void testGetFileList()
-			throws InterruptedException, IOException {
+	public void testGetFileList() throws InterruptedException, IOException {
 		log.info(SERVICE_URI);
 		Response resp = client.target(SERVICE_URI).request().get();
 		log.info("GET /mint-file response: " + resp);

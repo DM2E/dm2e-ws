@@ -1,23 +1,17 @@
 package eu.dm2e.ws.api.json;
 
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.joda.time.DateTime;
-import org.reflections.Reflections;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
+import com.google.gson.*;
 import eu.dm2e.ws.api.AbstractPersistentPojo;
 import eu.dm2e.ws.api.SerializablePojo;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
+import org.joda.time.DateTime;
+import org.reflections.Reflections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Set;
 
 public class OmnomJsonSerializer {
 	

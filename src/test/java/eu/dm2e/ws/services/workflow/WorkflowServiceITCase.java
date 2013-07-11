@@ -66,7 +66,7 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 		Assert.assertEquals(200, resp.getStatus());
 	}
 
-	//@Test
+	@Test
 	public void testGetWorkflow() {
 		// Response resp2 =
 		// client.resource(wf.getId()).get(ClientResponse.class);
