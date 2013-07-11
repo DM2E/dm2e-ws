@@ -1,14 +1,16 @@
 package eu.dm2e.ws.api;
 
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.junit.Test;
-
+import eu.dm2e.ws.NS;
+import eu.dm2e.ws.OmnomUnitTest;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
 
-public class WebserviceConfigPojoTest {
+public class WebserviceConfigPojoTest  extends OmnomUnitTest {
 	
 	private Logger log = LoggerFactory.getLogger(getClass().getName());
 	
@@ -53,6 +55,65 @@ public class WebserviceConfigPojoTest {
         assert (config2.getParameterValueByName("testparam2").equals("2"));
     }
 	
+	@Test
+	public void testDeserializationRDF() {
+		final String confUri = "http://foo/conf";
+		final String wsUri = "http://foo/service";
+		{
+			GrafeoImpl gIn = new GrafeoImpl();
+			gIn.addTriple(confUri, NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_WEBSERVICE_CONFIG);
+//			gIn.addTriple(wsUri, NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_WEBSERVICE);
+			gIn.addTriple(confUri, NS.OMNOM.PROP_WEBSERVICE, wsUri);
 
+			WebservicePojo ws = new WebservicePojo();
+			ws.setId(wsUri);
+			WebserviceConfigPojo config = new WebserviceConfigPojo();
+			config.setId(confUri);
+			config.setWebservice(ws);
+			GrafeoAssert.graphContainsGraph(config.getGrafeo(), gIn);
+//			GrafeoAssert.graphsAreEquivalent(config.getGrafeo(), gIn);
+		}
+		{
+			GrafeoImpl gIn = new GrafeoImpl();
+			gIn.addTriple(confUri, NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_WEBSERVICE_CONFIG);
+			gIn.addTriple(wsUri, NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_WEBSERVICE);
+			gIn.addTriple(confUri, NS.OMNOM.PROP_WEBSERVICE, wsUri);
+
+			WebservicePojo ws = new WebservicePojo();
+			ws.setId(wsUri);
+			WebserviceConfigPojo config = new WebserviceConfigPojo();
+			config.setId(confUri);
+			config.setWebservice(ws);
+			GrafeoAssert.graphsAreEquivalent(config.getGrafeo(), gIn);
+		}
+	}
+	
+	@Test
+	public void testDeserializationJSON() {
+		final String confUri = "http://foo/conf";
+		final String wsUri = "http://foo/service";
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.append("{")
+					.append("'id':'").append(confUri).append("'")
+					.append(",")
+					.append("'webservice':").append("{")
+						.append("'id':'").append(wsUri).append("'")
+						.append("}")
+			.append("}");
+			log.debug(sb.toString());
+			
+			String jsonStr = sb.toString();
+			WebserviceConfigPojo pojoParsed = jsonSerializer.deserializeFromJSON(jsonStr, WebserviceConfigPojo.class);
+			log.debug(pojoParsed.getTerseTurtle());
+
+			WebservicePojo ws = new WebservicePojo();
+			ws.setId(wsUri);
+			WebserviceConfigPojo config = new WebserviceConfigPojo();
+			config.setId(confUri);
+			config.setWebservice(ws);
+			GrafeoAssert.graphsAreEquivalent(config.getGrafeo(), pojoParsed.getGrafeo());
+		}
+	}
 
 }

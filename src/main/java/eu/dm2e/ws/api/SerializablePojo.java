@@ -9,6 +9,8 @@ import javax.ws.rs.client.Entity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonObject;
+
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.json.OmnomJsonSerializer;
@@ -58,6 +60,9 @@ public abstract class SerializablePojo<T> {
 	 **************************************/
 	public String toJson() {
 		return OmnomJsonSerializer.serializeToJSON(this, getClass());
+	}
+	public JsonObject toJsonObject() {
+		return OmnomJsonSerializer.serializeToJsonObject(this, getClass());
 	}
 	
 	

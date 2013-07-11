@@ -2,9 +2,9 @@ package eu.dm2e.ws;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.List;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -16,8 +16,13 @@ import javax.ws.rs.ext.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.api.SerializablePojo;
+import eu.dm2e.ws.api.json.OmnomJsonSerializer;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
 //@Singleton
@@ -26,26 +31,24 @@ import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 	MediaType.WILDCARD,
 	MediaType.APPLICATION_JSON
 })
-public class SerializablePojoMessageBodyWriter implements MessageBodyWriter<SerializablePojo> {
+public class SerializablePojoListMessageBodyWriter implements MessageBodyWriter<List<SerializablePojo>> {
 	
 	Logger log = LoggerFactory.getLogger(getClass().getName());
+	
+	private JsonParser jsonParser = new JsonParser();
 	
 	@Override
 	public boolean isWriteable(Class<?> type,
 			Type genericType,
 			Annotation[] annotations,
 			MediaType mediaType) {
-//		return true;
-//		return false;
-		return (
-				SerializablePojo.class.isAssignableFrom(type)
-				&&
-				DM2E_MediaType.expectsMetadataResponse(mediaType)
-				);
+		return DM2E_MediaType.expectsMetadataResponse(mediaType);
+//		return MediaType.APPLICATION_XML_TYPE.equals(mediaType) 
+//                && List.class.isAssignableFrom(type);
 	}
 
 	@Override
-	public long getSize(SerializablePojo t,
+	public long getSize(List<SerializablePojo> t,
 			Class<?> type,
 			Type genericType,
 			Annotation[] annotations,
@@ -55,7 +58,7 @@ public class SerializablePojoMessageBodyWriter implements MessageBodyWriter<Seri
 	}
 
 	@Override
-	public void writeTo(SerializablePojo t,
+	public void writeTo(List<SerializablePojo> t,
 			Class<?> type,
 			Type genericType,
 			Annotation[] annotations,
@@ -64,11 +67,16 @@ public class SerializablePojoMessageBodyWriter implements MessageBodyWriter<Seri
 			OutputStream entityStream)
 			throws IOException, WebApplicationException {
 		if (DM2E_MediaType.expectsJsonResponse(mediaType)) {
-			log.debug(LogbackMarkers.DATA_DUMP, "Serializing to JSON: {}", t.toJson());
-			entityStream.write(t.toJson().getBytes("UTF-8"));
+			String jsonStr = OmnomJsonSerializer.serializeToJSON(t);
+			log.debug(LogbackMarkers.DATA_DUMP, "Serializing to JSON: {}", jsonStr);
+			entityStream.write(jsonStr.getBytes("UTF-8"));
 		} else if (DM2E_MediaType.expectsRdfResponse(mediaType)) {
 			// TODO FIXME this is duplicated in GrafeoMessageBodyWriter
-			GrafeoImpl g = (GrafeoImpl) t.getGrafeo();
+			GrafeoImpl g = new GrafeoImpl();
+			for (SerializablePojo pojo : t) {
+				g.merge(pojo.getGrafeo());
+			}
+
 			final String jenaLng = DM2E_MediaType.getJenaLanguageForMediaType(mediaType);
 			log.debug(LogbackMarkers.DATA_DUMP, "Serializing to RDF ({}), as terse turtle: {}",
 					jenaLng, g.getTerseTurtle());

@@ -398,6 +398,8 @@ public interface Grafeo {
 	
 	Set<GStatement> listStatements(GResource subject, String predicate, GValue object);
 
+	Set<GResource> listSubjects();
+
 	void removeTriple(GStatement stmt);
 	void removeTriple(GResource s, String p, GValue o);
 	void removeTriple(String s, String p, String o);
@@ -471,6 +473,7 @@ public interface Grafeo {
 	Entity<String> getTurtleEntity();
 
 	boolean containsTriple(URI s, String p, String o);
+
 
 }
 

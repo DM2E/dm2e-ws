@@ -1,17 +1,24 @@
 package eu.dm2e.ws.api.json;
 
-import com.google.gson.*;
-import eu.dm2e.ws.api.AbstractPersistentPojo;
-import eu.dm2e.ws.api.SerializablePojo;
-import eu.dm2e.ws.grafeo.annotations.RDFClass;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
 import org.joda.time.DateTime;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Set;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import eu.dm2e.ws.api.AbstractPersistentPojo;
+import eu.dm2e.ws.api.SerializablePojo;
+import eu.dm2e.ws.grafeo.annotations.RDFClass;
 
 public class OmnomJsonSerializer {
 	
@@ -36,6 +43,14 @@ public class OmnomJsonSerializer {
 		gson = gsonBuilder.create();
 	}
 	
+	public static String serializeToJSON(List<? extends SerializablePojo> pojoList) {
+		JsonArray retArray = new JsonArray();
+		for (SerializablePojo pojo : pojoList) {
+			retArray.add(pojo.toJsonObject());
+		}
+		return gson.toJson(retArray);
+	}
+	
 	public static <T> String serializeToJSON(List<? extends SerializablePojo<T>> pojoList, Type T) {
 		JsonArray retArray = new JsonArray();
 		for (SerializablePojo<T> pojo : pojoList) {
@@ -44,7 +59,7 @@ public class OmnomJsonSerializer {
 		return gson.toJson(retArray);
 	}
 	
-	private static <T> JsonObject serializeToJsonObject(SerializablePojo<T> pojo, Type T) {
+	public static <T> JsonObject serializeToJsonObject(SerializablePojo<T> pojo, Type T) {
 		 JsonElement jsonElem = gson.toJsonTree(pojo, T);
 		 if (! jsonElem.isJsonObject()) {
 			 throw new RuntimeException(pojo + " was serialized to something other than a JSON object: " + jsonElem.getClass());
@@ -65,5 +80,5 @@ public class OmnomJsonSerializer {
 	public static <T> T deserializeFromJSON(String jsonStr, Class<T> T) {
 		return (T) gson.fromJson(jsonStr, T);
 	}
-
+	
 }

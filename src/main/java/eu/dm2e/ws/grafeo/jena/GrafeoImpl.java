@@ -1363,4 +1363,14 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 			this.addTriple(stmt);
 		}
 	}
+
+	@Override
+	public Set<GResource> listSubjects() {
+		Set<Resource> jenaResSet = this.getModel().listSubjects().toSet();
+		Set<GResource> grafeoResSet = new HashSet<>();
+		for (Resource jenaRes : jenaResSet) {
+			grafeoResSet.add(this.resource(jenaRes));
+		}
+		return grafeoResSet;
+	}
 }

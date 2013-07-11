@@ -150,7 +150,9 @@ public class GrafeoAssert {
 		GrafeoImpl g1Impl = (GrafeoImpl) g1;
 		GrafeoImpl g2Impl = (GrafeoImpl) g2;
 		if (! g1Impl.containsAllStatementsFrom(g2Impl)) {
-			throw new AssertionError("Grafeo " + g1 + " does not contain all statements from Grafeo " + g2);
+			throw new ComparisonFailure("Grafeo " + g1 + " does not contain all statements from Grafeo " + g2,
+					g1.getTerseTurtle(),
+					g2.getTerseTurtle());
 		}
 	}
 	public static void graphDoesntContainGraph(Grafeo g1, Grafeo g2) {
@@ -159,7 +161,8 @@ public class GrafeoAssert {
 			graphContainsGraph(g1, g2);
 			failedOK = false;
 		} catch (AssertionError e) { }
-		if (! failedOK) fail("Grafeo " + g1 + " does contain all statements from Grafeo " + g2);
+		if (! failedOK) 
+			fail("Grafeo " + g1 + " does contain all statements from Grafeo " + g2);
 	}
 	static public void graphContainsGraphStructurally(Grafeo g1, Grafeo g2) {
 		GrafeoImpl g1Copy = (GrafeoImpl) g1.copy();
