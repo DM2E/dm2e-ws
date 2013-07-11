@@ -25,6 +25,10 @@ public enum ErrorMsg {
 	ILLEGAL_PARAMETER_VALUE("Bad Value for this parameter.")
 	,
 	NOT_FOUND("Resource not found.")
+	,
+	UNTYPED_RDF("Could not determine the rdf:type of the top resource.")
+	,
+	WRONG_RDF_TYPE("The rdf:type of the top resource is incompatible with this request.")
 	;
 	
 	private String message;

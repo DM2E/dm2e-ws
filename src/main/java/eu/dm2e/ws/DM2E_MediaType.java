@@ -25,13 +25,15 @@ public class DM2E_MediaType {
 	/*
      *
 	 * This is for copy/pasting (since Annotations don't support arrays, sigh
-	@Consumes({
+	@Consumes|Produces({
 		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
 		DM2E_MediaType.APPLICATION_RDF_XML,
 		DM2E_MediaType.APPLICATION_X_TURTLE,
-		// DM2E_MediaType.TEXT_PLAIN,
 		DM2E_MediaType.TEXT_RDF_N3,
 		DM2E_MediaType.TEXT_TURTLE
+		// , MediaType.TEXT_HTML
+		// , DM2E_MediaType.TEXT_PLAIN,
+		// , MediaType.APPLICATION_JSON
 	})
 	 */
     private static Logger log = LoggerFactory.getLogger(DM2E_MediaType.class.getName());
@@ -50,6 +52,19 @@ public class DM2E_MediaType {
 			TEXT_RDF_N3 = "text/rdf+n3",
 			// TURTLE
 			TEXT_TURTLE = "text/turtle";
+	public static final MediaType
+			// NTRIPLES
+			APPLICATION_RDF_TRIPLES_TYPE = MediaType.valueOf(APPLICATION_RDF_TRIPLES),
+			// RDFXML
+			APPLICATION_RDF_XML_TYPE = MediaType.valueOf(APPLICATION_RDF_XML),
+			// TURTLE
+			APPLICATION_X_TURTLE_TYPE = MediaType.valueOf(APPLICATION_X_TURTLE),
+			// NTRIPLES
+			TEXT_PLAIN_TYPE = MediaType.valueOf(TEXT_PLAIN),
+			// N3
+			TEXT_RDF_N3_TYPE = MediaType.valueOf(TEXT_RDF_N3),
+			// TURTLE
+			TEXT_TURTLE_TYPE = MediaType.valueOf(TEXT_TURTLE);
 
 	// Log file mediatype
 	public static final String TEXT_X_LOG = "text/x-log";
