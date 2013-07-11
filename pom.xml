@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.dm2e.ws</groupId>
 	<artifactId>dm2e-ws</artifactId>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<version>1.0-SNAPSHOT</version>
 	<name>dm2e-ws</name>
 	<distributionManagement>
@@ -345,7 +345,8 @@
                             <goal>integration-test</goal>
                         </goals>
                         <configuration>
-                            <argLine>${failsafe.argLine}</argLine>
+                            <!-- <argLine>${failsafe.argLine}</argLine>            -->
+                            <argLine></argLine>
                         </configuration>
                     </execution>
                     <execution>
