@@ -854,6 +854,11 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
         return sparqlask.execute();
     }
 
+	@Override
+	public boolean containsTriple(URI s, String p, String o) {
+		return containsTriple(s.toString(), p, o);
+	}
+
     @Override
     public boolean containsTriple(String s, String p, GLiteral o) {
     	GrafeoImpl temp = new GrafeoImpl();

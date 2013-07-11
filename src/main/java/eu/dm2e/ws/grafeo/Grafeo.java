@@ -470,9 +470,7 @@ public interface Grafeo {
 	
 	Entity<String> getTurtleEntity();
 
-
-
-
+	boolean containsTriple(URI s, String p, String o);
 
 }
 

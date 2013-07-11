@@ -268,7 +268,7 @@ public class FileServiceITCase extends OmnomTestCase {
 				assertEquals(configString.get(res), resp.readEntity(String.class));
 			}
 			{
-				for (String mediaType : DM2E_MediaType.SET_OF_RDF_TYPES) {
+				for (String mediaType : DM2E_MediaType.SET_OF_RDF_TYPES_STRING) {
 					log.info("Getting file metadata as " + mediaType);
 					Response resp = client.target(fileURI)
 							.request(mediaType)
