@@ -330,7 +330,8 @@
                             <goal>integration-test</goal>
                         </goals>
                         <configuration>
-                            <argLine>${failsafe.argLine}</argLine>
+                            <!-- <argLine>${failsafe.argLine}</argLine>            -->
+                            <argLine></argLine>
                         </configuration>
                     </execution>
                     <execution>

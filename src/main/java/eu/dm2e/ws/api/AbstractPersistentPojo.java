@@ -20,7 +20,7 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo<T> {
 		this.loadFromURI(uri.toString(), 0);
 	}
 	
-	public void loadFromURI(URI uri, int expansionSteps) throws Exception {
+	public void loadFromURI(URI uri, int expansionSteps) {
 		this.loadFromURI(uri.toString(), expansionSteps);
 	}
 	
