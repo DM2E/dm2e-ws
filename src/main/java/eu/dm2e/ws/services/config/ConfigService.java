@@ -13,6 +13,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import eu.dm2e.logback.LogbackMarkers;
@@ -21,8 +22,10 @@ import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
+import eu.dm2e.ws.SerializablePojoMessageBodyWriter;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
+import eu.dm2e.ws.api.WorkflowConfigPojo;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
@@ -50,12 +53,26 @@ public class ConfigService extends AbstractRDFService {
     public Response getConfig(@Context UriInfo uriInfo, @PathParam("id") String id) {
         log.info("Configuration requested: " + getRequestUriWithoutQuery());
         Grafeo g = new GrafeoImpl();
+        URI configURI = getRequestUriWithoutQuery();
         try {
-	        g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), getRequestUriWithoutQuery());
+	        g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), configURI);
         } catch (RuntimeException e) {
         	return throwServiceError(getRequestUriWithoutQuery().toString(), ErrorMsg.NOT_FOUND, 404);
         }
-        return getResponse(g);
+        
+        ResponseBuilder resp;
+        if (g.containsTriple(configURI, NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_WEBSERVICE_CONFIG)) {
+        	WebserviceConfigPojo configPojo = g.getObjectMapper().getObject(WebserviceConfigPojo.class, configURI);
+        	resp = Response.ok(configPojo);
+        } else if (g.containsTriple(configURI, NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_WORKFLOW_CONFIG)) {
+        	WorkflowConfigPojo configPojo = g.getObjectMapper().getObject(WorkflowConfigPojo.class, configURI);
+        	resp = Response.ok(configPojo);
+        } else {
+        	return throwServiceError(configURI + " has an unknown rdf:type.", ErrorMsg.NOT_FOUND, 404);
+        }
+        return resp.build();
+//        return Response.ok(configPojo);
+//        return getResponse(g);
     }
     
     /**

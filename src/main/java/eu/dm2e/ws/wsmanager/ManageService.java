@@ -22,6 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.sparql.core.DatasetGraphFactory;
+
+import eu.dm2e.ws.SerializablePojoMessageBodyWriter;
 //import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 /**
@@ -84,7 +86,11 @@ public class ManageService {
 //        initParams.put("com.sun.jersey.config.property.packages", "eu.dm2e.ws.services");
     	final ResourceConfig resourceConfig = new ResourceConfig()
         	.packages("eu.dm2e.ws.services")
+        	// multipart/form-data
 	        .register(MultiPartFeature.class)
+	        // setting pojos as response entity
+	        .register(SerializablePojoMessageBodyWriter.class)
+	        // Log Jersey-internal server communication
 	        .register(LoggingFilter.class);
 
         

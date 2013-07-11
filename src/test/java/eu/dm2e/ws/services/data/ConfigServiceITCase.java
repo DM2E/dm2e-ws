@@ -1,6 +1,7 @@
 // <<<<<<< HEAD
 package eu.dm2e.ws.services.data;
 
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static org.junit.matchers.JUnitMatchers.*;
 
@@ -8,13 +9,17 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 
+import javax.print.attribute.standard.Media;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.OmnomTestCase;
@@ -35,6 +40,43 @@ public class ConfigServiceITCase extends OmnomTestCase{
 		client = new Client();
 		webTarget = client.getJerseyClient().target(BASE_URI + "/config");
     }
+	
+	@Test
+	public void testGetConfig() {
+		URI configURI = null;
+		{
+			Grafeo gOut = new GrafeoImpl(configFile.get(OmnomTestResources.DEMO_SERVICE_WORKING));
+			Response resp = webTarget.request().post(
+					Entity.entity(gOut.getCanonicalNTriples(), DM2E_MediaType.APPLICATION_RDF_TRIPLES));
+			assertThat(resp.getStatus(), is(201));
+			configURI = resp.getLocation();
+		}
+		assertNotNull(configURI);
+		// n-triple
+		{
+			Response resp = client.target(configURI).request(DM2E_MediaType.APPLICATION_RDF_TRIPLES).get();
+			final String respStr = resp.readEntity(String.class);
+			log.warn(respStr);
+			assertThat(resp.getStatus(), is(200));
+			assertThat(resp.getMediaType().toString(), is(DM2E_MediaType.APPLICATION_RDF_TRIPLES));
+		}
+		// turtle
+		{
+			Response resp = client.target(configURI).request(DM2E_MediaType.TEXT_TURTLE).get();
+			final String respStr = resp.readEntity(String.class);
+			log.warn(respStr);
+			assertThat(resp.getStatus(), is(200));
+			assertThat(resp.getMediaType().toString(), is(DM2E_MediaType.TEXT_TURTLE));
+		}
+		// json
+		{
+			Response resp = client.target(configURI).request(MediaType.APPLICATION_JSON).get();
+			final String respStr = resp.readEntity(String.class);
+			log.warn(respStr);
+			assertThat(resp.getStatus(), is(200));
+			assertThat(resp.getMediaType(), is(MediaType.APPLICATION_JSON_TYPE));
+		}
+	}
 	
 	@Test
 	public void testPostBadSyntax() {
