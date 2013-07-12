@@ -1,15 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<configuration debug="true" scan="true" scanPeriod="10 seconds" >
+<configuration debug="true" scan="true" scanPeriod="10 seconds">
 
-  <conversionRule conversionWord="markerWithSeparator" 
-                  converterClass="eu.dm2e.logback.SeparatorMarkerOrEmptyStringConverter" />
-                  
-  <conversionRule conversionWord="dm2eHighlight" 
-                  converterClass="eu.dm2e.logback.HighlightHighContrastConverter" />
+    <!--
+        Translating java.util.logging log events to slf4j is very expensive especially
+        since creating them cannot be avoided. LevelChangePropagator disables JUL logging
+        of disabled logging statements and resets the JUL root logger.
+        
+        Actual installation of the jul-slf4j bridge is in static block in OmnomUnitTest
+    -->
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
+
+    <conversionRule conversionWord="markerWithSeparator"
+        converterClass="eu.dm2e.logback.SeparatorMarkerOrEmptyStringConverter" />
+
+    <conversionRule conversionWord="dm2eHighlight"
+        converterClass="eu.dm2e.logback.HighlightHighContrastConverter" />
 
 
-	<statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
 	
 	<!-- 
 		Filter messages with some Marker (see eu.dm2e.logback.LogbackMarkers)
@@ -17,68 +28,59 @@
 		NEUTRAL: do nothing
 		ACCEPT: accept it, even if other filters deny it
 	 -->
-	<turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
-		<Marker>HTTP_RESPONSE_DUMP</Marker>
+    <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
+        <Marker>HTTP_RESPONSE_DUMP</Marker>
 	<!--<OnMatch>ACCEPT</OnMatch>-->
-		<OnMatch>DENY</OnMatch>
-	</turboFilter>
-	<turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
-		<Marker>DATA_DUMP</Marker>
+        <OnMatch>DENY</OnMatch>
+    </turboFilter>
+    <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
+        <Marker>DATA_DUMP</Marker>
 <!-- 		<OnMatch>ACCEPT</OnMatch> -->
-		<OnMatch>DENY</OnMatch>
-	</turboFilter>
-	<turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
-		<Marker>SENSITIVE_INFORMATION</Marker>
-		<OnMatch>ACCEPT</OnMatch>
-	</turboFilter>
-	<turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
-		<Marker>SERVER_COMMUNICATION</Marker>
-		<OnMatch>ACCEPT</OnMatch>
-	</turboFilter>
-	<turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
-		<Marker>TRACE_TIME</Marker>
-		<OnMatch>ACCEPT</OnMatch>
-	</turboFilter>
+        <OnMatch>DENY</OnMatch>
+    </turboFilter>
+    <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
+        <Marker>SENSITIVE_INFORMATION</Marker>
+        <OnMatch>ACCEPT</OnMatch>
+    </turboFilter>
+    <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
+        <Marker>SERVER_COMMUNICATION</Marker>
+        <OnMatch>ACCEPT</OnMatch>
+    </turboFilter>
+    <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
+        <Marker>TRACE_TIME</Marker>
+        <OnMatch>ACCEPT</OnMatch>
+    </turboFilter>
 
-	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<!--  ANSI coloring -->
-	    <withJansi>true</withJansi>
+        <withJansi>true</withJansi>
 		<!-- 
 		See http://logback.qos.ch/manual/layouts.html
 		encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder by default
 		 -->
-		<encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-			<layout class="eu.dm2e.logback.OmnomLogbackLayout">
-				<Pattern>%dm2eHighlight(%level [%logger{5}] %m)</Pattern>
-			</layout>
-		</encoder>
-	</appender>
-	
-	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>log/console.log</file>
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<!-- 
-				hourly rollover 
-				log-test/dm2e-ws.log
-				log-test/2013-07-05/dm2e-ws.2013-07-05_11.log
-				...
-			-->
-			<fileNamePattern>log-/console.%d{yyyy-MM-dd}.log</fileNamePattern>
-			<!-- keep 30 days' worth of history -->
-			<maxHistory>720</maxHistory>
-		</rollingPolicy>
-		<encoder>
-			<Pattern>%level [%logger.%method:%line%markerWithSeparator] %m%n</Pattern>
-		</encoder>
-	</appender>
-	
-	<root level="INFO">
-		<appender-ref ref="STDOUT" />
-		<appender-ref ref="FILE" />
-	</root>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="eu.dm2e.logback.OmnomLogbackLayout">
+                <Pattern>%dm2eHighlight(%level [%logger{5}] %m)</Pattern>
+            </layout>
+        </encoder>
+    </appender>
 
-	<logger name="eu.dm2e.ws.grafeo.gom" level="DEBUG" />
-	<logger name="org.apache.jena.fuseki.Fuseki" level="WARN" />
+    <logger level="DEBUG" name="eu.dm2e.ws.grafeo.gom" />
+    <logger level="WARN" name="org.apache.jena.fuseki" />
+    <logger level="WARN" name="com.hp.hpl.jena.shared" />
+    <logger level="INFO" name="org.apache.http" />
+    <logger level="INFO" name="org.eclipse.jetty" />
+    <logger level="INFO" name="sun.net" />
+    <logger level="INFO" name="org.glassfish.grizzly.filterchain" />
+    <logger level="INFO" name="org.glassfish.grizzly.nio.transport" />
+
+    
+    <!-- Set this to WARN or higher to disable Jersey logging -->
+    <logger level="INFO" name="org.glassfish.jersey.filter.LoggingFilter" />
+
+    <logger name="eu.dm2e.ws.grafeo.gom" level="DEBUG" />
+    <logger name="org.apache.jena.fuseki.Fuseki" level="WARN" />
 
 
+    <root level="DEBUG"> <appender-ref ref="STDOUT" /> </root>
 </configuration>

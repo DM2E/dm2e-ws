@@ -21,14 +21,6 @@ public class OmnomUnitTest {
 			.create();
 	protected OmnomJsonSerializer jsonSerializer = new OmnomJsonSerializer();
 	static {
-		 // Optionally remove existing handlers attached to j.u.l root logger
-		 SLF4JBridgeHandler.removeHandlersForRootLogger();  // (since SLF4J 1.6.5)
-
-		 // add SLF4JBridgeHandler to j.u.l's root logger, should be done once during
-		 // the initialization phase of your application
-		 SLF4JBridgeHandler.install();
-	}
-	static {
 //		try {
 	        System.setProperty("org.eclipse.jetty.server.Request.maxFormContentSize", "100000000");
 //			System.setProperty("java.util.logging.config.file", "logging.properties");

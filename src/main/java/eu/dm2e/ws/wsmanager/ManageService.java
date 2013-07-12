@@ -13,6 +13,7 @@ import org.apache.jena.fuseki.server.DatasetRef;
 import org.apache.jena.fuseki.server.SPARQLServer;
 import org.apache.jena.fuseki.server.ServerConfig;
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.http.server.NetworkListener;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
@@ -20,6 +21,7 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import com.hp.hpl.jena.sparql.core.DatasetGraphFactory;
 
@@ -42,6 +44,12 @@ public class ManageService {
 	
 	static {
 		System.setProperty("dm2e-ws.test.properties_file", "dm2e-ws.test.properties");
+		 // Optionally remove existing handlers attached to j.u.l root logger
+		 SLF4JBridgeHandler.removeHandlersForRootLogger();  // (since SLF4J 1.6.5)
+
+		 // add SLF4JBridgeHandler to j.u.l's root logger, should be done once during
+		 // the initialization phase of your application
+		 SLF4JBridgeHandler.install();
 	}
 	
 	private static final int FUSEKI_PORT = 9997;
@@ -109,6 +117,10 @@ public class ManageService {
         httpServer = GrizzlyHttpServerFactory.createHttpServer(
         		UriBuilder.fromUri("http://localhost:" + OMNOM_PORT + "/api").build(), resourceConfig);
         httpServer.getServerConfiguration().addHttpHandler(new StaticHttpHandler("WebContent"), "/");
+        // disable caching for the static files
+        for (NetworkListener l : httpServer.getListeners()) {
+        	l.getFileCache().setEnabled(false);
+        }
 
     }
     public static void stopHttpServer() {
