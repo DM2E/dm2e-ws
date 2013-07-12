@@ -41,35 +41,35 @@ public class SerializablePojoITCase extends OmnomUnitTest {
 		assertNotNull(new MockPojo().getGrafeo());
 	}
 
-	@Test
-	public void testCopy() throws Exception {
-		{
-			MockPojo orig = new MockPojo();
-			orig.setFooProp("FOO");
-			MockPojo copy = orig.copy();
-			assertEquals(orig.getId(), copy.getId());
-			assertEquals(orig.getFooProp(), copy.getFooProp());
-			GrafeoAssert.graphsAreEquivalent(orig.getGrafeo(), copy.getGrafeo());
-		}
-		{
-			IntegerPojo orig = new IntegerPojo(10);
-			IntegerPojo copy = orig.copy();
-			assertNull(orig.getId(), orig.getId());
-			assertNull(copy.getId(), copy.getId());
-			assertEquals(orig.getId(), copy.getId());
-			assertEquals(orig.getSomeNumber(), copy.getSomeNumber());
-			GrafeoAssert.graphsAreEquivalent(orig.getGrafeo(), copy.getGrafeo());
-		}
-		{
-			String THE_URI = "http://foo3000";
-			IntegerPojo orig = new IntegerPojo(THE_URI, 3000);
-			IntegerPojo copy = orig.copy();
-			assertEquals(THE_URI, orig.getId());
-			assertEquals(orig.getId(), copy.getId());
-			assertEquals(orig.getSomeNumber(), copy.getSomeNumber());
-			GrafeoAssert.graphsAreEquivalent(orig.getGrafeo(), copy.getGrafeo());
-			assertEquals(orig.getClass(), copy.getClass());
-		}
-	}	
+//	@Test
+//	public void testCopy() throws Exception {
+//		{
+//			MockPojo orig = new MockPojo();
+//			orig.setFooProp("FOO");
+//			MockPojo copy = orig.copy();
+//			assertEquals(orig.getId(), copy.getId());
+//			assertEquals(orig.getFooProp(), copy.getFooProp());
+//			GrafeoAssert.graphsAreEquivalent(orig.getGrafeo(), copy.getGrafeo());
+//		}
+//		{
+//			IntegerPojo orig = new IntegerPojo(10);
+//			IntegerPojo copy = orig.copy();
+//			assertNull(orig.getId(), orig.getId());
+//			assertNull(copy.getId(), copy.getId());
+//			assertEquals(orig.getId(), copy.getId());
+//			assertEquals(orig.getSomeNumber(), copy.getSomeNumber());
+//			GrafeoAssert.graphsAreEquivalent(orig.getGrafeo(), copy.getGrafeo());
+//		}
+//		{
+//			String THE_URI = "http://foo3000";
+//			IntegerPojo orig = new IntegerPojo(THE_URI, 3000);
+//			IntegerPojo copy = orig.copy();
+//			assertEquals(THE_URI, orig.getId());
+//			assertEquals(orig.getId(), copy.getId());
+//			assertEquals(orig.getSomeNumber(), copy.getSomeNumber());
+//			GrafeoAssert.graphsAreEquivalent(orig.getGrafeo(), copy.getGrafeo());
+//			assertEquals(orig.getClass(), copy.getClass());
+//		}
+//	}	
 
 }

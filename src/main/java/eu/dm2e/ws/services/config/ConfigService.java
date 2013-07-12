@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.jws.WebService;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -32,7 +31,6 @@ import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.api.WorkflowConfigPojo;
 import eu.dm2e.ws.grafeo.GResource;
-import eu.dm2e.ws.grafeo.GValue;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;

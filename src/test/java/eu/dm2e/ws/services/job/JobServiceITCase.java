@@ -336,15 +336,14 @@ public class JobServiceITCase extends OmnomTestCase {
 			job.publishToService(client.getJobWebTarget());
 			assertThat(job.getId(), not(nullValue()));
 		}	
-		{
-			
-			WorkflowJobPojo job2 = (WorkflowJobPojo) job.copy();
-			assertNotNull(job2);
-			assertNotNull(job2.getId());
-			assertEquals(JobStatus.FINISHED.toString(), job2.getStatus());
-			job2.setStatus(JobStatus.FAILED);
-			job2.publishToService();
-		}
+//		{
+//			WorkflowJobPojo job2 = (WorkflowJobPojo) job.copy();
+//			assertNotNull(job2);
+//			assertNotNull(job2.getId());
+//			assertEquals(JobStatus.FINISHED.toString(), job2.getStatus());
+//			job2.setStatus(JobStatus.FAILED);
+//			job2.publishToService();
+//		}
 	}
 	
 	@Test

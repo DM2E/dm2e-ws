@@ -108,18 +108,13 @@ public abstract class SerializablePojo<T> {
 				+ (this.hasLabel() ? "(\"" + this.getLabel() + "\")" : "");
     }
     
-    public T copy() {
-    	String origId = this.getId();
-    	String tempID = "http://temporary/" + UUID.randomUUID(); 
-    	this.setId(tempID);
-    	
-    	SerializablePojo<T> that = this.getGrafeo().getObjectMapper().getObject(this.getClass(), tempID);
-    	
-    	this.setId(origId);
-    	that.setId(origId);
-    	
-		return (T) that;
-    }
+    // TODO could use PojoUtils, JSON, Grafeo ... but why?
+//    public T copy() {
+//    	
+//    	SerializablePojo<T> that = OmnomJsonSerializer.deserializeFromJSON(this.toJson(), this.getClass());
+//    	
+//		return (T) that;
+//    }
     
     /*********************************************
      * 
