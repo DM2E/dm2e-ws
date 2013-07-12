@@ -85,7 +85,6 @@ public class FileService extends AbstractRDFService {
 	 * @return
 	 */
 	@GET
-	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getFileListBaseAlias() {
 		return Response.seeOther(appendPath(getRequestUriWithoutQuery(), "list")).build();
@@ -107,6 +106,9 @@ public class FileService extends AbstractRDFService {
         g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_FILE));
         for (GResource fileUri : g.findByClass(NS.OMNOM.CLASS_FILE)) {
         	log.info("Resource: " + fileUri.getUri());
+        	if (null == fileUri.getUri()) {
+        		log.warn("There is a blank node file without an ID in the triplestore.");
+        	}
         	g.load(fileUri.getUri());
         	FilePojo fp = new FilePojo();
         	fp.loadFromURI(fileUri.getUri());

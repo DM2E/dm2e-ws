@@ -40,12 +40,12 @@ public class WorkflowJobPojo extends AbstractJobPojo {
 	public WorkflowConfigPojo getWorkflowConfig() { return workflowConfig; }
 	public void setWorkflowConfig(WorkflowConfigPojo workflowConfig) { this.workflowConfig = workflowConfig; }
 	
-	@RDFProperty(value = NS.OMNOM.FINISHED_POSITION, serializeAsURI=true)
+	@RDFProperty(value = NS.OMNOM.PROP_FINISHED_POSITION, serializeAsURI=true)
 	private Set<WorkflowPositionPojo> finishedPositions = new HashSet<>();
 	public Set<WorkflowPositionPojo> getFinishedPositions() { return finishedPositions; }
 	public void setFinishedPositions(Set<WorkflowPositionPojo> finishedPositions) { this.finishedPositions = finishedPositions; }
 	
-	@RDFProperty(value = NS.OMNOM.FINISHED_JOB, serializeAsURI=true)
+	@RDFProperty(value = NS.OMNOM.PROP_FINISHED_JOB, serializeAsURI=true)
 	private Set<JobPojo> finishedJobs = new HashSet<>();
 	public Set<JobPojo> getFinishedJobs() { return finishedJobs; }
 	public void setFinishedJobs(Set<JobPojo> finishedJobs) { this.finishedJobs = finishedJobs; }

@@ -147,9 +147,9 @@ public final class NS {
 
 		public static final String PROP_DEFAULT_VALUE = BASE + "defaultValue";
 
-		public static final String FINISHED_POSITION = BASE + "finishedPosition";
+		public static final String PROP_FINISHED_POSITION = BASE + "finishedPosition";
 
-		public static final String FINISHED_JOB = BASE + "finishedJob";
+		public static final String PROP_FINISHED_JOB = BASE + "finishedJob";
 
 		public static final String PROP_FILE_TYPE = BASE + "fileType";
 		

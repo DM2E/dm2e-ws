@@ -19,10 +19,10 @@ public class NSExporter {
 			Field[] listOfFields = innerClass.getFields();
 			for (Field field : listOfFields) {
 				if (! Modifier.isStatic(field.getModifiers())
-						||
-					! Modifier.isStatic(field.getModifiers())
-						||
-					field.getName().equals("BASE")
+//						||
+//					! Modifier.isStatic(field.getModifiers())
+////						||
+//					field.getName().equals("BASE")
 //						||
 //					! (
 //						field.getName().startsWith("PROP_")
