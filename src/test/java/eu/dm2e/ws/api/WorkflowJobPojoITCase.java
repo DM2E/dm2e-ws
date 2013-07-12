@@ -22,7 +22,7 @@ public class WorkflowJobPojoITCase extends OmnomTestCase {
 		
 		WorkflowJobPojo wfjob = new WorkflowJobPojo();
 		wfjob.setId(wfid);
-		wfjob.getFinishedJobs().add(finishedJob1);
+		wfjob.getFinishedJob().add(finishedJob1);
 		
 		log.info(wfjob.getTerseTurtle());
 		Grafeo g = new GrafeoImpl();

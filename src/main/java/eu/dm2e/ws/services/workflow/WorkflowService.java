@@ -515,7 +515,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 				} while (webserviceJob.isStillRunning());
 				
 				finishedJobs.put(pos.getId(), webserviceJob);
-				workflowJob.getFinishedJobs().add(webserviceJob);
+				workflowJob.getFinishedJob().add(webserviceJob);
 				workflowJob.getFinishedPositions().add(pos);
 				workflowJob.publishToService();
 				
