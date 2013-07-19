@@ -16,10 +16,6 @@ import javax.ws.rs.ext.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.api.SerializablePojo;
 import eu.dm2e.ws.api.json.OmnomJsonSerializer;
@@ -35,7 +31,7 @@ public class SerializablePojoListMessageBodyWriter implements MessageBodyWriter<
 	
 	Logger log = LoggerFactory.getLogger(getClass().getName());
 	
-	private JsonParser jsonParser = new JsonParser();
+//	private JsonParser jsonParser = new JsonParser();
 	
 	@Override
 	public boolean isWriteable(Class<?> type,

@@ -131,32 +131,32 @@ public abstract class AbstractJobPojo extends AbstractPersistentPojo<AbstractJob
 	 * 
 	 ********************/
 	public void setStatus(JobStatus status) {
-		setStatus(status.toString());
+		setJobStatus(status.toString());
 	}
 
 	public void setStarted() {
-		this.trace("Status change: " + this.getStatus() + " => " + JobStatus.STARTED);
-		this.setStatus(JobStatus.STARTED.toString()); 
-		publishJobStatus(this.getStatus());
+		this.trace("Status change: " + this.getJobStatus() + " => " + JobStatus.STARTED);
+		this.setJobStatus(JobStatus.STARTED.toString()); 
+		publishJobStatus(this.getJobStatus());
 	}
 
 	public void setFinished() {
-		this.trace("Status change: " + this.getStatus() + " => " + JobStatus.FINISHED);
-		this.setStatus(JobStatus.FINISHED.toString()); 
-		publishJobStatus(this.getStatus());
+		this.trace("Status change: " + this.getJobStatus() + " => " + JobStatus.FINISHED);
+		this.setJobStatus(JobStatus.FINISHED.toString()); 
+		publishJobStatus(this.getJobStatus());
 	}
 
 	public void setFailed() {
-		this.trace("Status change: " + this.getStatus() + " => " + JobStatus.FAILED);
-		this.setStatus(JobStatus.FAILED.toString()); 
-		publishJobStatus(this.getStatus());
+		this.trace("Status change: " + this.getJobStatus() + " => " + JobStatus.FAILED);
+		this.setJobStatus(JobStatus.FAILED.toString()); 
+		publishJobStatus(this.getJobStatus());
 	}
 
-	public boolean isFinished() { return this.getStatus().equals(JobStatus.FINISHED.toString()); }
+	public boolean isFinished() { return this.getJobStatus().equals(JobStatus.FINISHED.toString()); }
 
-	public boolean isFailed() { return this.getStatus().equals(JobStatus.FAILED.toString()); }
+	public boolean isFailed() { return this.getJobStatus().equals(JobStatus.FAILED.toString()); }
 
-	public boolean isStarted() { return ! this.getStatus().equals(JobStatus.NOT_STARTED.toString()); }
+	public boolean isStarted() { return ! this.getJobStatus().equals(JobStatus.NOT_STARTED.toString()); }
 
 	public boolean isStillRunning() {
 		return !(isFinished() || isFailed());
@@ -272,12 +272,12 @@ public abstract class AbstractJobPojo extends AbstractPersistentPojo<AbstractJob
 	 *********************/
 	
     @RDFProperty(NS.OMNOM.PROP_JOB_STATUS)
-    String status;
-	public String getStatus() {
-		if (null != status) return status;
+    String jobStatus;
+	public String getJobStatus() {
+		if (null != jobStatus) return jobStatus;
 		return JobStatus.NOT_STARTED.toString();
 	}
-	public void setStatus(String status) { this.status = status; }
+	public void setJobStatus(String status) { this.jobStatus = status; }
 	
     @RDFProperty(NS.OMNOM.PROP_LOG_ENTRY) 
     Set<LogEntryPojo> logEntries = new HashSet<>();
