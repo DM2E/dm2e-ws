@@ -1,0 +1,13 @@
+{
+    "predef": [ 
+        "require",
+        "define",
+        "console",
+        "window"
+    ],
+    "undef": true,
+    "curly": true,
+    // "smarttabs": true,
+    "-W099": true // allowed mixed tabs and spaces
+
+}
