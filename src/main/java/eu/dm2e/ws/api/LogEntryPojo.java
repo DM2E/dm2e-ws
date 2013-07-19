@@ -30,6 +30,7 @@ public class LogEntryPojo extends AbstractPersistentPojo<LogEntryPojo>{
 	private DateTime timestamp;
 	public DateTime getTimestamp() { return timestamp; }
 	public void setTimestamp(DateTime timestamp) { this.timestamp = timestamp; }
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */

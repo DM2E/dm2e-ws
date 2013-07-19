@@ -14,43 +14,43 @@ public class ParameterConnectorPojo extends SerializablePojo<ParameterConnectorP
 	 * GETTERS/SETTERS
 	 *****************/
 	
-	@RDFProperty(NS.OMNOM.PROP_IN_WORKFLOW)
+	@RDFProperty( value=NS.OMNOM.PROP_IN_WORKFLOW, serializeAsURI = true )
 	private WorkflowPojo inWorkflow;
 	public WorkflowPojo getInWorkflow() { return inWorkflow; }
 	public void setInWorkflow(WorkflowPojo wf) { this.inWorkflow = wf; }
 	public boolean hasInWorkflow() { return this.inWorkflow != null; }
 	
-	@RDFProperty(NS.OMNOM.PROP_FROM_WORKFLOW)
+	@RDFProperty( value=NS.OMNOM.PROP_FROM_WORKFLOW, serializeAsURI = true )
 	private WorkflowPojo fromWorkflow;
 	public WorkflowPojo getFromWorkflow() { return fromWorkflow; }
 	public void setFromWorkflow(WorkflowPojo wf) { this.fromWorkflow = wf; }
 	public boolean hasFromWorkflow() { return this.fromWorkflow != null; }
 	
-	@RDFProperty(NS.OMNOM.PROP_TO_WORKFLOW)
+	@RDFProperty( value=NS.OMNOM.PROP_TO_WORKFLOW, serializeAsURI = true )
 	private WorkflowPojo toWorkflow;
 	public WorkflowPojo getToWorkflow() { return toWorkflow; }
 	public void setToWorkflow(WorkflowPojo wf) { this.toWorkflow = wf; }
 	public boolean hasToWorkflow() { return this.toWorkflow != null; }
 	
-	@RDFProperty(NS.OMNOM.PROP_FROM_POSITION)
+	@RDFProperty( value=NS.OMNOM.PROP_FROM_POSITION, serializeAsURI = true )
 	private WorkflowPositionPojo fromPosition;
 	public WorkflowPositionPojo getFromPosition() { return fromPosition; }
 	public void setFromPosition(WorkflowPositionPojo fromPosition) { this.fromPosition = fromPosition; }
 	public boolean hasFromPosition() { return this.fromPosition != null; }
 	
-	@RDFProperty(NS.OMNOM.PROP_TO_POSITION)
+	@RDFProperty( value=NS.OMNOM.PROP_TO_POSITION, serializeAsURI = true )
 	private WorkflowPositionPojo toPosition;
 	public WorkflowPositionPojo getToPosition() { return toPosition; }
 	public void setToPosition(WorkflowPositionPojo toPosition) { this.toPosition = toPosition; }
 	public boolean hasToPosition() { return this.toPosition != null; }
 
-	@RDFProperty(NS.OMNOM.PROP_FROM_PARAM)
+	@RDFProperty( value=NS.OMNOM.PROP_FROM_PARAM, serializeAsURI = true )
 	private ParameterPojo fromParam;
 	public ParameterPojo getFromParam() { return fromParam; }
 	public void setFromParam(ParameterPojo fromParam) { this.fromParam = fromParam; }
 	public boolean hasFromParam() { return this.fromParam != null; }
 	
-	@RDFProperty(NS.OMNOM.PROP_TO_PARAM)
+	@RDFProperty( value=NS.OMNOM.PROP_TO_PARAM, serializeAsURI = true )
 	private ParameterPojo toParam;
 	public ParameterPojo getToParam() { return toParam; }
 	public void setToParam(ParameterPojo toParam) { this.toParam = toParam; }
