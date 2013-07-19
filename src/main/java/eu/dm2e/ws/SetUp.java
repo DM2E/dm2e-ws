@@ -2,16 +2,17 @@ package eu.dm2e.ws;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class SetUp {
 
 
+	static Logger log = LoggerFactory.getLogger(SetUp.class);
 
 
 	public static void main(String[] args)
 			throws IOException {
-//        System.out.println("SET UP: Starting all servers...");
-//        Config.config.setProperty("dm2e.ws.sparql_endpoint",  "http://localhost:9997/test/sparql");
-//        Config.config.setProperty("dm2e.ws.sparql_endpoint_statements",  "http://localhost:9997/test/update");
-//        ManageService.startAll();
+		log.trace("SetUp happens in the tests now.");
 	}
 }
