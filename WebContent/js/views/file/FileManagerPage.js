@@ -1,25 +1,30 @@
 define([
 	'jquery',
 	'underscore',
-	'backbone',
+	'BaseView',
 	'logging',
 	'vm',
-	'session/UserSession',
+	'singletons/UserSession',
 	'collections/file/FilesCollection',
+	'views/file/FileManagerListView',
 	'text!templates/file/fileManagerTemplate.html'
 ], function(
 	$,
-	logging,
-	Backbone,
+	_,
+	BaseView,
 	logging,
 	Vm,
 	userSession,
 	FilesCollection,
-	fileManagerTemplate) {
+	FileManagerListView,
+	fileManagerTemplate
+) {
 
 	var log = logging.getLogger("FileManagerView");
 
-	return Backbone.View.extend({
+	return BaseView.extend({
+
+		className : "file-manager-page",
 
 		initialize : function(options_arg) {
 
@@ -35,61 +40,50 @@ define([
 					log.warn("Error retrieving collection");
 					console.log(resp);
 				};
-
-				that.collection = new FilesCollection([]);
-				console.log(this.selectedFileService);
-				this.selectedFileService = options.selectedFileService;
-				that.collection.url = function() {
-					return options.selectedFileService;
-				};
+				this.collection = new FilesCollection([], {
+					url: options.selectedFileService
+				});
 				that.collection.fetch({
 					success : onDataHandler,
 					error : onErrorHandler,
 					dataType : "json",
 				});
 			}
-
 		},
 
 		render : function() {
 
-			var compiledTemplate = _.template(fileManagerTemplate, {
+			this.$el.html(_.template(fileManagerTemplate, {
 				user : userSession.get("user"),
-			});
-			this.$el.html(compiledTemplate);
+			}));
 
-			if (typeof this.collection !== 'undefined')
+			if (this.collection) {
 				this.renderFileList();
+			}
 
 			return this;
 		},
 
 		renderFileList : function() {
-
-			that = this;
-
-			require([
-				'views/file/FileManagerListView',
-			], function(FileManagerListView) {
-				var fileListView = Vm.createView(
-					that,
-					'FileManagerListView',
-					FileManagerListView,
-					{
-						collection : that.collection,
-						selectedFileServie : this.selectedFileService
-					});
-				fileListView.render();
-				$(".file-list", that.$el).append(fileListView.$el);
+			this.fileListView = Vm.createView(this, 'FileManagerListView', FileManagerListView, {
+				collection : this.collection,
 			});
+			this.assign(this.fileListView, 'div.file-list');
+//			Vm.cleanupSubViews(this);
+//			_.each(this.collection.models, function(fileModel) {
+//				var subview = Vm.createSubView(this, FileManagerListView, {
+//					model : fileModel
+//				});
+//				this.appendHTML(subview, "div.list-container");
+//			}, this);
 
-			log.debug("FileList rendered.");
 		},
 
 		clean : function() {
 			log.debug("Removing collection object.");
-			if (typeof this.collection !== 'undefined')
+			if (typeof this.collection !== 'undefined') {
 				this.collection.reset();
+			}
 		}
 
 	});

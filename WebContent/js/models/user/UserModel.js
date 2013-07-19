@@ -1,29 +1,53 @@
 //Filename: UserModel.js
 
 define([
-        'jquery',
-        'underscore',
-        'backbone',
-        'logging',
-], function($, _, Backbone, logging) {
+	'jquery',
+	'underscore',
+	'BaseModel',
+	'RelationalModel',
+	'logging',
+	'constants/RDFNS',
+	'models/workflow/WebserviceModel',
+	'collections/workflow/WebserviceCollection'
+], function($,
+	_,
+	BaseModel,
+	RelationalModel,
+	logging,
+	NS,
+	WebserviceModel,
+	WebserviceCollection) {
 
-    var log = logging.getLogger("UserModel");
+	var log = logging.getLogger("models.user.UserModel");
 
-    return Backbone.Model.extend({
-        
-        defaults : {
-            fileServices : [
-                    'api/file',
-                    'api/mint-file'
-            ],
-            configService : 'api/config',
-            workflowService : 'api/workflow',
-            services : [
-                    'api/service/xslt',
-                    'api/service/xslt-zip',
-                    'api/service/publish',
-                    'api/service/demo'
-            ]
-        }
-    });
+	var theDefaults = {
+		fileServices : [ 'api/file', 'api/mint-file' ],
+		configService : 'api/config',
+		workflowService : 'api/workflow',
+		serviceList : [
+			'api/service/xslt',
+			'api/service/xslt-zip',
+			'api/publish',
+			'api/service/demo'
+		]
+	};
+//	theDefaults[NS.getQN("omnom:webservice")] = new WebserviceCollection();
+
+	return RelationalModel.extend({
+
+		defaults : theDefaults,
+		relations : [{
+			type : Backbone.HasMany,
+			key : NS.getQN("omnom:webservice"),
+			relatedModel : WebserviceModel,
+		}],
+		initialize : function() {
+			_.each(this.get("serviceList"), function(serviceURL) {
+				var service = new WebserviceModel({id : serviceURL});
+				service.url = serviceURL;
+				service.fetch();
+				this.getQN("omnom:webservice").add(service);
+			}, this);
+		}
+	});
 });

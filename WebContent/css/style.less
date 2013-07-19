@@ -1,0 +1,82 @@
+/*
+ * Variables
+ */
+
+/*
+ * Mixins
+ */
+.fat-border(@color) {
+  border: 2px solid @color;
+}
+
+.dark-border-solid-content(@color) {
+  .border-radius(20px);
+  border: 3px solid @color - #444 !important;
+  background-color: @color;
+}
+
+/*
+ * Styling
+ */
+.drop-active {
+  .dark-border-solid-content(@drop-active-color);
+}
+
+.drop-hover {
+  .dark-border-solid-content(@drop-hover-color);
+}
+
+.main-menu {
+  a {
+    color: @mainMenuLinkColor;
+  }
+}
+
+.highlight {
+  .dark-border-solid-content(@highlightFirstLevel);
+  .parameter.highlight {
+    background-color: @highlightSecondLevel;
+  }
+}
+
+dl {
+  margin: 5px 0;
+  overflow: hidden;
+}
+
+.boxed-item {
+  h4 {
+    margin: 0 ;
+//    border-bottom: 1px solid black ;
+    padding: 2px ;
+    background: @lightGray ;
+    text-align: center ;
+  }
+}
+
+.list-container {
+  >div {
+    .fat-border(red);
+    .border-radius(10px);
+    overflow: auto;
+    margin: 2px;
+  }
+  .dl-horizontal {
+    overflow: hidden;
+    dd {
+      margin-left: 100px;
+    }
+    dt {
+      width: 80px;
+    }
+  }
+}
+
+#workflow-position-list {
+  min-height: 400px;
+}
+
+//dl {
+//  overflow: hidden;
+//}
+

@@ -1,35 +1,55 @@
 define([
-        'jquery',
-        'underscore',
-        'backbone',
-        'bootstrap',
-        'logging',
-        'session/UserSession',
-        'text!templates/header/menuTemplate.html'
-], function($, _, Backbone, bootstrap, logging, userSession, menuTemplate) {
+	'jquery',
+	'underscore',
+	'BaseView',
+	'logging',
+    'util/themeSwitcher',
+	'singletons/UserSession',
+	'text!templates/header/menuTemplate.html'
+], function($,
+	_,
+	BaseView,
+	logging,
+    themeSwitcher,
+	userSession,
+	menuTemplate) {
 
-    var log = logging.getLogger("MenuView");
+	var log = logging.getLogger("MenuView");
 
-    var HeaderMenuView = Backbone.View.extend({
-        initialize : function() {
-            log.trace("MenuView initialized.");
-        },
-        render : function() {
-            var compiledTemplate = _.template(menuTemplate, {
-                user : userSession.get("user")
-            });
-            $(this.el).html(compiledTemplate);
-            $('a[href="' + window.location.hash + '"]').parent().addClass('active');
-            return this;
-        },
-        events : {
-            'click a' : 'highlightMenuItem'
-        },
-        highlightMenuItem : function(ev) {
-            $('.active').removeClass('active');
-            $(ev.currentTarget).parent().addClass('active');
-        }
-    });
+	var HeaderMenuView = BaseView.extend({
+		
+		template: menuTemplate,
 
-    return HeaderMenuView;
+        events: {
+            "click #switch-theme" : function() {
+                themeSwitcher.toggle();
+                userSession.get("user").setQN("omnom:preferredTheme", themeSwitcher.getTheme());
+                userSession.get("user").save();
+                this.render();
+            }
+        },
+		initialize : function() {
+			log.trace("MenuView initialized.");
+			this.model = userSession.get("user");
+		},
+		render : function() {
+            this.doRender();
+            this.$("#switch-theme").html(userSession.get("user").getQN("omnom:preferredTheme"));
+        },
+//			this.$el.html(_.template(menuTemplate, {
+//				user : userSession.get("user")
+//			}));
+//			$('a[href="' + window.location.hash + '"]').parent().addClass('active');
+//			return this;
+//		},
+//		events : {
+//			'click a' : 'highlightMenuItem'
+//		},
+//		highlightMenuItem : function(ev) {
+//			$('.active').removeClass('active');
+//			$(ev.currentTarget).parent().addClass('active');
+//		}
+	});
+
+	return HeaderMenuView;
 });

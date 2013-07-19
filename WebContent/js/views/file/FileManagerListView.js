@@ -1,43 +1,69 @@
-define([ 'jquery',
-        'underscore',
-        'backbone',
-        'logging',
-        'collections/file/FilesCollection',
-        'text!templates/file/fileManagerListItemTemplate.html'
-], function(
-        $,
-        _,
-        Backbone,
-        logging,
-        FilesCollection,
-        fileManagerListItemTemplate) {
-    
-    var log = logging.getLogger("FileManageListView");
-    
-    return Backbone.View.extend({
-        
-//        initialize : function() {
-//            this.setElement($("#file-manager .file-list"));
-//        },
+define([
+	'jquery',
+	'underscore',
+	'backbone',
+	'logging',
+	'vm',
+	'collections/file/FilesCollection',
+	'views/file/FileManagerListItemView',
+	'text!templates/file/fileManagerListTemplate.html'
+], function($,
+	_,
+	Backbone,
+	logging,
+	Vm,
+	FilesCollection,
+	FileManagerListItemView,
+	fileManagerListTemplate) {
 
-        render : function() {
-            
-            var that = this;
-            
-            that.$el.append($("<h2>List of files on " + that.collection.url() + "</h2>"));
-            
-			_.each(this.collection.models, function(fileModel) {
-			    var compiledTemplate = _.template( fileManagerListItemTemplate, fileModel.attributes );
-//			    log.info(compiledTemplate);
-			    that.$el.append(compiledTemplate);
-			});
+	var log = logging.getLogger("FileManageListView");
+
+	return Backbone.View.extend({
+		
+		className: "list-container",
+
+		hideLoadingIndicator : function() {
+			if (this.collection.listAvailable().length === 0) {
+				this.$el.append("No Files found.");
+			}
+			this.$(".loading-indicator").hide();
+		},
+
+		initialize : function() {
+			this.collection.on('remove', this.render, this);
+			this.collection.on('remove', this.hideLoadingIndicator, this);
+			this.collection.on('sync', this.hideLoadingIndicator, this);
+		},
+
+		render : function() {
 			
-			log.debug("FileManagerListView rendered.");
-        },
-        
-        clean : function() {
-        }
+			var that = this;
 
-    });
+			this.$el.html(_.template(fileManagerListTemplate, {
+				fileService : this.collection.url()
+			}));
+
+			_.each(this.collection.listAvailable(), function(fileModel) {
+				that.renderFileModel(fileModel);
+			});
+//			
+			return this;
+		},
+
+		renderFileModel : function(fileModel) {
+
+			// var self = this;
+
+			var viewName = 'view-' + fileModel.get("id");
+			var itemView = Vm.createView(this, viewName, FileManagerListItemView, {
+				model : fileModel
+			});
+			this.$el.append(itemView.render().$el);
+		},
+
+		clean : function() {
+		}
+
+	});
 
 });

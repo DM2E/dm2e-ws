@@ -1,27 +1,34 @@
 define([
-        'jquery',
-        'underscore',
-        'backbone',
-        'text!templates/home/homeTemplate.html',
-        'NS'
-], function($, _, Backbone, homeTemplate, NS) {
+	'jquery',
+	'underscore',
+	'backbone',
+	'logging',
+	'text!templates/home/homeTemplate.html'
+], function($,
+	_,
+	Backbone,
+	logging,
+	homeTemplate) {
 
-    var HomeView = Backbone.View.extend({
+	var log = logging.getLogger("HomeView");
 
-        initialize : function() {
-            // this.setElement($("#page"));
-            log.trace("HomeView initialized.");
-        },
+	var HomeView = Backbone.View.extend({
 
-        render : function() {
+		initialize : function() {
+			log.trace("HomeView initialized.");
+		},
 
-            this.$el.html(homeTemplate);
+		render : function() {
 
-            log.trace("HomeView rendered.");
-        }
+			this.$el.html(homeTemplate);
 
-    });
+			log.trace("HomeView rendered.");
 
-    return HomeView;
+			return this;
+		}
+
+	});
+
+	return HomeView;
 
 });

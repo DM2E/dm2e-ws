@@ -1,25 +1,38 @@
 //Filename: UserPage.js
 
-define([ 'jquery', // lib/jquery/jquery
-'underscore', // lib/underscore/underscore
-'backbone', // lib/backbone/backbone
-'logging', // logging
-'session/UserSession',
-'text!templates/user/UserPageTemplate.html'
-], function($, _, Backbone, logging, userSession, userPageTemplate) {
+define([
+	'jquery',
+	'underscore',
+	'BaseView',
+	'logging',
+	'singletons/UserSession',
+	'text!templates/user/userPageTemplate.html'
+], function($,
+	_,
+	BaseView,
+	logging,
+	userSession,
+	userPageTemplate) {
 
-    var log = logging.getLogger("UserPage.js");
+	var log = logging.getLogger("UserPage.js");
 
-    return Backbone.View.extend({
-        
-        render: function() {
-            
-            compiledTemplate = _.template(userPageTemplate, { user: userSession.get("user") });
-            
-            this.$el.html(compiledTemplate);
-            
-            log.debug('UserPage rendered');
-        }
+	return BaseView.extend({
 
-    });
+		template : userPageTemplate,
+
+	 initialize : function() {
+		 console.log("I LIVE");
+		 this.model = userSession.get("user");
+		 console.log("I LIVE");
+	 }
+
+	// render : function() {
+	// this.$el.html(_.template(userPageTemplate, {
+	// user : userSession.get("user")
+	// }));
+	//
+	// log.debug('UserPage rendered');
+	// }
+
+	});
 });

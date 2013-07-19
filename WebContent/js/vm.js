@@ -7,6 +7,42 @@ define([
 ], function(_, logging) {
 
     var log = logging.getLogger("vm");
+    
+    var GLOBAL_MODAL_CONTEXT = {};
+    var GLOBAL_MODAL_VIEW;
+    
+    var cleanupSubViews = function(context) {
+    	log.debug("Cleaning up subviews.");
+    	var i = 0;
+        _.each(context.subViews || [], function(subview) {
+        	this.cleanupView(subview);
+        	i++;
+        }, this);
+        context.subViews = [];
+    	log.debug("DONE Cleaning up " + i + " subviews.");
+    }
+
+    var createSubView = function(context, View, options) {
+    	log.debug("Creating item view.")
+        var view = new View(options);
+        if (typeof context.subViews === 'undefined') {
+            context.subViews = [];
+        }
+        context.subViews.push(view);
+    	log.debug("DONE Creating item view.")
+        return view;
+    };
+    
+//    // TODO
+    var createModalView = function(template, options) {
+//    	this.cleanupView(GLOBAL_MODAL_VIEW);
+//    	GLOBAL_MODAL_VIEW = Vm.createView({}, 'ModalView', BaseView, _.extend({
+//    		template : formTemplate,
+//    	}, options));
+//    	var modal = new Backbone.BootstrapModal({ content : this.formView });
+//
+////    	GLOBAL_MODAL_VIEW;
+    };
 
     var createView = function(context, name, View, options) {
 
@@ -22,6 +58,7 @@ define([
         }
         context.subViews.push(view);
 
+        log.debug("DONE Creating view "  + name);
         return view;
     };
 
@@ -71,13 +108,30 @@ define([
         }
         return this.createView(context, name, View, options);
     };
+    
+    var navigateTo = function(path) {
+    	if (! this.router) {
+    		log.warn("No router was set for ViewManager.");
+    		return;
+    	}
+    	this.router.navigate(path, true);
+    };
+    
+    var setRouter = function(theRouter) {
+    	this.router = theRouter;
+    };
 
     return {
         views : {},
         createView : createView,
+        createSubView : createSubView,
+        createModalView : createModalView,
         closeView : closeView,
         reuseView : reuseView,
         cleanupView : cleanupView,
+        cleanupSubViews : cleanupSubViews,
+        navigateTo : navigateTo,
+        setRouter : setRouter,
     };
 
 });

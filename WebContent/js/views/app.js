@@ -1,43 +1,57 @@
 //Filename: app.js
 
 define([
-        'jquery', // lib/jquery/jquery
-        'underscore', // lib/underscore/underscore
-        'backbone', // lib/backbone/backbone
-        'logging', // logging
-        'bootstrap',
-        'vm',
-        'text!templates/layout.html',
-        'models/user/UserModel'
-], function($, _, Backbone, logging, bootstrap, Vm, layoutTemplate, UserModel) {
+	'logging',
+	'vm',
+	'BaseView',
+	'views/header/MenuView',
+	'text!templates/layout.html',
 
-    var log = logging.getLogger("app.js");
+	// these are just loaded for use in other views/models/whatever
+    'less',
+	'bootstrap',
+	'jquery_ui',
+	'backbone_bootstrap_modal',
+	'jquery',
+	'jquery_file_upload'
+], function(
+	logging,
+	Vm,
+	BaseView,
+	HeaderMenuView,
+	layoutTemplate) {
 
-    return Backbone.View.extend({
+	var log = logging.getLogger("app.js");
 
-        el : '.app-container',
+	return BaseView.extend({
 
-        // initialize : function() {
-        // },
+		el : '.app-container',
 
-        render : function() {
+        template : layoutTemplate,
 
-            this.$el.html(layoutTemplate);
+		initialize : function() {
 
-            require([
-                'views/header/MenuView'
-            ], function(HeaderMenuView) {
-                var headerMenuView = Vm.createView(this, "HeaderMenuView", HeaderMenuView);
-                $(".main-menu-container").html(headerMenuView.render().$el);
-            });
+			// load top menu
+			this.headerView = Vm.createView(this, "HeaderMenuView", HeaderMenuView);
+		},
 
-        },
+		render : function() {
 
-        showPage : function(view) {
-            // console.log(view);
-            view.render();
-            $("#page").html(view.$el);
-        }
+			this.$el.html(layoutTemplate);
 
-    });
+			this.assign(this.headerView, '.main-menu-container');
+			if (this.pageView) {
+				this.assign(this.pageView, '#page');
+			}
+			log.debug("DONE rendering page.");
+
+		},
+
+		showPage : function(view) {
+			log.debug("Rendering page");
+			this.pageView = view;
+			this.render();
+		}
+
+	});
 });
