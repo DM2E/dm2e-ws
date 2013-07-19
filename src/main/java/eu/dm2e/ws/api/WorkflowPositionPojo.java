@@ -13,10 +13,10 @@ public class WorkflowPositionPojo extends SerializablePojo<WorkflowPositionPojo>
 	public void validate() throws Exception {
 		if (null == workflow)
 			throw new AssertionError(this + " has no workflow");
-		if (null == webserviceConfig)
-			throw new AssertionError(this + " has no webserviceConfig");
-		else
-			webserviceConfig.validate();
+		if (null == webservice)
+			throw new AssertionError(this + " has no webservice");
+//		else
+//			webservice.validate();
 	}
 
     /*********************
@@ -33,17 +33,18 @@ public class WorkflowPositionPojo extends SerializablePojo<WorkflowPositionPojo>
      ********************/
 
 	/**
+	 * TODO this shoudl be replace with a web service
 	 *  Configuration of the workflow in this position as provided
 	 */
-	@RDFProperty(NS.OMNOM.PROP_WEBSERVICE_CONFIG)
-	private WebserviceConfigPojo webserviceConfig;
-	public WebserviceConfigPojo getWebserviceConfig() { return this.webserviceConfig; }
-	public void setWebserviceConfig(WebserviceConfigPojo webServiceConfig) { this.webserviceConfig = webServiceConfig; }
+	@RDFProperty( value = NS.OMNOM.PROP_WEBSERVICE, serializeAsURI = true)
+	private WebservicePojo webservice;
+	public WebservicePojo getWebservice() { return this.webservice; }
+	public void setWebservice(WebservicePojo webService) { this.webservice = webService; }
 
 	/**
 	 * The workflow this position belongs to
 	 */
-	@RDFProperty(NS.OMNOM.PROP_IN_WORKFLOW)
+	@RDFProperty( value = NS.OMNOM.PROP_IN_WORKFLOW, serializeAsURI = true)
 	private WorkflowPojo workflow;
 	public WorkflowPojo getWorkflow() { return workflow; }
 	public void setWorkflow(WorkflowPojo workflow) { this.workflow = workflow; }

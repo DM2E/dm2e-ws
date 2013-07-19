@@ -4,6 +4,7 @@ import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
+import eu.dm2e.ws.services.workflow.WorkflowService;
 
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/"})
 @RDFClass(NS.OMNOM.CLASS_WORKFLOW_CONFIG)
@@ -51,39 +52,17 @@ public class WorkflowConfigPojo extends AbstractConfigPojo<WorkflowConfigPojo> {
 		}
 		
 		//
-		// b)
-		//
-		for (ParameterConnectorPojo conn : workflow.getParameterConnectors()) {
-			if (conn.hasFromWorkflow() 
-					&&
-				null == workflow.getParamByName(conn.getFromParam().getLabel())) {
-				throw new AssertionError(conn + " references parameter " + conn.getToParam() + " which is not defined by " + workflow);
-			}
-			if (conn.hasToWorkflow() 
-					&&
-				null == workflow.getParamByName(conn.getToParam().getLabel())) {
-				throw new AssertionError(conn + " references parameter " + conn.getToParam() + " which is not defined by " + workflow);
-			}
-		}
-		
-		//
 		// c)
 		//
 		// for every position
 		for (WorkflowPositionPojo pos : workflow.getPositions()) {
-			WebserviceConfigPojo wsconf = pos.getWebserviceConfig();
-			if (null == wsconf) {
-				throw new AssertionError(pos + " has no WebServiceConfig");
-			}
-			WebservicePojo ws = wsconf.getWebservice();
+//			wsconf = pos.getWebservice();
+			WebservicePojo ws = pos.getWebservice();
 			if (null == ws) {
-				throw new AssertionError(wsconf + " of " + pos + " has no webService.");
+				throw new AssertionError(pos + " has no webService.");
 			}
 			// for every input parameter of the webservice at this position
 			for (ParameterPojo param : ws.getInputParams()) {
-				if (null != wsconf.getParameterAssignmentForParam(param.getId())) {
-					throw new AssertionError(param + " is covered by the " + wsconf +". This belongs to the Workflow however.");
-				}
 				if (param.getIsRequired()
 						&&
 					null == workflow.getConnectorToPositionAndParam(pos, param)) {
@@ -97,6 +76,8 @@ public class WorkflowConfigPojo extends AbstractConfigPojo<WorkflowConfigPojo> {
 		// d)
 		//
 		for (ParameterPojo param : workflow.getOutputParams()) {
+			if (param.matchesParameterName(WorkflowService.PARAM_COMPLETE_LOG))
+				continue;
 			if (null == workflow.getConnectorToWorkflowOutputParam(param)) {
 				throw new RuntimeException("No connector to output parameter " + param + "of workflow " + workflow);
 			}
@@ -113,32 +94,32 @@ public class WorkflowConfigPojo extends AbstractConfigPojo<WorkflowConfigPojo> {
 	public void setWorkflow(WorkflowPojo wf) { this.workflow = wf; }
 
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((workflow == null) ? 0 : workflow.hashCode());
-		return result;
-	}
-
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (!super.equals(obj)) return false;
-		if (!(obj instanceof WorkflowConfigPojo)) return false;
-		WorkflowConfigPojo other = (WorkflowConfigPojo) obj;
-		if (workflow == null) {
-			if (other.workflow != null) return false;
-		} else if (!workflow.equals(other.workflow)) return false;
-		return true;
-	}
+//	/* (non-Javadoc)
+//	 * @see java.lang.Object#hashCode()
+//	 */
+//	@Override
+//	public int hashCode() {
+//		final int prime = 31;
+//		int result = super.hashCode();
+//		result = prime * result + ((workflow == null) ? 0 : workflow.hashCode());
+//		return result;
+//	}
+//
+//
+//	/* (non-Javadoc)
+//	 * @see java.lang.Object#equals(java.lang.Object)
+//	 */
+//	@Override
+//	public boolean equals(Object obj) {
+//		if (this == obj) return true;
+//		if (!super.equals(obj)) return false;
+//		if (!(obj instanceof WorkflowConfigPojo)) return false;
+//		WorkflowConfigPojo other = (WorkflowConfigPojo) obj;
+//		if (workflow == null) {
+//			if (other.workflow != null) return false;
+//		} else if (!workflow.equals(other.workflow)) return false;
+//		return true;
+//	}
 
 
 }

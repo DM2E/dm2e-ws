@@ -20,6 +20,9 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implements IWebservice, IValidatable {
 	
 	@Override
+	public int getMaximumJsonDepth() { return 3; }
+	
+	@Override
 	public Grafeo getGrafeo() {
 		Grafeo g = super.getGrafeo();
 		return g;
@@ -131,7 +134,7 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
     	conn.setFromWorkflow(this);
     	conn.setFromParam(getParamByName(fromParamName));
     	conn.setToPosition(toPos);
-    	conn.setToParam(toPos.getWebserviceConfig().getWebservice().getParamByName(toParamName));
+    	conn.setToParam(toPos.getWebservice().getParamByName(toParamName));
     	conn.validate();
     	this.getParameterConnectors().add(conn);
     	return conn;
@@ -149,7 +152,7 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
     	ParameterConnectorPojo conn = new ParameterConnectorPojo();
     	conn.setInWorkflow(this);
     	conn.setFromPosition(fromPos);
-    	conn.setFromParam(fromPos.getWebserviceConfig().getWebservice().getParamByName(fromParamName));
+    	conn.setFromParam(fromPos.getWebservice().getParamByName(fromParamName));
     	conn.setToWorkflow(this);
     	conn.setToParam(getParamByName(toParamName));
     	conn.validate();
@@ -168,9 +171,9 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
     	ParameterConnectorPojo conn = new ParameterConnectorPojo();
     	conn.setInWorkflow(this);
     	conn.setFromPosition(fromPos);
-    	conn.setFromParam(fromPos.getWebserviceConfig().getWebservice().getParamByName(fromParamName));
+    	conn.setFromParam(fromPos.getWebservice().getParamByName(fromParamName));
     	conn.setToPosition(toPos);
-    	conn.setToParam(toPos.getWebserviceConfig().getWebservice().getParamByName(toParamName));
+    	conn.setToParam(toPos.getWebservice().getParamByName(toParamName));
     	conn.validate();
     	this.getParameterConnectors().add(conn);
     	return conn;
@@ -183,15 +186,33 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
 	 * * webservice configs contain a priori assignments (which they should not when run in a workflow)
 	 * TODO
 	 * 
+	 * @see eu.dm2e.ws.api.WorkflowConfigPojo#validate()
 	 * @see eu.dm2e.ws.api.IValidatable#validate()
 	 */
 	@Override
 	public void validate() throws Exception {
-		if (this.getPositions().isEmpty()) {
-			throw new RuntimeException("No positions in the workflow.");
+//		if (this.getPositions().isEmpty()) {
+//			throw new RuntimeException("No positions in the workflow.");
+//		}
+		//
+		// b)
+		//
+		for (ParameterConnectorPojo conn : this.getParameterConnectors()) {
+			if (conn.hasFromWorkflow() 
+					&&
+				null == this.getParamByName(conn.getFromParam().getLabel())) {
+				throw new AssertionError(conn + " references parameter " + conn.getToParam() + " which is not defined by " + this);
+			}
+			if (conn.hasToWorkflow() 
+					&&
+				null == this.getParamByName(conn.getToParam().getLabel())) {
+				throw new AssertionError(conn + " references parameter " + conn.getToParam() + " which is not defined by " + this);
+			}
 		}
-		for (WorkflowPositionPojo pos : this.getPositions())
+		
+		for (WorkflowPositionPojo pos : this.getPositions()) {
 			pos.validate();
+		}
 	}
     
     
@@ -199,26 +220,25 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
      * GETTERS/SETTERS
      ********************/
 
-    @RDFProperty(NS.OMNOM.PROP_INPUT_PARAM)
+    @RDFProperty(value = NS.OMNOM.PROP_INPUT_PARAM, serializeAsURI = false)
     private Set<ParameterPojo> inputParams = new HashSet<>();
 	@Override public Set<ParameterPojo> getInputParams() { return inputParams; }
 	@Override public void setInputParams(Set<ParameterPojo> inputParams) { this.inputParams = inputParams; }
 	
-    @RDFProperty(NS.OMNOM.PROP_OUTPUT_PARAM)
+    @RDFProperty(value = NS.OMNOM.PROP_OUTPUT_PARAM, serializeAsURI = false)
     private Set<ParameterPojo> outputParams = new HashSet<>();
 	@Override public Set<ParameterPojo> getOutputParams() { return outputParams; }
 	@Override public void setOutputParams(Set<ParameterPojo> outputParams) { this.outputParams = outputParams; }
     
-    @RDFProperty(NS.OMNOM.PROP_PARAMETER_CONNECTOR)
+    @RDFProperty(value = NS.OMNOM.PROP_PARAMETER_CONNECTOR, serializeAsURI = false)
     private Set<ParameterConnectorPojo> parameterConnectors = new HashSet<>();
 	public Set<ParameterConnectorPojo> getParameterConnectors() { return parameterConnectors; }
 	public void setParameterConnectors(Set<ParameterConnectorPojo> parameterConnectors) { this.parameterConnectors = parameterConnectors; }
 
-    @RDFProperty(value = NS.OMNOM.PROP_HAS_POSITION, itemPrefix="position-item" )
+	@RDFProperty(value = NS.OMNOM.PROP_WORKFLOW_POSITION, serializeAsURI = false, itemPrefix = "position-item")
     private List<WorkflowPositionPojo> positions = new ArrayList<>();
 	public List<WorkflowPositionPojo> getPositions() { return positions; }
 	public void setPositions(List<WorkflowPositionPojo> positions) { this.positions = positions; }
 	public void addPosition(WorkflowPositionPojo it) { this.getPositions().add(it); }
-
 
 }
