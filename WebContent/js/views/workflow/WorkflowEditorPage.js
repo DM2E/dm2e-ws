@@ -41,6 +41,7 @@ define([
 
 		events : {
 			"click button#save-workflow" : "saveWorkflow",
+            "click button#create-config" : "createConfig",
 			"click button#render" : "render"
 		},
 
@@ -51,8 +52,6 @@ define([
 
             // NOTE cannot reference $el yet because app.js assigns it to the #page at render time => render
 //            this.$el.attr("data-backbone-modelid", this.model.id);
-
-			var that = this;
 
 			/*
 			 * Load Webservice List
@@ -139,6 +138,11 @@ define([
 			log.debug(this.model.toJSON());
 			this.model.save();
 		},
+
+        createConfig: function() {
+            this.saveWorkflow();
+            window.location.hash = "#config-edit-from/" + this.model.id;
+        }
 
 	});
 });

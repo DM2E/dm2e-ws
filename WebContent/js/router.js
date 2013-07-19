@@ -16,7 +16,7 @@ define([
             'profile': 'showUserPage',
             'workflow-list': 'showWorkflowList',
             'job-list': 'showJobList',
-            'workflow-run': 'showRunWorkflow',
+//            'workflow-run': 'showRunWorkflow',
             'help': 'showHelp',
             // Default route
             '*actions': 'defaultAction',
@@ -29,6 +29,8 @@ define([
 
         // Route to Workflow Editor
         appRouter.route(/workflow-edit\/?(.*)/, 'showWorkflowEditor');
+        appRouter.route(/config-edit-from\/(.*)/, 'showConfigEditor');
+        appRouter.route(/config-edit\/(.*)/, 'showConfigEditorFrom');
         appRouter.route(/file-list\/?(.*)/, 'showFileManager');
 
         var appView = args.appView;
@@ -47,7 +49,6 @@ define([
             });
 
         });
-
         appRouter.on('route:showUserPage', function () {
 
             require([ 'views/user/UserPage'
@@ -56,8 +57,7 @@ define([
             });
 
         });
-
-        appRouter.on('route:defaultAction', function (actions) {
+        appRouter.on('route:defaultAction', function () {
             require([ 'views/home/HomePage'
             ], function (HomePage) {
                 var page = Vm.reuseView({}, 'HomePage', HomePage);
@@ -65,7 +65,6 @@ define([
             });
 
         });
-
         appRouter.on('route:showFileUpload', function () {
             require([ 'views/file/FileUploadPage'
             ], function (FileUploadPage) {
@@ -74,35 +73,30 @@ define([
             });
 
         });
-
         appRouter.on('route:showWorkflowEditor', function (workflowURL) {
 
             require([
                 'views/workflow/WorkflowEditorPage',
                 'models/workflow/WorkflowModel',
-                'collections/workflow/WorkflowCollection'
-            ], function (WorkflowEditorPage, WorkflowModel, WorkflowCollection) {
+            ], function (WorkflowEditorPage, WorkflowModel) {
                 var model;
                 if (workflowURL) {
                     console.error(workflowURL);
 //                    model = WorkflowModel.findOrCreate({ id: workflowURL});
-                    // smelly smelly
+                    // smelly smelly HACK
                     var TheModel = WorkflowModel.extend({
-                        url : workflowURL,
+                        url: workflowURL,
                     });
                     model = new TheModel();
                     console.warn("Retrieving workflow %o", workflowURL);
-                    console.log("I LIVE");
                     model.url = function () {
                         return workflowURL;
                     };
-                    console.log("I LIVE");
                     model.fetch({
                         success: function () {
-                            log.debug("I LIVE");
                             appView.showPage(Vm.createView({}, 'WorkflowEditorPage', WorkflowEditorPage, {model: model}));
                         },
-                        error: function (model, xhr, options) {
+                        error: function (model, xhr) {
                             dialogs.errorXHR(xhr);
                         }
                     });
@@ -121,7 +115,7 @@ define([
                             appRouter.navigate(redirectRoute);
                             appView.showPage(Vm.createView({}, 'WorkflowEditorPage', WorkflowEditorPage, {model: model}));
                         },
-                        error: function (model, xhr, options) {
+                        error: function (model, xhr) {
                             dialogs.errorXHR(xhr);
                         }
                     });
@@ -129,20 +123,54 @@ define([
             });
 
         });
-        // TODO
-        appRouter.on('route:showRunWorkflow', function () {
-            dialogs.errorNotImplemented();
-            //
-            // require([
-            // 'views/workflow/RunWorkflowPage'
-            // ], function(RunWorkflowPage) {
-            // appView.showPage(Vm.createView({}, 'RunWorkflowPage',
-            // RunWorkflowPage, {}));
-            // });
-
+        appRouter.on('route:showWorkflowEditorFrom', function (fromWorkflowUri) {
+            require([
+//                'views/workflow/RunWorkflowPage',
+                'models/config/WorkflowConfigModel'
+            ], function (WorkflowConfigModel) {
+                if (! fromWorkflowUri) {
+                    dialogs.errorNotFound();
+                    return;
+                }
+                var TheModel = WorkflowConfigModel.extend({
+                    url: fromWorkflowUri + "/blankConfig"
+                });
+                var model = new TheModel();
+                // load the blank model
+                model.fetch({async:true});
+                model.url = '/api/config';
+                model.save({async:true});
+                model.url = model.id;
+                console.warn(model);
+            });
         });
-        appRouter.on('route:showRunWorkflow', function () {
-            dialogs.errorNotImplemented();
+        appRouter.on('route:showConfigEditor', function (workflowConfigURI) {
+            require([
+//                'views/workflow/RunWorkflowPage',
+                'models/config/WorkflowConfigModel'
+            ], function (
+//                            RunWorkflowPage,
+                         WorkflowConfigModel) {
+                var TheModel;
+                if (!workflowConfigURI) {
+                    dialogs.errorNotFound();
+                } else {
+                    //noinspection JSUnusedAssignment
+                    TheModel = WorkflowConfigModel.extend({
+                        url: workflowConfigURI
+                    });
+                    var model = new TheModel();
+                    model.fetch({async: true});
+                    console.warn(model);
+                }
+                console.log(workflowConfigURI);
+                var x = new WorkflowConfigModel();
+                log.debug(x);
+
+//                appView.showPage(Vm.createView({}, 'RunWorkflowPage',
+//                    RunWorkflowPage, {}));
+            });
+
         });
         appRouter.on('route:showWorkflowList', function () {
             require([
