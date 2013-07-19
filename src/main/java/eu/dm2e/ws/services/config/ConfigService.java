@@ -19,6 +19,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ConfigProp;
@@ -30,6 +33,7 @@ import eu.dm2e.ws.api.SerializablePojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.api.WorkflowConfigPojo;
+import eu.dm2e.ws.api.json.OmnomJsonSerializer;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
@@ -48,7 +52,7 @@ public class ConfigService extends AbstractRDFService {
 	}
 	
     /**
-     * GET /{id}
+     * GET /{id}		Accept: RDF, JSON
      * @param uriInfo
      * @param id
      * @return
@@ -88,7 +92,7 @@ public class ConfigService extends AbstractRDFService {
     }
     
     /**
-     * GET /list
+     * GET /list		Accept: RDF, JSON
      * @param uriInfo
      * @return
      */
@@ -122,12 +126,18 @@ public class ConfigService extends AbstractRDFService {
     }
 
     /**
-     * PUT /{id}
+     * PUT /{id}		Accept: RDF
      * @param input
      * @return
      */
     @PUT
-    @Consumes(MediaType.WILDCARD)
+    @Consumes({
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML,
+		DM2E_MediaType.APPLICATION_X_TURTLE,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.TEXT_TURTLE
+    })
     @Path("{id}")
     public Response putConfig(File input) {
     	URI uri = getRequestUriWithoutQuery();
@@ -178,12 +188,18 @@ public class ConfigService extends AbstractRDFService {
     }
 
 	/**
-	 * POST /
+	 * POST /			Accept: RDF
 	 * @param input
 	 * @return
 	 */
 	@POST
-    @Consumes(MediaType.WILDCARD)
+    @Consumes({
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML,
+		DM2E_MediaType.APPLICATION_X_TURTLE,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.TEXT_TURTLE
+    })
     public Response postConfig(File input) {
         log.info("POST config.");
 //        // TODO BUG this fails if newlines aren't correctly transmitted due to line-wide comments in turtle
@@ -227,6 +243,41 @@ public class ConfigService extends AbstractRDFService {
 
         return Response.created(uri).entity(pojo).build();
     }
+	
+	/**
+	 * POST /		Accept: JSON
+	 * @param input
+	 * @return
+	 */
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response postConfigJSON(String input) {
+		log.info("POST config (JSON)");
+
+		JsonParser jsonParser = new JsonParser();
+		JsonElement json = jsonParser.parse(input);
+		if (! json.getAsJsonObject().has(NS.RDF.PROP_TYPE)) {
+			return throwServiceError(ErrorMsg.UNTYPED_RDF);
+		}
+
+		String rdfType = json.getAsJsonObject().get(NS.RDF.PROP_TYPE).getAsString();
+		SerializablePojo pojo;
+		if (rdfType.equals(NS.OMNOM.CLASS_WEBSERVICE_CONFIG)) {
+			pojo = OmnomJsonSerializer.deserializeFromJSON(input, WebserviceConfigPojo.class);
+		} else if (rdfType.equals(NS.OMNOM.CLASS_WORKFLOW_CONFIG)) { 
+			pojo = OmnomJsonSerializer.deserializeFromJSON(input, WorkflowConfigPojo.class);
+		} else {
+			return throwServiceError(ErrorMsg.WRONG_RDF_TYPE);
+		}
+
+    	URI uri = appendPath(createUniqueStr());
+    	pojo.setId(uri.toString());
+    	
+    	pojo.getGrafeo().putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), uri);
+    	
+    	return Response.created(uri).entity(pojo).build();
+		
+	}
 
 	/**
 	 * GET /{id}/validate
