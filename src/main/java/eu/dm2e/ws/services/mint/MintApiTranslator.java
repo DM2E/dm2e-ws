@@ -513,7 +513,7 @@ public final class MintApiTranslator {
 
 		fp.setId(mint_file_base + "/upload" + uploadID);
 		fp.setCreated(DateTime.parse(json.get("created").getAsString()));
-		fp.setLastModified(DateTime.parse(json.get("lastModified").getAsString()));
+		fp.setModified(DateTime.parse(json.get("lastModified").getAsString()));
 		fp.setOriginalName(json.get("name").getAsString());
 		fp.setLabel(json.get("name").getAsString());
 
@@ -587,10 +587,10 @@ public final class MintApiTranslator {
 		final String mappingID = json.get("dbID").getAsString();
 		FilePojo fp = new FilePojo();
 		fp.setId(mint_file_base + "/mapping" + mappingID);
-		fp.setMediaType("application/xslt+xml");
+		fp.setFormat("application/xslt+xml");
 		fp.setFileType(NS.OMNOM_TYPES.XSLT);
 		fp.setLabel(json.get("name").getAsString());
-		fp.setLastModified(DateTime.parse(json.get("lastModified").getAsString()));
+		fp.setModified(DateTime.parse(json.get("lastModified").getAsString()));
 		if (null != json.get("uploadId")) {
 			String uploadID = json.get("uploadId").getAsString();
 			// http://mint-projects.image.ntua.gr/dm2e/MappingOptions.action?selaction=downloadxsl&selectedMapping=1166&uploadId=1130&isApi=true
