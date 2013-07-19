@@ -27,12 +27,12 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 		result = prime * result + ((fileEditURI == null) ? 0 : fileEditURI.hashCode());
 		result = prime * result + ((internalFileLocation == null) ? 0 : internalFileLocation.hashCode());
 		result = prime * result + ((fileRetrievalURI == null) ? 0 : fileRetrievalURI.hashCode());
-		result = prime * result + (int) (fileSize ^ (fileSize >>> 32));
+		result = prime * result + (int) (extent ^ (extent >>> 32));
 		result = prime * result + ((fileStatus == null) ? 0 : fileStatus.hashCode());
 		result = prime * result + ((fileType == null) ? 0 : fileType.hashCode());
-		result = prime * result + ((lastModified == null) ? 0 : lastModified.hashCode());
+		result = prime * result + ((modified == null) ? 0 : modified.hashCode());
 		result = prime * result + ((md5 == null) ? 0 : md5.hashCode());
-		result = prime * result + ((mediaType == null) ? 0 : mediaType.hashCode());
+		result = prime * result + ((format == null) ? 0 : format.hashCode());
 		result = prime * result + ((originalName == null) ? 0 : originalName.hashCode());
 		result = prime * result + ((itemRootXPath == null) ? 0 : itemRootXPath.hashCode());
 		return result;
@@ -59,22 +59,22 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 		if (fileRetrievalURI == null) {
 			if (other.fileRetrievalURI != null) return false;
 		} else if (!fileRetrievalURI.equals(other.fileRetrievalURI)) return false;
-		if (fileSize != other.fileSize) return false;
+		if (extent != other.extent) return false;
 		if (fileStatus == null) {
 			if (other.fileStatus != null) return false;
 		} else if (!fileStatus.equals(other.fileStatus)) return false;
 		if (fileType == null) {
 			if (other.fileType != null) return false;
 		} else if (!fileType.equals(other.fileType)) return false;
-		if (lastModified == null) {
-			if (other.lastModified != null) return false;
-		} else if (!lastModified.equals(other.lastModified)) return false;
+		if (modified == null) {
+			if (other.modified != null) return false;
+		} else if (!modified.equals(other.modified)) return false;
 		if (md5 == null) {
 			if (other.md5 != null) return false;
 		} else if (!md5.equals(other.md5)) return false;
-		if (mediaType == null) {
-			if (other.mediaType != null) return false;
-		} else if (!mediaType.equals(other.mediaType)) return false;
+		if (format == null) {
+			if (other.format != null) return false;
+		} else if (!format.equals(other.format)) return false;
 		if (originalName == null) {
 			if (other.originalName != null) return false;
 		} else if (!originalName.equals(other.originalName)) return false;
@@ -95,11 +95,11 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 	public void setInternalFileLocation(String fileLocation) { this.internalFileLocation = fileLocation; }
 
 	@RDFProperty(NS.DCTERMS.PROP_FORMAT)
-	private String mediaType;
-	public String getMediaType() { return mediaType; }
-	public void setMediaType(String mediaType) { this.mediaType = mediaType; }
+	private String format;
+	public String getFormat() { return format; }
+	public void setFormat(String mediaType) { this.format = mediaType; }
 
-	@RDFProperty(NS.DC.PROP_TITLE)
+	@RDFProperty(NS.OMNOM.PROP_ORIGINAL_NAME)
 	private String originalName;
 	public String getOriginalName() { return originalName; }
 	public void setOriginalName(String originalName) { this.originalName = originalName; }
@@ -110,9 +110,9 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 	public void setMd5(String md5) { this.md5 = md5; }
 
 	@RDFProperty(NS.DCTERMS.PROP_EXTENT)
-	private long fileSize;
-	public long getFileSize() { return fileSize; }
-	public void setFileSize(long fileSize) { this.fileSize = fileSize; }
+	private long extent;
+	public long getExtent() { return extent; }
+	public void setExtent(long fileSize) { this.extent = fileSize; }
 
 	@RDFProperty(NS.OMNOM.PROP_FILE_RETRIEVAL_URI)
 	private URI fileRetrievalURI;
@@ -133,9 +133,9 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 	public void setFileType(String fileType) { this.fileType = URI.create(fileType); }
 	
 	@RDFProperty(NS.DCTERMS.PROP_MODIFIED)
-	private DateTime lastModified;
-	public DateTime getLastModified() { return lastModified; }
-	public void setLastModified(DateTime lastModified) { this.lastModified = lastModified; }
+	private DateTime modified;
+	public DateTime getModified() { return modified; }
+	public void setModified(DateTime lastModified) { this.modified = lastModified; }
 	
 	@RDFProperty(NS.DCTERMS.PROP_CREATED)
 	private DateTime created;
@@ -148,9 +148,9 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 	public void setFileStatus(String fileStatus) { this.fileStatus = fileStatus; }
 	
 	@RDFProperty(NS.PROV.PROP_WAS_GENERATED_BY)
-	private JobPojo generatorJob;
-	public JobPojo getGeneratorJob() { return generatorJob; }
-	public void setGeneratorJob(JobPojo generatorJob) { this.generatorJob = generatorJob; }
+	private JobPojo wasGeneratedBy;
+	public JobPojo getWasGeneratedBy() { return wasGeneratedBy; }
+	public void setWasGeneratedBy(JobPojo generatorJob) { this.wasGeneratedBy = generatorJob; }
 	
 	@RDFProperty(NS.OMNOM.PROP_ITEM_ROOT_XPATH)
 	private String itemRootXPath;
