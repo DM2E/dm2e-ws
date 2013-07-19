@@ -9,9 +9,11 @@ import org.junit.Test;
 
 import com.google.gson.JsonObject;
 
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.OmnomUnitTest;
 import eu.dm2e.ws.api.json.OmnomJsonSerializer;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
+import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
 
 public class LogEntryPojoTest extends OmnomUnitTest{
 	private String logId = "http://log.foo/bar/1234";
@@ -55,8 +57,9 @@ public class LogEntryPojoTest extends OmnomUnitTest{
 		logE.setMessage("foo message");
 
 		JsonObject expected = new JsonObject();
-		expected.addProperty("message", "foo message");
-		expected.addProperty("timestamp", dt.toString());
+		expected.addProperty(SerializablePojo.JSON_FIELD_UUID, logE.getUuid());
+		expected.addProperty(NS.OMNOM.PROP_LOG_MESSAGE, "foo message");
+		expected.addProperty(NS.DC.PROP_DATE, dt.toString());
 		expected.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, logE.getRDFClassUri());
 		log.info(logE.toJson());
 		assertEquals(testGson.toJson(expected), logE.toJson());
@@ -73,22 +76,54 @@ public class LogEntryPojoTest extends OmnomUnitTest{
 
 		JsonObject expected = new JsonObject();
 		expected.addProperty(SerializablePojo.JSON_FIELD_ID, logId);
-		expected.addProperty("message", "foo");
-		expected.addProperty("timestamp", dt.toString());
+//		expected.addProperty(SerializablePojo.JSON_FIELD_UUID, logE.getUuid());
+		expected.addProperty(NS.OMNOM.PROP_LOG_MESSAGE, "foo");
+		expected.addProperty(NS.DC.PROP_DATE, dt.toString());
 		expected.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, logE.getRDFClassUri());
 		assertEquals(testGson.toJson(expected), logE.toJson());
 		assertEquals(testGson.toJson(expected), OmnomJsonSerializer.serializeToJSON(logE, LogEntryPojo.class));
 	}
 	
 	
+	@Test 
+	public void testDeserializeJsonWithOutId() {
+		DateTime dt = DateTime.now();
+		String uuid = createUUID();
+		JsonObject asJson = new JsonObject();
+		asJson.addProperty(SerializablePojo.JSON_FIELD_UUID, uuid);
+		asJson.addProperty(NS.OMNOM.PROP_LOG_MESSAGE, "foo");
+		asJson.addProperty(NS.DC.PROP_DATE, dt.toString());
+		asJson.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, LogEntryPojo.class.getAnnotation(RDFClass.class).value());
+		LogEntryPojo logE = OmnomJsonSerializer.deserializeFromJSON(asJson.toString(), LogEntryPojo.class);
+		assertEquals(logE.getUuid(), uuid);
+		
+		LogEntryPojo expected = new LogEntryPojo();
+		expected.setUuid(uuid);
+		expected.setMessage("foo");
+		expected.setTimestamp(dt);
+		
+		log.info(expected.toJson());
+		log.info(testGson.toJson(asJson));
+		log.info(logE.toJson());
+		
+		assertEquals(expected.getUuid(), logE.getUuid());
+		assertEquals(expected.getLevel(), logE.getLevel());
+		assertEquals(expected.getMessage(), logE.getMessage());
+		assertEquals(expected.getLevel(), logE.getLevel());
+		assertEquals(expected.getTimestamp().toString(), logE.getTimestamp().toString());
+		GrafeoAssert.graphsAreEquivalent(expected, logE);
+		assertEquals(expected, logE);
+		assertEquals(testGson.toJson(asJson), logE.toJson());
+	}
 
 	@Test 
-	public void testDeserializeJson() {
+	public void testDeserializeJsonWithId() {
 		DateTime dt = DateTime.now();
 		JsonObject asJson = new JsonObject();
-		asJson.addProperty("id", "http://foo/bar/quux");
-		asJson.addProperty("message", "foo");
-		asJson.addProperty("timestamp", dt.toString());
+		asJson.addProperty(SerializablePojo.JSON_FIELD_ID, "http://foo/bar/quux");
+//		asJson.addProperty(SerializablePojo.JSON_FIELD_UUID, uuid);
+		asJson.addProperty(NS.OMNOM.PROP_LOG_MESSAGE, "foo");
+		asJson.addProperty(NS.DC.PROP_DATE, dt.toString());
 		asJson.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, LogEntryPojo.class.getAnnotation(RDFClass.class).value());
 		LogEntryPojo logE = OmnomJsonSerializer.deserializeFromJSON(asJson.toString(), LogEntryPojo.class);
 		
@@ -97,10 +132,16 @@ public class LogEntryPojoTest extends OmnomUnitTest{
 		expected.setMessage("foo");
 		expected.setTimestamp(dt);
 		
-		log.info(asJson.toString());
+		log.info(expected.toJson());
+		log.info(testGson.toJson(asJson));
+		log.info(logE.toJson());
 		
+		assertEquals(expected.getLevel(), logE.getLevel());
+		assertEquals(expected.getMessage(), logE.getMessage());
+		assertEquals(expected.getId(), logE.getId());
+		assertEquals(expected.getLevel(), logE.getLevel());
+		assertEquals(expected.getTimestamp().toString(), logE.getTimestamp().toString());
 		assertEquals(expected, logE);
-		assertEquals(testGson.toJson(asJson), OmnomJsonSerializer.serializeToJSON(logE, LogEntryPojo.class));
 		assertEquals(testGson.toJson(asJson), logE.toJson());
 	}
 	

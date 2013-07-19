@@ -1,21 +1,17 @@
 package eu.dm2e.ws.api;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
 import eu.dm2e.ws.OmnomUnitTest;
-import eu.dm2e.ws.api.pojos.IntegerPojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
-import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
 
-public class SerializablePojoITCase extends OmnomUnitTest {
+public class SerializablePojoTest extends OmnomUnitTest {
 	
 	public static final String MOCK_CLASS = "omnom:Mock";
 	public static final String MOCK_PROP = "omnom:fooProp";

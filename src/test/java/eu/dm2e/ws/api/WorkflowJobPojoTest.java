@@ -18,7 +18,7 @@ public class WorkflowJobPojoTest extends OmnomUnitTest {
 		WorkflowJobPojo wfj = new WorkflowJobPojo();
 		wfj.info("foo");
 		wfj.setFailed();
-		log.info(wfj.getStatus());
+		log.info(wfj.getJobStatus());
 		log.info(wfj.getTurtle());
 	}
 
