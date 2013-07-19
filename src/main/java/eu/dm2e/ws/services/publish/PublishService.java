@@ -39,6 +39,7 @@ public class PublishService extends AbstractTransformationService {
 
     public PublishService() {
         IWebservice ws = getWebServicePojo();
+        ws.setLabel("Publish");
         ws.addInputParameter(PARAM_TO_PUBLISH).setIsRequired(true);
         ws.addInputParameter(PARAM_DATASET_ID).setIsRequired(true);
         ws.addInputParameter(PARAM_LABEL).setIsRequired(true);

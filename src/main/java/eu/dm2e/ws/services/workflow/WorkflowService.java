@@ -3,8 +3,10 @@ package eu.dm2e.ws.services.workflow;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,6 +18,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -65,6 +68,44 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		ws.setLabel("Workflow Service");
 		return ws;
 	}
+
+
+	/**
+	 * GET /list
+	 * @return
+	 */
+	@GET
+	@Path("list")
+	@Consumes({
+		MediaType.APPLICATION_JSON
+	})
+	public Response getWorkflowList() {
+		List<WorkflowPojo> wfList = new ArrayList<WorkflowPojo>();
+        Grafeo g = new GrafeoImpl();
+        g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_WORKFLOW));
+        for (GResource wfUri : g.findByClass(NS.OMNOM.CLASS_WORKFLOW)) {
+        	log.info("Workflow Resource: " + wfUri.getUri());
+        	if (null == wfUri.getUri()) {
+        		log.warn("There is a blank node workflow without an ID in the triplestore.");
+        	}
+        	// FIXME possibly very inefficient
+        	g.load(wfUri.getUri());
+        	WorkflowPojo wf = new WorkflowPojo();
+        	wf.loadFromURI(wfUri.getUri());
+        	wfList.add(wf);
+        }
+		
+		return Response.ok(wfList).build();
+	}
+	
+
+
+	/**
+	 * PUT /{id}
+	 * 
+	 *  (non-Javadoc)
+	 * @see eu.dm2e.ws.services.AbstractAsynchronousRDFService#putConfigToService(java.lang.String)
+	 */
 	@PUT
 	@Path("/{id}")
 	@Consumes({DM2E_MediaType.TEXT_PLAIN})
@@ -152,15 +193,123 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		return Response.status(202).location(jobPojo.getIdAsURI()).entity(
 				getResponseEntity(jobPojo.getGrafeo())).build();
 	}
+
 	
+	/**
+	 * GET /{id}
+	 * @return
+	 */
 	@GET
 	@Path("{id}")
 	public Response getWorkflow() {
 		URI wfUri = getRequestUriWithoutQuery();
 		GrafeoImpl g = new GrafeoImpl();
 		g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), wfUri);
-		return getResponse(g);
+		if (g.isEmpty()) {
+			return Response.status(404).build();
+		}
+		WorkflowPojo wf = g.getObjectMapper().getObject(WorkflowPojo.class, wfUri);
+		return Response.ok(wf).build();
 	}
+
+	
+	/**
+	 * PUT {workflowID} 	Accept: json
+	 * @param wf
+	 * @return
+	 */
+	@PUT
+	@Path("{workflowID}")
+	@Consumes({
+		MediaType.APPLICATION_JSON
+	})
+	public Response putWorkflowAsJSON(WorkflowPojo wf) {
+		return putGrafeo(wf.getGrafeo());
+	}
+
+	/**
+	 * PUT {workflowID}		Accept: rdf
+	 * TODO refactor
+	 * @param rdfString
+	 * @return
+	 */
+	@PUT
+	@Path("{workflowID}")
+	@Consumes({
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML,
+		DM2E_MediaType.APPLICATION_X_TURTLE,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.TEXT_TURTLE
+	})
+	public Response putRDF(String rdfString) {
+		Grafeo g = null;
+		try {
+			g = new GrafeoImpl();
+			g.readHeuristically(rdfString);
+			assert(g != null);
+		}
+		catch (Exception e) {
+			throwServiceError(e);
+		}
+		return this.putGrafeo(g);
+	}
+
+	public Response putGrafeo(Grafeo g) {
+		final URI wfUri = getRequestUriWithoutQuery();
+		final String wfUriStr = getRequestUriWithoutQuery().toString();
+		
+		// TODO FIXME What if the user changed the default parameters defined in post?
+
+		log.info("Skolemnizing parameters.");
+		{
+			g.skolemizeByLabel(wfUriStr, NS.OMNOM.PROP_INPUT_PARAM, "param");
+			g.skolemizeByLabel(wfUriStr, NS.OMNOM.PROP_OUTPUT_PARAM, "param");
+		}
+
+		log.info("Skolemizing Positions.");
+		{
+			g.skolemizeSequential(wfUriStr, NS.OMNOM.PROP_WORKFLOW_POSITION, "position");
+		}
+
+		log.info("Skolemnizing Connectors.");
+		{
+			g.skolemizeSequential(wfUriStr, NS.OMNOM.PROP_PARAMETER_CONNECTOR, "connector");
+		}
+//		log.info("Skolemnizing WebserviceConfigs");
+//		{
+//			for (GResource subj : g.findByClass(NS.OMNOM.CLASS_WORKFLOW_POSITION)) {
+//				g.skolemizeUUID(subj.toString(), NS.OMNOM.PROP_WEBSERVICE_CONFIG, "webserviceconfig");
+//			}
+//		}
+
+		log.info("Writing updated workflow to endpoint.");
+		try {
+			g.putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), wfUriStr);
+		} catch (Exception e) {
+			return throwServiceError(e);
+		}
+		log.info("DONE Writing updating workflow to endpoint: " + wfUriStr);
+
+		WorkflowPojo wf = g.getObjectMapper().getObject(WorkflowPojo.class, wfUriStr);
+		return Response.ok(wf).location(wfUri).build();
+	}
+
+	/**
+	 * POST /				Accept: json
+	 * @param wf
+	 * @return
+	 */
+	@POST
+	@Consumes({
+		MediaType.APPLICATION_JSON
+	})
+	public Response postWorkflowAsJSON(WorkflowPojo wf) {
+//		WorkflowPojo wf = OmnomJsonSerializer.deserializeFromJSON(s, WorkflowPojo.class);
+		log.error(wf.getTerseTurtle());
+		return postGrafeo(wf.getGrafeo());
+	}
+	
 	@Override
 	public Response postGrafeo(Grafeo g) {
 		GResource wfRes = g.findTopBlank(NS.OMNOM.CLASS_WORKFLOW);
@@ -199,7 +348,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 				completeLogParam.setLabel(PARAM_COMPLETE_LOG);
 				completeLogParam.setComment("The complete log file of the workflow job and its webservice jobs.");
 				GResource completeLogParamRes = g.getObjectMapper().addObject(completeLogParam);
-				g.addTriple(wfRes, NS.OMNOM.PROP_INPUT_PARAM, completeLogParamRes);
+				g.addTriple(wfRes, NS.OMNOM.PROP_OUTPUT_PARAM, completeLogParamRes);
 			}
 		}
 
@@ -211,19 +360,19 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 
 		log.info("Skolemizing Positions.");
 		{
-			g.skolemizeSequential(wfUri, NS.OMNOM.PROP_HAS_POSITION, "position");
+			g.skolemizeSequential(wfUri, NS.OMNOM.PROP_WORKFLOW_POSITION, "position");
 		}
 
 		log.info("Skolemnizing Connectors.");
 		{
 			g.skolemizeSequential(wfUri, NS.OMNOM.PROP_PARAMETER_CONNECTOR, "connector");
 		}
-		log.info("Skolemnizing WebserviceConfigs");
-		{
-			for (GResource subj : g.findByClass(NS.OMNOM.CLASS_WORKFLOW_POSITION)) {
-				g.skolemizeUUID(subj.toString(), NS.OMNOM.PROP_WEBSERVICE_CONFIG, "webserviceconfig");
-			}
-		}
+//		log.info("Skolemnizing WebserviceConfigs");
+//		{
+//			for (GResource subj : g.findByClass(NS.OMNOM.CLASS_WORKFLOW_POSITION)) {
+//				g.skolemizeUUID(subj.toString(), NS.OMNOM.PROP_WEBSERVICE_CONFIG, "webserviceconfig");
+//			}
+//		}
 
 		log.info("Writing workflow to config.");
 		try {
@@ -232,8 +381,16 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 			return throwServiceError(e);
 		}
 		log.info("Done Writing workflow to config: " + wfUri);
+		
+		WorkflowPojo wf = g.getObjectMapper().getObject(WorkflowPojo.class, wfUri);
+		
+		try {
+			wf.validate();
+		} catch (Exception e) {
+			return throwServiceError(e);
+		}
 
-		return Response.ok().entity(getResponseEntity(g)).location(URI.create(wfUri)).build();
+		return Response.ok().entity(wf).location(URI.create(wfUri)).build();
 	}
 	@POST
 	@Consumes({ DM2E_MediaType.APPLICATION_RDF_TRIPLES, DM2E_MediaType.APPLICATION_RDF_XML,
@@ -292,7 +449,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		DM2E_MediaType.TEXT_TURTLE })
 	@Path("{workflowId}/connector")
 	public Response postWorkflowConnector(@PathParam("workflowId") String workflowId, String rdfString) { Grafeo g = new GrafeoImpl(rdfString, null);
-		GResource blank = g.findTopBlank(NS.OMNOM.CLASS_WORKFLOW_PARAMETER_CONNECTOR);
+		GResource blank = g.findTopBlank(NS.OMNOM.CLASS_PARAMETER_CONNECTOR);
 		if (null == blank) {
 			return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE);
 		}
@@ -440,8 +597,9 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 			 * Iterate Positions
 			 */
 			for (WorkflowPositionPojo pos : workflow.getPositions()) {
-				WebserviceConfigPojo wsconf = pos.getWebserviceConfig();
-				WebservicePojo ws = wsconf.getWebservice();
+				WebservicePojo ws = pos.getWebservice();
+				WebserviceConfigPojo wsconf = new WebserviceConfigPojo();
+				wsconf.setWebservice(ws);
 				
 				/*				
 				 * Iterate Input Parameters of the Webservice at this position
@@ -515,7 +673,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 				} while (webserviceJob.isStillRunning());
 				
 				finishedJobs.put(pos.getId(), webserviceJob);
-				workflowJob.getFinishedJob().add(webserviceJob);
+				workflowJob.getFinishedJobs().add(webserviceJob);
 				workflowJob.getFinishedPositions().add(pos);
 				workflowJob.publishToService();
 				
