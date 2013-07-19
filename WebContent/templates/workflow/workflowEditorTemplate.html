@@ -1,0 +1,34 @@
+<div class="row">
+    <div class="span3">
+	    <button id="save-workflow" class="btn btn-success">Save Workflow</button>
+	    <button id="render" class="btn btn-warning">Re-render</button>
+    </div>
+    <div class="span9">
+    	Workflow: ID <%= model.id %>
+    	<br/>
+    	Workflow: URL <a href="<%= rawModel.url() %>"><%= rawModel.url() %></a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span3 workflow-parameter-list">
+        <div>
+            <h3>Input Params</h3>
+            <div id="workflow-input-parameter-list" class="">I MUST LOAD</div>
+            <h3>Output Params</h3>
+            <div id="workflow-output-parameter-list" class="">I MUST LOAD</div>
+        </div>
+    </div>
+    <div class="span4">
+        <h3>Positions</h3>
+        <div id="workflow-position-list">I MUST LOAD</div>
+    </div>
+    <div class="span3">
+        <h3>Connectors</h3>
+        <div id="workflow-connector-list">I MUST LOAD</div>
+    </div>
+    <div class="span2">
+        <h3>Webservices</h3>
+        <div id="workflow-webservice-list"> I MUST LOAD </div>
+    </div>
+</div>

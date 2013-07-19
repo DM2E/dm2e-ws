@@ -1,0 +1,22 @@
+<div class="span12">
+
+<h2>Profile for <%= rdf_attr("foaf:name") %></h2>
+
+<h3>File Services</h3>
+<ul>
+	<% _.each(model.fileServices, function(fileService) { %>
+	<li>
+		<a href="<%= fileService %>"><%= fileService %></a>
+	</li>
+	<% }) %>
+</ul>
+	
+<h3>Transformation / Publishing Services</h3>
+<ul>
+	<% _.each(rdf_attr("omnom:webservice"), function(service) { %>
+		<li>
+			<a href="<%= service.id %>"><%= service.id %></a>
+		</li>
+	<% }) %>
+</ul>
+</div>

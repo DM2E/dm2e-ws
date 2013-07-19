@@ -1,0 +1,18 @@
+<td>
+    <a class="btn btn-success" href="#workflow-edit<%= url_path(model.id) %>">Edit</a>
+</td>
+<td>
+    <a href="<%= model.id %>"><%= last_url_segment(model.id) %></a>
+</td>
+<td>
+    <%= rdf_attr("omnom:workflowPosition").length %>
+</td>
+<td>
+    <%= rdf_attr("omnom:parameterConnector").length %>
+</td>
+<td>
+    <%= rdf_attr("dcterms:creator") || 'UNKNOWN' %>
+</td>
+<td>
+    <%= rdf_attr("dcterms:modified") || 'UNKNOWN' %>
+</td>

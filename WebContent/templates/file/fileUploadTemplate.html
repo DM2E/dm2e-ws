@@ -1,0 +1,41 @@
+<div class="span11 offset1">
+	<h2>Upload a file</h2>
+	<form class="form-horizontal" action="/api/file" method="post" enctype="multipart/form-data"
+		class="inline-form">
+		<input type="hidden" name="owner" value='<%= window.user.get("user_name") %>' />
+
+		<div class="fileupload fileupload-new" data-provides="fileupload">
+			<span class="btn btn-file"><span class="fileupload-new">Select file</span><span
+				class="fileupload-exists">Change</span>
+			<input type="file" id="file-input"' /></span> <span class="fileupload-preview"></span>
+			<a href="#" class="close fileupload-exists" data-dismiss="fileupload" style="float: none">×</a>
+		</div>
+		<!-- 		<div class="control-group fileupload fileupload-new" data-provides="fileupload"> -->
+<!-- 			<label for="inputFile" class="control-label"></label> -->
+<!-- 			<div class="input-append"> -->
+<!-- 				<div class="uneditable-input span3"> -->
+<!-- 					<i class="icon-file fileupload-exists"></i> -->
+<!-- 					<span class="fileupload-preview"></span> -->
+<!-- 				</div> -->
+<!-- 				<span class="btn btn-file"><span class="fileupload-new">Select file</span><span -->
+<!-- 					class="fileupload-exists">Change</span> <input type="file" id="inputFile" /></span> -->
+<!-- 				<a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a> -->
+<!-- 			</div> -->
+<!-- 			<!-- 		<input type="file" id="inputfile" /> --> 
+<!-- 		</div> -->
+		<div class="control-group">
+			<label for="inputFiletype" class="control-label">File Type</label>
+			<select id="inputFiletype"></select>
+		</div>
+		<br />
+		<!-- <input type="submit" class="btn btn-info" value="Upload" /> -->
+		<input type="submit" class="btn btn-info" id="submit-upload" value="Upload" />
+		<input type="button" class="btn btn-warning" id="cancel-upload" value="Cancel" />
+	</form>
+	<div class="upload-job">
+		<div id="progressPercent"></div>
+		<div id="progress" class="progress progress-striped">
+			<div class="bar"></div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,35 @@
+<div class="draggableLocation file" data-location="<%= obj.data_location %>">
+	<% console.log( obj ) %> Name:
+	<strong><%= rdf_attr("omnom:originalName") %></strong>
+<!-- 	<br /> -->
+<!-- 	Owner: <%= obj.owner %> -->
+<!-- 	<br /> -->
+<!-- 	Upload Date: rdf_attr("omnom:uploadDate") %> -->
+	<br />
+	Size: <%= rdf_attr("dcterms:extent") %>
+	<br />
+	Resource Type: <%= rdf_attr("omnom:fileType") %>
+	<br />
+	Status: <%= rdf_attr("omnom:fileStatus") %>
+	<br />
+	Content-Type: <%= rdf_attr("dcterms:format") %>
+	<br />
+	ID: <%= model.id %>
+	<br />
+	URL: <a href="<%= model.id %>"><%= model.url %></a>
+	<br />
+	<a class="btn btn-file-edit"
+			href='<%= rdf_attr("omnom:fileEditURI") %>'>
+<!-- 		href="<% if (obj.edit_url) { %><%= obj.edit_url %><% } else { %>editor?id=<%= obj.id %><% } %>"> -->
+		<i class="icon-edit">&nbsp;</i>
+		edit
+	</a>
+	<button class="btn btn-danger btn-file-delete disabled">
+		<i class="icon-trash">&nbsp;</i>
+		delete
+	</button>
+	<a class="btn btn-download" href='<%= rdf_attr("omnom:fileRetrievalURI") %>'>
+		<i class="icon-download">&nbsp;</i>
+		Download
+	</a>
+</div>

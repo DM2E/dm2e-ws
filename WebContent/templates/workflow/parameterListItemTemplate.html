@@ -1,0 +1,18 @@
+<div class="hover-grp">
+    <div class="btn-group-vertical show-hover pull-right">
+        <button class="edit-parameter btn btn-small btn-info">
+            <i class="icon-edit icon-white">&nbsp;</i>
+        </button>
+        <button class="remove-parameter btn btn-small btn-danger">
+            <i class="icon-trash icon-white">&nbsp;</i>
+        </button>
+    </div>
+    <dl class="dl-horizontal">
+        <dt>Label:</dt>
+        <dd><%= rdf_attr("rdfs:label") %></dd>
+        <dt>Default:</dt>
+        <dd><%= rdf_attr("omnom:defaultValue") %></dd>
+        <dt>Required?</dt>
+        <dd><%= rdf_attr("omnom:isRequired") %></dd>
+    </dl>
+</div>
