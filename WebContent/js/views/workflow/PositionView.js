@@ -27,9 +27,10 @@ define([
 		events: {
             "click button.set-first" : function() {
                 var thisModel = this.model;
-                this.model.collection.models.splice(1, 1, this.model.collection.models[0])
-//                this.model.collection.remove(this.model);
-//                this.model.collection.add(this.model, { at: 0 });
+                var coll = thisModel.collection;
+                var thisModelIndex = coll.indexOf(thisModel);
+                coll.models.splice(0, 0, coll.models.splice(thisModelIndex, 1)[0]);
+                coll.trigger("add");
             },
 			"click button.remove-position" : function() {
 				this.model.collection.remove(this.model);

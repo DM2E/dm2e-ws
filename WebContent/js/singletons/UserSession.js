@@ -19,17 +19,31 @@ define([
 	var log = logging.getLogger("sessions.UserSession");
 
     var userURI = '/api/user/john-doe';
-    var dummyUserModel = new UserModel();
-    dummyUserModel.set("id", userURI);
-	dummyUserModel.setQN("foaf:name", "John Doe");
-    dummyUserModel.setQN("omnom:preferredTheme", "dark");
-    dummyUserModel.url = userURI;
-    dummyUserModel.save();
 
-	var UserSession = Backbone.Model.extend({});
+    var TheUserModel = UserModel.extend({
+        url : userURI,
+    });
+    var userModel = new TheUserModel();
+    userModel.fetch({
+        async: false,
+        success : function() {
+            log.debug("Successfully fetched user from server.");
+        },
+        error : function() {
+            log.warn("Creating user");
+            userModel.set("id", userURI);
+            userModel.setQN("foaf:name", "John Doe");
+            userModel.setQN("omnom:preferredTheme", "dark");
+            userModel.save();
+        }
+    });
+
+	var UserSession = Backbone.Model.extend({
+
+    });
 
 	var session = new UserSession({
-		user :  dummyUserModel,
+		user :  userModel,
 	});
     themeSwitcher.setTheme(session.get("user").getQN("omnom:preferredTheme"));
 	return session;
