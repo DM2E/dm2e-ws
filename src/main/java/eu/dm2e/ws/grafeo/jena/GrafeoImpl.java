@@ -1039,8 +1039,8 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 	@Override
 	public void skolemize(String subject, String predicate, String template, SkolemizationMethod method) {
 		log.debug("Skolemizing " + stringifyResourcePattern(subject, predicate, null) + " with template '" + template + "'");
-		subject = expand(subject);
-		predicate = expand(predicate);
+		subject = this.expand(subject);
+		predicate = this.expand(predicate);
 		LinkedHashSet<GResource> anonRes = new LinkedHashSet<>();
 		GValue possiblyList = this.resource(subject).get(predicate);
 		if (null == possiblyList) {
@@ -1050,6 +1050,11 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		if (! possiblyList.isLiteral() && possiblyList.resource().isa(NS.CO.CLASS_LIST)) {
 			log.debug("This is a list.");
 			GResource listRes = possiblyList.resource();
+			long listSize = listRes.get(NS.CO.PROP_SIZE).literal().getTypedValue(Long.class);
+			if (listSize == 0) {
+				log.debug("This list is empty, nothing to skolemize");
+				return;
+			}
 			GResource cur;
 			try {
 				cur = listRes.get(NS.CO.PROP_FIRST_ITEM).resource();
@@ -1059,7 +1064,11 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 				return;
 			}
 			while (null != cur) {
-				if (cur.isAnon()) {
+				GResource itemRes = cur.get(NS.CO.PROP_ITEM_CONTENT).resource();
+				if (null == itemRes) {
+					log.debug("Item content is not a resource hence no identity, hence no skolemizing.");
+				}
+				if (itemRes.isAnon()) {
 					log.debug("Adding " + cur);
 					anonRes.add(cur.get(NS.CO.PROP_ITEM_CONTENT).resource());
 				}
@@ -1080,26 +1089,35 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 		long i = 0;
 		log.debug("Skolemizing " + template + ": " + anonRes);
 		for (GResource gres : anonRes) {
+			if (! gres.isAnon()) {
+				throw new RuntimeException(gres + " is not a blank node and hence needs no skolemizing.");
+			}
 			// start counting from 1;
 			log.debug("Resource before skolem: " + gres);
-			i++;
 			String resId;
-			if (method.equals(SkolemizationMethod.RANDOM_UUID)) {
-				resId = UUID.randomUUID().toString();
-			}
-			else if (method.equals(SkolemizationMethod.SEQUENTIAL_ID)) {
-				resId = "" + i;
-			}
-			else if (method.equals(SkolemizationMethod.BY_RDFS_LABEL)) {
-				resId = gres.get("rdfs:label").literal().getValue();
-				if (null == resId) {
-					throw new RuntimeException("Blank resource " + gres + " has no rdfs:label");
+			String newUri;
+			int maxTries = 50;
+			int currentTry = 0;
+			do {
+				if (method.equals(SkolemizationMethod.RANDOM_UUID)) {
+					resId = UUID.randomUUID().toString();
 				}
-			}
-			else {
-				throw new RuntimeException("Unknown SkolemnizationMethod " + method.toString());
-			}
-			gres.rename(subject + "/" + template + "/" + resId);
+				else if (method.equals(SkolemizationMethod.SEQUENTIAL_ID)) {
+					++i;
+					resId = Long.toString(i);
+				}
+				else if (method.equals(SkolemizationMethod.BY_RDFS_LABEL)) {
+					resId = gres.get("rdfs:label").literal().getValue();
+					if (null == resId) {
+						throw new RuntimeException("Blank resource " + gres + " has no rdfs:label");
+					}
+				} else {
+					throw new RuntimeException("Unknown SkolemnizationMethod " + method.toString());
+				}
+				newUri = subject + "/" + template + "/" + resId;
+				currentTry++;
+			} while (currentTry < maxTries && this.containsTriple(newUri, "?p", "?o"));
+			gres.rename(newUri);
 			log.debug("Resource after skolem: " + gres);
 		}
 	}
