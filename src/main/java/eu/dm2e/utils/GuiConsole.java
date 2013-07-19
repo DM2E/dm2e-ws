@@ -123,8 +123,8 @@ public class GuiConsole {
 			} else if (input.matches("^status.*")) {
 				log.info("[{}]", getStatusString());
 			} else {
-				log.warn("Default to restart.");
-				restartServer();
+				log.warn("Default to to nothing.");
+//				restartServer();
 			}
 		}
 		
