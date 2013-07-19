@@ -14,7 +14,6 @@ import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.client.ClientProperties;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import eu.dm2e.logback.LogbackMarkers;
@@ -208,14 +207,15 @@ public class JobServiceITCase extends OmnomTestCase {
 				Response logResp = client.getJerseyClient()
 					.target(jobLoc)
 					.path("log")
-					.request().post(Entity.text(level + ": FOO"));
+					.request()
+					.post(Entity.text(level + ": FOO"));
 				assertEquals(201, logResp.getStatus());
 			}
 		}
 		{
 			GrafeoImpl g = new GrafeoImpl(jobLoc);
 			log.info("There should be 10 messages total");
-			GrafeoAssert.numberOfResourceStatements(g, 10, jobLoc, "omnom:hasLogEntry", null);
+			GrafeoAssert.numberOfResourceStatements(g, 10, jobLoc, NS.OMNOM.PROP_LOG_ENTRY, null);
 		}
 		{
 			 Response resp = client.target(jobLoc)
@@ -311,10 +311,10 @@ public class JobServiceITCase extends OmnomTestCase {
 			log.info(getjobGrafeo.getTurtle());
 			
 			AbstractJobPojo getjob = getjobGrafeo.getObjectMapper().getObject(JobPojo.class, job.getId());
-			assertEquals(JobStatus.FAILED.toString(), getjob.getStatus());
+			assertEquals(JobStatus.FAILED.toString(), getjob.getJobStatus());
 			client.target(job.getId()).path("status").request().put(Entity.text("FINISHED"));
 			getjob.loadFromURI(job.getId());
-			assertEquals(JobStatus.FINISHED.toString(), getjob.getStatus());
+			assertEquals(JobStatus.FINISHED.toString(), getjob.getJobStatus());
 		}
 	}
 	

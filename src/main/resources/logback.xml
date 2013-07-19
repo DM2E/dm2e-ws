@@ -20,6 +20,7 @@
 	</turboFilter>
 	<turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
 		<Marker>DATA_DUMP</Marker>
+<!-- 		<OnMatch>ACCEPT</OnMatch> -->
 		<OnMatch>DENY</OnMatch>
 	</turboFilter>
 	<turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">

@@ -16,6 +16,7 @@ import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
 import eu.dm2e.ws.api.AbstractJobPojo;
@@ -85,7 +86,7 @@ public class DemoServiceITCase extends OmnomTestCase {
 		g.readHeuristically(respStr);
 		log.info(g.getTurtle());
 		assertTrue(g.containsTriple(SERVICE_URI, "rdf:type", "omnom:Webservice"));
-		assertTrue(g.containsTriple(SERVICE_URI, "omnom:inputParam", SERVICE_URI
+		assertTrue(g.containsTriple(SERVICE_URI, NS.OMNOM.PROP_INPUT_PARAM, SERVICE_URI
 				+ "/param/sleeptime"));
 		assertTrue(g
 				.containsTriple(SERVICE_URI + "/param/sleeptime", "rdf:type", "omnom:Parameter"));
@@ -179,7 +180,7 @@ public class DemoServiceITCase extends OmnomTestCase {
 		}
 		Grafeo g = new GrafeoImpl(joburi.toString());
 		AbstractJobPojo job = g.getObjectMapper().getObject(JobPojo.class, joburi.toString());
-		String status = job.getStatus();
+		String status = job.getJobStatus();
 		log.info("Status after 1 seconds: " + status);
 		assert (status.equals(JobStatus.STARTED.name()));
 		try {
@@ -189,7 +190,7 @@ public class DemoServiceITCase extends OmnomTestCase {
 		}
 		g = new GrafeoImpl(joburi.toString());
 		job = g.getObjectMapper().getObject(JobPojo.class, joburi.toString());
-		status = job.getStatus();
+		status = job.getJobStatus();
 		log.info("Status after 4 seconds: " + status);
 		log.info(job.toLogString());
 		assert (status.equals(JobStatus.FINISHED.name()));
