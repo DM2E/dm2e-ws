@@ -6,8 +6,10 @@ import java.net.URI;
 
 import org.junit.Test;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.OmnomUnitTest;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.JobPojo;
@@ -27,16 +29,17 @@ public class FilePojoTest extends OmnomUnitTest{
 		
 		{
 			FilePojo fp = new FilePojo();
-			fp.setFileSize(100L);
+			fp.setExtent(100L);
 			fp.setFileRetrievalURI(URI.create(retUri));
 			fp.setFileEditURI(editUri);
 			fp.setFileStatus(fileStatus);
 			
 			JsonObject expect = new JsonObject();
-			expect.addProperty("fileSize", 100L);
-			expect.addProperty("fileRetrievalURI", retUri);
-			expect.addProperty("fileEditURI", editUri);
-			expect.addProperty("fileStatus", fileStatus);
+			expect.addProperty(SerializablePojo.JSON_FIELD_UUID, fp.getUuid());
+			expect.addProperty(NS.DCTERMS.PROP_EXTENT, 100L);
+			expect.addProperty(NS.OMNOM.PROP_FILE_RETRIEVAL_URI, retUri);
+			expect.addProperty(NS.OMNOM.PROP_FILE_EDIT_URI, editUri);
+			expect.addProperty(NS.OMNOM.PROP_FILE_STATUS, fileStatus);
 			expect.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, fp.getRDFClassUri());
 			
 			assertEquals(testGson.toJson(expect), OmnomJsonSerializer.serializeToJSON(fp, FilePojo.class));
@@ -47,16 +50,20 @@ public class FilePojoTest extends OmnomUnitTest{
 			job.setId(jobId);
 			
 			FilePojo fp = new FilePojo();
-			fp.setFileSize(100L);
+			fp.setExtent(100L);
 			fp.setFileStatus(fileStatus);
-			fp.setGeneratorJob(job);
+			fp.setWasGeneratedBy(job);
 			
 			JsonObject expect = new JsonObject();
-			expect.addProperty("fileSize", 100L);
-			expect.addProperty("fileStatus", fileStatus);
+			expect.addProperty(SerializablePojo.JSON_FIELD_UUID, fp.getUuid());
+			expect.addProperty(NS.DCTERMS.PROP_EXTENT, 100L);
+			expect.addProperty(NS.OMNOM.PROP_FILE_STATUS, fileStatus);
 			JsonObject jobObj = new JsonObject();
 			jobObj.addProperty(SerializablePojo.JSON_FIELD_ID, jobId);
-			expect.add("generatorJob", jobObj);
+			jobObj.addProperty(NS.OMNOM.PROP_JOB_STATUS, "NOT_STARTED");
+			jobObj.add(NS.OMNOM.PROP_LOG_ENTRY, new JsonArray());
+			jobObj.add(NS.OMNOM.PROP_ASSIGNMENT, new JsonArray());
+			expect.add(NS.PROV.PROP_WAS_GENERATED_BY, jobObj);
 			expect.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, fp.getRDFClassUri());
 			
 			assertEquals(testGson.toJson(expect), OmnomJsonSerializer.serializeToJSON(fp, FilePojo.class));
@@ -75,13 +82,13 @@ public class FilePojoTest extends OmnomUnitTest{
 		fileMetaStr.append("@prefix omnom: <http://onto.dm2e.eu/omnom/>. \n");
 		fileMetaStr.append("@prefix dct: <http://purl.org/dc/terms/>. \n");
 		fileMetaStr.append("@prefix xsd: <http://www.w3.org/2001/XMLSchema#>. \n");
-		fileMetaStr.append("<").append(fileUri).append("> omnom:fileLocation \"").append(fileLocationShouldBe).append("\". \n");
+		fileMetaStr.append("<").append(fileUri).append("> omnom:internalFileLocation \"").append(fileLocationShouldBe).append("\". \n");
 		fileMetaStr.append("<").append(fileUri).append("> omnom:fileRetrievalURI <").append(fileRetrievalURIShouldBe).append(">. \n");
 		fileMetaStr.append("<").append(fileUri).append("> dct:extent \"123456\". \n");
 		g.readHeuristically(fileMetaStr.toString());
 		FilePojo fp = g.getObjectMapper().getObject(FilePojo.class, fileUri);
 		assertEquals(fileUri, fp.getId());
-		assertEquals(123456L, fp.getFileSize());
+		assertEquals(123456L, fp.getExtent());
 		assertEquals(fileLocationShouldBe, fp.getInternalFileLocation());
 		assertEquals(fileRetrievalURIShouldBe, fp.getFileRetrievalURI().toString());
 //		log.info(g.getNTriples());

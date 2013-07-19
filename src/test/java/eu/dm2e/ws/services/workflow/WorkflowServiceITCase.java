@@ -18,10 +18,10 @@ import org.slf4j.LoggerFactory;
 
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
 import eu.dm2e.ws.api.ParameterConnectorPojo;
-import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.api.WorkflowConfigPojo;
 import eu.dm2e.ws.api.WorkflowJobPojo;
@@ -130,7 +130,7 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 		GrafeoImpl gBefore = (GrafeoImpl) wf.getGrafeo();
 		assertNull(wf.getId());
 
-		Assert.assertEquals(1, wf .getGrafeo() .listStatements(null, "omnom:hasPosition", null) .size());
+		Assert.assertEquals(1, wf .getGrafeo() .listStatements(null, NS.OMNOM.PROP_WORKFLOW_POSITION, null) .size());
 
 		String respStr = null;
 		try {
@@ -142,7 +142,7 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 		
 		assertNotNull(wf.getId());
 
-		Assert.assertEquals(1, wf.getGrafeo().listStatements(null, "omnom:hasPosition", null).size());
+		Assert.assertEquals(1, wf.getGrafeo().listStatements(null, NS.OMNOM.PROP_WORKFLOW_POSITION, null).size());
 		
 		for (WorkflowPositionPojo pos : wf.getPositions()) {
 			assertNotNull(pos.getId());
@@ -185,8 +185,9 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 
 	/**
 	 * @return
+	 * @throws IOException 
 	 */
-	protected WorkflowPojo createWorkflow() {
+	protected WorkflowPojo createWorkflow() throws IOException {
 		WorkflowPojo wf = new WorkflowPojo();
 
 		wf.setLabel(_ws_label);
@@ -200,9 +201,9 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 
 		WorkflowPositionPojo step1_pos = new WorkflowPositionPojo();
 		WebservicePojo step1_ws = new XsltService().getWebServicePojo();
-		WebserviceConfigPojo step1_config = new WebserviceConfigPojo();
-		step1_config.setWebservice(step1_ws);
-		step1_pos.setWebserviceConfig(step1_config);
+//		WebserviceConfigPojo step1_config = new WebserviceConfigPojo();
+//		step1_config.setWebservice(step1_ws);
+		step1_pos.setWebservice(step1_ws);
 		step1_pos.setLabel(_ws_pos1_label);
 		step1_pos.setWorkflow(wf);
 		wf.addPosition(step1_pos);
@@ -210,9 +211,9 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 
 		WorkflowPositionPojo step2_pos = new WorkflowPositionPojo();
 		WebservicePojo step2_ws = new PublishService().getWebServicePojo();
-		WebserviceConfigPojo step2_config = new WebserviceConfigPojo();
-		step2_config.setWebservice(step2_ws);
-		step2_pos.setWebserviceConfig(step2_config);
+//		WebserviceConfigPojo step2_config = new WebserviceConfigPojo();
+//		step2_config.setWebservice(step2_ws);
+		step2_pos.setWebservice(step2_ws);
 		step2_pos.setLabel(_ws_pos2_label);
 		step2_pos.setWorkflow(wf);
 		wf.addPosition(step2_pos);
@@ -260,7 +261,8 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 				step2_pos,
 				PublishService.PARAM_RESULT_DATASET_ID,
 				_ws_param_outgraph);
-
+		
+		log.debug(wf.toJson());
 		return wf;
 	}
 	

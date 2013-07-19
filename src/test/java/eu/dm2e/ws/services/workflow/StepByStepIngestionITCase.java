@@ -93,9 +93,9 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
             for (
                     jobPojo.loadFromURI(resp.getLocation())
                     ;
-                    ! jobPojo.getStatus().equals(JobStatus.FINISHED.toString())
+                    ! jobPojo.getJobStatus().equals(JobStatus.FINISHED.toString())
                             &&
-                            ! jobPojo.getStatus().equals(JobStatus.FAILED.toString())
+                            ! jobPojo.getJobStatus().equals(JobStatus.FAILED.toString())
                     ;
                     jobPojo.loadFromURI(resp.getLocation())) {
                 log.info(jobPojo.toLogString());
@@ -204,7 +204,7 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
                     break;
                 }
 
-                log.info("Check for status: " + job.getStatus());
+                log.info("Check for status: " + job.getJobStatus());
                 log.info("Loop [# " + i + "]");
                 log.info(LogbackMarkers.DATA_DUMP, "JOB SO FAR: {}", job.getTerseTurtle());
                 try {
@@ -218,8 +218,8 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
             /**
              * CHECK IF JOB IS FINISHED
              */
-            log.info("Status: " + job.getStatus());
-            assertEquals(JobStatus.FINISHED.name(), job.getStatus());
+            log.info("Status: " + job.getJobStatus());
+            assertEquals(JobStatus.FINISHED.name(), job.getJobStatus());
             log.info("Log: " + job.toLogString());
 
         } catch (Exception e) {

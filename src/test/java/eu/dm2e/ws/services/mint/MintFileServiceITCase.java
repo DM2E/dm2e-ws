@@ -141,7 +141,7 @@ public class MintFileServiceITCase extends OmnomTestCase {
 		log.info(fileG.getTerseTurtle());
 		assertEquals(randomFilePojo.getId(), actualFP.getId());
 		assertEquals(randomFilePojo.getLabel(), actualFP.getLabel());
-		assertEquals(randomFilePojo.getLastModified(), actualFP.getLastModified());
+		assertEquals(randomFilePojo.getModified(), actualFP.getModified());
 	}
 
 }

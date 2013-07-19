@@ -12,6 +12,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.OmnomTestResources;
@@ -51,14 +52,14 @@ public class PublishServiceITCase extends OmnomTestCase {
                 .target(SERVICE_URI)
                 .request("text/turtle")
                 .get(InputStream.class));
-        log.info(g.getNTriples());
+        log.info(LogbackMarkers.DATA_DUMP, g.getNTriples());
         assertTrue(g.containsTriple(SERVICE_URI, NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_WEBSERVICE));
         assertTrue(g.containsTriple(SERVICE_URI, NS.OMNOM.PROP_INPUT_PARAM, SERVICE_URI + "/param/to-publish"));
         assertTrue(g.containsTriple(SERVICE_URI + "/param/to-publish", NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_PARAMETER));
         assertTrue(g.containsTriple(SERVICE_URI, NS.OMNOM.PROP_INPUT_PARAM, SERVICE_URI + "/param/dataset-id"));
         assertTrue(g.containsTriple(SERVICE_URI + "/param/dataset-id", NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_PARAMETER));
-        assertTrue(g.containsTriple(SERVICE_URI, "omnom:inputParam", SERVICE_URI + "/param/provider-id"));
-        assertTrue(g.containsTriple(SERVICE_URI + "/param/provider-id", "rdf:type", "omnom:Parameter"));
+        assertTrue(g.containsTriple(SERVICE_URI, NS.OMNOM.PROP_INPUT_PARAM, SERVICE_URI + "/param/provider-id"));
+        assertTrue(g.containsTriple(SERVICE_URI + "/param/provider-id", NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_PARAMETER));
         assertTrue(g.containsTriple(SERVICE_URI, NS.OMNOM.PROP_INPUT_PARAM, SERVICE_URI + "/param/endpoint-select"));
         assertTrue(g.containsTriple(SERVICE_URI + "/param/endpoint-select", NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_PARAMETER));
         assertTrue(g.containsTriple(SERVICE_URI, NS.OMNOM.PROP_INPUT_PARAM, SERVICE_URI + "/param/endpoint-update"));
@@ -117,7 +118,7 @@ public class PublishServiceITCase extends OmnomTestCase {
             		break;
             	}
             	
-                log.info("Check for status: " + job.getStatus());
+                log.info("Check for status: " + job.getJobStatus());
                 log.info("Loop [# " + i + "] JOB SO FAR: " + job.getTurtle());
                 try {
                     Thread.sleep(sleeptime);
@@ -130,8 +131,8 @@ public class PublishServiceITCase extends OmnomTestCase {
             /**
              * CHECK IF JOB IS FINISHED
              */
-            log.info("Status: " + job.getStatus());
-            assertEquals(JobStatus.FINISHED.name(), job.getStatus());
+            log.info("Status: " + job.getJobStatus());
+            assertEquals(JobStatus.FINISHED.name(), job.getJobStatus());
 
         } catch (Exception e) {
         	log.info("" + e);
@@ -176,7 +177,7 @@ public class PublishServiceITCase extends OmnomTestCase {
             while (status.equals(JobStatus.NOT_STARTED.name()) || status.equals(JobStatus.STARTED.name())) {
                 Grafeo g = new GrafeoImpl(joburi.toString());
                 job = g.getObjectMapper().getObject(JobPojo.class, joburi.toString());
-                status = job.getStatus();
+                status = job.getJobStatus();
                 log.info("Check for status: " + status);
                 log.info("JOB SO FAR: " + job.getTurtle());
                 try {

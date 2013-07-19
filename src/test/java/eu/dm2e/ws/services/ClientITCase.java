@@ -24,6 +24,7 @@ import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
 
 public class ClientITCase extends OmnomTestCase {
 	
@@ -47,10 +48,14 @@ public class ClientITCase extends OmnomTestCase {
 			e.printStackTrace();
 			return false;
 		}
-		if (null == fp.getOriginalName()) {
-			return false;
-		}
-		return fp.getOriginalName().equals(FILE_POJO.getOriginalName());
+		GrafeoAssert.graphContainsGraphStructurally(fp.getGrafeo(), FILE_POJO.getGrafeo());
+		return true;
+//		if (null == fp.getOriginalName()
+//				||
+//				fp.getOriginalName().equals(FILE_POJO.getOriginalName();
+//				) {
+//			throw new ComparisonFailure("Metadata mismatch", FILE_POJO.getTerseTurtle(), fp.getTerseTurtle());
+//		}
 	}
 
 	@Before
