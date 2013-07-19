@@ -11,6 +11,7 @@ import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
+import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.services.AbstractTransformationService;
 
@@ -29,16 +30,19 @@ public class DemoService extends AbstractTransformationService {
 	public static final String PARAM_RANDOM_OUTPUT = "randomOutput";
 	
     public DemoService() {
-        ParameterPojo sleeptimeParam = getWebServicePojo().addInputParameter(PARAM_SLEEPTIME);
+        final WebservicePojo ws = getWebServicePojo();
+        ws.setLabel("Demo");
+
+		ParameterPojo sleeptimeParam = ws.addInputParameter(PARAM_SLEEPTIME);
         sleeptimeParam.setParameterType(NS.XSD.INT);
         sleeptimeParam.setDefaultValue("3");
         sleeptimeParam.setIsRequired(false);
         
-        ParameterPojo countdownPhraseParam = getWebServicePojo().addInputParameter(PARAM_COUNTDOWN_PHRASE);
+        ParameterPojo countdownPhraseParam = ws.addInputParameter(PARAM_COUNTDOWN_PHRASE);
         countdownPhraseParam.setDefaultValue("bottles of beer on the wall");
         countdownPhraseParam.setIsRequired(false);
         
-        ParameterPojo randomOutputParam = getWebServicePojo().addOutputParameter(PARAM_RANDOM_OUTPUT);
+        ParameterPojo randomOutputParam = ws.addOutputParameter(PARAM_RANDOM_OUTPUT);
         randomOutputParam.setIsRequired(false);
     }
     

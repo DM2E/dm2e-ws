@@ -46,7 +46,7 @@ public class WorkflowJobPojo extends AbstractJobPojo {
 	public void setFinishedPositions(Set<WorkflowPositionPojo> finishedPositions) { this.finishedPositions = finishedPositions; }
 	
 	@RDFProperty(value = NS.OMNOM.PROP_FINISHED_JOB, serializeAsURI=true)
-	private Set<JobPojo> finishedJob = new HashSet<>();
-	public Set<JobPojo> getFinishedJob() { return finishedJob; }
-	public void setFinishedJob(Set<JobPojo> finishedJobs) { this.finishedJob = finishedJobs; }
+	private Set<JobPojo> finishedJobs = new HashSet<>();
+	public Set<JobPojo> getFinishedJobs() { return finishedJobs; }
+	public void setFinishedJobs(Set<JobPojo> finishedJobs) { this.finishedJobs = finishedJobs; }
 }

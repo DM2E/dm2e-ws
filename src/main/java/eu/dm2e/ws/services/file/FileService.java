@@ -109,6 +109,7 @@ public class FileService extends AbstractRDFService {
         	if (null == fileUri.getUri()) {
         		log.warn("There is a blank node file without an ID in the triplestore.");
         	}
+        	// FIXME possibly very inefficient
         	g.load(fileUri.getUri());
         	FilePojo fp = new FilePojo();
         	fp.loadFromURI(fileUri.getUri());
@@ -358,7 +359,7 @@ public class FileService extends AbstractRDFService {
 
 				if (!filePart.isSimple()) {
 					// TODO this is wrong most of the time
-					filePojo.setMediaType(filePart.getMediaType().toString());
+					filePojo.setFormat(filePart.getMediaType().toString());
 					filePojo.setOriginalName(fileDisposition.getFileName());
 				}
 			} catch (IOException | IllegalAccessException | InvocationTargetException e) {
@@ -433,7 +434,7 @@ public class FileService extends AbstractRDFService {
 		}
 		return Response
 			.ok(fis)
-			.header("Content-Type", filePojo.getMediaType())
+			.header("Content-Type", filePojo.getFormat())
 			.header("Content-Disposition", "attachment; filename=" + filePojo.getOriginalName())
 			.build();
 	}
@@ -730,7 +731,7 @@ public class FileService extends AbstractRDFService {
 		filePojo.setInternalFileLocation(f.getAbsolutePath()); // TODO not a good "solution"
 		filePojo.setId(uri.toString());
 		filePojo.setFileRetrievalURI(uri.toString());
-		filePojo.setFileSize(f.length());
+		filePojo.setExtent(f.length());
 
 		// these are only available if this is an upload field and not just a
 		// form field

@@ -29,6 +29,7 @@ public class XsltZipService extends AbstractTransformationService {
 	@Override
 	public WebservicePojo getWebServicePojo() {
 		WebservicePojo ws = super.getWebServicePojo();
+		ws.setLabel("XSLT (Zipped)");
 
 		ParameterPojo xsltInParam = ws.addInputParameter(PARAM_XML_IN);
 		xsltInParam.setComment("XML input");
@@ -145,7 +146,7 @@ public class XsltZipService extends AbstractTransformationService {
 			}
 
 			FilePojo fp = new FilePojo();
-			fp.setGeneratorJob(jobPojo);
+			fp.setWasGeneratedBy(jobPojo);
 			String fileLocation = new Client().publishFile(xslResultStr, fp);
 
 			jobPojo.info("Store result URI on the job (" + fileLocation + ").");
