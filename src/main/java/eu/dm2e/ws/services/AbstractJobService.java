@@ -252,7 +252,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		AbstractJobPojo jobPojo = new JobPojo();
 		try {
 			jobPojo.loadFromURI(resourceUriStr);
-			return Response.ok(jobPojo.getStatus()).build();
+			return Response.ok(jobPojo.getJobStatus()).build();
 		} catch (Exception e) {
 			return throwServiceError(e);
 		}
