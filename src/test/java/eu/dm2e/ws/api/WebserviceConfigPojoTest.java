@@ -1,11 +1,14 @@
 package eu.dm2e.ws.api;
 
+import java.util.UUID;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.OmnomUnitTest;
+import eu.dm2e.ws.api.json.OmnomJsonSerializer;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
@@ -95,16 +98,18 @@ public class WebserviceConfigPojoTest  extends OmnomUnitTest {
 		{
 			StringBuilder sb = new StringBuilder();
 			sb.append("{")
+					.append("'uuid':'").append(UUID.randomUUID().toString()).append("',")
 					.append("'id':'").append(confUri).append("'")
 					.append(",")
-					.append("'webservice':").append("{")
+					.append("'" + NS.OMNOM.PROP_WEBSERVICE + "':").append("{")
+						.append("'uuid':'").append(UUID.randomUUID().toString()).append("',")
 						.append("'id':'").append(wsUri).append("'")
 						.append("}")
 			.append("}");
 			log.debug(sb.toString());
 			
 			String jsonStr = sb.toString();
-			WebserviceConfigPojo pojoParsed = jsonSerializer.deserializeFromJSON(jsonStr, WebserviceConfigPojo.class);
+			WebserviceConfigPojo pojoParsed = OmnomJsonSerializer.deserializeFromJSON(jsonStr, WebserviceConfigPojo.class);
 			log.debug(pojoParsed.getTerseTurtle());
 
 			WebservicePojo ws = new WebservicePojo();
