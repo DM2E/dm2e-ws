@@ -75,12 +75,12 @@ public class ParameterPojo extends SerializablePojo<ParameterPojo>{
 	 * GETTERS/SETTERS
 	 *****************/
 
-	@RDFProperty(NS.OMNOM.PROP_WEBSERVICE)
+	@RDFProperty(value = NS.OMNOM.PROP_WEBSERVICE, serializeAsURI = true)
     private WebservicePojo webservice;
 	public WebservicePojo getWebservice() { return webservice; }
     public void setWebservice(WebservicePojo webservice) { this.webservice = webservice; }
     
-	@RDFProperty(NS.OMNOM.PROP_WORKFLOW)
+	@RDFProperty(value = NS.OMNOM.PROP_WORKFLOW, serializeAsURI = true)
     private WorkflowPojo workflow;
 	public WorkflowPojo getWorkflow() { return workflow; }
 	public void setWorkflow(WorkflowPojo workflow) { this.workflow = workflow; }
@@ -100,6 +100,7 @@ public class ParameterPojo extends SerializablePojo<ParameterPojo>{
 	public boolean getIsRequired() { return isRequired; }
 	public void setIsRequired(boolean isRequired) { this.isRequired = isRequired; }
 	
+	// TODO should be URI
 	@RDFProperty(NS.OMNOM.PROP_PARAMETER_TYPE)
 	private String parameterType;
 	public String getParameterType() { return parameterType; }
