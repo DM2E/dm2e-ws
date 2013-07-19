@@ -7,6 +7,13 @@ define([ 'jquery', 'underscore', 'backbone',
 
 	return {
 
+        errorNotFound : function() {
+            new Backbone.BootstrapModal({
+                content : "404 : Not found.",
+            }).open();
+            window.location.hash = "home";
+        },
+
 		errorNotImplemented : function() {
 			new Backbone.BootstrapModal({
 				content : "This view is not yet implemented.",
