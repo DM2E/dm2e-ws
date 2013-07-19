@@ -43,7 +43,7 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
 			wsConf.loadFromURI(configURI, 1);
 		} catch (Exception e) {
 			log.error("Exception: " + e);
-			return throwServiceError(e);
+			return throwServiceError("Could not load configURI"+ e);
 		}
 		
 		/*		
@@ -64,6 +64,7 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
         job.setWebserviceConfig(wsConf);
         job.addLogEntry("JobPojo constructed by AbstractTransformationService", "TRACE");
         try {
+        	log.debug("Posting job to job service <{}>", client.getJobWebTarget());
 			job.publishToService(client.getJobWebTarget());
 		} catch (Exception e1) {
 			return throwServiceError(e1);
