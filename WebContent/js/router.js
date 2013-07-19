@@ -29,8 +29,8 @@ define([
 
         // Route to Workflow Editor
         appRouter.route(/workflow-edit\/?(.*)/, 'showWorkflowEditor');
-        appRouter.route(/config-edit-from\/(.*)/, 'showConfigEditor');
-        appRouter.route(/config-edit\/(.*)/, 'showConfigEditorFrom');
+        appRouter.route(/config-edit-from\/(.*)/, 'showConfigEditorFrom');
+        appRouter.route(/config-edit\/(.*)/, 'showConfigEditor');
         appRouter.route(/file-list\/?(.*)/, 'showFileManager');
 
         var appView = args.appView;
@@ -123,7 +123,7 @@ define([
             });
 
         });
-        appRouter.on('route:showWorkflowEditorFrom', function (fromWorkflowUri) {
+        appRouter.on('route:showConfigEditorFrom', function (fromWorkflowUri) {
             require([
 //                'views/workflow/RunWorkflowPage',
                 'models/config/WorkflowConfigModel'
@@ -133,10 +133,11 @@ define([
                     return;
                 }
                 var TheModel = WorkflowConfigModel.extend({
-                    url: fromWorkflowUri + "/blankConfig"
+                    url: function() { return fromWorkflowUri + "/blankConfig" }
                 });
                 var model = new TheModel();
                 // load the blank model
+                console.warn(model);
                 model.fetch({async:true});
                 model.url = '/api/config';
                 model.save({async:true});
@@ -165,7 +166,7 @@ define([
                 }
                 console.log(workflowConfigURI);
                 var x = new WorkflowConfigModel();
-                log.debug(x);
+                console.debug(x);
 
 //                appView.showPage(Vm.createView({}, 'RunWorkflowPage',
 //                    RunWorkflowPage, {}));
