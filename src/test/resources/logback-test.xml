@@ -30,7 +30,7 @@
 	 -->
     <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
         <Marker>HTTP_RESPONSE_DUMP</Marker>
-<!-- 	<OnMatch>ACCEPT</OnMatch> -->
+<!--     	<OnMatch>ACCEPT</OnMatch> -->
         <OnMatch>DENY</OnMatch>
     </turboFilter>
     <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
@@ -94,7 +94,8 @@
         </encoder>
     </appender>
 
-    <logger level="DEBUG" name="eu.dm2e.ws.grafeo.gom" />
+    <logger level="INFO" name="eu.dm2e.ws.grafeo.gom" />
+
     <logger level="WARN" name="org.apache.jena.fuseki" />
     <logger level="WARN" name="com.hp.hpl.jena.shared" />
     <logger level="INFO" name="org.apache.http" />
@@ -107,7 +108,7 @@
     <!-- Set this to WARN or higher to disable Jersey logging -->
     <logger level="WARN" name="org.glassfish.jersey.filter.LoggingFilter" />
 
-    <root level="DEBUG">
+    <root level="INFO">
         <appender-ref ref="FILE" />
         <appender-ref ref="STDOUT" />
     </root>
