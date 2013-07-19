@@ -67,10 +67,12 @@ public class ObjectMapper {
     /**
      * Serialized an object to RDF statements and adds the statements
      * to the internal Grafeo.
+     * 
      *
      * @param object
      * @return
      */
+     // FIXME TODO handle serializeAsURI for single objects as well (list and set is covered)
     public GResource addObject(Object object) {
     	// Cache nested objects
     	if (objectCache.keySet().contains(object))
@@ -303,6 +305,7 @@ public class ObjectMapper {
 		// get actual list
 		List valueList = (List) value;
 		
+		// FIXME
 		// Don't serialize empty lists
 		if (valueList.size() == 0) {
 			return;
@@ -362,7 +365,6 @@ public class ObjectMapper {
 				serializeAnnotatedObject(itemResource, NS.CO.PROP_ITEM_CONTENT, itemContent);
 			} else {
 				serializeLiteral(itemResource, NS.CO.PROP_ITEM_CONTENT, itemContent);
-				
 			}
 		}
 	}
@@ -442,17 +444,32 @@ public class ObjectMapper {
 		try {
 			listResource = objectResource.get(prop).resource();
 		} catch (Exception e) {
-			log.error("No List: " + e);
+//			log.error("No List on prop {} ", prop, e);
+			try{
+				PropertyUtils.setProperty(targetObject, field.getName(), new ArrayList<>());
+			} catch (InvocationTargetException | NoSuchMethodException  | IllegalAccessException e2) {
+				throw new RuntimeException("An exception occurred: ", e2);
+			}
 			return;
 		}
+		
+//		long listSize = listResource.get(NS.CO.PROP_SIZE).literal().getTypedValue(Long.class);
+//		if (listSize == 0) {
+		
+//			try{
+//				PropertyUtils.setProperty(targetObject, field.getName(), new ArrayList<>());
+//			} catch (InvocationTargetException | NoSuchMethodException  | IllegalAccessException e2) {
+//				throw new RuntimeException("An exception occurred: ", e2);
+//			}
+//			return;
+//		}
 		
 		// Find the co:firstItem
 		GResource currentItem;
 		try {
 			currentItem = listResource.get(NS.CO.PROP_FIRST_ITEM).resource();
 		} catch (Exception e) {
-			log.error("No firstItem: " + e);
-			return;
+			throw new RuntimeException("No firstItem: " + e);
 		}
 		log.trace("co:firstItem : " + currentItem);
 		
@@ -465,6 +482,7 @@ public class ObjectMapper {
 		// The final array
 		ArrayList propArray = new ArrayList();
 		
+		int i=0;
 		// loop through the list
 		while (! listIsFinished) {
 			
@@ -476,7 +494,7 @@ public class ObjectMapper {
 			
 			GValue contentValue = currentItem.get(NS.CO.PROP_ITEM_CONTENT);
 			if (null == contentValue) {
-				throw new RuntimeException("This item has no item content!");
+				throw new RuntimeException("Item content of item #" + i + " of field '" + field.getName() + "' is null.");
 			}
 			
 			// if its a literal
@@ -496,6 +514,9 @@ public class ObjectMapper {
 			} catch (NullPointerException e) {
 				listIsFinished = true;
 			}
+
+			// keep index
+			i++;
 		}
 		
 		try{
