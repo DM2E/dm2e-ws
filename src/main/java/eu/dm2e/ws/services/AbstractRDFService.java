@@ -8,7 +8,6 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -226,7 +225,8 @@ public abstract class AbstractRDFService {
         URI wsUri = popPath();
         wsDesc.setId(wsUri);
         log.trace(wsDesc.getTerseTurtle());
-        return Response.ok().entity(getResponseEntity(wsDesc.getGrafeo())).build();
+        return Response.ok().entity(wsDesc).build();
+//        return Response.ok().entity(getResponseEntity(wsDesc.getGrafeo())).build();
 	}
     
     @GET
