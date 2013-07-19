@@ -29,7 +29,8 @@ public abstract class SerializablePojo<T> {
 
 	protected transient Logger log = LoggerFactory.getLogger(getClass().getName());
 	public static transient final String JSON_FIELD_ID = "id";
-	public static transient final String JSON_FIELD_RDF_TYPE = "rdf:type";
+	public static transient final String JSON_FIELD_UUID = "uuid";
+	public static transient final String JSON_FIELD_RDF_TYPE = NS.RDF.PROP_TYPE;
 	
 	public SerializablePojo() {
 		super();
@@ -143,15 +144,29 @@ public abstract class SerializablePojo<T> {
 	}
 	
     /**
-     * 
      * Every Pojo can have a label, bridge between human-readable and machine-readable
-     * 
      */
     @RDFProperty(NS.RDFS.PROP_LABEL)
     private String label;
     public String getLabel() { return label; }
 	public void setLabel(String label) { this.label = label; }
 	public boolean hasLabel() { return this.label != null; }
+
+    /**
+     * Every Pojo has a unique UUID, whether it has an ID or is a blank node
+     */
+//    @RDFProperty(NS.RDFS.PROP_LABEL)
+    private String uuid = UUID.randomUUID().toString();
+    public String getUuid() { return uuid; }
+	public void setUuid(String uuid) { this.uuid = uuid; }
+	public boolean hasUuid() { return this.uuid != null; }
+
+	/**
+	 * This specifies how deep the JSON serializer recurses into nested Pojos. Default is 1.
+	 * 
+	 * @return Recursion depth
+	 */
+	public int getMaximumJsonDepth() { return 2; }
 	
 	/***************************
 	 * 
