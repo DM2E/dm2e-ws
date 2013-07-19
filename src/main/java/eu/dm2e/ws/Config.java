@@ -1,8 +1,6 @@
 package eu.dm2e.ws;
 
 import java.io.File;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -15,7 +13,7 @@ public enum Config {
 	
 	private static final String DM2E_WS_CONFIG = "/config.xml";
 	private final Configuration config;
-	private Logger log = LoggerFactory.getLogger(Config.class.getName());
+//	private Logger log = LoggerFactory.getLogger(Config.class.getName());
 	
 	private Config() {
 		Configuration c;

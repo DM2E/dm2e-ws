@@ -123,6 +123,7 @@ public class DM2E_MediaType {
 
 
 	public static boolean expectsMetadataResponse(MediaType mediaType) {
+		if (null == mediaType) return false;
 		return (
 				isJsonMediaType(mediaType)
 				||
@@ -131,6 +132,7 @@ public class DM2E_MediaType {
 	}
 	
 	public static boolean expectsMetadataResponse(HttpHeaders headers) {
+		if (null == headers) return false;
 		return (
 				expectsJsonResponse(headers)
 				||
@@ -139,6 +141,7 @@ public class DM2E_MediaType {
 	}
 	
 	public static boolean isRdfMediaType(MediaType mediaType) {
+		if (null == mediaType) return false;
 		return SET_OF_RDF_TYPES_STRING.contains(mediaType.toString());
 	}
 	
@@ -155,9 +158,11 @@ public class DM2E_MediaType {
 	}
 
 	public static boolean isJsonMediaType(MediaType thisType) {
+		if (null == thisType) return false;
 		return thisType.equals(MediaType.APPLICATION_JSON_TYPE);
 	}
 	public static boolean expectsJsonResponse(HttpHeaders headers) {
+		if (null == headers) return false;
 		for (MediaType thisType : headers.getAcceptableMediaTypes())
 			if (isJsonMediaType(thisType))
 				return true;

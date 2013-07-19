@@ -65,7 +65,12 @@ public class PojoUtils extends BeanUtils {
 	 * @return
 	 */
 	public static Class<?> subtypeClassOfGenericField(Field field) {
-		ParameterizedType subtype = (ParameterizedType) field.getGenericType();
+		ParameterizedType subtype;
+		try {
+			 subtype = (ParameterizedType) field.getGenericType();
+		} catch (ClassCastException e) {
+			return null;
+		}
 		Class<?> subtypeClass = (Class<?>) subtype.getActualTypeArguments()[0];
 		return subtypeClass;
 	}
