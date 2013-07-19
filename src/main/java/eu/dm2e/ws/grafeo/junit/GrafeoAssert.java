@@ -67,6 +67,9 @@ public class GrafeoAssert {
 			throw new ComparisonFailure("Grafeo size differs", ""+size, ""+grafeo.size());
 		}
 	}
+	static public void sizeEquals(SerializablePojo p1, SerializablePojo p2) {
+		sizeEquals(p1.getGrafeo(), p2.getGrafeo());
+	}
 	static public void sizeEquals(Grafeo g1, Grafeo g2) {
 		if (!(g1.size() == g2.size())) {
 			throw new ComparisonFailure("Grafeo size differs", ""+g1.size(), ""+g2.size());
@@ -109,8 +112,10 @@ public class GrafeoAssert {
 	static public void graphsAreEquivalent(Grafeo g1, Grafeo g2) {
 		if (! g1.isGraphEquivalent(g2)) {
 			throw new ComparisonFailure("Graphs are not equivalent!",
-					g1.getTerseTurtle(),
-					g2.getTerseTurtle());
+					g1.getCanonicalNTriples(),
+					g2.getCanonicalNTriples());
+//					g1.getTerseTurtle(),
+//					g2.getTerseTurtle());
 		}
 	}
 	static public void graphsAreNotEquivalent(Grafeo g1, Grafeo g2) {
@@ -145,6 +150,9 @@ public class GrafeoAssert {
 			failedOK = false;
 		} catch (ComparisonFailure e) { }
 		if (! failedOK) fail("They are structurally equivalent.");
+	}
+	static public void graphContainsGraph(SerializablePojo p1, SerializablePojo p2) {
+		graphContainsGraph(p1.getGrafeo(), p2.getGrafeo());
 	}
 	static public void graphContainsGraph(Grafeo g1, Grafeo g2) {
 		GrafeoImpl g1Impl = (GrafeoImpl) g1;
