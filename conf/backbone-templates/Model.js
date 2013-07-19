@@ -4,14 +4,16 @@ define([
 	'jquery',
 	'underscore',
 	'logging',
+	'constants/RDFNS',
 	'BaseModel',
 ], function($,
 	_,
 	logging,
-	BaseView
+	NS,
+	BaseModel
    ) {
 
-	// var log = logging.getLogger("filename");
+    var log = logging.getLogger("filename");
 
     var theDefaults = {};
 
@@ -20,6 +22,7 @@ define([
 	    defaults : theDefaults,
 
 	    initialize : function () {
+	        log.debug("Initialized filename");
         }
 
     });

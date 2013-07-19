@@ -91,6 +91,7 @@ public class ConfigService extends AbstractRDFService {
         return resp.build();
     }
     
+    
     /**
      * GET /list		Accept: RDF, JSON
      * @param uriInfo

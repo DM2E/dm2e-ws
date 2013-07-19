@@ -212,6 +212,27 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		return Response.ok(wf).build();
 	}
 
+    
+    @GET
+    @Path("{id}/blankConfig")
+    public Response getEmptyConfigForWorkflow() {
+		URI wfUri = popPath(getRequestUriWithoutQuery());
+		GrafeoImpl g = new GrafeoImpl();
+		g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), wfUri);
+		if (g.isEmpty()) {
+			return Response.status(404).build();
+		}
+		WorkflowPojo wf = g.getObjectMapper().getObject(WorkflowPojo.class, wfUri);
+		WorkflowConfigPojo wfconf = new WorkflowConfigPojo();
+		wfconf.setWorkflow(wf);
+		for (ParameterPojo inputParam : wf.getInputParams()) {
+			wfconf.addParameterAssignment(inputParam.getId(), "BLANK");
+		}
+//		for (ParameterPojo inputParam : wf.getOutputParams()) {
+//			wfconf.addParameterAssignment(inputParam.getId(), "BLANK");
+//		}
+		return Response.ok().entity(wfconf).build();
+    }
 	
 	/**
 	 * PUT {workflowID} 	Accept: json
