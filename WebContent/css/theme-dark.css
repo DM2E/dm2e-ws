@@ -209,15 +209,21 @@ html.lt-ie8 .hover-grp:hover .show-hover {
 .highlight .parameter.highlight {
   background-color: #5d00c3;
 }
+.loading-indicator {
+  background-image: url(../img/pacman-yellow.gif);
+  height: 50px;
+  width: 50px;
+  background-repeat: no-repeat;
+}
 dl {
   margin: 5px 0;
   overflow: hidden;
 }
 .boxed-item h4 {
-  margin: 0 ;
-  padding: 2px ;
+  margin: 0;
+  padding: 2px;
   background: #222222;
-  text-align: center ;
+  text-align: center;
 }
 .list-container > div {
   border: 2px solid #ff0000;
