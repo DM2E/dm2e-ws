@@ -212,8 +212,8 @@ html.lt-ie8 .hover-grp:hover .show-hover {
 .loading-indicator {
   background-image: url(../img/pacman-black.gif);
   height: 50px;
-  width: 50px;
-  background-repeat: no-repeat;
+  max-width: 480px;
+  background-repeat: repeat-x;
 }
 dl {
   margin: 5px 0;

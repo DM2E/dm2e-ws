@@ -36,10 +36,17 @@ define([
         events : {
 		},
 
+        hideLoadingIndicator : function() {
+            this.$(".loading-indicator").hide();
+            if (this.collection.models.length === 0)
+                this.$el.append("No workflows found");
+        },
+
 		initialize : function() {
 			
 //			this.listenTo(this.collection, "add", this.render);
             this.listenTo(this.collection, "sync", this.render);
+            this.listenTo(this.collection, "sync", this.hideLoadingIndicator);
             this.collection.fetch();
 
 //			/*

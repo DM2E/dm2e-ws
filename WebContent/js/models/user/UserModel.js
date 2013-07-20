@@ -23,7 +23,7 @@ define([
 	var theDefaults = {
 		fileServices : [
             'api/file',
-//            'api/mint-file'
+            'api/mint-file'
         ],
 		configService : 'api/config',
 		workflowService : 'api/workflow',
