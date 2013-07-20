@@ -21,7 +21,10 @@ define([
 	var log = logging.getLogger("models.user.UserModel");
 
 	var theDefaults = {
-		fileServices : [ 'api/file', 'api/mint-file' ],
+		fileServices : [
+            'api/file',
+//            'api/mint-file'
+        ],
 		configService : 'api/config',
 		workflowService : 'api/workflow',
 		serviceList : [
@@ -36,11 +39,14 @@ define([
 	return RelationalModel.extend({
 
 		defaults : theDefaults,
-		relations : [{
-			type : Backbone.HasMany,
-			key : NS.getQN("omnom:webservice"),
-			relatedModel : WebserviceModel,
-		}],
+		relations : [
+            {
+                type : Backbone.HasMany,
+                key : NS.getQN("omnom:webservice"),
+                relatedModel : WebserviceModel,
+            },
+
+        ],
 		initialize : function() {
 			_.each(this.get("serviceList"), function(serviceURL) {
 				var service = new WebserviceModel({id : serviceURL});

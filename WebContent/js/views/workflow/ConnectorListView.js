@@ -11,6 +11,8 @@ define([ 'jquery', 'underscore', 'logging', 'BaseView', 'vm',
 
         template: connectorListTemplate,
 
+        itemView : ConnectorView,
+
         initialize: function () {
             log.debug("Initialized ConnectorListView");
             this.listenTo(this.collection, "add", this.render);
@@ -20,7 +22,7 @@ define([ 'jquery', 'underscore', 'logging', 'BaseView', 'vm',
 
         render: function () {
             this.$el.html(this.createHTML(this.template));
-            this.renderCollection(ConnectorView);
+            this.renderCollection();
         }
 
     });

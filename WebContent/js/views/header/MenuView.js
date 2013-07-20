@@ -33,7 +33,7 @@ define([
 			this.model = userSession.get("user");
 		},
 		render : function() {
-            this.doRender();
+            this.renderModel();
             this.$("#switch-theme").html(userSession.get("user").getQN("omnom:preferredTheme"));
         },
 //			this.$el.html(_.template(menuTemplate, {

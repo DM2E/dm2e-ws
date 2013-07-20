@@ -71,7 +71,7 @@ define([
             console.error(render_opts);
             console.error(this.model);
 
-            this.doRender(render_opts);
+            this.renderModel(render_opts);
 
             this.$("*[data-backbone-modelid-ref]").hover(function(ev) {
 //                console.error(this);

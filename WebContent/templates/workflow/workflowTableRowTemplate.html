@@ -5,6 +5,9 @@
     <a href="<%= model.id %>"><%= last_url_segment(model.id) %></a>
 </td>
 <td>
+    <%= rdf_attr("rdfs:label") %>
+</td>
+<td>
     <%= rdf_attr("omnom:workflowPosition").length %>
 </td>
 <td>

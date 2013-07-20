@@ -52,8 +52,6 @@ define([
 
 		renderFileModel : function(fileModel) {
 
-			// var self = this;
-
 			var viewName = 'view-' + fileModel.get("id");
 			var itemView = Vm.createView(this, viewName, FileManagerListItemView, {
 				model : fileModel

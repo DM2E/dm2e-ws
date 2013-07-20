@@ -31,7 +31,9 @@ define([
 
         template : workflowListTemplate,
 
-		events : {
+        itemView: WorkflowTableRow,
+
+        events : {
 		},
 
 		initialize : function() {
@@ -51,9 +53,9 @@ define([
 		},
 
 		render : function () {
-            this.doRender();
+            this.renderModel();
             console.log(this.collection);
-            this.renderCollection(WorkflowTableRow, {}, 'tbody');
+            this.renderCollection({}, 'tbody');
             return this;
 		},
 		

@@ -35,7 +35,7 @@ define([ 'jquery',
 		},
 
 //        render : function() {
-//            this.doRender();
+//            this.renderModel();
 //        }
 	
 	});

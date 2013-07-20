@@ -121,7 +121,7 @@ define([
 		},
 
 		render : function() {
-            this.doRender();
+            this.renderModel();
 
             this.$el.data("model", this.model);
 
@@ -141,6 +141,7 @@ define([
 
         createConfig: function() {
             this.saveWorkflow();
+            // Navigate to the config editor
             window.location.hash = "#config-edit-from/" + this.model.id;
         }
 

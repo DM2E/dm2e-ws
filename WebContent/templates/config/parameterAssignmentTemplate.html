@@ -1,0 +1,19 @@
+<form class="form-horizontal parameter-assignment">
+    <fieldset>
+
+        <!-- Form Name -->
+        <legend><%= model.id || "THIS SHOULD HAVE AN ID" %></legend>
+
+        <!-- Text input-->
+        <div class="control-group">
+            <label class="control-label" for="paramValue">Parameter Value</label>
+
+            <div class="controls">
+                <input id="paramValue" name="paramValue" type="text"
+                       placeholder='<%= rdf_attr("omnom:parameterValue") %>' class="input-xlarge">
+                <!--<p class="help-block">help</p>-->
+            </div>
+        </div>
+
+    </fieldset>
+</form>

@@ -12,6 +12,8 @@ define([
 	var log = logging.getLogger('FileManagerListItemView.js');
 
 	return BaseView.extend({
+
+        template : itemTemplate,
 		
 		events : {
 			"click .btn-file-delete" : function(e) {
@@ -30,8 +32,7 @@ define([
 		},
 
 		render : function() {
-
-			this.$el.html(this.createHTML(itemTemplate, {model: this.model.toJSON()}));
+            this.renderModel();
 			if (this.model.get("fileEditURI")) {
 				this.$(".btn-file-edit").removeClass("disabled");
 			}

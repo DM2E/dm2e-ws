@@ -22,6 +22,8 @@ define([ 'jquery', // lib/jquery/jquery
 
 //        tagName : "div",
 
+        itemView : WebserviceView,
+
 		initialize : function() {
 			var that = this;
 			console.log(this.collection);
@@ -37,7 +39,7 @@ define([ 'jquery', // lib/jquery/jquery
 //				this.appendHTML(subview, "div.list-container")
 //			}, this);
 //            this.listSelector = this.el;
-            this.renderCollection(WebserviceView);
+            this.renderCollection()
 
 		}
 	
