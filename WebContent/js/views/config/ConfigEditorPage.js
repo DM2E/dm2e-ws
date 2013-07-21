@@ -6,12 +6,14 @@ define([
     'logging',
     'vm',
     'BaseView',
+    'util/dialogs',
     'singletons/UserSession',
     'views/file/FileListView',
     'views/config/ParameterAssignmentView',
     'collections/file/FilesCollection',
     'text!templates/config/ConfigEditorTemplate.html'
-], function ($, _, logging, Vm, BaseView, session, FileListView, ParameterAssignmentView, FilesCollection, theTemplate) {
+], function ($, _, logging, Vm, BaseView, dialogs, session, FileListView, ParameterAssignmentView,
+    FilesCollection, theTemplate) {
 
     var log = logging.getLogger("views.config.ConfigEditorPage");
 
@@ -20,6 +22,59 @@ define([
         template: theTemplate,
 
         fileCollections: {},
+
+        events: {
+            "click button#edit-workflow": function () {
+                var that = this;
+                window.location.hash = "workflow-edit/" + this.model.getQN("omnom:workflow").id;
+            },
+            "click button#save-config": function() { this.saveConfig(); },
+            "click button#run-config": function () {
+                this.saveConfig();
+                console.error(this.model.toJSON());
+                var config = this.model;
+                $.ajax( {
+                    url: config.getQN("omnom:workflow").id,
+                    type: "PUT",
+                    processData: false,
+                    dataType: "json",
+                    contentType: "text/plain",
+                    data: config.id,
+                    complete : function (jqXHR, textStatus, err) {
+                        var jobLoc = jqXHR.getResponseHeader("Location");
+                        if (jqXHR.status === 202) {
+//                            dialogs.errorXHR(jqXHR);
+                            dialogs.notify("Job started " + jobLoc);
+                        } else {
+                            dialogs.notify(jqXHR.status, 'error');
+                        }
+                        dialogs.notify("Run executed.");
+                    },
+                });
+                    // FIXME TODO
+//                ).complete(function (data, textStatus, jqXHR) {
+//                    var jobLoc = jqXHR.getResponseHeader("Location");
+//                    if (jqXHR.status === 202) {
+//                        dialogs.errorXHR(jqXHR);
+////                            dialogs.notify("Job started " + jobLoc);
+//                    } else {
+//                        dialogs.notify(textStatus, 'error');
+//                    }
+//                    dialogs.notify("Run executed.");
+//                });
+            }
+        },
+
+        saveConfig: function () {
+            var that = this;
+            this.model.save().then(function (data, textStatus, xhr) {
+                if (xhr.status === 201)
+                    dialogs.notify("Saved WorkflowConfig " + that.model.id);
+                else
+                    dialogs.notify(xhr.statusText, 'error');
+            });
+
+        },
 
         initialize: function () {
 //            this.listenTo(this.model, "change", this.render);

@@ -8,6 +8,7 @@ define([
 	'vm',
 	'singletons/UserSession',
 	'constants/RDFNS',
+    'util/dialogs',
 	'collections/workflow/WebserviceCollection',
 	'models/workflow/WorkflowModel',
 	'models/workflow/WebserviceModel',
@@ -23,6 +24,7 @@ define([
 	Vm,
 	session,
 	NS,
+    dialogs,
 	WebserviceCollection,
 	WorkflowModel,
 	WebserviceModel,
@@ -40,9 +42,9 @@ define([
         template : workflowEditorTemplate,
 
 		events : {
-			"click button#save-workflow" : "saveWorkflow",
-            "click button#create-config" : "createConfig",
-			"click button#render" : "render"
+			"click button#save-workflow" : function() { this.saveWorkflow(); },
+            "click button#create-config" : function() { this.createConfig(); },
+			"click button#render" : function() { this.render; }
 		},
 
 		initialize : function() {
@@ -121,10 +123,8 @@ define([
 		},
 
 		render : function() {
-            this.renderModel();
-
             this.$el.data("model", this.model);
-
+            this.renderModel();
 			this.renderWebserviceList();
 			this.renderInputParameterListView();
 			this.renderOutputParameterListView();
@@ -136,7 +136,26 @@ define([
 		saveWorkflow: function() {
 			log.debug(JSON.stringify(this.model.toJSON(), undefined, 2));
 			log.debug(this.model.toJSON());
-			this.model.save();
+            var that = this;
+            // Un-Skolemize positions (i.e. make them blank nodes and let the
+            // server rename them again
+            // FIXME this does not work because connectors do not pick up the change and become invalid.
+            // Have to do this by hand in JS
+//            console.warn(this.model);
+//            _.each(this.model.getQN("omnom:workflowPosition").models, function(pos) {
+//                delete pos.attributes.id;
+//                pos.id = null;
+//                pos.set("id", undefined);
+//                console.warn(pos);
+//            });
+			this.model.save().then(function(data, textStatus, xhr) {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        dialogs.notify("Saved Workflow " + that.model.id, 'success');
+//                        that.odel.fetch().then(that.render);
+                    }
+                    else
+                        dialogs.notify(xhr.statusText, 'error');
+                });
 		},
 
         createConfig: function() {

@@ -105,7 +105,7 @@ define([ 'jquery', 'underscore', 'logging', 'backbone', 'vm', 'uuid', 'constants
         /**
          * Render a model view, by compiling this.template and appending it to this.$el.
          *
-         * @param options  Additional options are passed to createHTML
+         * @param [options]  Additional options are passed to createHTML
          */
         renderModel: function (options) {
             log.debug("renderModel() in baseview called");
