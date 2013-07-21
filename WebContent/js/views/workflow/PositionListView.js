@@ -36,9 +36,9 @@ define([
 			this.listenTo(this.collection, "remove", this.render);
 		},
 		
-		addItem : function() {
-			that.collection.add(new PositionModel());
-		},
+//		addItem : function() {
+//			that.collection.add(new PositionModel());
+//		},
 
 		render : function() {
 			this.$el.html(this.createHTML(positionListTemplate));
