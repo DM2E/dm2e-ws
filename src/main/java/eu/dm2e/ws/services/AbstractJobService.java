@@ -30,6 +30,7 @@ import eu.dm2e.ws.api.AbstractJobPojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.LogEntryPojo;
 import eu.dm2e.ws.api.ParameterAssignmentPojo;
+import eu.dm2e.ws.api.SerializablePojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.api.WorkflowJobPojo;
 import eu.dm2e.ws.api.WorkflowPojo;
@@ -252,6 +253,36 @@ public abstract class AbstractJobService extends AbstractRDFService {
         }
         return this.getJob(g, g.resource(uri));
     }
+	
+	@GET
+	@Path("{id}")
+	@Produces({
+		MediaType.APPLICATION_JSON
+	})
+	public Response getJobJSONHandler() {
+		URI uri = getRequestUriWithoutQuery();
+        Grafeo g = new GrafeoImpl();
+        log.debug("Reading job from endpoint " + Config.get(ConfigProp.ENDPOINT_QUERY));
+        try {
+            g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), uri);
+        } catch (Exception e1) {
+            // if we couldn't read the job, try again once in a second
+            try { Thread.sleep(1000); } catch (InterruptedException e) { }
+            try { g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), uri);
+            } catch (Exception e) {
+                return throwServiceError(e);
+            }
+        }
+        SerializablePojo pojo;
+        if (g.resource(uri).isa(NS.OMNOM.CLASS_WORKFLOW_JOB)) {
+        	pojo = g.getObjectMapper().getObject(WorkflowJobPojo.class, uri);
+        } else if(g.resource(uri).isa(NS.OMNOM.CLASS_JOB)) {
+        	pojo = g.getObjectMapper().getObject(JobPojo.class, uri);
+        } else  {
+        	return throwServiceError(ErrorMsg.WRONG_RDF_TYPE);
+        }
+        return Response.ok().entity(pojo).build();
+	}
 	
 	/**
 	 * GET /{id}/status			Accept: *		Content-Type: TEXT
