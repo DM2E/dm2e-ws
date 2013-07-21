@@ -226,7 +226,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		WorkflowConfigPojo wfconf = new WorkflowConfigPojo();
 		wfconf.setWorkflow(wf);
 		for (ParameterPojo inputParam : wf.getInputParams()) {
-			wfconf.addParameterAssignment(inputParam.getId(), "BLANK");
+			wfconf.addParameterAssignment(inputParam.getId(), inputParam.getDefaultValue());
 		}
 //		for (ParameterPojo inputParam : wf.getOutputParams()) {
 //			wfconf.addParameterAssignment(inputParam.getId(), "BLANK");
