@@ -6,6 +6,7 @@ define([
 	'backbone', // lib/backbone/backbone
 	'logging', // logging
 	'vm',
+    'util/dialogs',
 	'constants/RDFNS',
 	'text!templates/file/fileUploadTemplate.html',
 ], function($,
@@ -13,6 +14,7 @@ define([
 	Backbone,
 	logging,
 	Vm,
+    dialogs,
 	RDFNS,
 	fileUploadTemplate) {
 
@@ -52,13 +54,11 @@ define([
 					},
 
 					// Now you should be able to do this:
-					mimeType : 'multipart/form-data', // Property added in
-														// 1.5.1
+					mimeType : 'multipart/form-data', // Property added in 1.5.1
 
-					success : function(data) {
-						log.info("success");
-						console.log(data);
-						Vm.navigateTo("file-manager/api/file");
+					success : function(data, textStatus, xhr) {
+						dialogs.notify("Uploaded file as " + xhr.getResponseHeader("Location") );
+						Vm.navigateTo("file-list/api/file");
 					},
 					error : function(xhr) {
 						log.info("errror :(");
