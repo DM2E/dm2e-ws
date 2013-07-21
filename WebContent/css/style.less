@@ -44,11 +44,17 @@
   }
 }
 
-.loading-indicator {
+div.loading-indicator {
   background-image: @loadIndicator;
+  background-repeat: repeat-x;
   height: 50px;
   max-width: 20 * 24px;
-  background-repeat: repeat-x;
+}
+span.loading-indicator {
+  background-image: @loadIndicator;
+  min-width: 1 * 24px;
+  float: left;
+  background-repeat: no-repeat;
 }
 
 dl {

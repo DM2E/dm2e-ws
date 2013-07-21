@@ -214,11 +214,17 @@ html.lt-ie8 .hover-grp:hover .show-hover {
 .highlight .parameter.highlight {
   background-color: #eeee00;
 }
-.loading-indicator {
+div.loading-indicator {
   background-image: url(../img/pacman-black.gif);
+  background-repeat: repeat-x;
   height: 50px;
   max-width: 480px;
-  background-repeat: repeat-x;
+}
+span.loading-indicator {
+  background-image: url(../img/pacman-black.gif);
+  min-width: 24px;
+  float: left;
+  background-repeat: no-repeat;
 }
 dl {
   margin: 5px 0;
