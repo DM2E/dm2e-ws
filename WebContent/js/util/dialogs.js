@@ -7,18 +7,33 @@ define([ 'jquery', 'underscore', 'backbone',
 
 	return {
 
+        /**
+         * Show a notification
+         *
+         * @param what The message
+         * @param [type] Type of notification (success|error|info)
+         */
+        notify : function(what, type) {
+            type = type || 'success';
+            $(".notifications").notify({
+                message: { text : type.toUpperCase() + ": " + what },
+                fadeOut : { enabled: false },
+                onClosed : function() { console.error(this); console.error(arguments); },
+                type : type,
+            }).show();
+        },
+
         errorNotFound : function() {
             new Backbone.BootstrapModal({
                 content : "404 : Not found.",
             }).open();
-            window.location.hash = "home";
         },
 
-		errorNotImplemented : function() {
+		errorNotImplemented : function(what) {
+            var what = what || "functionality";
 			new Backbone.BootstrapModal({
-				content : "This view is not yet implemented.",
+				content : what + " is not yet implemented.",
 			}).open();
-			window.location.hash = "home";
 		},
 
 		errorXHR : function(xhr) {

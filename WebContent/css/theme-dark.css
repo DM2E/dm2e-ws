@@ -1,10 +1,15 @@
+@import url("fonts/Sonsie-One.css");
+
 @import url("../vendor/bootswatch/cyborg/bootstrap.css");
 
-@import url('//fonts.googleapis.com/css?family=Sonsie+One');
-
-@import url('//fonts.googleapis.com/css?family=Lobster|Cabin:400,700');
+@import url("../vendor/bootstrap-notify/css/bootstrap-notify.css");
+/*
+ * Imports
+ */
 /* @import url('bootstrap.css'); */
 /* Fonts */
+/* @import url('//fonts.googleapis.com/css?family=Sonsie+One'); */
+/* @import url('//fonts.googleapis.com/css?family=Lobster|Cabin:400,700'); */
 /* Library CSS */
 .clearfix {
   *zoom: 1;

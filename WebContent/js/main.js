@@ -26,6 +26,9 @@ require.config({
         jquery_iframe_transport : '../vendor/jquery-file-upload/js/jquery.iframe-transport.js',
         jquery_file_upload: '../vendor/jquery-file-upload/js/jquery.fileupload',
 
+        // for notifications
+        bootstrap_notify : '../vendor/bootstrap-notify/js/bootstrap-notify',
+
         // utility
         uuid : '../vendor/node-uuid/uuid',
 
@@ -77,6 +80,11 @@ require.config({
             ],
             // exports : "jquery.ui.widget",
         },
+        'bootstrap_notify' : {
+            deps : [
+                'jquery'
+            ],
+        }
 
 	}
 

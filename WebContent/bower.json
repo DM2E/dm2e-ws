@@ -19,8 +19,9 @@
     "underscore": "~1.5.1",
     "bootstrap-css": "~2.3.2",
     "bootstrap-switch": "latest",
-    "bootstrap-jasny" : "latest",
-    "node-uuid" : "broofa/node-uuid#713951c726cb9d9e8bee71512445e097703a6f1a"
+    "bootstrap-jasny": "latest",
+    "bootstrap-notify": "kba/bootstrap-notify",
+    "node-uuid": "broofa/node-uuid#713951c726cb9d9e8bee71512445e097703a6f1a"
   },
   "ignore": [
     "**/.*",
