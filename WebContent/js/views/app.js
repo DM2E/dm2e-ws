@@ -13,7 +13,8 @@ define([
 	'jquery_ui',
 	'backbone_bootstrap_modal',
 	'jquery',
-	'jquery_file_upload'
+	'jquery_file_upload',
+    'bootstrap_notify'
 ], function(
 	logging,
 	Vm,
