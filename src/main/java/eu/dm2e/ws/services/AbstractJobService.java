@@ -66,6 +66,12 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		return getResponse(g);
 	}
 	
+	/**
+	 * PUT /{resourceID} 		Accept: RDF		Content-Type: RDF
+	 * @param resourceID
+	 * @param bodyAsFile
+	 * @return
+	 */
 	@PUT
 	@Path("{resourceID}")
 	@Consumes({
@@ -145,6 +151,11 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		return this.putJob(outputGrafeo, outputGrafeo.get(uriStr));
 	}
 
+	/**
+	 * POST /					Accept: RDF		Content-Type: RDF
+	 * @param bodyAsString
+	 * @return
+	 */
 	@POST
 	@Consumes({
 		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
@@ -157,7 +168,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 	@Produces({
 		MediaType.WILDCARD
 	})
-	public Response postJobHandler(String bodyAsString) {
+	public Response postJobRDFHandler(String bodyAsString) {
 		log.trace(LogbackMarkers.DATA_DUMP, "Job posted: {}", bodyAsString);
 		Grafeo inputGrafeo;
 		try {
@@ -211,6 +222,10 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		return this.postJob(outputGrafeo, blank);
 	}
 	
+	/**
+	 * GET /{resourceID}		Accept: *		Content-Type: RDF
+	 * @return
+	 */
 	@GET
 	@Path("/{resourceId}")
 	@Produces({
@@ -221,7 +236,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		DM2E_MediaType.TEXT_RDF_N3,
 		DM2E_MediaType.TEXT_TURTLE
 	})
-	public Response getJobHandler() {
+	public Response getJobRDFHandler() {
         URI uri = getRequestUriWithoutQuery();
         Grafeo g = new GrafeoImpl();
         log.debug("Reading job from endpoint " + Config.get(ConfigProp.ENDPOINT_QUERY));
@@ -239,6 +254,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
     }
 	
 	/**
+	 * GET /{id}/status			Accept: *		Content-Type: TEXT
 	 * Get the job status as a string.
 	 * @param id
 	 * @return
@@ -259,6 +275,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 	}
 
 	/**
+	 * PUT /{id}/status			Accept: TEXT,	Content-Type: *
 	 * Set the job status by string.
 	 * @param id
 	 * @param newStatusStr
@@ -292,11 +309,20 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		return Response.created(getRequestUriWithoutQuery()).build();
 	}
 
+	/**
+	 * POST /{id}/log			Accept: RDF		Content-Type: *
+	 * @param logRdfStr
+	 * @return
+	 */
 	@POST
 	@Path("/{id}/log")
-	@Consumes({ DM2E_MediaType.APPLICATION_RDF_TRIPLES, DM2E_MediaType.APPLICATION_RDF_XML,
-			DM2E_MediaType.APPLICATION_X_TURTLE, DM2E_MediaType.TEXT_RDF_N3,
-			DM2E_MediaType.TEXT_TURTLE })
+	@Consumes({ 
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML,
+		DM2E_MediaType.APPLICATION_X_TURTLE,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.TEXT_TURTLE 
+	})
 	public Response postLogAsRDF(String logRdfStr) {
 	//@formatter:on
 	
@@ -321,6 +347,7 @@ public abstract class AbstractJobService extends AbstractRDFService {
 	}
 
 	/**
+	 * POST /{id}/log			Accept: TEXT	Content-Type: *
 	 * @param logString
 	 * @return
 	 */
@@ -349,6 +376,12 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		return Response.created(entry.getIdAsURI()).build();
 	}
 
+	/**
+	 * GET /{id}/log			Accept: *		Content-Type: RDF
+	 * @param minLevelStr
+	 * @param maxLevelStr
+	 * @return
+	 */
 	@GET
 	@Path("/{id}/log")
 	@Produces({ 
@@ -374,6 +407,12 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		return getResponse(logGrafeo);
 	}
 
+	/**
+	 * GET /{id}/log			Accept: *		Content-Type: TEXT_LOG
+	 * @param minLevelStr
+	 * @param maxLevelStr
+	 * @return
+	 */
 	@GET
 	@Path("/{id}/log")
 	@Produces(DM2E_MediaType.TEXT_X_LOG)
@@ -389,6 +428,12 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		return Response.ok().entity(jobPojo.toLogString(minLevelStr, maxLevelStr)).build();
 	}
 
+	/**
+	 * GET /{id}				Accept: TEXT_LOG		Content-Type: TEXT
+	 * @param minLevelStr
+	 * @param maxLevelStr
+	 * @return
+	 */
 	@GET
 	@Path("/{id}")
 	@Produces({ "text/x-log" })
@@ -396,6 +441,11 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		return this.listLogEntriesAsLogFile(minLevelStr, maxLevelStr);
 	}
 
+	/**
+	 * POST /{id}/assignment	Accept: RDF				Content-Type: RDF
+	 * @param bodyAsFile
+	 * @return
+	 */
 	@POST
 	@Consumes(MediaType.WILDCARD)
 	@Path("/{id}/assignment")
@@ -429,6 +479,12 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		return Response.created(assUri).entity(getResponseEntity(ass.getGrafeo())).build();
 	}
 	
+    /**
+     * GET /{id}/assignment/{assId}		Accept: *		Content-Type: RDF
+     * @param id
+     * @param assId
+     * @return
+     */
     @GET
     @Path("{id}/assignment/{assId}")
     public Response getAssignment( @PathParam("id") String id, @PathParam("assId") String assId) {
