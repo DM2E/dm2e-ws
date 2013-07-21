@@ -1,9 +1,9 @@
 define([
 	'underscore',
-	'backbone',
-], function(_, Backbone) {
+	'BaseModel',
+], function(_, BaseModel) {
 
-	var FileModel = Backbone.Model.extend({
+	var FileModel = BaseModel.extend({
 
 		defaults : {
 			originalName : "Untitled Document :)",
