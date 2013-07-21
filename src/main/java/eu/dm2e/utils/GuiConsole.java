@@ -26,6 +26,8 @@ public class GuiConsole {
 	
 	static {
 		System.setProperty("logback.configurationFile", "logback-console.xml");
+		// Don't resolve external URLs
+		System.setProperty("eu.dm2e.ws.grafeo.no_external_url", "true");
 		log = LoggerFactory.getLogger(GuiConsole.class.getName());
 		
 		client = ClientBuilder.newClient();
