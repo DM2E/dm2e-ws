@@ -22,8 +22,11 @@ define([
 	return BaseView.extend({
 
 		className : "fat-border parameter",
+        initialize : function(options) {
+            this.doInitialize(options);
+        },
 
-		initialize : function(options) {
+		doInitialize : function(options) {
 
 	    	var that = this;
 
@@ -129,20 +132,10 @@ define([
                 ? NS.getQN("omnom:toWorkflow")
                 : NS.getQN("omnom:toPosition")] = targetParent;
 
-//            console.error(targetParent.cid);
-
-//			console.log("New connection: %o", conn);
-
             // finding the workflow
             var workflow = $("#page").data("model");
             var x = workflow.getQN("omnom:parameterConnector").add(conn);
             console.log("New connection: %o", x.toJSON());
-
-
-//			if (source.paramType == 'workflow')
-//				console.log("fromWorkflow");
-//			else
-//				console.log("fromWebservice");
 		}
 
 	});
