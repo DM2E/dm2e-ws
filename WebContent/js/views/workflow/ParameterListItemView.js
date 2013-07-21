@@ -1,4 +1,4 @@
-//Filename: ParamterListItemView.js
+//Filename: ParameterListItemView.js
 
 define([
 	'jquery',
@@ -21,27 +21,37 @@ define([
 	formTemplate
 ) {
 
-	var log = logging.getLogger("ParamterListItemView.js");
+	var log = logging.getLogger("ParameterListItemView.js");
 
 	return ParameterView.extend({
 
 		template : viewTemplate,
 
 		events : {
-			"ok" : "handleFormSave",
-			"hidden" : "render",
 			"click button.edit-parameter" : "showForm",
 			"click button.remove-parameter" : "removeParam",
 		},
+
+        initialize : function(options) {
+            var that = this;
+            this.on("ok", function() { that.handleFormSave(); });
+            this.on("hidden", function() { that.render(); });
+            this.model.on("change", function() { that.render(); });
+            this.doInitialize(options);
+        },
 		
 		removeParam: function() {
 			this.model.collection.remove(this.model);
 		},
 
 		handleFormSave : function() {
-			_.each([ "rdfs:label", "omnom:defaultValue", "omnom:isRequired" ], function(qname) {
+			_.each([ "rdfs:label", "omnom:defaultValue"], function(qname) {
 				this.model.setQN(qname, this.formView.$("input[name='" + qname + "']").val());
 			}, this);
+            // FIXME TODO
+            this.model.setQN("omnom:isRequired", this.formView.$("input[name='omnom:isRequired']:checked").val());
+//            , "omnom:isRequired"
+            this.trigger("parameter-was-saved");
 			this.render();
 		},
 

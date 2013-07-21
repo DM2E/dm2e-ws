@@ -5,21 +5,21 @@
 <div class="control-group">
 	<label class="control-label" for="rdfs:label">Parameter Label</label>
 	<div class="controls">
-		<input data-rdf-uri='<% rdf_attr("rdfs:label") %>' name="rdfs:label" type="text"
+		<input name="rdfs:label" id="rdfs:label" type="text"
 			value='<%= rdf_attr("rdfs:label") %>' class="input-xlarge">
 	</div>
 </div>
 <div class="control-group">
 	<label class="control-label" for="omnom:defaultValue">Default Value</label>
 	<div class="controls">
-		<input data-rdf-uri='<% NS.getQN("omnom:defaultValue") %>' name="omnom:defaultValue" type="text"
+		<input id="omnom:defaultValue" name="omnom:defaultValue" type="text"
 			value='<%= rdf_attr("omnom:defaultValue") %>' class="input-xlarge">
 	</div>
 </div>
 <!-- Multiple Radios -->
 <div class="control-group">
 	<label class="control-label" for="omnom:isRequired">Required Parameter?</label>
-	<div class="controls">
+	<div class="controls" id="omnom:isRequired">
 		<label class="radio" for="required-0">
 			<input type="radio" name="omnom:isRequired" id="required-0" value="false" checked="checked">
 			Not Required
