@@ -6,6 +6,7 @@ define([
 	'logging',
 	'BaseView',
 	'vm',
+    'util/dialogs',
 	'text!templates/workflow/parameterListTemplate.html',
 	'views/workflow/ParameterListItemView',
 ], function($,
@@ -13,6 +14,7 @@ define([
 	logging,
 	BaseView,
 	Vm,
+    dialogs,
 	parameterListTemplate,
 	ParameterListItemView) {
 
@@ -21,18 +23,26 @@ define([
 	return BaseView.extend({
 		
 		events : {
-			"click button.add-parameter" : "addItem"
+			"click button.add-parameter" : function() { this.addItem({}); }
         },
 
-		addItem : function() {
-			console.log("param coll: %o", this.collection);
+		addItem : function(preset) {
+//			console.log("param coll: %o", this.collection);
 			var NewModel = this.collection.model;
-			console.log("new model: %o", NewModel);
-			var newInst = new NewModel();
-			console.log("new instance: %o", newInst);
-			newInst.setQN("rdfs:label", "CHANGE ME");
-			this.collection.add(newInst);
-//			console.log("parameters coll %o", that.collection);
+//			console.log("new model: %o", NewModel);
+			var newInst = new NewModel(preset);
+//			console.log("new instance: %o", newInst);
+//			this.collection.add(newInst);
+            var modalView = new ParameterListItemView({
+                model : newInst,
+                workflowOrPosition : 'workflow',
+            });
+            var that = this;
+            modalView.on("parameter-was-saved", function() {
+                that.collection.add( newInst )
+            });
+            modalView.showForm();
+            return newInst;
 		},
 
 		initialize : function(options) {
@@ -52,6 +62,37 @@ define([
 
 		render : function() {
 			this.$el.html(parameterListTemplate);
+
+            var parameterList = this;
+            var workflow = this.parentModel;
+            this.$(".add-parameter-dropzone").droppable({
+                accept: function(draggable) {
+                    console.error(workflow);
+                    if (! draggable.hasClass("parameter"))
+                        return false
+                    var source = draggable.data("model");
+                    var sourceParent = draggable.data("parentModel");
+                    if (source.inputOrOutput !== parameterList.inputOrOutput)
+                        return false;
+                    if (sourceParent === workflow)
+                        return false;
+                    return true;
+                },
+                drop : function (event, ui) {
+                    var source = ui.draggable.data("model");
+                    console.log(source);
+                    var sourceModelJSON = source.toJSON();
+                    // delete the ID so backbone-relational is happy and we're forced to create a new, workflow-specific one
+                    delete sourceModelJSON.id;
+                    // Add parameter
+                    var newParam = parameterList.addItem(sourceModelJSON);
+                    // FIXME TODO Add connection
+//                    var conn = {};
+//                    newParam.addConnectionTo()
+                },
+                activeClass: "drop-active",
+                hoverClass: "drop-hover",
+            });
 			Vm.cleanupSubViews(this);
 			_.each(this.collection.models, function(parameterModel) {
 				var subview = Vm.createSubView(this, ParameterListItemView, {
