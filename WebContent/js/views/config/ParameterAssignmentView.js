@@ -20,9 +20,14 @@ define([
     return BaseView.extend({
 
         template : theTemplate,
+        populateModelFromForm : function() {
+            this.model.setQN("omnom:parameterValue", this.$("input#paramValue").val());
+        },
         drop : function(event, ui) {
             var droppedModel = ui.draggable.data("model");
-            this.$("input#paramValue").val(droppedModel.url());
+            console.log(droppedModel.absoluteURL());
+            this.$("input#paramValue").val(droppedModel.absoluteURL());
+            this.populateModelFromForm();
         },
         accept: function(draggable) {
             return true;
