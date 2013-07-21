@@ -18,7 +18,6 @@ define([ 'jquery', 'underscore', 'backbone',
             $(".notifications").notify({
                 message: { text : type.toUpperCase() + ": " + what },
                 fadeOut : { enabled: false },
-                onClosed : function() { console.error(this); console.error(arguments); },
                 type : type,
             }).show();
         },

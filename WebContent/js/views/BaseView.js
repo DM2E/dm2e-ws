@@ -155,7 +155,14 @@ define([ 'jquery', 'underscore', 'logging', 'backbone', 'vm', 'uuid', 'constants
                     }, itemViewOptions));
                 this.appendHTML(subview, listSelector);
             }, this);
-        }
+        },
+
+        setButtonLoading : function(selector) {
+            this.$("span", selector).first().addClass("loading-indicator");
+        },
+        unsetButtonLoading : function(selector) {
+            this.$("span", selector).first().removeClass("loading-indicator");
+        },
 
     });
 

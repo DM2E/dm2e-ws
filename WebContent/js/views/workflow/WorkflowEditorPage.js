@@ -42,7 +42,9 @@ define([
         template : workflowEditorTemplate,
 
 		events : {
-			"click button#save-workflow" : function() { this.saveWorkflow(); },
+			"click button#save-workflow" : function() {
+                this.saveWorkflow();
+            },
             "click button#create-config" : function() { this.createConfig(); },
 			"click button#render" : function() { this.render; }
 		},
@@ -136,6 +138,7 @@ define([
 		saveWorkflow: function() {
 			log.debug(JSON.stringify(this.model.toJSON(), undefined, 2));
 			log.debug(this.model.toJSON());
+            this.setButtonLoading("button#save-workflow");
             var that = this;
             // Un-Skolemize positions (i.e. make them blank nodes and let the
             // server rename them again
@@ -149,6 +152,7 @@ define([
 //                console.warn(pos);
 //            });
 			this.model.save().then(function(data, textStatus, xhr) {
+                    that.unsetButtonLoading("button#save-workflow");
                     if (xhr.status >= 200 && xhr.status < 300) {
                         dialogs.notify("Saved Workflow " + that.model.id, 'success');
 //                        that.odel.fetch().then(that.render);

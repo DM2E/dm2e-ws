@@ -30,8 +30,11 @@ define([
             },
             "click button#save-config": function() { this.saveConfig(); },
             "click button#run-config": function () {
+//                var button = this.$("button#run-config");
+//                $("span", button).addClass("loading-indicator");
+                this.setButtonLoading("button#run-config");
+                var that = this;
                 this.saveConfig();
-                console.error(this.model.toJSON());
                 var config = this.model;
                 $.ajax( {
                     url: config.getQN("omnom:workflow").id,
@@ -48,7 +51,7 @@ define([
                         } else {
                             dialogs.notify(jqXHR.status, 'error');
                         }
-                        dialogs.notify("Run executed.");
+                        that.unsetButtonLoading("button#run-config");
                     },
                 });
                     // FIXME TODO

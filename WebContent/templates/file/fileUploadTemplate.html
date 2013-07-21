@@ -1,4 +1,4 @@
-<div class="span11 offset1">
+<div class="span11 offset1" xmlns="http://www.w3.org/1999/html">
 	<h2>Upload a file</h2>
 	<form class="form-horizontal" action="/api/file" method="post" enctype="multipart/form-data"
 		class="inline-form">
@@ -29,7 +29,7 @@
 		</div>
 		<br />
 		<!-- <input type="submit" class="btn btn-info" value="Upload" /> -->
-		<input type="submit" class="btn btn-info" id="submit-upload" value="Upload" />
+		<input type="submit" class="btn btn-info" id="submit-upload" value="Upload"><span class="loading-indicator"></span></button>
 		<input type="button" class="btn btn-warning" id="cancel-upload" value="Cancel" />
 	</form>
 	<div class="upload-job">
