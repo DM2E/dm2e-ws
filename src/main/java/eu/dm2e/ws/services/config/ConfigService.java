@@ -41,6 +41,11 @@ import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.jena.SparqlUpdate;
 import eu.dm2e.ws.services.AbstractRDFService;
 
+/**
+ * FIXME refactor this into workflowconfig/webservice config service so we can delegate de/serialization to MessageBodyWriter
+ * @author Konstantin Baierer
+ *
+ */
 @Path("/config")
 public class ConfigService extends AbstractRDFService {
 	
@@ -90,7 +95,6 @@ public class ConfigService extends AbstractRDFService {
         }
         return resp.build();
     }
-    
     
     /**
      * GET /list		Accept: RDF, JSON
@@ -263,20 +267,79 @@ public class ConfigService extends AbstractRDFService {
 
 		String rdfType = json.getAsJsonObject().get(NS.RDF.PROP_TYPE).getAsString();
 		SerializablePojo pojo;
+		boolean isWorkflow = false;
 		if (rdfType.equals(NS.OMNOM.CLASS_WEBSERVICE_CONFIG)) {
 			pojo = OmnomJsonSerializer.deserializeFromJSON(input, WebserviceConfigPojo.class);
 		} else if (rdfType.equals(NS.OMNOM.CLASS_WORKFLOW_CONFIG)) { 
+			isWorkflow = true;
 			pojo = OmnomJsonSerializer.deserializeFromJSON(input, WorkflowConfigPojo.class);
 		} else {
 			return throwServiceError(ErrorMsg.WRONG_RDF_TYPE);
 		}
-
+		log.debug(LogbackMarkers.DATA_DUMP, pojo.getTerseTurtle());
+		
+		// set uri
     	URI uri = appendPath(createUniqueStr());
     	pojo.setId(uri.toString());
+		
+    	// Skolemize assignments
+		Grafeo g = pojo.getGrafeo();
+		g.skolemizeUUID(uri.toString(), NS.OMNOM.PROP_ASSIGNMENT, "assignment");
+
+		SerializablePojo pojoSkolemized = g.getObjectMapper()
+				.getObject(isWorkflow ? WorkflowConfigPojo.class : WebserviceConfigPojo.class, uri);
     	
-    	pojo.getGrafeo().putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), uri);
+		log.debug(LogbackMarkers.DATA_DUMP, pojoSkolemized.getTerseTurtle());
+    	pojoSkolemized.getGrafeo().putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), uri);
     	
-    	return Response.created(uri).entity(pojo).build();
+    	return Response.created(uri).entity(pojoSkolemized).build();
+		
+	}
+
+	/**
+	 * PUT /{id}		Accept: JSON
+	 * @param input
+	 * @return
+	 */
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("{id}")
+	public Response putConfigJSON(String input) {
+		log.info("PUT config (JSON)");
+
+		JsonParser jsonParser = new JsonParser();
+		JsonElement json = jsonParser.parse(input);
+		if (! json.getAsJsonObject().has(NS.RDF.PROP_TYPE)) {
+			return throwServiceError(ErrorMsg.UNTYPED_RDF);
+		}
+
+		String rdfType = json.getAsJsonObject().get(NS.RDF.PROP_TYPE).getAsString();
+		SerializablePojo pojo;
+		boolean isWorkflow = false;
+		if (rdfType.equals(NS.OMNOM.CLASS_WEBSERVICE_CONFIG)) {
+			pojo = OmnomJsonSerializer.deserializeFromJSON(input, WebserviceConfigPojo.class);
+		} else if (rdfType.equals(NS.OMNOM.CLASS_WORKFLOW_CONFIG)) { 
+			isWorkflow = true;
+			pojo = OmnomJsonSerializer.deserializeFromJSON(input, WorkflowConfigPojo.class);
+		} else {
+			return throwServiceError(ErrorMsg.WRONG_RDF_TYPE);
+		}
+		log.debug(LogbackMarkers.DATA_DUMP, pojo.getTerseTurtle());
+		
+		// DON'T change the ID
+		URI uri = getRequestUriWithoutQuery();
+		
+    	// Skolemize assignments
+		Grafeo g = pojo.getGrafeo();
+		g.skolemizeUUID(uri.toString(), NS.OMNOM.PROP_ASSIGNMENT, "assignment");
+
+		SerializablePojo pojoSkolemized = g.getObjectMapper()
+				.getObject(isWorkflow ? WorkflowConfigPojo.class : WebserviceConfigPojo.class, uri);
+    	
+		log.debug(LogbackMarkers.DATA_DUMP, pojoSkolemized.getTerseTurtle());
+    	pojoSkolemized.getGrafeo().putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), uri);
+    	
+    	return Response.created(uri).entity(pojoSkolemized).build();
 		
 	}
 
