@@ -13,6 +13,7 @@ define(
             currentState = currentState == 'light' ? 'dark' : 'light';
         }
         var applyTheme = function() {
+            $("body").hide();
             $("*[data-theme]").remove();
             $("head").append(
                 $("<link/>")
@@ -20,6 +21,7 @@ define(
                     .attr("rel", "stylesheet")
                     .attr("type", "text/css")
                     .attr("href", themes[currentState]));
+            $("body").show();
         }
         var getTheme = function() {
             return currentState;
