@@ -87,7 +87,8 @@ define([ 'jquery', 'underscore', 'logging', 'backbone', 'vm', 'uuid', 'constants
                 /**
                  * Creates a unique ID by using UUID.js (to be used for generation of HTML identifiers and such)
                  */
-                unique_id: function() { return UUID.v4() },
+                unique_id: function() { //noinspection JSUnresolvedFunction
+                    return UUID.v4() },
             }, options ));
         },
 

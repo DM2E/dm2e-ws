@@ -1,0 +1,35 @@
+<% console.error( obj ) %>
+<div class="row">
+
+    <div class="span2">
+        <a class="btn btn-info" href="#workflow-edit/<%= rdf_attr('omnom:workflow').id %>"
+           id="workflow-edit">Edit Workflow</a>
+        <br/>
+        <a class="btn btn-info" href="#config-edit/<%= rdf_attr('omnom:workflowConfig').id %>"
+           id="config-edit">Edit Workflow Config</a>
+        <br/>
+        <button class="btn btn-primary" id="job-refresh">Refresh</button>
+    </div>
+
+    <div class="span10">
+        <h2>Job <%= last_url_segment(model.id) %></h2>
+
+        <div class="job-status">Status:
+            <span class="status-<%=rdf_attr('omnom:status')%>">
+                <%= rdf_attr("omnom:status") %>
+            </span>
+        </div>
+
+        <div class="progress">
+            <div class="bar bar-success"></div>
+            <div class="bar bar-fail"></div>
+        </div>
+        Progress: <%= rdf_attr("omnom:finishedPosition").length %> / <%= rdf_attr("omnom:workflowPosition", workflow).length %>
+
+        <h3>Log</h3>
+        <pre id="job-log">No log messages yet ...</pre>
+
+
+    </div>
+
+</div>

@@ -23,7 +23,8 @@ define([
 	var theDefaults = {
 		fileServices : [
             'api/file',
-            'api/mint-file'
+            // Comment the next one out to improve test performance
+//            'api/mint-file'
         ],
 		configService : 'api/config',
 		workflowService : 'api/workflow',

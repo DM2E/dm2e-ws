@@ -25,12 +25,12 @@ define([
         /**
          * The fallback/default route
          */
-        appRouter.on('route:notFound', function() {
+        appRouter.on('route:notFound', function () {
             dialogs.errorNotFound();
         });
 
         /**
-         * The home/landing page
+         * --- #home --- The home/landing page
          */
         appRouter.route(/(^$|^home$)/, 'showHomePage');
         appRouter.on('route:showHomePage', function () {
@@ -43,7 +43,18 @@ define([
         });
 
         /**
-         * Shows a list of files sorted by file service
+         * --- #help --- Shows the help page
+         */
+        appRouter.route(/help/, 'showHelp');
+        appRouter.on('route:showHelp', function () {
+            require(['views/help/HelpView'], function (HelpView) {
+                var helpView = Vm.reuseView(this, 'HelpView', HelpView, {});
+                appView.showPage(helpView);
+            });
+        });
+
+        /**
+         * --- #file-list/{fileService} -- Shows a list of files sorted by file service
          */
         appRouter.route(/file-list\/?(.*)/, 'showFileManager');
         appRouter.on('route:showFileManager', function (fileService) {
@@ -61,7 +72,7 @@ define([
         });
 
         /**
-         * Shows the user page / profile
+         * --- #profile --- Shows the user page / profile
          */
         appRouter.route(/^profile$/, 'showUserPage');
         appRouter.on('route:showUserPage', function () {
@@ -73,7 +84,7 @@ define([
         });
 
         /**
-         * Shows the file upload page
+         * --- #file-upload --- Shows the file upload page
          */
         appRouter.route(/^file-upload$/, 'showFileUploadPage');
         appRouter.on('route:showFileUploadPage', function () {
@@ -86,7 +97,8 @@ define([
         });
 
         /**
-         * Show the workflow editor. If no workflow is given as URL argumnt, create a new one
+         * --- #workflow-edit --- Show the workflow editor.
+         * If no workflow is given as URL argumnt, create a new one
          */
         appRouter.route(/workflow-edit\/?(.*)/, 'showWorkflowEditor');
         appRouter.on('route:showWorkflowEditor', function (workflowURL) {
@@ -141,83 +153,7 @@ define([
         });
 
         /**
-         * Create a config from a workflow, persist it and show the config editor for it.
-         */
-        appRouter.route(/config-edit-from\/(.*)/, 'showConfigEditorFrom');
-        appRouter.on('route:showConfigEditorFrom', function (fromWorkflowUri) {
-            require([
-//                'views/workflow/RunWorkflowPage',
-                'models/config/WorkflowConfigModel'
-            ], function (WorkflowConfigModel) {
-                if (! fromWorkflowUri) {
-                    dialogs.errorNotFound();
-                    return;
-                }
-
-                var onError = function(xhr, status, err) {
-                    dialogs.errorXHR(xhr);
-                };
-
-                // Persist the workflow config
-                var onGenerateSuccess = function(blankConfigData, status, xhr) {
-                    $.ajax({
-                        async: false,
-                        url : '/api/config',
-                        type : "POST",
-                        processData : false,
-                        dataType: "json",
-                        contentType : "application/json",
-                        data : JSON.stringify(blankConfigData),
-                        success : function(namedConfigData, status, xhr) {
-                            var respLocation = xhr.getResponseHeader("Location");
-                            log.debug("Posted config to " + respLocation);
-                            // Load the workflow config editor
-                            appRouter.navigate( "config-edit/" + respLocation, true );
-                        },
-                        error : onError,
-                    })
-                }
-
-                // Let the server create an empty config for this workflow
-                $.ajax({
-                    url : fromWorkflowUri + "/blankConfig",
-                    type : "GET",
-                    dataType: "json",
-                    async: false,       // wait for result
-                    success: onGenerateSuccess,
-                    error : onError,
-                })
-            });
-        });
-
-        /**
-         * Show the config editor
-         */
-        appRouter.route(/config-edit\/(.*)/, 'showConfigEditor');
-        appRouter.on('route:showConfigEditor', function (workflowConfigURI) {
-            log.debug("Hit route 'config-edit/" + workflowConfigURI);
-            require([
-                'views/config/ConfigEditorPage',
-                'models/config/WorkflowConfigModel'
-            ], function (ConfigEditorPage,  WorkflowConfigModel) {
-                if (!workflowConfigURI) {
-                    dialogs.errorNotFound();
-                } else {
-                    var TheModel = WorkflowConfigModel.extend({
-                        url: workflowConfigURI
-                    });
-                    var configModel = new TheModel();
-                    configModel.fetch({async: false});
-//                    console.warn(configModel);
-                    var pageView = Vm.createView({}, 'ConfigEditorPage', ConfigEditorPage, { model: configModel });
-                    appView.showPage(pageView);
-                }
-            });
-
-        });
-
-        /**
-         *  Show the list of workflows
+         * --- #workflow-list --- Show the list of workflows
          */
         appRouter.route(/workflow-list/, 'showWorkflowList');
         appRouter.on('route:showWorkflowList', function () {
@@ -232,22 +168,119 @@ define([
         });
 
         /**
-         * TODO
+         * --- #config-edit-from/{workflowId} --- Create a config from a workflow,
+         * persist it and show the config editor for it.
          */
-        appRouter.route(/job-list/, 'showJobList');
-        appRouter.on('route:showJobList', function () {
-            dialogs.errorNotImplemented();
+        appRouter.route(/config-edit-from\/(.*)/, 'showConfigEditorFrom');
+        appRouter.on('route:showConfigEditorFrom', function (fromWorkflowUri) {
+            require([
+//                'views/workflow/RunWorkflowPage',
+                'models/config/WorkflowConfigModel'
+            ], function (WorkflowConfigModel) {
+                if (!fromWorkflowUri) {
+                    dialogs.errorNotFound();
+                    return;
+                }
+
+                var onError = function (xhr, status, err) {
+                    dialogs.errorXHR(xhr);
+                };
+
+                // Persist the workflow config
+                var onGenerateSuccess = function (blankConfigData, status, xhr) {
+                    $.ajax({
+                        async: false,
+                        url: '/api/config',
+                        type: "POST",
+                        processData: false,
+                        dataType: "json",
+                        contentType: "application/json",
+                        data: JSON.stringify(blankConfigData),
+                        success: function (namedConfigData, status, xhr) {
+                            var respLocation = xhr.getResponseHeader("Location");
+                            log.debug("Posted config to " + respLocation);
+                            // Load the workflow config editor
+                            appRouter.navigate("config-edit/" + respLocation, true);
+                        },
+                        error: onError,
+                    })
+                }
+
+                // Let the server create an empty config for this workflow
+                $.ajax({
+                    url: fromWorkflowUri + "/blankConfig",
+                    type: "GET",
+                    dataType: "json",
+                    async: false,       // wait for result
+                    success: onGenerateSuccess,
+                    error: onError,
+                })
+            });
         });
 
         /**
-         * Shows the help page
+         * --- #config-edit/{configId} --- Show the config editor
          */
-        appRouter.route(/help/, 'showHelp');
-        appRouter.on('route:showHelp', function () {
-            require(['views/help/HelpView'], function(HelpView) {
-                var helpView = Vm.reuseView(this, 'HelpView', HelpView, {});
-                appView.showPage(helpView);
+        appRouter.route(/config-edit\/(.*)/, 'showConfigEditor');
+        appRouter.on('route:showConfigEditor', function (configId) {
+            log.debug("Hit route 'config-edit/" + configId);
+            require([
+                'views/config/ConfigEditorPage',
+                'models/config/WorkflowConfigModel'
+            ], function (ConfigEditorPage, WorkflowConfigModel) {
+                if (!configId) {
+                    dialogs.errorNotFound();
+                } else {
+                    var TheModel = WorkflowConfigModel.extend({
+                        url: configId
+                    });
+                    var configModel = new TheModel();
+                    configModel.fetch({async: false});
+//                    console.warn(configModel);
+                    var pageView = Vm.createView({}, 'ConfigEditorPage', ConfigEditorPage, { model: configModel });
+                    appView.showPage(pageView);
+                }
             });
+
+        });
+
+        /**
+         * --- #job/{jobId} --- Show a single job
+         */
+        appRouter.route(/^job\/(.*)/, 'showJob');
+        appRouter.on('route:showJob', function (jobId) {
+            if (!jobId) {
+                dialogs.errorNotFound();
+                return;
+            }
+            require([
+                'models/job/JobModel',
+                'views/job/WorkflowJobPage'
+            ], function (JobModel, JobPage) {
+                $.ajax({
+                    url : jobId,
+                    dataType : "json",
+                    complete: function(jqXHR, textStatus, err) {
+                        if (jqXHR.status === 200) {
+                            var jobData = $.parseJSON(jqXHR.responseText);
+                            var jobInst = new JobModel(jobData);
+                            jobInst.url = jobId;
+                            var jobView = Vm.createView(this, 'JobPage', JobPage, { model: jobInst });
+                            appView.showPage(jobView);
+                        } else {
+                            dialogs.errorXHR(jqXHR);
+                        }
+                    }
+                });
+            });
+        });
+
+        /**
+         * TODO
+         */
+        appRouter.route(/^job-list/, 'showJobList');
+        appRouter.on('route:showJobList', function () {
+            dialogs.errorNotImplemented('View JobList');
         });
 
         Backbone.history.start();

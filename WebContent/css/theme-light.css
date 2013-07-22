@@ -256,3 +256,25 @@ dl {
 #workflow-position-list {
   min-height: 400px;
 }
+.status-FINISHED {
+  color: #00aa00;
+}
+.status-NOT_STARTED {
+  color: #aaaa00;
+}
+.status-FAILED {
+  color: #aa0000;
+}
+/*
+ disable transition animation of progress bars
+ */
+.progress .bar {
+  -webkit-transition: none;
+  -moz-transition: none;
+  -ms-transition: none;
+  -o-transition: none;
+  transition: none;
+}
+/*dl {
+  overflow: hidden;
+}*/

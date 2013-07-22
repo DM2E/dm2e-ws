@@ -94,7 +94,28 @@ dl {
   min-height: 400px;
 }
 
-//dl {
-//  overflow: hidden;
-//}
+.status-FINISHED {
+  color: @fgStatus-FINISHED;
+}
+.status-NOT_STARTED {
+  color: @fgStatus-NOT_STARTED;
+}
+.status-FAILED {
+  color: @fgStatus-FAILED;
+}
+
+/*
+ disable transition animation of progress bars
+ */
+.progress .bar {
+  -webkit-transition: none;
+  -moz-transition: none;
+  -ms-transition: none;
+  -o-transition: none;
+  transition: none;
+}
+
+/*dl {
+  overflow: hidden;
+}*/
 
