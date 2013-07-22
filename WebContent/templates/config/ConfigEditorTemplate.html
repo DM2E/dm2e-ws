@@ -3,7 +3,7 @@
     <div class="span3">
         <button id="save-config" class="btn btn-success">Save</button>
         <button id="run-config" class="btn btn-warning"><span>&nbsp;</span> Run!</button>
-        <button id="edit-workflow" class="btn btn-primary">Edit Workflow</button>
+        <a href="#workflow-edit/<%= rdf_attr('omnom:workflow').id %>" class="btn btn-primary">Edit Workflow</a>
     </div>
     <div class="span9">
         Configuration URL : <%= model.id %>

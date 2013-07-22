@@ -24,10 +24,10 @@ define([
         fileCollections: {},
 
         events: {
-            "click button#edit-workflow": function () {
-                var that = this;
-                window.location.hash = "workflow-edit/" + this.model.getQN("omnom:workflow").id;
-            },
+//            "click button#workflow-edit": function () {
+//                var that = this;
+//                window.location.hash = "workflow-edit/" + this.model.getQN("omnom:workflow").id;
+//            },
             "click button#save-config": function() { this.saveConfig(); },
             "click button#run-config": function () {
 //                var button = this.$("button#run-config");
@@ -48,6 +48,7 @@ define([
                         if (jqXHR.status === 202) {
 //                            dialogs.errorXHR(jqXHR);
                             dialogs.notify("Job started " + jobLoc);
+                            window.location.hash = 'job/' + jobLoc;
                         } else {
                             dialogs.notify(jqXHR.status, 'error');
                         }
