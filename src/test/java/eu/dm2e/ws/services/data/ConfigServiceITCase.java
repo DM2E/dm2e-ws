@@ -123,7 +123,9 @@ public class ConfigServiceITCase extends OmnomTestCase {
 
 	@Test
 	public void testPostBadSyntax() {
-		Response resp = webTarget.request().post(Entity.text("FOO"));
+		Response resp = webTarget
+				.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+				.post(Entity.entity("FOO", DM2E_MediaType.APPLICATION_RDF_TRIPLES));
 		assertEquals(400, resp.getStatus());
 		String respStr = resp.readEntity(String.class);
 		assertThat(respStr, containsString(ErrorMsg.BAD_RDF.toString()));
@@ -131,8 +133,10 @@ public class ConfigServiceITCase extends OmnomTestCase {
 
 	@Test
 	public void testPostNoBlank() {
-		Response resp = webTarget.request().post(Entity.text(configString
-				.get(OmnomTestResources.DEMO_SERVICE_NO_TOP_BLANK)));
+		Response resp = webTarget
+				.request()
+				.post(Entity.entity(configString .get(OmnomTestResources.DEMO_SERVICE_NO_TOP_BLANK),
+						DM2E_MediaType.APPLICATION_RDF_TRIPLES));
 		assertEquals(400, resp.getStatus());
 		String respStr = resp.readEntity(String.class);
 		assertThat(respStr, containsString(ErrorMsg.NO_TOP_BLANK_NODE.toString()));
@@ -142,7 +146,7 @@ public class ConfigServiceITCase extends OmnomTestCase {
 	public void testPostGoodSyntax() {
 		Grafeo gOut = new GrafeoImpl(configFile.get(OmnomTestResources.DEMO_SERVICE_WORKING));
 		{
-			Response resp = webTarget.request().post(Entity.text(gOut.getNTriples()));
+			Response resp = webTarget.request().post(Entity.entity(gOut.getNTriples(), DM2E_MediaType.APPLICATION_RDF_TRIPLES));
 			assertThat(resp.getMediaType(), is(DM2E_MediaType.APPLICATION_RDF_TRIPLES_TYPE));
 			assertEquals(201, resp.getStatus());
 			assertNotNull(resp.getLocation());
@@ -154,7 +158,7 @@ public class ConfigServiceITCase extends OmnomTestCase {
 		{
 			Response resp = webTarget
 					.request(MediaType.APPLICATION_JSON)
-					.post(Entity.text(gOut.getNTriples()));
+					.post(Entity.entity(gOut.getNTriples(), DM2E_MediaType.APPLICATION_RDF_TRIPLES));
 			assertEquals(201, resp.getStatus());
 			assertThat(resp.getMediaType(), is(MediaType.APPLICATION_JSON_TYPE));
 			final String respStr = resp.readEntity(String.class);
@@ -207,12 +211,13 @@ public class ConfigServiceITCase extends OmnomTestCase {
 	public void testData() {
 		Response response = webTarget
 				.request()
-				.post(Entity.text(
+				.post(Entity.entity(
 						"[] <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://onto.dm2e.eu/omnom/WebserviceConfig> ;" +
 //		 NOTE: dc:creator isn't in a WebserviceConfigPojo so it will *not* be stored
 //							" <http://purl.org/dc/terms/creator> <http://localhost/kai>;" +
 							" <http://onto.dm2e.eu/omnom/webservice> <http://localhost:9998/service/xslt>."
-						));
+						, DM2E_MediaType.APPLICATION_RDF_TRIPLES));
+		assertEquals(201, response.getStatus());
 		Grafeo gPosted = new GrafeoImpl();
 		final String confRespStr = response.readEntity(String.class);
 		log.info(confRespStr);
