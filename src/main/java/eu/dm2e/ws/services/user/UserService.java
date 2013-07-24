@@ -4,6 +4,7 @@ import java.net.URI;
 
 import javax.servlet.ServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -20,26 +21,46 @@ import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.api.UserPojo;
+import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.AbstractRDFService;
 
 @Path("/user")
 public class UserService extends AbstractRDFService {
 	
+	/**
+	 * GET _username		Accept: * 		Content-Type: text/plain
+	 *
+	 * Returns the name of the currently logged in user
+	 * @param security
+	 * @return
+	 */
 	@GET
 	@Path("_username")
 	@Produces({
 		DM2E_MediaType.TEXT_PLAIN
 	})
-	public Response getUserName(@Context SecurityContext security) {
+	public Response getUserId(@Context SecurityContext security) {
 		// TODO handle test case
 		if (null != System.getProperty("dm2e-ws.isTestRun") && System.getProperty("dm2e-ws.isTestRun").equals("true"))
-			return Response.ok("the-test-user").build();
+			return Response.ok(appendPath(popPath(), "the-test-user").toString()).build();
 		if (null == security.getUserPrincipal()) {
 			return throwServiceError("NOT LOGGED IN", 403);
 		}
-		return Response.ok(security.getUserPrincipal().getName()).build();
+		return Response.ok(appendPath(popPath(), security.getUserPrincipal().getName()).toString()).build();
 	}
+	
+	@DELETE
+	@Path("{id}")
+	public Response deleteUser() {
+		URI uri = getRequestUriWithoutQuery();
+		Grafeo g = new GrafeoImpl();
+		
+		g.emptyGraph(Config.get(ConfigProp.ENDPOINT_UPDATE), uri);
+		return Response.ok().build();
+	}
+	
+	
 	
 	/**
 	 * GET {id}		Accept: JSON, RDF
