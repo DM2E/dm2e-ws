@@ -1,8 +1,0 @@
-@font-face {
-  font-family: 'Telex';
-  font-style: normal;
-  font-weight: 400;
-  src: local('Telex-Regular'),
-          url(Telex.ttf) format('truetype'),
-          url(http://themes.googleusercontent.com/static/fonts/telex/v1/eXTLMlW5_yOhUYbVCO_akg.ttf) format('truetype');
-}
