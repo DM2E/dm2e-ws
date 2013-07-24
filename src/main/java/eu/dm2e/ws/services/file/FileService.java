@@ -42,6 +42,7 @@ import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.api.json.OmnomJsonSerializer;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -61,10 +62,15 @@ import eu.dm2e.ws.services.AbstractRDFService;
 @Path("/file")
 public class FileService extends AbstractRDFService {
 
+	
+	@Override
+	public WebservicePojo getWebServicePojo() {
+		WebservicePojo ws = super.getWebServicePojo();
+		ws.setLabel("Default File Service");
+		return ws;
+	}
 
-    public FileService() {
-
-    }
+    public FileService() { }
 
 	/**
 	 * GET /{id}
