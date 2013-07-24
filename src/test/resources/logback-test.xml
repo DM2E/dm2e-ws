@@ -108,7 +108,7 @@
     <!-- Set this to WARN or higher to disable Jersey logging -->
     <logger level="WARN" name="org.glassfish.jersey.filter.LoggingFilter" />
 
-    <root level="INFO">
+    <root level="DEBUG">
         <appender-ref ref="FILE" />
         <appender-ref ref="STDOUT" />
     </root>

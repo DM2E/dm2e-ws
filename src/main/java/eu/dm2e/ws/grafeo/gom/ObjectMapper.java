@@ -17,6 +17,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 
 import eu.dm2e.utils.PojoUtils;
 import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.SerializablePojo;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.GValue;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -106,11 +107,9 @@ public class ObjectMapper {
                 serializeAnnotatedObject(targetResource, property, value);
             } else if (value instanceof java.util.Set) { 
             	serializeSet(targetResource, property, field, value);
-            }
-			else if (value instanceof java.util.List) {
+            } else if (value instanceof java.util.List) {
             	serializeList(targetResource, property, field, value);
-            }
-			else if (value instanceof java.net.URI){
+            } else if (value instanceof java.net.URI){
                 serializeURI(targetResource, property, value);
             } else {
                 serializeLiteral(targetResource, property, value);
@@ -199,6 +198,9 @@ public class ObjectMapper {
                 }
                 else if (field.getType().isAssignableFrom(java.net.URI.class)){
                 	deserializeURI(targetResource, targetObject, field, prop);
+                }
+                else if (field.getType().isAssignableFrom(SerializablePojo.class)) {
+                	deserializeAnnotatedObject(targetResource, targetObject, field, prop);
                 }
                 else {
                     deserializeLiteral(targetResource, targetObject, field, prop);
@@ -524,6 +526,14 @@ public class ObjectMapper {
 		} catch (InvocationTargetException | NoSuchMethodException  | IllegalAccessException e) {
 		    throw new RuntimeException("An exception occurred: " + e, e);
 		}
+	}
+
+	protected <T> void deserializeAnnotatedObject(GResource targetResource, T targetObject, Field field, String prop) {
+		log.trace(field + " is an exhilarating " + field.getType());
+		GValue propValue = targetResource.get(prop);
+		SerializablePojo nestedObject = (SerializablePojo) this.getObject(field.getType(), (GResource) propValue);
+		targetResource.set(prop, nestedObject.getId());
+//		propSet.add(nestedObject);
 	}
 	
 	protected <T> void deserializeURI(GResource targetResource, T targetObject, Field field, String prop) {

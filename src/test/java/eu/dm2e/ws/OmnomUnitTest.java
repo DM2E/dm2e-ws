@@ -22,7 +22,7 @@ public class OmnomUnitTest {
 	protected OmnomJsonSerializer jsonSerializer = new OmnomJsonSerializer();
 	static {
 //		try {
-		System.setProperty("dm2e-ws.test.properties_file", "dm2e-ws.test.properties");
+			System.setProperty("dm2e-ws.test.properties_file", "dm2e-ws.test.properties");
 	        System.setProperty("org.eclipse.jetty.server.Request.maxFormContentSize", "100000000");
 //			System.setProperty("java.util.logging.config.file", "logging.properties");
 			System.setProperty(GrafeoImpl.NO_EXTERNAL_URL_FLAG, "true");

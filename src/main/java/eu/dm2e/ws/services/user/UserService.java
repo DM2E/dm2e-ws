@@ -2,13 +2,19 @@ package eu.dm2e.ws.services.user;
 
 import java.net.URI;
 
+import javax.servlet.ServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
+
+import com.sun.research.ws.wadl.Application;
 
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ConfigProp;
@@ -19,6 +25,21 @@ import eu.dm2e.ws.services.AbstractRDFService;
 
 @Path("/user")
 public class UserService extends AbstractRDFService {
+	
+	@GET
+	@Path("_username")
+	@Produces({
+		DM2E_MediaType.TEXT_PLAIN
+	})
+	public Response getUserName(@Context SecurityContext security) {
+		// TODO handle test case
+		if (null != System.getProperty("dm2e-ws.isTestRun") && System.getProperty("dm2e-ws.isTestRun").equals("true"))
+			return Response.ok("the-test-user").build();
+		if (null == security.getUserPrincipal()) {
+			return throwServiceError("NOT LOGGED IN", 403);
+		}
+		return Response.ok(security.getUserPrincipal().getName()).build();
+	}
 	
 	/**
 	 * GET {id}		Accept: JSON, RDF

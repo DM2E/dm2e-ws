@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.jena.fuseki.server.DatasetRef;
@@ -43,6 +44,8 @@ public class ManageService {
 	static Logger log = LoggerFactory.getLogger(ManageService.class.getName());
 	
 	static {
+		// Set to true to tell the user service to return a dummy user name
+		System.setProperty("dm2e-ws.isTestRun", "true");
 		System.setProperty("dm2e-ws.test.properties_file", "dm2e-ws.test.properties");
 		 // Optionally remove existing handlers attached to j.u.l root logger
 		 SLF4JBridgeHandler.removeHandlersForRootLogger();  // (since SLF4J 1.6.5)
@@ -63,8 +66,13 @@ public class ManageService {
 
     @GET
     @Path("/start")
-    public String start() {
-    	startAll();
+    public String start(@QueryParam("webappPath") String webappPathParam) {
+		if (null == httpServer) {
+			startHttpServer(webappPathParam);
+	    }
+		if (null == sparqlServer) {
+			startFuseki();
+	    }
     	return "Tried to start";
     }
 
@@ -89,8 +97,15 @@ public class ManageService {
         manageServer = GrizzlyHttpServerFactory.createHttpServer(UriBuilder.fromUri("http://localhost:" + MANAGE_PORT + "/").build(), rc);
 
     }
-
     public static void startHttpServer() {
+    	startHttpServer("WebContent");
+    }
+
+    public static void startHttpServer(String webappPath) {
+    	if (null == webappPath) {
+    		log.warn("webappPath is NULLLLLLL");
+    		startHttpServer();
+    	}
     	if (isPortInUse(OMNOM_PORT)) {
     		log.error(OMNOM_PORT + " is already in use");
     		return;
@@ -116,7 +131,7 @@ public class ManageService {
         
         httpServer = GrizzlyHttpServerFactory.createHttpServer(
         		UriBuilder.fromUri("http://localhost:" + OMNOM_PORT + "/api").build(), resourceConfig);
-        httpServer.getServerConfiguration().addHttpHandler(new StaticHttpHandler("WebContent"), "/");
+        httpServer.getServerConfiguration().addHttpHandler(new StaticHttpHandler(webappPath), "/");
         // disable caching for the static files
         for (NetworkListener l : httpServer.getListeners()) {
         	l.getFileCache().setEnabled(false);

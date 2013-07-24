@@ -78,6 +78,8 @@ public final class NS {
 		public static final String PROP_WORKFLOW            = BASE + "workflow";
 		public static final String PROP_WORKFLOW_CONFIG     = BASE + "workflowConfig";
 
+		public static final String PROP_FILE_SERVICE = BASE + "fileservice";
+
 	}
 	
 	public static final class OMNOM_TYPES {
