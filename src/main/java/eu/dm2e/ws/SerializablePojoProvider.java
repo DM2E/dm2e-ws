@@ -138,7 +138,7 @@ public class SerializablePojoProvider implements MessageBodyWriter<SerializableP
 			GResource res = set.iterator().next().getSubject();
 			pojo = (SerializablePojo) g.getObjectMapper().getObject(pojoClass, res);
 		} else {
-			throw new RuntimeException("Can't deserialize this!");
+			throw new RuntimeException("Can't deserialize this: " + mediaType);
 		}
 		return pojo;
 	}
