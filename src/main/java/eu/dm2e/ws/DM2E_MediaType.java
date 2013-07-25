@@ -142,7 +142,13 @@ public class DM2E_MediaType {
 	
 	public static boolean isRdfMediaType(MediaType mediaType) {
 		if (null == mediaType) return false;
-		return SET_OF_RDF_TYPES_STRING.contains(mediaType.toString());
+		for (MediaType rdfType : SET_OF_RDF_TYPES) {
+			if (rdfType.isCompatible(mediaType)) {
+				return true;
+			}
+		}
+		return false;
+//		return SET_OF_RDF_TYPES_STRING.contains(mediaType.toString());
 	}
 	
 	public static boolean expectsRdfResponse(HttpHeaders headers) {
@@ -159,7 +165,7 @@ public class DM2E_MediaType {
 
 	public static boolean isJsonMediaType(MediaType thisType) {
 		if (null == thisType) return false;
-		return thisType.equals(MediaType.APPLICATION_JSON_TYPE);
+		return thisType.isCompatible(MediaType.APPLICATION_JSON_TYPE);
 	}
 	public static boolean expectsJsonResponse(HttpHeaders headers) {
 		if (null == headers) return false;
