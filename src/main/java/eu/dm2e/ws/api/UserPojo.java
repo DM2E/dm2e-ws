@@ -35,12 +35,12 @@ public class UserPojo extends AbstractPersistentPojo<UserPojo> {
 	public String getPreferredTheme() { return preferredTheme; }
 	public void setPreferredTheme(String preferredTheme) { this.preferredTheme = preferredTheme; }
 	
-	@RDFProperty(value = NS.OMNOM.PROP_FILE_SERVICE, serializeAsURI = true)
+	@RDFProperty(value = NS.OMNOM.PROP_FILE_SERVICE, serializeAsURI = false)
 	private Set<WebservicePojo> fileServices = new HashSet<>();
 	public Set<WebservicePojo> getFileServices() { return fileServices; }
 	public void setFileServices(Set<WebservicePojo> fileServices) { this.fileServices = fileServices; }
 
-	@RDFProperty(value = NS.OMNOM.PROP_WEBSERVICE, serializeAsURI = true)
+	@RDFProperty(value = NS.OMNOM.PROP_WEBSERVICE, serializeAsURI = false)
 	private Set<WebservicePojo> webServices = new HashSet<>();
 	public Set<WebservicePojo> getWebServices() { return webServices; }
 	public void setWebServices(Set<WebservicePojo> webServices) { this.webServices = webServices; }

@@ -145,7 +145,8 @@ public class SerializablePojoJsonSerializer<T> implements JsonSerializer<Seriali
 			if (SerializablePojo.class.isAssignableFrom(value.getClass())) {
 				SerializablePojo valueAsSP = (SerializablePojo) value;
 				if (valueAsSP.hasId() && serializeAsURI) {
-					jsonObj.add(jsonFieldName, new JsonPrimitive(valueAsSP.getId()));
+//					jsonObj.add(jsonFieldName, new JsonPrimitive(valueAsSP.getId()));
+					jsonObj.add(jsonFieldName, findOrCreate(cachedPojos, valueAsSP));
 				} else if ( recDepth > 1) { // FIXME FIXME 
 					// NON-RECURSION
 					jsonObj.add(jsonFieldName, findOrCreate(cachedPojos, valueAsSP));
@@ -167,7 +168,8 @@ public class SerializablePojoJsonSerializer<T> implements JsonSerializer<Seriali
 				JsonArray jsonArr = new JsonArray();
 				for (SerializablePojo subPojo : valueCollection) {
 					if (subPojo.hasId() && serializeAsURI) {
-						jsonArr.add(new JsonPrimitive(subPojo.getId()));
+//						jsonArr.add(new JsonPrimitive(subPojo.getId()));
+						jsonArr.add(findOrCreate(cachedPojos, subPojo));
 					} else if ( recDepth > 1) {
 						// FIXME FIXME
 						// ARRAY NON-RECURSION

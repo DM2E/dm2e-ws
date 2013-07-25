@@ -4,7 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import java.net.URI;
 
+import org.json.JSONException;
 import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -21,7 +23,7 @@ import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 public class FilePojoTest extends OmnomUnitTest{
 	
 	@Test
-	public void serializeToJson() {
+	public void serializeToJson() throws JSONException {
 		
 		final String userURI = "http://foo/bar/user1";
 		final UserPojo userPojo = new UserPojo();
@@ -46,11 +48,15 @@ public class FilePojoTest extends OmnomUnitTest{
 			expect.addProperty(NS.OMNOM.PROP_FILE_RETRIEVAL_URI, retUri);
 			expect.addProperty(NS.OMNOM.PROP_FILE_EDIT_URI, editUri);
 			expect.addProperty(NS.OMNOM.PROP_FILE_STATUS, fileStatus);
-			expect.addProperty(NS.OMNOM.PROP_FILE_OWNER, userURI);
 			expect.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, fp.getRDFClassUri());
+
+			JsonObject expectUser = new JsonObject();
+			expectUser.addProperty(SerializablePojo.JSON_FIELD_ID, userURI);
+			expect.add(NS.OMNOM.PROP_FILE_OWNER, expectUser);
 			
-			assertEquals(testGson.toJson(expect), OmnomJsonSerializer.serializeToJSON(fp, FilePojo.class));
-			assertEquals(testGson.toJson(expect), fp.toJson());
+			JSONAssert.assertEquals(expect.toString(), fp.toJson(), false);
+//			assertEquals(testGson.toJson(expect), OmnomJsonSerializer.serializeToJSON(fp, FilePojo.class));
+//			assertEquals(testGson.toJson(expect), fp.toJson());
 		}
 		{
 			JobPojo job = new JobPojo();
