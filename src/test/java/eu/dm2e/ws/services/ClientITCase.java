@@ -1,5 +1,6 @@
 package eu.dm2e.ws.services;
 
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import java.io.File;
@@ -9,6 +10,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
@@ -35,7 +38,10 @@ public class ClientITCase extends OmnomTestCase {
 	private File TEMP_FILE;
 	
 	private boolean isCorrectlyPosted(String uri) {
-		String respStr = client.target(uri).request().get(String.class);
+		Invocation invoc = client.target(uri).request().build("GET");
+//		log.debug("" + invoc.);
+		String respStr = invoc.invoke(String.class);
+		assertThat(respStr, is(FILE_CONTENTS));
 		return respStr.equals(FILE_CONTENTS);
 	}
 

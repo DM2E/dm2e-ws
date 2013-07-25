@@ -10,6 +10,9 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 @RDFClass(NS.FOAF.CLASS_PERSON)
 public class UserPojo extends AbstractPersistentPojo<UserPojo> {
 	
+//	@Override
+//	public int getMaximumJsonDepth() { return 10; };
+	
 	public enum THEMES {
 		  LIGHT("light")
 		, DARK("dark")

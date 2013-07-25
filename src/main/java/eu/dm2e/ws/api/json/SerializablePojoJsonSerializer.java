@@ -113,7 +113,7 @@ public class SerializablePojoJsonSerializer<T> implements JsonSerializer<Seriali
 				throw new RuntimeException("An exception occurred: " + e, e);
 			}
 
-			log.trace(src + " : Field " + field.getName() + " : " + value);
+			log.debug(src + " : Field " + field.getName() + " : " + value);
 
 			/*
 			 * Set the output name
@@ -167,7 +167,7 @@ public class SerializablePojoJsonSerializer<T> implements JsonSerializer<Seriali
 				JsonArray jsonArr = new JsonArray();
 				for (SerializablePojo subPojo : valueCollection) {
 					if (subPojo.hasId() && serializeAsURI) {
-						jsonObj.add(jsonFieldName, new JsonPrimitive(subPojo.getId()));
+						jsonArr.add(new JsonPrimitive(subPojo.getId()));
 					} else if ( recDepth > 1) {
 						// FIXME FIXME
 						// ARRAY NON-RECURSION
@@ -212,15 +212,23 @@ public class SerializablePojoJsonSerializer<T> implements JsonSerializer<Seriali
 			JsonDeserializationContext context,
 			HashMap<String, SerializablePojo> pojoCache) {
 		
-		log.debug("DESERIALIZING " + typeOfT);
+		T pojo;
+		Class<T> pojoClass = ((Class<T>) typeOfT);
+		log.debug("DESERIALIZING {} as {}", typeOfT, pojoClass );
 		
 		if (!jsonElem.isJsonObject()) {
-			throw new RuntimeException("Can't deserialize a non-JSON-object to a SerializablePojo<T>.");
+			// Assume that the field is serializeURI
+			if (jsonElem.isJsonPrimitive()) {
+				log.warn("Coercing flat ID to nested object.");
+				JsonObject nestedIdObj = new JsonObject();
+				nestedIdObj.addProperty(SerializablePojo.JSON_FIELD_ID, jsonElem.getAsString());
+				jsonElem = nestedIdObj;
+			} else {
+				throw new RuntimeException("Can't deserialize a non-JSON-object/non-JSON-primitve to a SerializablePojo<T>: " + jsonElem.toString());
+			}
 		}
 		JsonObject json = jsonElem.getAsJsonObject();
 		
-		T pojo;
-		Class<T> pojoClass = ((Class<T>) typeOfT);
 		String uuid;
 		if (null != json.get(SerializablePojo.JSON_FIELD_UUID)) {
 			uuid = json.get(SerializablePojo.JSON_FIELD_UUID).getAsJsonPrimitive().getAsString();

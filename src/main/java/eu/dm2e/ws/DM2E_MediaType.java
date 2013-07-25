@@ -140,22 +140,33 @@ public class DM2E_MediaType {
 				);
 	}
 	
-	public static boolean isRdfMediaType(MediaType mediaType) {
-		if (null == mediaType) return false;
+	public static boolean isRdfMediaType(MediaType thisType) {
+		if (null == thisType) return false;
 		for (MediaType rdfType : SET_OF_RDF_TYPES) {
-			if (rdfType.isCompatible(mediaType)) {
+//			log.debug("Trying to match with " + rdfType);
+			if (matchMediaTypeAndSubtype(thisType, rdfType)) {
+//				log.debug("Yup, " + thisType + " matches " + rdfType);
 				return true;
 			}
 		}
 		return false;
 //		return SET_OF_RDF_TYPES_STRING.contains(mediaType.toString());
 	}
+
+	public static boolean matchMediaTypeAndSubtype(MediaType thisType, MediaType otherType) {
+//		log.trace("Matching " +thisType+ " against " + otherType);
+//		log.trace("Matching " +thisType.getType()+ " against " + otherType.getType());
+//		log.trace("Matching " +thisType.getSubtype()+ " against " + otherType.getSubtype());
+		return 	thisType.getType().equals(otherType.getType())
+				&&
+				thisType.getSubtype().equals(otherType.getSubtype());
+	}
 	
 	public static boolean expectsRdfResponse(HttpHeaders headers) {
 		boolean doesExpectRdf = false;
 		for (MediaType thisType : headers.getAcceptableMediaTypes()) {
-            log.info("Accept header: " + thisType.toString());
 			if (isRdfMediaType(thisType)) {
+	            log.info("Accept header: " + thisType.toString() + " is RDF (" + thisType + ")" );
 				doesExpectRdf = true;
 				break;
 			}
@@ -165,13 +176,18 @@ public class DM2E_MediaType {
 
 	public static boolean isJsonMediaType(MediaType thisType) {
 		if (null == thisType) return false;
-		return thisType.isCompatible(MediaType.APPLICATION_JSON_TYPE);
+		return  matchMediaTypeAndSubtype(thisType, MediaType.APPLICATION_JSON_TYPE);
+//				(thisType.getType().equals(MediaType.APPLICATION_JSON_TYPE.getType())
+//				&&
+//				thisType.getSubtype().equals(MediaType.APPLICATION_JSON_TYPE.getSubtype()));
 	}
 	public static boolean expectsJsonResponse(HttpHeaders headers) {
 		if (null == headers) return false;
 		for (MediaType thisType : headers.getAcceptableMediaTypes())
-			if (isJsonMediaType(thisType))
+			if (isJsonMediaType(thisType)) {
+	            log.info("Accept header: " + thisType.toString() + " is JSON.");
 				return true;
+			}
 		return false;
 	}
 
