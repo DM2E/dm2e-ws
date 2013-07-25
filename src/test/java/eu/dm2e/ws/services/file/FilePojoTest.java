@@ -14,6 +14,7 @@ import eu.dm2e.ws.OmnomUnitTest;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.SerializablePojo;
+import eu.dm2e.ws.api.UserPojo;
 import eu.dm2e.ws.api.json.OmnomJsonSerializer;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
@@ -22,6 +23,10 @@ public class FilePojoTest extends OmnomUnitTest{
 	@Test
 	public void serializeToJson() {
 		
+		final String userURI = "http://foo/bar/user1";
+		final UserPojo userPojo = new UserPojo();
+		userPojo.setId(userURI);
+
 		final String retUri = "http://foo/bar.ext";
 		final String editUri = "http://foo/bar.ext/edit";
 		final String fileStatus = "AVAILABLE";
@@ -33,6 +38,7 @@ public class FilePojoTest extends OmnomUnitTest{
 			fp.setFileRetrievalURI(URI.create(retUri));
 			fp.setFileEditURI(editUri);
 			fp.setFileStatus(fileStatus);
+			fp.setFileOwner(userPojo);
 			
 			JsonObject expect = new JsonObject();
 			expect.addProperty(SerializablePojo.JSON_FIELD_UUID, fp.getUuid());
@@ -40,6 +46,7 @@ public class FilePojoTest extends OmnomUnitTest{
 			expect.addProperty(NS.OMNOM.PROP_FILE_RETRIEVAL_URI, retUri);
 			expect.addProperty(NS.OMNOM.PROP_FILE_EDIT_URI, editUri);
 			expect.addProperty(NS.OMNOM.PROP_FILE_STATUS, fileStatus);
+			expect.addProperty(NS.OMNOM.PROP_FILE_OWNER, userURI);
 			expect.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, fp.getRDFClassUri());
 			
 			assertEquals(testGson.toJson(expect), OmnomJsonSerializer.serializeToJSON(fp, FilePojo.class));

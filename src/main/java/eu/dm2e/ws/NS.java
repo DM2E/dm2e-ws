@@ -80,6 +80,8 @@ public final class NS {
 
 		public static final String PROP_FILE_SERVICE = BASE + "fileservice";
 
+		public static final String PROP_FILE_OWNER = BASE + "fileOwner";
+
 	}
 	
 	public static final class OMNOM_TYPES {

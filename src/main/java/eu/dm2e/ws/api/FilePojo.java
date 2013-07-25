@@ -162,4 +162,8 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 	public String getItemLabelXPath() { return itemLabelXPath; }
 	public void setItemLabelXPath(String itemLabelXPath) { this.itemLabelXPath = itemLabelXPath; }
 	
+	@RDFProperty(value = NS.OMNOM.PROP_FILE_OWNER, serializeAsURI = true)
+	private UserPojo fileOwner;
+	public UserPojo getFileOwner() { return fileOwner; }
+	public void setFileOwner(UserPojo fileOwner) { this.fileOwner = fileOwner; }
 }
