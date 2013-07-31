@@ -115,7 +115,8 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		DM2E_MediaType.APPLICATION_X_TURTLE,
 //		 DM2E_MediaType.TEXT_PLAIN,
 		DM2E_MediaType.TEXT_RDF_N3,
-		DM2E_MediaType.TEXT_TURTLE
+		DM2E_MediaType.TEXT_TURTLE,
+		MediaType.APPLICATION_JSON
 	})
 	public Response putConfigToService(String workflowConfigURI) {
 		
@@ -158,7 +159,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		WorkflowJobPojo jobPojo = new WorkflowJobPojo();
 		jobPojo.setWorkflow(workflowPojo);
 		jobPojo.setWorkflowConfig(wfConf);
-		log.info("WorkflowJobPojo constructed by WorkflowService");
+		log.info("WorkflowJobPojo constructed by WorkflowService: {}", jobPojo);
 		jobPojo.addLogEntry("WorkflowJobPojo constructed by WorkflowService", "TRACE");
 		try {
 			jobPojo.publishToService(client.getJobWebTarget());
@@ -190,8 +191,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		/*
 		 * Return JobPojo
 		 */
-		return Response.status(202).location(jobPojo.getIdAsURI()).entity(
-				getResponseEntity(jobPojo.getGrafeo())).build();
+		return Response.status(202).location(jobPojo.getIdAsURI()).entity(jobPojo).build();
 	}
 
 	
@@ -213,6 +213,10 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 	}
 
     
+    /**
+     * GET {id}/blankConfig
+     * @return
+     */
     @GET
     @Path("{id}/blankConfig")
     public Response getEmptyConfigForWorkflow() {
@@ -226,7 +230,8 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		WorkflowConfigPojo wfconf = new WorkflowConfigPojo();
 		wfconf.setWorkflow(wf);
 		for (ParameterPojo inputParam : wf.getInputParams()) {
-			wfconf.addParameterAssignment(inputParam.getId(), inputParam.getDefaultValue());
+			ParameterAssignmentPojo ass = wfconf.addParameterAssignment(inputParam.getId(), inputParam.getDefaultValue());
+			ass.setLabel(inputParam.getLabel());
 		}
 //		for (ParameterPojo inputParam : wf.getOutputParams()) {
 //			wfconf.addParameterAssignment(inputParam.getId(), "BLANK");
@@ -581,7 +586,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 				workflowJob.getId().toString();
 				workflow.getId().toString();
 				workflowConfig.getId().toString();
-				log.info(workflow.getTerseTurtle());
+				log.info("Workflow in run before validation: " + workflow.getTerseTurtle());
 			} catch (NullPointerException e) {
 				throw e;
 			}
@@ -619,15 +624,20 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 			 */
 			for (WorkflowPositionPojo pos : workflow.getPositions()) {
 				WebservicePojo ws = pos.getWebservice();
+				workflowJob.addLogEntry("Re-loading webservice description", "TRACE");
+				ws.loadFromURI(ws.getId());
 				WebserviceConfigPojo wsconf = new WebserviceConfigPojo();
 				wsconf.setWebservice(ws);
 				
 				/*				
 				 * Iterate Input Parameters of the Webservice at this position
 				 */
+				workflowJob.addLogEntry("About to iterate parameters", "TRACE");
 				nextParam:
 				for (ParameterPojo param : ws.getInputParams()) {
-					workflowJob.debug("Current param: " + param);
+					workflowJob.trace("Current param: " + param);
+					workflowJob.addLogEntry("Current param: " + param, "TRACE");
+					workflowJob.publishToService();
 					log.trace("Current param: " + param);
 					
 					// if there is a connector to this parameter at this position
@@ -636,6 +646,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 					
 					final ParameterAssignmentPojo ass;
 					if (conn.hasFromWorkflow()) {
+						// FIXME this is not working for whatever reason
 						// if the connector is from the workflow, take the value assigned to the workflow parameter
 						ass = workflowConfig.getParameterAssignmentForParam(conn.getFromParam());
 					} else {

@@ -26,7 +26,7 @@ public abstract class AbstractConfigPojo<T> extends AbstractPersistentPojo<T> im
 		return null;
 	}
 	
-	public void addParameterAssignment(String paramName, String paramValue) {
+	public ParameterAssignmentPojo addParameterAssignment(String paramName, String paramValue) {
 		log.info("Adding parameter assignment for {}", paramName);
 		ParameterPojo param = this.getParamByName(paramName);
 		if (null == param) {
@@ -41,6 +41,7 @@ public abstract class AbstractConfigPojo<T> extends AbstractPersistentPojo<T> im
 		ass.setForParam(param);
 		ass.setParameterValue(paramValue);
 		this.getParameterAssignments().add(ass);
+		return ass;
 	}
 	
 	public void addParameterAssignment(ParameterAssignmentPojo ass) {
