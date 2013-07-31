@@ -5,7 +5,10 @@ import java.util.Map;
 
 import javax.ws.rs.Path;
 
+import org.joda.time.DateTime;
+
 import eu.dm2e.utils.XsltUtils;
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.ParameterPojo;
@@ -95,6 +98,10 @@ public class XsltService extends AbstractTransformationService {
 			}
 
 			FilePojo fp = new FilePojo();
+			fp.setExtent(xslResultStr.length());
+			fp.setOriginalName("generated_" + DateTime.now().toString() + ".xml");
+			fp.setModified(DateTime.now());
+			fp.setFileType(NS.OMNOM_TYPES.XML);
 			fp.setWasGeneratedBy(jobPojo);
 			String fileLocation = new Client().publishFile(xslResultStr, fp);
 
