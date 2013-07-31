@@ -258,7 +258,7 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 
     @Override
     public void load(String uri, int expansionSteps) {
-    	if ( ! uri.matches("https?://localhost.*") ) {
+    	if ( ! uri.matches(Config.get(ConfigProp.BASE_URI))) {
 	    	if (null != System.getProperty(NO_EXTERNAL_URL_FLAG) && System.getProperty(NO_EXTERNAL_URL_FLAG).equals("true")) {
 	    		log.warn("Skipping loading if <{}> because {} system property is set.", uri, NO_EXTERNAL_URL_FLAG );
 	    		return;
