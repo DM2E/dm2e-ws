@@ -124,6 +124,7 @@ public class ConfigService extends AbstractRDFService {
 					return throwServiceError("INTERNAL ERROR ");
 				}
     			pojo.setId(gres.getUri());
+				pojo.loadFromURI(pojo.getId());
     			configList.add(pojo);
     		}
     	}
