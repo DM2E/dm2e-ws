@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.joda.time.DateTime;
+
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.annotations.Namespaces;
@@ -240,5 +242,16 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
 	public List<WorkflowPositionPojo> getPositions() { return positions; }
 	public void setPositions(List<WorkflowPositionPojo> positions) { this.positions = positions; }
 	public void addPosition(WorkflowPositionPojo it) { this.getPositions().add(it); }
+
+	@RDFProperty(NS.DCTERMS.PROP_CREATOR)
+	private UserPojo creator;
+	public UserPojo getCreator() { return creator; }
+	public void setCreator(UserPojo creator) { this.creator = creator; }
+	
+	@RDFProperty(NS.DCTERMS.PROP_MODIFIED)
+	private DateTime modified = DateTime.now();
+	public DateTime getModified() { return modified; }
+	public void setModified(DateTime modified) { this.modified = modified; }
+
 
 }

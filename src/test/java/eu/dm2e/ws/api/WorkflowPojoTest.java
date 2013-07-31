@@ -6,6 +6,7 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 
+import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -35,6 +36,7 @@ public class WorkflowPojoTest extends OmnomUnitTest {
 	final String _ws_pos1_label = "XML -> XMLRDF";
 	final String _ws_pos2_label = "XMLRDF -> Graphstore";
 	final String _ws_param_datasetID = "datasetID";
+	final DateTime _ws_modified = DateTime.now();
 	
 	String _file_xml_in;
 	String _file_xslt_in;
