@@ -23,6 +23,7 @@
 @prefix cc:    <http://creativecommons.org/ns#> .
 
 [] a                    omnom:WebserviceConfig ;
+  dct:modified  "2013-07-31T20:13:03.154+02:00"^^xsd:dateTime ;
   omnom:assignment     [ a                     omnom:ParameterAssignment ;
                          omnom:forParam        <http://localhost:9998/api/service/demo/param/sleeptime> ;
                          omnom:parameterValue  "10"^^xsd:string

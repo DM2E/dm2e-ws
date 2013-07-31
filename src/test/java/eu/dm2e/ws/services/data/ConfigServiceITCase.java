@@ -169,8 +169,7 @@ public class ConfigServiceITCase extends OmnomTestCase {
 	@Test
 	public void testPut() {
 		Grafeo gOut = new GrafeoImpl(configFile.get(OmnomTestResources.DEMO_SERVICE_WORKING));
-		Response respPOST = webTarget
-				.request().post(gOut.getNTriplesEntity());
+		Response respPOST = webTarget.request().post(gOut.getNTriplesEntity());
 		assertEquals(201, respPOST.getStatus());
 		assertNotNull(respPOST.getLocation());
 

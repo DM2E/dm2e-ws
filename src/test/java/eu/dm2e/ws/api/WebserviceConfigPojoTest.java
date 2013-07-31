@@ -2,6 +2,7 @@ package eu.dm2e.ws.api;
 
 import java.util.UUID;
 
+import org.joda.time.DateTime;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +10,9 @@ import org.slf4j.LoggerFactory;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.OmnomUnitTest;
 import eu.dm2e.ws.api.json.OmnomJsonSerializer;
+import eu.dm2e.ws.grafeo.GLiteral;
 import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.grafeo.jena.GLiteralImpl;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
 
@@ -62,17 +65,22 @@ public class WebserviceConfigPojoTest  extends OmnomUnitTest {
 	public void testDeserializationRDF() {
 		final String confUri = "http://foo/conf";
 		final String wsUri = "http://foo/service";
+		final DateTime ts = DateTime.now();
 		{
 			GrafeoImpl gIn = new GrafeoImpl();
 			gIn.addTriple(confUri, NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_WEBSERVICE_CONFIG);
-//			gIn.addTriple(wsUri, NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_WEBSERVICE);
+			gIn.addTriple(wsUri, NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_WEBSERVICE);
 			gIn.addTriple(confUri, NS.OMNOM.PROP_WEBSERVICE, wsUri);
+			
+//			GLiteralImpl tsLiteral = gIn.literal(ts));
+			gIn.addTriple(confUri, NS.DCTERMS.PROP_MODIFIED, gIn.literal(ts));
 
 			WebservicePojo ws = new WebservicePojo();
 			ws.setId(wsUri);
 			WebserviceConfigPojo config = new WebserviceConfigPojo();
 			config.setId(confUri);
 			config.setWebservice(ws);
+			config.setModified(ts);
 			GrafeoAssert.graphContainsGraph(config.getGrafeo(), gIn);
 //			GrafeoAssert.graphsAreEquivalent(config.getGrafeo(), gIn);
 		}
@@ -81,12 +89,14 @@ public class WebserviceConfigPojoTest  extends OmnomUnitTest {
 			gIn.addTriple(confUri, NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_WEBSERVICE_CONFIG);
 			gIn.addTriple(wsUri, NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_WEBSERVICE);
 			gIn.addTriple(confUri, NS.OMNOM.PROP_WEBSERVICE, wsUri);
+			gIn.addTriple(confUri, NS.DCTERMS.PROP_MODIFIED, gIn.literal(ts));
 
 			WebservicePojo ws = new WebservicePojo();
 			ws.setId(wsUri);
 			WebserviceConfigPojo config = new WebserviceConfigPojo();
 			config.setId(confUri);
 			config.setWebservice(ws);
+			config.setModified(ts);
 			GrafeoAssert.graphsAreEquivalent(config.getGrafeo(), gIn);
 		}
 	}
@@ -95,11 +105,16 @@ public class WebserviceConfigPojoTest  extends OmnomUnitTest {
 	public void testDeserializationJSON() {
 		final String confUri = "http://foo/conf";
 		final String wsUri = "http://foo/service";
+		final DateTime ts = DateTime.now();
 		{
 			StringBuilder sb = new StringBuilder();
 			sb.append("{")
 					.append("'uuid':'").append(UUID.randomUUID().toString()).append("',")
 					.append("'id':'").append(confUri).append("'")
+					.append(",")
+					.append("'" + NS.DCTERMS.PROP_MODIFIED + "':'")
+						.append(ts.toString())
+						.append("'")
 					.append(",")
 					.append("'" + NS.OMNOM.PROP_WEBSERVICE + "':").append("{")
 						.append("'uuid':'").append(UUID.randomUUID().toString()).append("',")
@@ -117,6 +132,7 @@ public class WebserviceConfigPojoTest  extends OmnomUnitTest {
 			WebserviceConfigPojo config = new WebserviceConfigPojo();
 			config.setId(confUri);
 			config.setWebservice(ws);
+			config.setModified(ts);
 			GrafeoAssert.graphsAreEquivalent(config.getGrafeo(), pojoParsed.getGrafeo());
 		}
 	}

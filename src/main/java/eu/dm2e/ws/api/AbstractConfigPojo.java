@@ -3,6 +3,8 @@ package eu.dm2e.ws.api;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.joda.time.DateTime;
+
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
@@ -67,4 +69,14 @@ public abstract class AbstractConfigPojo<T> extends AbstractPersistentPojo<T> im
 	public Set<ParameterAssignmentPojo> getParameterAssignments() { return parameterAssignments; }
 	public void setParameterAssignments(Set<ParameterAssignmentPojo> parameterAssignments) { this.parameterAssignments = parameterAssignments; }
 
+
+	@RDFProperty(NS.DCTERMS.PROP_CREATOR)
+	private UserPojo creator;
+	public UserPojo getCreator() { return creator; }
+	public void setCreator(UserPojo creator) { this.creator = creator; }
+	
+	@RDFProperty(NS.DCTERMS.PROP_MODIFIED)
+	private DateTime modified = DateTime.now();
+	public DateTime getModified() { return modified; }
+	public void setModified(DateTime modified) { this.modified = modified; }
 }
