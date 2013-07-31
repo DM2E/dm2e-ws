@@ -48,6 +48,8 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 import eu.dm2e.logback.LogbackMarkers;
+import eu.dm2e.ws.Config;
+import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.GLiteral;
@@ -256,14 +258,15 @@ public class GrafeoImpl extends JenaImpl implements Grafeo {
 
     @Override
     public void load(String uri, int expansionSteps) {
-    	if (null != System.getProperty(NO_EXTERNAL_URL_FLAG)
-    			&&
-			System.getProperty(NO_EXTERNAL_URL_FLAG).equals("true")
-				&&
-			! uri.matches("https?://localhost.*")
-			) {
-    		log.warn("Skipping loading if <{}> because {} system property is set.", uri, NO_EXTERNAL_URL_FLAG );
-    		return;
+    	if ( ! uri.matches("https?://localhost.*") ) {
+	    	if (null != System.getProperty(NO_EXTERNAL_URL_FLAG) && System.getProperty(NO_EXTERNAL_URL_FLAG).equals("true")) {
+	    		log.warn("Skipping loading if <{}> because {} system property is set.", uri, NO_EXTERNAL_URL_FLAG );
+	    		return;
+	    	}
+	    	if (null != Config.get(ConfigProp.NO_EXTERNAL_URL) && Config.get(ConfigProp.NO_EXTERNAL_URL).equals("true")) {
+	    		log.warn("Skipping loading if <{}> because {} config option is set.", uri, ConfigProp.NO_EXTERNAL_URL);
+	    		return;
+	    	}
     	}
         log.debug("Load data from URI: " + uri);
         uri = expand(uri);
