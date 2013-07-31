@@ -3,6 +3,9 @@ package eu.dm2e.ws.services;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,6 +29,7 @@ import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.AbstractConfigPojo;
 import eu.dm2e.ws.api.AbstractJobPojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.LogEntryPojo;
@@ -36,6 +40,7 @@ import eu.dm2e.ws.api.WorkflowJobPojo;
 import eu.dm2e.ws.api.WorkflowPojo;
 import eu.dm2e.ws.grafeo.GResource;
 import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.jena.SparqlUpdate;
 import eu.dm2e.ws.model.JobStatus;
@@ -58,13 +63,38 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		DM2E_MediaType.APPLICATION_X_TURTLE,
 		DM2E_MediaType.TEXT_PLAIN,
 		DM2E_MediaType.TEXT_RDF_N3,
-		DM2E_MediaType.TEXT_TURTLE
+		DM2E_MediaType.TEXT_TURTLE,
+		MediaType.APPLICATION_JSON
 	})
 	public Response getJobList() {
-		Grafeo g = new GrafeoImpl();
-		g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, "rdf:type", g.resource(NS.OMNOM.CLASS_JOB));
-		g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, "rdf:type", g.resource(NS.OMNOM.CLASS_WORKFLOW_JOB));
-		return getResponse(g);
+//		Grafeo g = new GrafeoImpl();
+//		g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, "rdf:type", g.resource(NS.OMNOM.CLASS_JOB));
+//		g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, "rdf:type", g.resource(NS.OMNOM.CLASS_WORKFLOW_JOB));
+//		return getResponse(g);
+    	List<Class<? extends AbstractJobPojo>> pojoClasses = Arrays.asList(
+			JobPojo.class,
+			WorkflowJobPojo.class
+		);
+        List<SerializablePojo> jobList = new ArrayList<>();
+    	for (Class<? extends AbstractJobPojo> pojoClass  : pojoClasses) {
+    		GrafeoImpl g = new GrafeoImpl();
+    		String pojoRdfClass = pojoClass.getAnnotation(RDFClass.class).value();
+    		g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, NS.RDF.PROP_TYPE, g.resource(pojoRdfClass));
+    		for (GResource gres : g.listSubjects()) {
+    			if (gres.isAnon()) continue;
+    			AbstractJobPojo pojo = null;
+				try {
+					pojo = pojoClass.newInstance();
+				} catch (InstantiationException | IllegalAccessException e) {
+					log.error("Could not instantiate {} for URI {}", pojoClass, gres);
+					return throwServiceError("INTERNAL ERROR ");
+				}
+    			pojo.setId(gres.getUri());
+				pojo.loadFromURI(pojo.getId());
+    			jobList.add(pojo);
+    		}
+    	}
+    	return Response.ok(jobList).build();
 	}
 	
 	/**
