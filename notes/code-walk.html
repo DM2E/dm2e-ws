@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Title</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<style type="text/css" media="screen">
+  /* Slideshow styles */
+  @import url(http://fonts.googleapis.com/css?family=Droid+Serif);
+  @import url(http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+
+  body {
+    font-family: 'Droid Serif';
+    font-size: 20px;
+  }
+  h1, h2, h3 {
+    font-family: 'Yanone Kaffeesatz';
+    font-weight: 400;
+    margin-bottom: 0;
+  }
+  li { margin-bottom: 10px }
+  h1 { font-size: 2em; }
+  h2 { font-size: 2em; }
+  h3 { font-size: 1.6em; }
+  .footnote {
+    position: absolute;
+    bottom: 3em;
+  }
+  li p { line-height: 1.25em; }
+  .red { color: #fa0000; }
+  .large { font-size: 2em; }
+  a, a > code {
+    color: rgb(249, 38, 114);
+    text-decoration: none;
+  }
+  code {
+    -moz-border-radius: 5px;
+    -web-border-radius: 5px;
+    background: #e7e8e2;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  .pull-left {
+    float: left;
+    width: 47%;
+  }
+  .pull-right {
+    float: right;
+    width: 47%;
+  }
+  .pull-right ~ p {
+    clear: both;
+  }
+  #slideshow .slide .content code {
+    font-size: 0.8em;
+  }
+  #slideshow .slide .content pre code {
+    font-size: 0.9em;
+    padding: 15px;
+  }
+  .inverse {
+    background: #272822;
+    color: #777872;
+    text-shadow: 0 0 20px #333;
+  }
+  .inverse h1, .inverse h2 {
+    color: #f3f3f3;
+    line-height: 0.8em;
+  }
+
+  /* Two-column layout */
+  .left-column {
+    color: #777;
+    width: 20%;
+    height: 92%;
+    float: left;
+  }
+    .left-column h2:last-of-type, .left-column h3:last-child {
+      color: #000;
+    }
+  .right-column {
+    width: 75%;
+    float: right;
+    padding-top: 2em;
+  }
+</style>
+</head>
+<body>
+<textarea id="source">
+class: center, middle
+template: inverse
+# Omnom Code Walkthrough
+
+konstantin baierer
+
+2013-08-01
+
+---
+
+# Agenda
+
+1. The Big Picture
+2. Backend
+3. Frontend
+4. Deployment
+    1. Initial Deployment
+    2. Manually Testing Deployment
+    3. Setup Automatic Redeploy
+5. GOTCHAS
+
+
+
+---
+
+# The Big Picture
+
+* Communication in nothing but RDF
+* Asynchronous Web Services
+* Non-sequential orchestration of services
+* HTML5 webapp as GUI
+* Java (Backend) + Javascript (Frontend) + Bash/Zsh (Maintenance)
+
+---
+
+# DM2E projects
+
+* [dm2e-ws]() : Core Services, Test Server
+* [dm2e-gui]() : Frontend and Production server
+* [dm2e-silk]() : Silk Service
+* [pubby]() : Pubby Frontend for published RDF datasets
+
+---
+
+class: center, middle
+
+# Backend
+
+---
+
+# Backend - Technologies
+
+* [Apache Maven](http://maven.apache.org/) - Building
+* [Jersey 2.0](https://jersey.java.net/) =~ [JAX-RS 2.0](http://jax-rs-spec.java.net/nonav/2.0/apidocs/index.html) - Web Services
+* [Apache Jena](http://jena.apache.org/) - RDF engine for Grafeo
+* [slf4j](http://www.slf4j.org) =~ [Logback](http://logback.qos.ch/) - Logging
+* [Commons Configuration](http://commons.apache.org/proper/commons-configuration/) - Configuration
+* [JUnit](http://junit.org) - Unit tests
+* [JOSSO](http://josso.org) - Single Sign On
+* [Tomcat 7](http://tomcat.apache.org/tomcat-7.0-doc/) - Server
+
+---
+
+# Backend : Logging
+
+Configuration is in `logback.xml` and `logback-test.xml`.
+
+```java
+Logger log = LoggerFactory.getLogger(getClass().getName());
+
+log.info("Something happened);
+
+log.debug("Object is {}", objectToDum);
+
+// Lots of output
+log.debug(LogbackMarkers.DATA_DUMP, g.getTerseTurtle());
+
+// Sensitive information
+log.info(LogbackMarkers.SENSITIVE_INFORMATION,
+          "Logging in as " + username + ":" + password);
+
+```
+
+---
+
+# Backend : Configuration
+
+Configuration setup in `config.xml`
+
+  * File `dm2e-ws.default.properties` Load always
+  * File `dm2e-ws.local.properties` Load if available => Use for passwords and local flags, don't check in
+  * File derived from system property `dm2e-ws.test.properties_file` Load if available
+
+New property? Add to `ConfigProp`!
+
+Usage
+
+```java
+String baseUriAsString = Config.get(ConfigProp.BASE_URI);
+```
+
+---
+
+# Backend : Testing
+
+Unit test: Self-contained set of methods for testing a class
+
+```java
+public class MyPojoTest extends OmnomUnitTest {
+  @Test
+  public void testFoo() {
+    assertTrue(true);
+  }
+}
+```
+
+Integration Test Case: More complex behavior that requires multiple classes or a server
+
+```java
+public class MyPojoITCase extends OmnomTestCase {
+  @Test
+  public void testFoo() {
+    assertTrue(true);
+  }
+}
+```
+
+MyPojo**Test** vs MyPojo**ITCase**
+
+Omnom**UnitTest** vs Omnom**TestCase**
+
+=> Relevant for Maven surefire/failsafe apparently
+
+---
+
+# Backend : Grafeo Basics
+
+```java
+Grafeo g = new GrafeoImpl();
+
+// Read From a URI
+g.readHeuristically("http://...");
+
+// Read from an endpoint
+g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY),
+  "http://some-graph");
+
+// Read from an endpoint, expanding 2 times
+g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY),
+  "http://some-graph",
+  2);
+
+// add resource statement
+g.addTriple("http://omnom/workflow/1", "rdf:type", "omnom:Workflow");
+// add literal statement
+g.addTriple("http://omnom/workflow/1", "rdfs:label",
+  g.literal("ze cool workflow does things");
+
+// Adds to "http://graph1"
+g.postToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), "http://graph1");
+// Replaces "http://graph1"
+g.putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), "http://graph1");
+```
+
+---
+
+# Backend : Grafeo Sparql
+
+Sparql wrapper: `SparqlConstruct`, `SparqlSelect`, `SparqlAsk` and `SparqlUpdate`
+
+```java
+String jobUri = getRequestUriWithoutQuery()
+                    .toString().replaceAll("/status$", "");
+
+SparqlUpdate sparul = new SparqlUpdate.Builder()
+    .delete("?s <" + NS.OMNOM.PROP_JOB_STATUS + "> ?p")
+    .insert("<" + jobUri + "> <" + NS.OMNOM.PROP_JOB_STATUS + "> \"" +
+            newStatus.toString() + "\"")
+    .endpoint(Config.get(ConfigProp.ENDPOINT_UPDATE))
+    .graph(jobUri)
+    .build();
+
+log.debug(LogbackMarkers.DATA_DUMP,
+            "Updating status with query: {}", sparul);
+sparul.execute();
+```
+
+---
+
+# Backend : Creating Pojos
+
+`OrganizationPojo.java`
+
+```java
+//@RDFClass(NS.OMNOM.CLASS_ORGANIZATION)
+@RDFClass("omnom:Organization")
+public class OrganizationPojo extends 
+                    AbstractPersistentPojo<OrganizationPojo> {
+
+    // @RDFProperty(NS.VCARD.PROP_ORGANIZATION_NAME)
+    @RDFProperty("vcard:organization-name")
+    private String organizationName;
+    /* getter, setter */
+
+    public OrganizationPojo(String orgName) {
+        this.organizationName = orgName;
+    }
+}
+```
+
+---
+
+# Backend : Using Pojos
+
+```java
+orgPojo = new OrganizationPojo("ONB");
+
+orgPojo.publishToService("http://omnom.hu-berlin.de/organization");
+
+log.debug(orgPojo.getId()) // "http://omnom/organization/onb";
+
+log.debug(orgPojo.toJson()); 
+// {"id" :
+//     "http://omnom.hu-berlin.de/organization/onb",
+// "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" :
+//     "http://onto.dm2e.eu/omnom/Organization",
+// "http://www.w3.org/2006/vcard/ns#organization-name" :
+//     "ONB"}
+
+log.debug(orgPojo.getTerseTurtle());
+//  <http://omnom.hu-berlin.de/organization/onb>
+//             a omnom:Organization;
+//             vcard:organization-name "ONB" .
+```
+
+---
+
+# Backend : Services
+
+* Inherit from `AbstractTransformationService`
+* Implement `run()`
+* Done :)
+
+=> [`DemoService.java`](https://github.com/DM2E/dm2e-ws/blob/master/src/main/java/eu/dm2e/ws/services/demo/DemoService.java?source=cc)
+
+---
+
+# Backend : Client
+
+Makes interacting with the services easier.
+
+Publishing a File
+
+```java
+FilePojo metadata = new FilePojo();
+
+metaData.setOriginalName("my-file.xml");
+
+String fileDataAsString = "<xml>bla</xml>";
+
+String loc = client.publishFile(fileDataAsString, metadata);
+
+log.debug(loc);
+//  "http://omnnom.hu-berlin.de/file/13234556-23123-233 "
+```
+
+
+---
+
+# Backend: Single-Sign-On / Java
+
+Use [JOSSO gateway provided by MPIWG](http://dm2e-security.rz-berlin.mpg.de/)
+
+All we do in our codebase is (in `UserService`)
+
+```java
+@GET
+@Path("_username")
+@Produces({
+    DM2E_MediaType.TEXT_PLAIN
+})
+public Response getUserId(@Context SecurityContext security) {
+    if (null == security.getUserPrincipal()) {
+        return throwServiceError("NOT LOGGED IN", 403);
+    }
+    return Response.ok(appendPath(popPath(),
+          security.getUserPrincipal().getName()).toString()).build();
+}
+```
+
+
+---
+
+# Backend: Single-Sign-On / web.xm
+
+```xml
+<!-- Make omnom JOSSO aware -->
+<login-config>
+    <auth-method>FORM</auth-method>
+    <form-login-config>
+        <form-login-page>/login-redirect.jsp</form-login-page>
+    </form-login-config>
+</login-config>
+<!-- ... -->
+<security-constraint>
+  <web-resource-collection>
+      <web-resource-name>Omnom GUI</web-resource-name>
+      <url-pattern>/index.html</url-pattern>
+      <url-pattern>/api/user/_username</url-pattern>
+      <http-method>GET</http-method>
+  </web-resource-collection>
+
+  <auth-constraint>
+      <role-name>omnom-user</role-name>
+  </auth-constraint>
+
+  <user-data-constraint>
+      <transport-guarantee>NONE</transport-guarantee>
+  </user-data-constraint>
+
+</security-constraint>
+```
+
+
+---
+
+class: center, middle
+
+# Frontend
+
+
+---
+
+# Frontend: Technologies
+
+* [RequireJS]() - Asynchronous Javascript loading
+* [Bootstrap]() - Slick interface
+* [LESS]() - CSS Preprocessor
+* [BackboneJS]() - Client-side MVC and eventing
+* [log4javascript]() - Logging
+
+
+---
+
+# Frontend: RequireJS
+
+Every module defines its dependencies inline, i.e. no global scop
+
+```js
+require(['some/script'], function(someScript) {
+    someScript.doSomething();
+})
+```
+
+Requires some adaption for non-AMD JS modules, see `main.js`
+
+
+---
+
+# Frontend : LESS
+
+Variable
+
+```css
+@myColor : red
+```
+
+Mixins
+
+```css
+.aMixin(@fg) {
+    color: @fg;
+}
+```
+
+Nesting + Variables + Mixin
+
+```css
+.container {
+  .someClass {
+    .aMixin(@myColor)
+  }
+}
+```
+
+---
+
+class: center, middle
+
+# Deployment of dm2e-gui / dm2e-ws
+
+---
+
+class: center, middle
+
+# Initial Deployment
+
+
+---
+
+## Initial Deployment 1 - Create Dirs
+Choose a base directory for the repositories and the deploy dir (`$BASE`)
+
+```bash
+cd $BASE
+mkdir deploy
+mkdir dm2e-repos
+```
+
+
+---
+
+## Initial Deployment 2 -  Clone Repos
+
+Clone the [dm2e-ws](http://github.com/DM2E/dm2e-ws) and [dm2e-gui](http://github.com/DM2E/dm2e-gui) repositories:
+
+```bash
+cd $BASE/dm2e-repos
+git clone git://github.com/DM2E/dm2e-ws
+git clone git://github.com/DM2E/dm2e-gui
+```
+
+
+---
+
+# Initial Deployment  3 - Download assets
+
+Run the `download-assets.sh` shell script in `dm2e-gui`:
+
+```bash
+cd $BASE/dm2e-repos/dm2e-gui
+bash bin/download-assets.sh all
+```
+
+This should download Tomcat, JOSSO and the JS dependencies to `$BASE/dm2e-repos/dm2e-gui/assets`
+
+
+---
+
+# Initial Deployment  4 - Build and install dm2e-ws
+
+Run Maven's `clean` and `install` targets on `dm2e-ws`
+
+```bash
+cd $BASE/dm2e-repos/dm2e-ws
+mvn clean
+mvn install
+```
+
+If you don't want to wait for the tests to finish, replace the last command with
+
+```bash
+mvn -DskipTests install
+```
+
+The `clean` target is required because the `clean` plugin is not downloaded otherwise
+and the redeploy script will fail for non-obvious reasons.
+
+The `install` target copies the built project to the local Maven repository (usually at `$HOME/.m2`) and
+makes it available to `dm2e-gui` in the following step.
+
+
+---
+
+# Initial Deployment  5 - Build and package dm2e-gui
+
+Run the `package` Maven goal on `dm2e-gui`:
+
+```bash
+cd $BASE/dm2e-repos/dm2e-gui
+mvn package
+```
+
+Doing so will
+
+  * compile all Java code
+  * package `src/main/webapp` as a WAR
+  * unpack JOSSO, Tomcat and Fuseki to `target`
+  * copy the JOSSO libs to Tomcat
+  * copy the exploded WAR to Tomcat/webapps/ROOT
+  * assemble a ZIP `target/dm2e-gui-deploy.zip` which contains
+    * `$BASE/dm2e-repos/dm2e-gui/target/tomcat`
+    * `$BASE/dm2e-repos/dm2e-gui/target/fuseki`
+    * `$BASE/dm2e-repos/dm2e-gui/src/main/bin`
+    * `$BASE/dm2e-repos/dm2e-gui/conf` (`templates`)
+
+
+---
+
+# Initial Deployment  6 Copy and Unzip
+
+Copy the ZIP to the deploy dir and unzip it:
+
+```bash
+cd $BASE
+cp $BASE/dm2e-repos/dm2e-gui/target/dm2e-gui-deploy.zip .
+unzip dm2e-gui-deploy.zip
+```
+
+---
+
+# Initial Deployment  7 Setup environment
+
+To setup the application, some templates must be filled with variables and
+copied to the appropriate locations by the `$BASE/deploy/dm2e-gui-deploy/bin/setup.sh`
+script.
+
+This script needs some environment variables to be set.
+
+To get started, adapt the file `$BASE/dm2e-repos/dm2e-gui/dist/deploy.profile.sh`
+
+```bash
+cp $BASE/dm2e-repos/dm2e-gui/dist/deploy.profile.sh $BASE/deploy
+vim $BASE/deploy/deploy.profile.sh # or nano or emacs or any editor
+```
+
+---
+
+class: center, middle
+# Manually Test Deployment
+
+Let's test the deployment by hand before we set up the one-script-redeploy-solution.
+
+---
+
+# Manually Testing Deployment 1: 
+## Are all template variables set?
+
+Make sure the environment variables are exported
+
+```bash
+source $BASE/deploy/deploy.profile.sh
+```
+
+---
+
+# Manually Testing Deployment 2: 
+## Run the template wizardry
+
+```bash
+cd $BASE/deploy/dm2e-gui-deploy
+bash bin/setup.sh
+```
+
+The output should be 4 times:
+```
+Patching ... with ...
+    -> DONE
+```
+
+
+---
+
+# Manually Testing Deployment 3:
+## Verify the installation
+
+```bash
+cd $BASE/deploy/dm2e-gui-deploy
+bash bin/verify-installation.sh
+```
+
+This should output
+```
+Everything seems to be fine.
+```
+
+
+---
+
+# Manually Testing Deployment 4:
+## Start Tomcat and Fuseki
+
+```bash
+cd $BASE/deploy/dm2e-gui-deploy
+bash bin/start-fuseki.sh
+bash bin/start-tomcat.sh
+```
+
+Verify the server is up (adapt to different server if necessary:
+
+```bash
+curl -H "Accept: application/json" http://omnom.hu-berlin.de/api/file/list
+```
+should result in
+
+```bash
+[]
+```
+
+and 
+
+```bash
+curl -v http://omnom.hu-berlin.de/
+```
+
+should result in a `302` redirect to the JOSSO login page.
+
+
+---
+
+# Manually Testing Deployment 5:
+## Programmatically create an example workflow
+
+The script `$BASE/dm2e-repos/dm2e-gui/bin/publish-fixtures.zsh` will publish the
+workflow defined by
+`$BASE/dm2e-repos/dm2e-gui/src/main/resources/test-fixtures/demo-workflow.json`,
+then create a workflow config from it and run that, creating a Workflow , a
+WorkflowConfig , a WorkflowJob , a WebserviceConfig and a Job.
+
+```bash
+cd $BASE/dm2e-repos/dm2e-gui
+export SRV=http://omnom.hu-berlin.de/api # this must match $DM2E_BASE_URI
+                                     # in $BASE/deploy/deploy.profile.sh
+zsh bin/publish-fixtures.zsh         # NOTE: This must be run with zsh!
+```
+
+The output should be something similar to
+
+```bash
+WORKFLOW='http://omnom.hu-berlin.de/api/workflow/093[...]ff6b'
+CONFIG='http://omnom.hu-berlin.de/api/config/329[...]c42a0c'
+JOB='http://omnom.hu-berlin.de/api/job/14a13602[...]c807'
+
+```
+
+
+---
+
+# Manually Testing Deployment 6:
+## Test file upload
+
+The script `$BASE/dm2e-repos/dm2e-gui/bin/ingest-file.sh` will publish a file passed
+as command line argument to the file service.
+
+Let's use it to publish itself:
+
+```bash
+cd $BASE/dm2e-repos/dm2e-gui
+export SRV=http://omnom.hu-berlin.de/api # this must match $DM2E_BASE_URI
+                                         # in $BASE/deploy/deploy.profile.sh
+zsh bin/ingest-file.sh bin/ingest-file.sh # NOTE: This must be run with zsh!
+```
+
+Result should be the URI of the file.
+
+---
+
+class: center, middle
+# Setup Automatic Redeploy
+
+If everything is working, these steps can be automated with a script.
+
+---
+
+# Setup Automatic Redeploy : Copy redeploy.sh
+
+```bash
+cp $BASE/dm2e-repos/dm2e-gui/dist/redeploy.sh $BASE/deploy
+```
+
+Because this script runs quite a lot of other programs and changes
+directories frequently, it's advisable good idea to make sure you have
+the directory structure like the script needs it (see top of `redeploy.sh`).
+
+FYI it does the following (copied from bottom of `redeploy.sh`):
+
+```bash
+sanity_check                    # Make sure dirs and repos are set up
+
+rebuild_dm2e_ws                 # see Initial Deployment Step 4
+rebuild_dm2e_gui                # see Initial Deployment Step 2/5
+
+if [ -d $deploy_dir ];then
+	stop_servers                # Stop tomcat and fuseki
+	undeploy                    # mv $deploy_dir $deploy_dir.$(date '+%s')
+fi
+
+unpack                          # see Initial Deployment Step 6
+setup                           # see Manually Testing Deployment 2
+start_servers                   # see Manually Testing Deployment 4
+```
+
+
+---
+
+# Setup Automatic Redeploy: Double Check
+
+* Is `$BASE/deploy/deploy.profile.sh` filled out?
+* Is `$JAVA_HOME` pointing to a 1.7 JDK?
+* Do you have this directory layout:
+
+```bash
+$BASE
+|--- deploy
+`--- dm2e-repos
+     |-- dm2e-gui
+     `-- dm2e-ws
+```
+
+---
+
+class: center, middle
+
+# Automatic Redeploy ftw
+
+```bash
+cd $BASE/deploy
+bash redeploy.sh
+```
+
+
+---
+
+class: center, middle
+# GOTCHAS
+
+---
+
+## API throws 500 'Unsupported major.minor version 51.0'
+
+Tomcat is running with a non-1.7 java version. Make sure `$JAVA_HOME` is set correcly
+
+---
+
+## `redeploy.sh` shows a BUILD FAILURE because maven-plugin-clean is missing
+
+Run `mvn clean` in either `$BASE/dm2e-repos/dm2e-ws` or `$BASE/dm2e-repos/dm2e-gui` then try again.
+
+---
+
+## After logging in to the GUI for the first time, loading takes very long
+
+This is because a new user in our system is created for the JOSSO login name.
+Subsequent startups will be faster.
+
+---
+
+## My changes aren't visible / Tomcat complains about address in use
+
+Tomcat tends to create zombies. 
+
+```bash
+ps aux | grep tomcat
+```
+
+Kill 'em all!
+
+</textarea>
+<script src="http://gnab.github.io/remark/downloads/remark-0.5.3.min.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+var slideshow = remark.create({
+  highlightStyle: "rainbow"
+});
+</script>
+</body>
+</html>
+
