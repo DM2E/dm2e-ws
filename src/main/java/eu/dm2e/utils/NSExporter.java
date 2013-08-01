@@ -5,6 +5,13 @@ import java.lang.reflect.Modifier;
 
 import com.google.gson.JsonObject;
 
+/**
+ * Utility class for exposing class constants and enum values to JSON.
+ *
+ * @see eu.dm2e.ws.NS
+ *
+ * @author Konstantin Baierer
+ */
 public class NSExporter {
 	
 	public static String exportInnerClassConstantsToJSON(Class clazz) {

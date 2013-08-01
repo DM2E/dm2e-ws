@@ -9,6 +9,14 @@ import eu.dm2e.ws.NS;
 import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.services.file.FileStatus;
 
+/**
+ * Service that returns constants and enums used in the backend to clients.
+ *
+ * @see eu.dm2e.utils.NSExporter
+ * @see eu.dm2e.ws.NS
+ *
+ * @author Konstantin Baierer
+ */
 @Path("/constants")
 public class NamespaceService {
 	

@@ -10,6 +10,9 @@ import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
+/**
+ * Abstract Base Class for services that are execute asynchronously
+ */
 public abstract class AbstractAsynchronousRDFService extends AbstractRDFService implements Runnable {
 
 	/**

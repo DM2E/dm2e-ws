@@ -32,11 +32,10 @@ import eu.dm2e.ws.grafeo.jaxrs.GrafeoMessageBodyWriter;
 //import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 /**
- * This file was created within the DM2E project.
- * http://dm2e.eu
- * http://github.com/dm2e
- *
- * Author: Kai Eckert, Konstantin Baierer
+ * JAX-RS service to start the DM2E services -- for testing only.
+ * <p>
+ * Relevant changes here must be ported to {@see eu.dm2e.ws.OmnomApplication}.
+ * </p>
  */
 @Path("/manage")
 public class ManageService {

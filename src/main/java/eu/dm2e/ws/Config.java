@@ -7,6 +7,12 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.DefaultConfigurationBuilder;
 
 
+/**
+ * Config singleton handling all configuration from properties/XML files.
+ *
+ * 
+ * @author Konstantin Baierer
+ */
 public enum Config {
 	INSTANCE
 	;
@@ -37,12 +43,33 @@ public enum Config {
 //		return conf;
 //	}
 	
+	/**
+	 * Get a configuration setting.
+	 * 
+	 * <pre>{@code
+	 * String baseUri = Config.get(ConfigProp.BASE_URI)
+	 * }</pre>
+	 *
+	 * @return Config value as String
+	 */
 	public static String get(ConfigProp configProp) {
 		return INSTANCE.config.getString(configProp.getPropertiesName());
 	}
+	/**
+	 * Set a configuration setting.
+	 *
+	 * Think carefully before using this, if config needs change, change the config file(s).
+	 *
+	 */
 	public static void set(ConfigProp configProp, String value) {
 		INSTANCE.config.setProperty(configProp.getPropertiesName(), value);
 	}
+
+	/**
+	 * Whether the backing config singleton is null.
+	 *
+	 * @return true if there was an error initiating the config, false otherwise
+	 */
 	public static boolean isNull() {
 		return INSTANCE.config == null;
 	}

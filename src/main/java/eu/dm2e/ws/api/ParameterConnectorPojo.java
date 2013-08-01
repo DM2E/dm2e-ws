@@ -6,6 +6,20 @@ import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
 
+/** 
+ * Pojo for a connector between two parameters.
+ * <p>
+ * Every ParameterConnectorPojo *MUST* have set:<ul>
+ * <li>inWorkflow
+ * <li>fromParam
+ * <li>toParam
+ * </ul>
+ * Every ParameterConnectorPojo *MUST* have set exactly one of the following combinations:<ul>
+ * <li>fromWorkflow and toPosition
+ * <li>fromPosition and toPosition
+ * <li>fromPosition and toWorkflow
+ * </p>
+ */
 @Namespaces({"omnom", NS.OMNOM.BASE})
 @RDFClass(NS.OMNOM.CLASS_PARAMETER_CONNECTOR)
 public class ParameterConnectorPojo extends SerializablePojo<ParameterConnectorPojo> implements IValidatable{

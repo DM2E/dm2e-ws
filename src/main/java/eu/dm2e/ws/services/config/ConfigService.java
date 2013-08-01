@@ -42,7 +42,10 @@ import eu.dm2e.ws.grafeo.jena.SparqlUpdate;
 import eu.dm2e.ws.services.AbstractRDFService;
 
 /**
- * FIXME refactor this into workflowconfig/webservice config service so we can delegate de/serialization to MessageBodyWriter
+ * Service for storing and retrieving configurations for workflows and webservices.
+ *
+ * FIXME refactor this into workflowconfig/webservice config service so we can delegate 
+ * de/serialization to MessageBodyWriter
  * @author Konstantin Baierer
  *
  */

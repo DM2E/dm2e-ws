@@ -8,6 +8,7 @@ import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
+/** Pojo for a webservice Job */
 @RDFClass(NS.OMNOM.CLASS_JOB)
 @RDFInstancePrefix("http://localhost:9998/job/")
 public class JobPojo extends AbstractJobPojo {

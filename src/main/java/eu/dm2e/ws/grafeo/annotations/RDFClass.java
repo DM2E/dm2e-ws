@@ -6,11 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This file was created within the DM2E project.
- * http://dm2e.eu
- * http://github.com/dm2e
- *
- * Author: Kai Eckert, Konstantin Baierer
+ * The RDF class this Pojo should be serialized to/deserialized from.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

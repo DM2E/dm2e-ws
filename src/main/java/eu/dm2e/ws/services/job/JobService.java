@@ -15,6 +15,8 @@ import eu.dm2e.ws.services.AbstractJobService;
 // TODO @GET /{id}/result with JSON
 
 /**
+ * Service that handles posting, putting and retrieving jobs.
+ *
  * NOTE: Don't use any Jersey annotations in the overridden methods. JSR-311 specifies
  * that a single annotation hides all inerited annotations.
  * 

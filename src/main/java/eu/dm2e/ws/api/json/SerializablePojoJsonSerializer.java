@@ -31,11 +31,15 @@ import eu.dm2e.ws.api.SerializablePojo;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
 /**
+ * Serialize / Deserialize SerializablePojos to/from JSON
+ *
+ * <p>
  * Smelly, slow, but working.
+ * </p>
  * 
  * @author Konstantin Baierer
  *
- * @param <T>
+ * @param <T>	The runtime type of the SerializablePojo
  */
 public class SerializablePojoJsonSerializer<T> implements JsonSerializer<SerializablePojo<T>>,
 		JsonDeserializer<SerializablePojo<T>>

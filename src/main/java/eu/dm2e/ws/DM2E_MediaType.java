@@ -12,7 +12,17 @@ import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Defines various MediaType and related functions specific to RDF and JSON in DM2E.
+ *
+ * @see javax.ws.rs.core.MediaType javax.ws.rs.core.MediaType
+ *
+ * @author Konstantin Baierer
+ */
 public class DM2E_MediaType {
+
+    private static Logger log = LoggerFactory.getLogger(DM2E_MediaType.class.getName());
+
 	/**
 	 * This is a list of RDF mediatypes to be used in @Consumes clauses. Note
 	 * that "text/plain" which is the media type for N-Triples is left out,
@@ -36,7 +46,6 @@ public class DM2E_MediaType {
 		// , MediaType.APPLICATION_JSON
 	})
 	 */
-    private static Logger log = LoggerFactory.getLogger(DM2E_MediaType.class.getName());
 
 
 	public static final String
@@ -66,12 +75,16 @@ public class DM2E_MediaType {
 			// TURTLE
 			TEXT_TURTLE_TYPE = MediaType.valueOf(TEXT_TURTLE);
 
-	// Log file mediatype
+	/** Log file MediaType (String) */
 	public static final String TEXT_X_LOG = "text/x-log";
+	/** Log file MediaType (MediaType) */
 	public static final MediaType TEXT_LOG_TYPE = new MediaType("text", "x-log");
 	
+	/** application/x-tar; charset="utf8" (MediaType) */
 	public static final MediaType APPLICATION_X_TAR_UTF8_TYPE;
+	/** text/html; charset="utf8" (MediaType) */
 	public static final MediaType TEXT_HTML_UTF8;
+	/** application/xml; charset="utf8" (MediaType) */
 	public static final MediaType APPLICATION_XML_UTF8;
     static HashMap<MediaType,String> mediaType2JenaLanguage = new HashMap<>();
 	private static final String[] rdfMediaTypes = {
@@ -82,7 +95,9 @@ public class DM2E_MediaType {
 		TEXT_RDF_N3,
 		TEXT_PLAIN,
 	};
+	/** Set of all RDF types */
 	public final static Set<MediaType> SET_OF_RDF_TYPES;
+	/** Set of the names of all RDF types */
 	public final static Set<String> SET_OF_RDF_TYPES_STRING = Collections
 			.unmodifiableSet(new HashSet<>(Arrays.asList(rdfMediaTypes)));
 	
@@ -106,7 +121,22 @@ public class DM2E_MediaType {
 		mediaType2JenaLanguage.put(MediaType.valueOf(DM2E_MediaType.TEXT_RDF_N3), "N3");
 		mediaType2JenaLanguage.put(MediaType.valueOf(DM2E_MediaType.TEXT_TURTLE), "TURTLE");
     } 
-    
+
+    /**
+     * Resolve a MediaType to a Jena language name.
+     * 
+     * <pre>{@code
+	*DM2E_MediaType.APPLICATION_RDF_TRIPLES	"N-TRIPLE"
+	*DM2E_MediaType.APPLICATION_RDF_XML	"RDF/XML"
+	*DM2E_MediaType.APPLICATION_X_TURTLE	"TURTLE"
+	*DM2E_MediaType.TEXT_PLAIN		"N-TRIPLE"
+	*DM2E_MediaType.TEXT_RDF_N3		"N3"
+	*DM2E_MediaType.TEXT_TURTLE		"TURTLE"
+     * } </pre>
+     *
+     * @param thisType  MediaType to find jena lang for
+     * @return Jena language if thisType is known, null otherwise.
+     */
     public static String getJenaLanguageForMediaType(MediaType thisType) {
     	return mediaType2JenaLanguage.get(thisType);
     }
@@ -120,8 +150,12 @@ public class DM2E_MediaType {
 		return !isRDF;
 	}
 	
-
-
+	/**
+	 * Decides whether a MediaType should result in metadata or data being sent, on the assumption that JSON and RDF mediatypes are for metadata.
+	 *
+	 * @param mediaType  MediaType to check
+	 * @return true if it's either a JSON or a RDF mediatype, false otherwise
+	 */
 	public static boolean expectsMetadataResponse(MediaType mediaType) {
 		if (null == mediaType) return false;
 		return (
@@ -131,6 +165,9 @@ public class DM2E_MediaType {
 				);
 	}
 	
+	/**
+	 * @see #expectsMetadataResponse(MediaType)
+	 */
 	public static boolean expectsMetadataResponse(HttpHeaders headers) {
 		if (null == headers) return false;
 		return (
@@ -140,6 +177,12 @@ public class DM2E_MediaType {
 				);
 	}
 	
+	/**
+	 * Whether a MediaType is an RDF type
+	 *
+	 * @param thisType  MediaType to check
+	 * @return true if MediaType is contained in {@link #SET_OF_RDF_TYPES}, false otherwise
+	 */
 	public static boolean isRdfMediaType(MediaType thisType) {
 		if (null == thisType) return false;
 		for (MediaType rdfType : SET_OF_RDF_TYPES) {
@@ -153,6 +196,16 @@ public class DM2E_MediaType {
 //		return SET_OF_RDF_TYPES_STRING.contains(mediaType.toString());
 	}
 
+	/**
+	 * Matches two mediatypes based on the main type and subtype and nothing else.
+	 *
+	 * <p>
+	 * Useful for comparing mediatypes with differing parameters
+	 * </p>
+	 * @param thisType  MediaType to match
+	 * @param otherType  MediaType to match
+	 * @return true if MediaTypes have the same type and subtype, false otherwise
+	 */
 	public static boolean matchMediaTypeAndSubtype(MediaType thisType, MediaType otherType) {
 //		log.trace("Matching " +thisType+ " against " + otherType);
 //		log.trace("Matching " +thisType.getType()+ " against " + otherType.getType());
@@ -162,6 +215,11 @@ public class DM2E_MediaType {
 				thisType.getSubtype().equals(otherType.getSubtype());
 	}
 	
+	/**
+	 * Decides whether a the acceptable media types of a HttpHeaders object should result in a RDF response.
+	 *
+	 * @see DM2E_MediaType#isRdfMediaType(MediaType)
+	 */
 	public static boolean expectsRdfResponse(HttpHeaders headers) {
 		boolean doesExpectRdf = false;
 		for (MediaType thisType : headers.getAcceptableMediaTypes()) {
@@ -174,6 +232,12 @@ public class DM2E_MediaType {
 		return doesExpectRdf;
 	}
 
+	/**
+	 * Decides whether a mediatype is a JSON mediatype
+	 *
+	 * @param thisType  MediaType to check
+	 * @return true if thisType is APPLICATION_JSON_TYPE, false otherwise
+	 */
 	public static boolean isJsonMediaType(MediaType thisType) {
 		if (null == thisType) return false;
 		return  matchMediaTypeAndSubtype(thisType, MediaType.APPLICATION_JSON_TYPE);
@@ -181,6 +245,11 @@ public class DM2E_MediaType {
 //				&&
 //				thisType.getSubtype().equals(MediaType.APPLICATION_JSON_TYPE.getSubtype()));
 	}
+	/**
+	 * Decides whether a the acceptable media types of a HttpHeaders object should result in a JSON response.
+	 *
+	 * @see DM2E_MediaType#isJsonMediaType(MediaType)
+	 */
 	public static boolean expectsJsonResponse(HttpHeaders headers) {
 		if (null == headers) return false;
 		for (MediaType thisType : headers.getAcceptableMediaTypes())

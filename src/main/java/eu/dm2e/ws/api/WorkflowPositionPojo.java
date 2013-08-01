@@ -5,6 +5,9 @@ import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
+/**
+ * Pojo representing an instance of a webservice within a workflow
+ */
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/"})
 @RDFClass(NS.OMNOM.CLASS_WORKFLOW_POSITION)
 public class WorkflowPositionPojo extends SerializablePojo<WorkflowPositionPojo> implements IValidatable{

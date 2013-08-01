@@ -27,6 +27,11 @@ import eu.dm2e.ws.api.WorkflowJobPojo;
 import eu.dm2e.ws.api.WorkflowPojo;
 import eu.dm2e.ws.api.WorkflowPositionPojo;
 
+/**
+ * Convenience class wrapping JSON serialization/deserialization functionality for easy reuse.
+ *
+ * @author Konstantin Baierer
+ */
 public class OmnomJsonSerializer {
 	
 //	private transient static Logger log = LoggerFactory.getLogger(OmnomJsonSerializer.class.getName());

@@ -13,6 +13,8 @@ import javax.ws.rs.HttpMethod;
  * @see http://tools.ietf.org/html/rfc5789
  * @author Konstantin Baierer
  *
+ * @deprecated This is cool but not standardized enough to make use of.
+ *
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

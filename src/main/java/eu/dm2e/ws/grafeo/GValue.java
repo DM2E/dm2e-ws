@@ -3,11 +3,7 @@ package eu.dm2e.ws.grafeo;
 import java.util.Set;
 
 /**
- * This file was created within the DM2E project.
- * http://dm2e.eu
- * http://github.com/dm2e
- *
- * Author: Kai Eckert, Konstantin Baierer
+ * A RDF Node, either literal or resource
  */
 public interface GValue {
     @Override

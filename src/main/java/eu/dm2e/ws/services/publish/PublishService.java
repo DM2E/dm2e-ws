@@ -19,11 +19,7 @@ import eu.dm2e.ws.services.AbstractTransformationService;
 //import java.util.Date;
 
 /**
- * This file was created within the DM2E project.
- * http://dm2e.eu
- * http://github.com/dm2e
- *
- * Author: Kai Eckert, Konstantin Baierer
+ * Service to publish files as versioned datasets to a RDF endpoint.
  */
 @Path("/publish")
 public class PublishService extends AbstractTransformationService {

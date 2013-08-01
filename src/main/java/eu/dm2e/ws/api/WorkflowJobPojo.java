@@ -7,6 +7,9 @@ import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
+/**
+ * Pojo for a workflow job.
+ */
 @RDFClass(NS.OMNOM.CLASS_WORKFLOW_JOB)
 public class WorkflowJobPojo extends AbstractJobPojo {
 	

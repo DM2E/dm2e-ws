@@ -18,6 +18,15 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.model.LogLevel;
 
+/**
+ * Abstract base class for JobPojos
+ * 
+ * <p>
+ * Every Jobpojo, workflow or webservice, has logging, status and assignments.
+ * </p>
+ *
+ * @author Konstantin Baierer
+ */
 public abstract class AbstractJobPojo extends AbstractPersistentPojo<AbstractJobPojo> {
 	
 	public AbstractJobPojo() {

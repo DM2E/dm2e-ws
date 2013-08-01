@@ -25,6 +25,9 @@ import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.AbstractRDFService;
 
+/**
+ * Service for managing users
+ */
 @Path("/user")
 public class UserService extends AbstractRDFService {
 	

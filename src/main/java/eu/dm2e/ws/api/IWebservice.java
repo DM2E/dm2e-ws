@@ -1,5 +1,8 @@
 package eu.dm2e.ws.api;
 
+/**
+ * Interface for web services
+ */
 import java.util.Set;
 
 public interface IWebservice {

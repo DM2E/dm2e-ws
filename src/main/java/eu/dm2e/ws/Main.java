@@ -6,7 +6,9 @@ import org.glassfish.grizzly.http.server.HttpServer;
 
 import java.io.IOException;
 
-
+/**
+ * @deprecated
+ */
 public class Main {
 
     static HttpServer httpServer;

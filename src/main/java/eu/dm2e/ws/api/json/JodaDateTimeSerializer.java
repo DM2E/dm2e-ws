@@ -14,6 +14,9 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
+/**
+ * Serialize and Deserialize Joda DateTime to/from JSON
+ */
 public class JodaDateTimeSerializer implements JsonSerializer<DateTime>, JsonDeserializer<DateTime>{
 	
 	  @Override

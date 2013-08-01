@@ -44,6 +44,14 @@ import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
 /**
+ * Abstract Base class for all RDF services.
+ *
+ * <p>
+ * Every service inheriting from AbstractRDFService will return a description of itself on GET /
+ * </p>
+ *
+ * TODO lots of docs
+ * 
  * TODO @GET /{id}/param/{param} 303 -> /{id}
  *
  */

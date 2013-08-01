@@ -1,5 +1,13 @@
 package eu.dm2e.ws;
 
+/**
+ * Collection of re-usable error messages for common failures.
+ * <p>
+ * this should be phased out with a JAX-RS aware exception system
+ * </p>
+ *
+ * @author Konstantin Baierer
+ */
 public enum ErrorMsg {
 	
 	NO_TOP_BLANK_NODE("No top blank node was found")

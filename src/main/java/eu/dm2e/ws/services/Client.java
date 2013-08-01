@@ -30,11 +30,7 @@ import eu.dm2e.ws.api.SerializablePojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 
 /**
- * This file was created within the DM2E project.
- * http://dm2e.eu
- * http://github.com/dm2e
- *
- * Author: Kai Eckert, Konstantin Baierer
+ * Wrapper for a JAX-RS client with POJO posting/loading abilities and helpers for publishing files.
  */
 public class Client {
 	

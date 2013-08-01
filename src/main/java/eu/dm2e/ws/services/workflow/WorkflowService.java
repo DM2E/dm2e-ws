@@ -47,9 +47,12 @@ import eu.dm2e.ws.grafeo.jena.SparqlUpdate;
 import eu.dm2e.ws.services.AbstractAsynchronousRDFService;
 import eu.dm2e.ws.services.WorkerExecutorSingleton;
 
+/**
+ * Service for the creation and execution of workflows
+ */
 @Path("/workflow")
 public class WorkflowService extends AbstractAsynchronousRDFService {
-	
+
 	public static String PARAM_POLL_INTERVAL = "pollInterval";
 	public static String PARAM_JOB_TIMEOUT = "jobTimeout";
 	public static String PARAM_COMPLETE_LOG = "completeLog";
@@ -94,15 +97,15 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
         	wf.loadFromURI(wfUri.getUri());
         	wfList.add(wf);
         }
-		
+
 		return Response.ok(wfList).build();
 	}
-	
+
 
 
 	/**
 	 * PUT /{id}
-	 * 
+	 *
 	 *  (non-Javadoc)
 	 * @see eu.dm2e.ws.services.AbstractAsynchronousRDFService#putConfigToService(java.lang.String)
 	 */
@@ -119,7 +122,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		MediaType.APPLICATION_JSON
 	})
 	public Response putConfigToService(String workflowConfigURI) {
-		
+
 		URI workflowUri = getRequestUriWithoutQuery();
 		/*
 		 * Build workflow
@@ -130,8 +133,8 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		} catch (Exception e2) {
 			return throwServiceError(e2);
 		}
-		
-		
+
+
 		/*
 		 * Resolve configURI to WebserviceConfigPojo
 		 */
@@ -179,7 +182,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		} catch ( NoSuchMethodException |
 					InvocationTargetException |
 					InstantiationException |
-					IllegalAccessException 
+					IllegalAccessException
 					e) {
 			log.error("Could not initialize worker WorkflowService: " + e + ExceptionUtils.getFullStackTrace(e));
 			return throwServiceError(e);
@@ -194,7 +197,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		return Response.status(202).location(jobPojo.getIdAsURI()).entity(jobPojo).build();
 	}
 
-	
+
 	/**
 	 * GET /{id}
 	 * @return
@@ -212,7 +215,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		return Response.ok(wf).build();
 	}
 
-    
+
     /**
      * GET {id}/blankConfig
      * @return
@@ -238,7 +241,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 //		}
 		return Response.ok().entity(wfconf).build();
     }
-	
+
 	/**
 	 * PUT {workflowID} 	Accept: json
 	 * @param wf
@@ -284,7 +287,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 	public Response putGrafeo(Grafeo g) {
 		final URI wfUri = getRequestUriWithoutQuery();
 		final String wfUriStr = getRequestUriWithoutQuery().toString();
-		
+
 		// TODO FIXME What if the user changed the default parameters defined in post?
 
 		log.info("Skolemnizing parameters.");
@@ -335,7 +338,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		log.error(wf.getTerseTurtle());
 		return postGrafeo(wf.getGrafeo());
 	}
-	
+
 	@Override
 	public Response postGrafeo(Grafeo g) {
 		GResource wfRes = g.findTopBlank(NS.OMNOM.CLASS_WORKFLOW);
@@ -347,7 +350,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		}
 		String wfUri = getRequestUriWithoutQuery() + "/" + createUniqueStr();
 		wfRes.rename(wfUri);
-		
+
 		/*
 		 * Add global workflow parameters
 		 */
@@ -407,9 +410,9 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 			return throwServiceError(e);
 		}
 		log.info("Done Writing workflow to config: " + wfUri);
-		
+
 		WorkflowPojo wf = g.getObjectMapper().getObject(WorkflowPojo.class, wfUri);
-		
+
 		try {
 			wf.validate();
 		} catch (Exception e) {
@@ -590,9 +593,9 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 			} catch (NullPointerException e) {
 				throw e;
 			}
-			
+
 			log.info("Job used in run(): " + workflowJob);
-			
+
 			/*
 			 * Validate
 			 */
@@ -601,24 +604,24 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 			} catch (Throwable t) {
 				throw(t);
 			}
-			
+
 			/*
 			 * Get global meta parameters (pollinterval, jobtimeout ...)
 			 */
-			long pollInterval = Long.parseLong(workflow.getParamByName(PARAM_POLL_INTERVAL).getDefaultValue()); 
+			long pollInterval = Long.parseLong(workflow.getParamByName(PARAM_POLL_INTERVAL).getDefaultValue());
 			if (null != workflowConfig.getParameterAssignmentForParam(PARAM_POLL_INTERVAL)) {
 				pollInterval = Long.parseLong(workflowConfig.getParameterAssignmentForParam(PARAM_POLL_INTERVAL).getParameterValue());
 			}
-			long jobTimeoutInterval = Long.parseLong(workflow.getParamByName(PARAM_JOB_TIMEOUT).getDefaultValue()); 
+			long jobTimeoutInterval = Long.parseLong(workflow.getParamByName(PARAM_JOB_TIMEOUT).getDefaultValue());
 			if (null != workflowConfig.getParameterAssignmentForParam(PARAM_JOB_TIMEOUT)) {
 				jobTimeoutInterval = Long.parseLong(workflowConfig.getParameterAssignmentForParam(PARAM_JOB_TIMEOUT).getParameterValue());
 			}
-			
+
 			/*
-			 * 
+			 *
 			 */
 			workflowJob.setStarted();
-			
+
 			/*
 			 * Iterate Positions
 			 */
@@ -628,8 +631,8 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 				ws.loadFromURI(ws.getId());
 				WebserviceConfigPojo wsconf = new WebserviceConfigPojo();
 				wsconf.setWebservice(ws);
-				
-				/*				
+
+				/*
 				 * Iterate Input Parameters of the Webservice at this position
 				 */
 				workflowJob.addLogEntry("About to iterate parameters", "TRACE");
@@ -639,11 +642,11 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 					workflowJob.addLogEntry("Current param: " + param, "TRACE");
 					workflowJob.publishToService();
 					log.trace("Current param: " + param);
-					
+
 					// if there is a connector to this parameter at this position
 					ParameterConnectorPojo conn = workflow.getConnectorToPositionAndParam(pos, param);
 					if (null == conn) continue nextParam;
-					
+
 					final ParameterAssignmentPojo ass;
 					if (conn.hasFromWorkflow()) {
 						// FIXME this is not working for whatever reason
@@ -651,7 +654,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 						ass = workflowConfig.getParameterAssignmentForParam(conn.getFromParam());
 					} else {
 						// if the connector is from a previous position, take the value from the corresponding previous job
-						ass = finishedJobs.get(conn.getFromPosition().getId()).getOutputParameterAssignmentForParam(conn.getFromParam()); 
+						ass = finishedJobs.get(conn.getFromPosition().getId()).getOutputParameterAssignmentForParam(conn.getFromParam());
 						workflowJob.debug("Finished Jobs: " + finishedJobs.keySet());
 						workflowJob.debug("This connector fromPosition: " + conn.getFromPosition());
 					}
@@ -661,7 +664,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 					}
 					wsconf.addParameterAssignment(param.getId(), ass.getParameterValue());
 				}
-				
+
 				/*
 				 * Publish the WebserviceConfig, so it becomes stable
 				 */
@@ -670,7 +673,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 				if (null == wsconf.getId()) {
 					throw new RuntimeException("Could not publish webservice config " + wsconf);
 				}
-				
+
 				/*
 				 * Run the webservice
 				 */
@@ -681,8 +684,8 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 //					workflowJob.debug(wsconf.getTerseTurtle());
 					throw new RuntimeException("Request to start web service " + ws + " with config " + wsconf + "failed: " + resp);
 				}
-				
-				
+
+
 				/*
 				 * start the job
 				 */
@@ -703,12 +706,12 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 					}
 					log.info("JOB STATUS: " +webserviceJob.getTerseTurtle());
 				} while (webserviceJob.isStillRunning());
-				
+
 				finishedJobs.put(pos.getId(), webserviceJob);
 				workflowJob.getFinishedJobs().add(webserviceJob);
 				workflowJob.getFinishedPositions().add(pos);
 				workflowJob.publishToService();
-				
+
 				if (webserviceJob.isFailed()) {
 					throw new RuntimeException("Job " + webserviceJob + " of Webservice " + ws + "failed, hence workflow " + workflow + "failed. :(");
 				}

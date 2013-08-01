@@ -14,6 +14,11 @@ import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.services.AbstractTransformationService;
 import eu.dm2e.ws.services.Client;
 
+/**
+ * Service for transforming XML to (RDF)XML using a zipped hierarchy of XSLT scripts.
+ *
+ * @author Konstantin Baierer
+ */
 @Path("/service/xslt-zip")
 public class XsltZipService extends AbstractTransformationService {
 

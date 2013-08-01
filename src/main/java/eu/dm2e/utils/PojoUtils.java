@@ -11,11 +11,19 @@ import java.util.List;
 import org.apache.commons.beanutils.BeanUtils;
 
 
+/**
+ * Wrapper class for BeanUtils
+ *
+ * @see SparsePojoCopier
+ * @see org.apache.commons.beanutils.BeanUtils org.apache.commons.beanutils.BeanUtils
+ *
+ * @author Konstantin Baierer
+ */
 public class PojoUtils extends BeanUtils {
 	
 	public static void copyProperties(Object dest, Object orig)
 	    throws IllegalAccessException, InvocationTargetException {
-	    
+	
 	    new SparsePojoCopier().copyProperties(dest, orig);
 	}
 

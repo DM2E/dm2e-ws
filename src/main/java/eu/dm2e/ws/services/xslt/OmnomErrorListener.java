@@ -7,6 +7,12 @@ import org.slf4j.Logger;
 
 import eu.dm2e.ws.api.JobPojo;
 
+/**
+ * ErrorListener for XSLT transformations.
+ *
+ * TODO move this somewhere else
+ * @author Konstantin Baierer
+ */
 public class OmnomErrorListener implements ErrorListener {
 
 	private Logger logger;

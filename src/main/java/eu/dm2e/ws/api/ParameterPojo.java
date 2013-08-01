@@ -8,11 +8,7 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
 /**
- * This file was created within the DM2E project.
- * http://dm2e.eu
- * http://github.com/dm2e
- *
- * Author: Kai Eckert, Konstantin Baierer
+ * Pojo for a Parameter
  */
 @Namespaces({"omnom", NS.OMNOM.BASE, 
 			 "skos", NS.SKOS.BASE,

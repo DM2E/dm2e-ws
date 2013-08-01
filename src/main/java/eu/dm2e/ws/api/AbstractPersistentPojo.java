@@ -10,6 +10,9 @@ import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.Client;
 
+/**
+ * Abstract Base Class for Grafeo-annotated Pojos that can be persisted in or loaded from a service.
+ */
 public abstract class AbstractPersistentPojo<T> extends SerializablePojo<T> {
 	
 	protected static transient Client client = new Client();

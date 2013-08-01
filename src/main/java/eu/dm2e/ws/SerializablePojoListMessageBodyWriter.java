@@ -21,6 +21,16 @@ import eu.dm2e.ws.api.SerializablePojo;
 import eu.dm2e.ws.api.json.OmnomJsonSerializer;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
+/**
+ * JAX-RS MessageBodyWriter for lists of SerializablePojos.
+ * <p>
+ * Allows JAX-RS applications with this feature to return a {@code List<SerializablePojo>} as the entity.
+ * The list is serialized either as a JSON array of JSON objects or a serialized RDF graph.
+ * </p>
+ *
+ * @see SerializablePojoProvider
+ * @author Konstantin Baierer
+ */
 //@Singleton
 @Provider
 @Produces({

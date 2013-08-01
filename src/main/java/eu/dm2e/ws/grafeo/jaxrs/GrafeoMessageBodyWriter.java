@@ -18,6 +18,12 @@ import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
+/**
+ * JAX-RS MessageBodyWriter for Grafeo.
+ * <p>
+ * Allows consuming applications to return a Grafeo as an entity in responses.
+ * </p>
+ */
 public class GrafeoMessageBodyWriter implements MessageBodyWriter<Grafeo> {
 
 	Logger log = LoggerFactory.getLogger(getClass().getName());

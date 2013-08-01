@@ -7,6 +7,7 @@ import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
+/** Pojo representing a user */
 @RDFClass(NS.FOAF.CLASS_PERSON)
 public class UserPojo extends AbstractPersistentPojo<UserPojo> {
 	

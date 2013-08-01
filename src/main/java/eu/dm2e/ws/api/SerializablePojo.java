@@ -22,7 +22,7 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
 /**
- * @author kb
+ * Abstract Base class for Pojos with serialization/deserialization abilities from RDF/JSON.
  *
  */
 public abstract class SerializablePojo<T> {
@@ -31,14 +31,14 @@ public abstract class SerializablePojo<T> {
 	public static transient final String JSON_FIELD_ID = "id";
 	public static transient final String JSON_FIELD_UUID = "uuid";
 	public static transient final String JSON_FIELD_RDF_TYPE = NS.RDF.PROP_TYPE;
-	
+
 	public SerializablePojo() {
 		super();
 	}
-	
+
 	/**
 	 * Get the RDFClass annotation of the class of this instance.
-	 * 
+	 *
 	 * @return RDFClass annotation
 	 * @see RDFClass
 	 */
@@ -56,9 +56,9 @@ public abstract class SerializablePojo<T> {
         return null;
 	}
 	/***************************************
-	 * 
+	 *
 	 * JSON Serialization
-	 * 
+	 *
 	 **************************************/
 	public String toJson() {
 		return OmnomJsonSerializer.serializeToJSON(this, getClass());
@@ -71,17 +71,17 @@ public abstract class SerializablePojo<T> {
 			OmnomJsonSerializer.serializeToJSON(this, getClass()),
 					MediaType.APPLICATION_JSON_TYPE);
 	}
-	
-	
+
+
 	/***************************************
-	 * 
+	 *
 	 * Grafeo / RDF Serialization
-	 * 
+	 *
 	 **************************************/
 
 	/**
 	 * Get a new grafeo with all the statements of this class added as RDF.
-	 * 
+	 *
 	 * @return Grafeo
 	 */
 	public Grafeo getGrafeo() {
@@ -94,10 +94,10 @@ public abstract class SerializablePojo<T> {
 	public String getNTriples() { return getGrafeo().getNTriples(); }
 	public Entity<String> getNTriplesEntity() { return Entity.entity(getGrafeo().getNTriples(), DM2E_MediaType.APPLICATION_RDF_TRIPLES); }
 	public String getCanonicalNTriples() { return getGrafeo().getCanonicalNTriples(); }
-	
+
     /**
      * The format is Classname<URI or 'BLANK'>(label)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -108,21 +108,21 @@ public abstract class SerializablePojo<T> {
 				+ ">"
 				+ (this.hasLabel() ? "(\"" + this.getLabel() + "\")" : "");
     }
-    
+
     // TODO could use PojoUtils, JSON, Grafeo ... but why?
 //    public T copy() {
-//    	
+//
 //    	SerializablePojo<T> that = OmnomJsonSerializer.deserializeFromJSON(this.toJson(), this.getClass());
-//    	
+//
 //		return (T) that;
 //    }
-    
+
     /*********************************************
-     * 
+     *
      * GETTERS SETTERS PREDICATES
-     * 
+     *
      *********************************************/
-	
+
     /**
      * Every Pojo needs and ID - though it can be null for a blank node
      */
@@ -142,7 +142,7 @@ public abstract class SerializablePojo<T> {
 		}
 		return uri;
 	}
-	
+
     /**
      * Every Pojo can have a label, bridge between human-readable and machine-readable
      */
@@ -163,15 +163,15 @@ public abstract class SerializablePojo<T> {
 
 	/**
 	 * This specifies how deep the JSON serializer recurses into nested Pojos. Default is 1.
-	 * 
+	 *
 	 * @return Recursion depth
 	 */
 	public int getMaximumJsonDepth() { return 2; }
-	
+
 	/***************************
-	 * 
+	 *
 	 * equals & hashCode
-	 * 
+	 *
 	 *************************/
 
 //	/* (non-Javadoc)

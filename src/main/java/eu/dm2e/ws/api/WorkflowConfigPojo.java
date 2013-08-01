@@ -6,6 +6,9 @@ import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 import eu.dm2e.ws.services.workflow.WorkflowService;
 
+/**
+ * Pojo for a workflow configuration
+ */
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/"})
 @RDFClass(NS.OMNOM.CLASS_WORKFLOW_CONFIG)
 public class WorkflowConfigPojo extends AbstractConfigPojo<WorkflowConfigPojo> {

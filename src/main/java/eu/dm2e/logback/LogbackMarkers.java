@@ -3,6 +3,17 @@ package eu.dm2e.logback;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
+/**
+ * Logback Markers used in our project, which can be passed as first argument to log statements.
+ *
+ * <pre>
+ * {@code
+ * log.debug(LogbackMarkers.DATA_DUMP, obj.methodThatProducesCopiousOutput());
+ * }
+ * </pre>
+ *
+ * @author Konstantin Baierer
+ */
 public final class LogbackMarkers {
 	
 	/**

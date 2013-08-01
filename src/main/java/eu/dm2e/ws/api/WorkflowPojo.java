@@ -14,6 +14,9 @@ import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
+/**
+ * Pojo representing a workflow
+ */
 @Namespaces({
 	"omnom", "http://onto.dm2e.eu/omnom/",
 	"rdfs", "http://www.w3.org/2000/01/rdf-schema#"

@@ -7,6 +7,9 @@ import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
+/**
+ * Configuration of a webservice
+ */
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/"})
 @RDFClass(NS.OMNOM.CLASS_WEBSERVICE_CONFIG)
 //@RDFInstancePrefix("http://data.dm2e.eu/config/")

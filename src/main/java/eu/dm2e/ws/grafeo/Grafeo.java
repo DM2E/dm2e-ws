@@ -25,14 +25,6 @@ import eu.dm2e.ws.grafeo.jena.GResourceImpl;
  * @author Konstantin Baierer
  *
  */
-/**
- * @author Konstantin Baierer
- *
- */
-/**
- * @author Konstantin Baierer
- *
- */
 public interface Grafeo {
 	GResource findTopBlank();
 

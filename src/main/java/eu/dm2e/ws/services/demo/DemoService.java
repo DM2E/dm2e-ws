@@ -16,11 +16,7 @@ import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.services.AbstractTransformationService;
 
 /**
- * This file was created within the DM2E project.
- * http://dm2e.eu
- * http://github.com/dm2e
- *
- * Author: Kai Eckert, Konstantin Baierer
+ * DemoService shows the necessary steps / best practices to create a webservice.
  */
 @Path("/service/demo")
 public class DemoService extends AbstractTransformationService {

@@ -16,6 +16,11 @@ import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.services.AbstractTransformationService;
 import eu.dm2e.ws.services.Client;
 
+/**
+ * Service for transforming XML to (RDF)XML using a self-contained XSLT script
+ *
+ * @author Konstantin Baierer
+ */
 @Path("/service/xslt")
 public class XsltService extends AbstractTransformationService {
 	

@@ -14,7 +14,7 @@ import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
 /**
- * Helper functions for asserting facts about
+ * Helper functions for asserting facts about Grafeos.
  * 
  * @author Konstantin Baierer
  *

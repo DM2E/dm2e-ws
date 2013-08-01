@@ -15,11 +15,7 @@ import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 import eu.dm2e.ws.grafeo.jena.SparqlSelect;
 
 /**
- * This file was created within the DM2E project.
- * http://dm2e.eu
- * http://github.com/dm2e
- * <p/>
- * Author: Kai Eckert, Konstantin Baierer
+ * Pojo representing a Versioned Dataset.
  */
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/",
         "dc", "http://purl.org/dc/elements/1.1/",

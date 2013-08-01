@@ -27,6 +27,16 @@ import eu.dm2e.ws.grafeo.GStatement;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 
+/**
+ * JAX-RS MessageBodyWriter/MessageBodyReader for SerializablePojos.
+ * <p>
+ * Allows JAX-RS applications with this feature to return a {@code SerializablePojo} as the entity.
+ * The SerializablePojo is parsed from or serialized to JSON or RDF transparently
+ * </p>
+ *
+ * @see SerializablePojoListMessageBodyWriter
+ * @author Konstantin Baierer
+ */
 //@Singleton
 @Provider
 @Produces({

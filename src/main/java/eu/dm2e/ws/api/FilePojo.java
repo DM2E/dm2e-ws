@@ -11,6 +11,7 @@ import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 import eu.dm2e.ws.services.file.FileStatus;
 
+/** Pojo for Files */
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/",
 	 "dc", "http://purl.org/dc/elements/1.1/",
 	 "dct", "http://purl.org/dc/terms/"})

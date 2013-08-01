@@ -21,6 +21,9 @@ import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.AbstractRDFService;
 
+/**
+ * File Service for files stored in a MINT instance
+ */
 @Path("/mint-file")
 public class MintFileService extends AbstractRDFService {
 	

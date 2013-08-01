@@ -3,6 +3,11 @@ package eu.dm2e.logback;
 import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 
+/**
+ * Logging layout that extends PatternLayout but indents multi-line log entries with a tab.
+ *
+ * @author Konstantin Baierer
+ */
 public class OmnomLogbackLayout extends PatternLayout{
 	
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");

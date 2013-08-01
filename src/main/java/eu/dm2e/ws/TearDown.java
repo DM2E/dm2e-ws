@@ -2,6 +2,7 @@ package eu.dm2e.ws;
 
 import java.io.IOException;
 
+/** @deprecated */
 public class TearDown {
 
 	public static void main(String[] args)

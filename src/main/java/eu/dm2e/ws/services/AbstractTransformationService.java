@@ -14,7 +14,14 @@ import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.grafeo.Grafeo;
 
 /**
- * TODO document
+ * Abstract Base Class for services that transform data.
+ *
+ * <p>
+ * PUTting the URL of a WebserviceConfig to an inheriting service
+ * will create a job and start the service's run method.
+ * </p>
+ *
+ * @author Konstantin Baierer
  */
 public abstract class AbstractTransformationService extends AbstractAsynchronousRDFService {
 	
