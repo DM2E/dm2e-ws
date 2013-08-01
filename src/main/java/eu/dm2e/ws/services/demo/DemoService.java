@@ -20,11 +20,11 @@ import eu.dm2e.ws.services.AbstractTransformationService;
  */
 @Path("/service/demo")
 public class DemoService extends AbstractTransformationService {
-	
+
 	public static final String PARAM_SLEEPTIME = "sleeptime";
 	public static final String PARAM_COUNTDOWN_PHRASE = "countdownPhrase";
 	public static final String PARAM_RANDOM_OUTPUT = "randomOutput";
-	
+
     public DemoService() {
         final WebservicePojo ws = getWebServicePojo();
         ws.setLabel("Demo");
@@ -33,22 +33,13 @@ public class DemoService extends AbstractTransformationService {
         sleeptimeParam.setParameterType(NS.XSD.INT);
         sleeptimeParam.setDefaultValue("3");
         sleeptimeParam.setIsRequired(false);
-        
+
         ParameterPojo countdownPhraseParam = ws.addInputParameter(PARAM_COUNTDOWN_PHRASE);
         countdownPhraseParam.setDefaultValue("bottles of beer on the wall");
         countdownPhraseParam.setIsRequired(false);
-        
+
         ParameterPojo randomOutputParam = ws.addOutputParameter(PARAM_RANDOM_OUTPUT);
         randomOutputParam.setIsRequired(false);
-    }
-    
-    @POST
-    @Path("test")
-    @Consumes(MediaType.WILDCARD)
-    @Produces(MediaType.WILDCARD)
-    public FilePojo postTestReader(FilePojo p) {
-    	log.warn("Server received: " + p);
-    	return p;
     }
 
     @Override
@@ -65,7 +56,7 @@ public class DemoService extends AbstractTransformationService {
 
     		sleepTime = Integer.parseInt(jobPojo.getInputParameterValueByName(PARAM_SLEEPTIME));
     		log.info("Parsed sleeptime: " + sleepTime);
-    		
+
     		String countdownPhrase = jobPojo.getInputParameterValueByName(PARAM_COUNTDOWN_PHRASE);
 
     		jobPojo.debug("DemoWorker will sleep for " + sleepTime + " seconds.");
@@ -86,7 +77,7 @@ public class DemoService extends AbstractTransformationService {
     		jobPojo.fatal(e.toString());
     		throw new RuntimeException(e);
     	} finally {
-    		client.publishPojoToJobService(jobPojo);        
+    		client.publishPojoToJobService(jobPojo);
     	}
     }
 
