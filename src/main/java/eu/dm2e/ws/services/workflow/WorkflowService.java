@@ -631,6 +631,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 				ws.loadFromURI(ws.getId());
 				WebserviceConfigPojo wsconf = new WebserviceConfigPojo();
 				wsconf.setWebservice(ws);
+				wsconf.setWasGeneratedBy(workflowJob);
 
 				/*
 				 * Iterate Input Parameters of the Webservice at this position

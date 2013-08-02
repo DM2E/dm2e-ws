@@ -79,4 +79,15 @@ public class WebserviceConfigPojo extends AbstractConfigPojo<WebserviceConfigPoj
 	public WebservicePojo getWebservice() { return webservice; }
 	public void setWebservice(WebservicePojo webservice) { this.webservice = webservice; }
 
+	@RDFProperty(NS.PROV.PROP_WAS_GENERATED_BY)
+	private WorkflowJobPojo wasGeneratedBy;
+	public WorkflowJobPojo getWasGeneratedBy() { return wasGeneratedBy; }
+	public void setWasGeneratedBy(WorkflowJobPojo wasGeneratedBy) { this.wasGeneratedBy = wasGeneratedBy; }
+
+	@RDFProperty(NS.DCTERMS.PROP_CREATOR)
+	private UserPojo creator;
+	public UserPojo getCreator() { return creator; }
+	public void setCreator(UserPojo creator) { this.creator = creator; }
+	
+
 }
