@@ -64,6 +64,26 @@
             </layout>
         </encoder>
     </appender>
+	<!-- 
+		Log File appender
+	-->
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>log/dm2e-ws.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- 
+				hourly rollover 
+				log/dm2e-ws.log
+				log/2013-07-05/dm2e-ws.2013-07-05_11.log
+				...
+			-->
+			<fileNamePattern>log/%d{yyyy-MM-dd,aux}/dm2e-ws.%d{yyyy-MM-dd_HH}.log</fileNamePattern>
+			<!-- keep 30 days' worth of history -->
+			<maxHistory>720</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<Pattern>%level [%logger.%method:%line%markerWithSeparator] %m%n</Pattern>
+		</encoder>
+	</appender>
 
     <logger level="DEBUG" name="eu.dm2e.ws.grafeo.gom" />
     <logger level="WARN" name="org.apache.jena.fuseki" />
@@ -81,6 +101,8 @@
     <logger name="eu.dm2e.ws.grafeo.gom" level="DEBUG" />
     <logger name="org.apache.jena.fuseki.Fuseki" level="WARN" />
 
-
-    <root level="DEBUG"> <appender-ref ref="STDOUT" /> </root>
+    <root level="DEBUG">
+        <appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+    </root>
 </configuration>
