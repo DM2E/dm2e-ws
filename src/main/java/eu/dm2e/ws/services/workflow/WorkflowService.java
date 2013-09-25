@@ -639,8 +639,8 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 				workflowJob.addLogEntry("About to iterate parameters", "TRACE");
 				nextParam:
 				for (ParameterPojo param : ws.getInputParams()) {
-					workflowJob.trace("Current param: " + param);
-					workflowJob.addLogEntry("Current param: " + param, "TRACE");
+					workflowJob.trace("Generating assignment for param " + param);
+//					workflowJob.addLogEntry("Current param: " + param, "TRACE");
 					workflowJob.publishToService();
 					log.trace("Current param: " + param);
 
@@ -693,6 +693,10 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 				long timePassed = 0;
 				JobPojo webserviceJob = new JobPojo(resp.getLocation());
 				webserviceJob.publishToService();
+
+				// persist change of the workflow job
+				workflowJob.getRunningJobs().add(webserviceJob);
+				workflowJob.publishToService();
 				do {
 					webserviceJob.loadFromURI(webserviceJob.getId());
 					workflowJob.trace("Sleeping for " + pollInterval + "ms, waiting for job " + webserviceJob + " to finish.");
@@ -706,7 +710,11 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 						throw new RuntimeException("Job " + webserviceJob + " took more than " + jobTimeoutInterval + "s too long to finish :(");
 					}
 					log.info("JOB STATUS: " +webserviceJob.getTerseTurtle());
+					
 				} while (webserviceJob.isStillRunning());
+
+				// just clearing the runningjobs set will be a problem for parallel jobs
+				workflowJob.getRunningJobs().remove(webserviceJob);
 
 				finishedJobs.put(pos.getId(), webserviceJob);
 				workflowJob.getFinishedJobs().add(webserviceJob);
@@ -719,7 +727,8 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 				else if (webserviceJob.isFinished()) {
 					workflowJob.info("Job " + webserviceJob + " of Webservice " + ws + "finished successfully, moving on to next position.");
 				}
-			}
+
+			} // end position loop
 
 			// TODO
 			workflowJob.setFinished();
