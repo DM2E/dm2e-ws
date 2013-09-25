@@ -240,12 +240,12 @@ public class ConfigService extends AbstractRDFService {
         SerializablePojo pojo;
         if (isWorkflow) {
         	pojo = g.getObjectMapper().getObject(WorkflowConfigPojo.class, res);
+        	log.warn("Workflow: " + ((WorkflowConfigPojo) pojo).getWorkflow());
         } else {
         	pojo = g.getObjectMapper().getObject(WebserviceConfigPojo.class, res);
+        	log.warn("Webservice: " + ((WebserviceConfigPojo) pojo).getWebservice());
         }
         
-        log.warn("Webservice: " + ((WebserviceConfigPojo) pojo).getWebservice());
-
         g.putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), uri);
         log.info("Written data to endpoint.");
         log.debug(LogbackMarkers.DATA_DUMP, g.getTerseTurtle());
