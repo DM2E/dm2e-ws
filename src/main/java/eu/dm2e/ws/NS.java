@@ -1,12 +1,5 @@
 package eu.dm2e.ws;
 
-import eu.dm2e.ws.api.JobPojo;
-import eu.dm2e.ws.api.ParameterAssignmentPojo;
-import eu.dm2e.ws.api.ParameterConnectorPojo;
-import eu.dm2e.ws.api.WebserviceConfigPojo;
-import eu.dm2e.ws.api.WorkflowConfigPojo;
-import eu.dm2e.ws.api.WorkflowJobPojo;
-import eu.dm2e.ws.api.WorkflowPositionPojo;
 
 
 //CHECKSTYLE.OFF: JavadocVariable
@@ -88,8 +81,8 @@ public final class NS {
 		public static final String PROP_WORKFLOW_CONFIG     = BASE + "workflowConfig";
 
 		public static final String PROP_FILE_SERVICE = BASE + "fileservice";
-
 		public static final String PROP_FILE_OWNER = BASE + "fileOwner";
+		public static final String PROP_RUNNING_JOB = BASE + "runningJob";
 
 	}
 
