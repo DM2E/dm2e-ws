@@ -12,6 +12,8 @@ import com.google.gson.JsonObject;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.OmnomUnitTest;
 import eu.dm2e.ws.api.json.OmnomJsonSerializer;
+import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.model.JobStatus;
 
 public class JobPojoTest extends OmnomUnitTest {
@@ -53,6 +55,28 @@ public class JobPojoTest extends OmnomUnitTest {
 		assertEquals(expectedJob, deserializedJob);
 //		assertEquals(testGson.toJson(expectedJson), OmnomJsonSerializer.serializeToJSON(deserializedJob, LogEntryPojo.class));
 //		assertEquals(testGson.toJson(expectedJson), deserializedJob.toJson());
+	}
+	
+	@Test
+	public void testExecutesPosition() {
+		{
+		JobPojo expJob = new JobPojo();
+		expJob.setId("htp://foo/job1");
+		WorkflowPositionPojo posPojo = new WorkflowPositionPojo();
+		posPojo.setId("http://foo/pos1");
+		expJob.setExecutesPosition(posPojo);
+		log.debug(expJob.getTerseTurtle());
+		}
+		{
+			String asTTL = "@prefix omnom: <http://onto.dm2e.eu/omnom#> . " 
+				+ "<http://foo/job1>"
+		        + "a                       omnom:Job ;"
+				+ "omnom:status            \"NOT_STARTED\" ;"
+		        + "omnom:executesPosition  <http://foo/pos1> .";
+			Grafeo g = new GrafeoImpl();
+			g.readHeuristically(asTTL);
+			log.debug(g.getTerseTurtle());
+		}
 	}
 
 }

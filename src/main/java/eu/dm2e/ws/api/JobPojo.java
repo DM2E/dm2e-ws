@@ -90,5 +90,11 @@ public class JobPojo extends AbstractJobPojo {
 		return true;
 	}
 
+	
+	// link to the position in a specific workflow this job executes
+    @RDFProperty(value = NS.OMNOM.PROP_EXECUTES_POSITION)
+    WorkflowPositionPojo executesPosition;
+	public WorkflowPositionPojo getExecutesPosition() { return executesPosition; }
+	public void setExecutesPosition(WorkflowPositionPojo executesPosition) { this.executesPosition = executesPosition; }
 
 }

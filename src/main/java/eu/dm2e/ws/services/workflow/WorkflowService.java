@@ -692,6 +692,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 				 */
 				long timePassed = 0;
 				JobPojo webserviceJob = new JobPojo(resp.getLocation());
+				webserviceJob.setExecutesPosition(pos);
 				webserviceJob.publishToService();
 
 				// persist change of the workflow job
@@ -719,14 +720,15 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 				finishedJobs.put(pos.getId(), webserviceJob);
 				workflowJob.getFinishedJobs().add(webserviceJob);
 				workflowJob.getFinishedPositions().add(pos);
-				workflowJob.publishToService();
 
+				workflowJob.publishToService();
 				if (webserviceJob.isFailed()) {
 					throw new RuntimeException("Job " + webserviceJob + " of Webservice " + ws + "failed, hence workflow " + workflow + "failed. :(");
 				}
 				else if (webserviceJob.isFinished()) {
 					workflowJob.info("Job " + webserviceJob + " of Webservice " + ws + "finished successfully, moving on to next position.");
 				}
+				workflowJob.publishToService();
 
 			} // end position loop
 

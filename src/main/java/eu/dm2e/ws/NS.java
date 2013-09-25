@@ -84,6 +84,8 @@ public final class NS {
 		public static final String PROP_FILE_OWNER = BASE + "fileOwner";
 		public static final String PROP_RUNNING_JOB = BASE + "runningJob";
 
+		public static final String PROP_EXECUTES_POSITION = BASE + "executesPosition";
+
 	}
 
 	/**
