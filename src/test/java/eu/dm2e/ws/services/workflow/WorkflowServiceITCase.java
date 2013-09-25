@@ -4,8 +4,11 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.FileUtils;
@@ -409,14 +412,25 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 		} while (workflowJob.isStillRunning());
 //		Thread.sleep(5000);
 		workflowJob.loadFromURI(resp.getLocation());
+		
+		log.debug("Test related Jobs call");
+		{
+			Response respRelatedJobs = client
+					.target(simpleWorkflow.getId() + "/relatedJobs")
+					.request(MediaType.APPLICATION_JSON)
+					.get();
+			final String respStr = respRelatedJobs.readEntity(String.class);
+			log.debug("Response body: " + respStr);
+		}
+		System.in.read();
 //		for (JobPojo finishedJob : workflowJob.getFinishedJobs()) {
 //			finishedJob.loadFromURI(finishedJob.getId());
 //			assertNotNull(runningJob.getExecutesPosition());
 //		}
-		log.info(LogbackMarkers.DATA_DUMP, workflowJob.getTerseTurtle());
-		String compLog = workflowJob.getOutputParameterValueByName(WorkflowService.PARAM_COMPLETE_LOG);
-		assertNotNull(compLog);
-		log.info(compLog);
+//		log.info(LogbackMarkers.DATA_DUMP, workflowJob.getTerseTurtle());
+//		String compLog = workflowJob.getOutputParameterValueByName(WorkflowService.PARAM_COMPLETE_LOG);
+//		assertNotNull(compLog);
+//		log.info(compLog);
 	}
 	
 }

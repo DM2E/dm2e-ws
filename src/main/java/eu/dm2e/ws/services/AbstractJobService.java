@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -572,4 +573,41 @@ public abstract class AbstractJobService extends AbstractRDFService {
         URI uri = popPath(popPath());
         return Response.status(303).location(uri).build();
     }
+    
+    /**
+     * GET /{id}/relatedJobs	Accept: *		Content-Type: 
+     * @throws Exception 
+     */
+    @GET
+    @Path("{id}/relatedJobs")
+    public List<JobPojo> getRelatedJobs() throws Exception {
+    	URI uri = popPath(getRequestUriWithoutQuery());
+    	Grafeo g = new GrafeoImpl();
+    	log.debug("Reading job from endpoint " + Config.get(ConfigProp.ENDPOINT_QUERY));
+    	try {
+    		g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), uri);
+    	} catch (Exception e1) {
+    		// if we couldn't read the job, try again once in a second
+    		try { Thread.sleep(1000); } catch (InterruptedException e) { }
+    		try { g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), uri);
+    		} catch (Exception e) {
+    			throw e;
+    			//                return throwServiceError(e);
+    		}
+    	}
+    	if (! g.resource(uri).isa(NS.OMNOM.CLASS_WORKFLOW_JOB)) {
+    		throw new Exception("Not a workflow job!");
+    	}
+    	WorkflowJobPojo wfJob = new WorkflowJobPojo();
+    	wfJob.loadFromURI(uri);
+    	List<JobPojo> jobs = new ArrayList<>();
+    	jobs.addAll(wfJob.getFinishedJobs());
+    	jobs.addAll(wfJob.getRunningJobs());
+    	for (JobPojo job : jobs) {
+    		job.loadFromURI(job.getId());
+    	}
+		return jobs;
+
+    }
+
 }
