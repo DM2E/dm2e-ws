@@ -149,6 +149,8 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 		}
 
 		Grafeo gAfter = wf.getGrafeo();
+		Grafeo gParsed = new GrafeoImpl();
+		gParsed.load(respStr);
 
 		log.info(gAfter.getTerseTurtle());
 //		GrafeoAssert.sizeEquals(gBefore, gAfter);
@@ -160,6 +162,9 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 			String respStr2 = resp.readEntity(String.class);
 			log.info("And here is the answer: \n" + respStr2);
 		}
+		// make sure the label is pertained
+		Assert.assertEquals(1, gAfter.listStatements(gAfter.resource(wf.getId()), NS.RDFS.PROP_LABEL, null).size());
+		Assert.assertEquals(1, gParsed.listStatements(gParsed.resource(wf.getId()), NS.RDFS.PROP_LABEL, null).size());
 		// wf.loadFromURI(wf.getId());
 		// log.info(wf.getTurtle());
 		// log.info(x);
@@ -267,7 +272,7 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 	}
 	
 	@Test
-	@Ignore("Working but jetty in fuseki croaks on the large form post")
+	//@Ignore("Working but jetty in fuseki croaks on the large form post")
 	public void testRunWorkflow() throws Exception {
 		WorkflowConfigPojo wfconf = new WorkflowConfigPojo();
 		wfconf.setWorkflow(wf);
@@ -301,10 +306,15 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 		Assert.assertEquals(202, resp.getStatus());
 		log.info("Location: " + resp.getLocation());
 		WorkflowJobPojo workflowJob = new WorkflowJobPojo();
+		
+		int loopCount = 0;
 		do {
 			workflowJob.loadFromURI(resp.getLocation());
 			log.info(workflowJob.toLogString());
-			Thread.sleep(500);
+			Thread.sleep(1000);
+//			assertEquals("[Loop #" + loopCount + "] Sub-Job running.", 1, workflowJob.getRunningJobs().size());
+			log.error("[Loop #" + loopCount + "] Sub-Job running: " + workflowJob.getRunningJobs());
+			loopCount++;
 		} while (workflowJob.isStillRunning());
 		Thread.sleep(5000);
 		workflowJob.loadFromURI(resp.getLocation());
