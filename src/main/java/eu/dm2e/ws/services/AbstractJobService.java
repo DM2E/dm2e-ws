@@ -29,7 +29,6 @@ import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
-import eu.dm2e.ws.api.AbstractConfigPojo;
 import eu.dm2e.ws.api.AbstractJobPojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.LogEntryPojo;
@@ -488,6 +487,26 @@ public abstract class AbstractJobService extends AbstractRDFService {
 		}
 		return Response.ok().entity(jobPojo.toLogString(minLevelStr, maxLevelStr)).build();
 	}
+	
+	@GET
+	@Path("/{id}/log/{logId}")
+	@Produces({ 
+		DM2E_MediaType.TEXT_TURTLE,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML })
+	public AbstractJobPojo getSingleLogEntry() {
+		URI resourceUri  = popPath(popPath(getRequestUriWithoutQuery()));
+		AbstractJobPojo jobPojo = new JobPojo();
+		try {
+			jobPojo.loadFromURI(resourceUri);
+		} catch (Exception e) {
+			log.warn("Could not reload job pojo.", e);
+			throwServiceError(e);
+		}
+		return jobPojo;
+	}
+	
 
 	/**
 	 * GET /{id}				Accept: TEXT_LOG		Content-Type: TEXT
