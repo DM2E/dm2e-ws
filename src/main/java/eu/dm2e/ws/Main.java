@@ -1,10 +1,11 @@
 package eu.dm2e.ws;
 
-import eu.dm2e.ws.wsmanager.ManageService;
+import java.io.IOException;
+
 import org.apache.jena.fuseki.server.SPARQLServer;
 import org.glassfish.grizzly.http.server.HttpServer;
 
-import java.io.IOException;
+import eu.dm2e.ws.wsmanager.ManageService;
 
 /**
  * @deprecated

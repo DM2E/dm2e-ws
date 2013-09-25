@@ -4,8 +4,6 @@ package eu.dm2e.ws.services.data;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -14,6 +12,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebservicePojo;

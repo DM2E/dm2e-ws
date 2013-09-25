@@ -4,8 +4,6 @@ import javax.servlet.ServletException;
 
 import org.glassfish.jersey.servlet.ServletContainer;
 
-import eu.dm2e.ws.wsmanager.ManageService;
-
 /**
  * @deprecated
  */

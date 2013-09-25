@@ -1,9 +1,5 @@
 package eu.dm2e.ws.grafeo.jena;
 
-import com.hp.hpl.jena.rdf.model.Literal;
-import eu.dm2e.ws.grafeo.GLiteral;
-import eu.dm2e.ws.grafeo.Grafeo;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -12,6 +8,11 @@ import java.util.TimeZone;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+
+import com.hp.hpl.jena.rdf.model.Literal;
+
+import eu.dm2e.ws.grafeo.GLiteral;
+import eu.dm2e.ws.grafeo.Grafeo;
 
 /**
  * This file was created within the DM2E project.

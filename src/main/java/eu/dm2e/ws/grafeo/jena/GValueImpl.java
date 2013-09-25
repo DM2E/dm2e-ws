@@ -4,12 +4,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.DatatypeConverter;
 
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.rdf.model.RDFNode;
 

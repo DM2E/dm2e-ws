@@ -1,6 +1,6 @@
 package eu.dm2e.ws.grafeo.junit;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.Set;

@@ -2,7 +2,12 @@ package eu.dm2e.ws.grafeo.jena;
 
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
-import eu.dm2e.ws.grafeo.*;
+
+import eu.dm2e.ws.grafeo.GLiteral;
+import eu.dm2e.ws.grafeo.GResource;
+import eu.dm2e.ws.grafeo.GStatement;
+import eu.dm2e.ws.grafeo.GValue;
+import eu.dm2e.ws.grafeo.Grafeo;
 
 /**
  * This file was created within the DM2E project.

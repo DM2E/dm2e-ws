@@ -4,7 +4,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.joda.time.DateTime;
-//import java.util.Date;
 
 import com.hp.hpl.jena.query.ResultSet;
 
@@ -13,6 +12,7 @@ import eu.dm2e.ws.grafeo.annotations.Namespaces;
 import eu.dm2e.ws.grafeo.annotations.RDFClass;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 import eu.dm2e.ws.grafeo.jena.SparqlSelect;
+//import java.util.Date;
 
 /**
  * Pojo representing a Versioned Dataset.
