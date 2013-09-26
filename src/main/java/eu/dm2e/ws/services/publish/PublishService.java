@@ -105,14 +105,14 @@ public class PublishService extends AbstractTransformationService {
             g.postToEndpoint(endpoint, versionedURI);
             jobPojo.addOutputParameterAssignment(PARAM_RESULT_DATASET_ID, versionedURI);
 
+	        jobPojo.setFinished();
         } catch (Throwable t) {
             log.error("Exception during publishing: " + t, t);
             jobPojo.fatal(t);
             jobPojo.setFailed();
             throw t;
-        }
-        jobPojo.setFinished();
+ 		} finally {
+			jobPojo.publishToService();
+		}
     }
-
-
 }
