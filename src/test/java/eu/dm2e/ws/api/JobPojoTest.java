@@ -56,27 +56,5 @@ public class JobPojoTest extends OmnomUnitTest {
 //		assertEquals(testGson.toJson(expectedJson), OmnomJsonSerializer.serializeToJSON(deserializedJob, LogEntryPojo.class));
 //		assertEquals(testGson.toJson(expectedJson), deserializedJob.toJson());
 	}
-	
-	@Test
-	public void testExecutesPosition() {
-		{
-		JobPojo expJob = new JobPojo();
-		expJob.setId("htp://foo/job1");
-		WorkflowPositionPojo posPojo = new WorkflowPositionPojo();
-		posPojo.setId("http://foo/pos1");
-		expJob.setExecutesPosition(posPojo);
-		log.debug(expJob.getTerseTurtle());
-		}
-		{
-			String asTTL = "@prefix omnom: <http://onto.dm2e.eu/omnom#> . " 
-				+ "<http://foo/job1>"
-		        + "a                       omnom:Job ;"
-				+ "omnom:status            \"NOT_STARTED\" ;"
-		        + "omnom:executesPosition  <http://foo/pos1> .";
-			Grafeo g = new GrafeoImpl();
-			g.readHeuristically(asTTL);
-			log.debug(g.getTerseTurtle());
-		}
-	}
 
 }

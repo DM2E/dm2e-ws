@@ -79,15 +79,23 @@ public class WebserviceConfigPojo extends AbstractConfigPojo<WebserviceConfigPoj
 	public WebservicePojo getWebservice() { return webservice; }
 	public void setWebservice(WebservicePojo webservice) { this.webservice = webservice; }
 
+	// link to the parent workflow that created this config
 	@RDFProperty(NS.PROV.PROP_WAS_GENERATED_BY)
 	private WorkflowJobPojo wasGeneratedBy;
 	public WorkflowJobPojo getWasGeneratedBy() { return wasGeneratedBy; }
 	public void setWasGeneratedBy(WorkflowJobPojo wasGeneratedBy) { this.wasGeneratedBy = wasGeneratedBy; }
 
+	// link to a person if it is a workflow config
 	@RDFProperty(NS.DCTERMS.PROP_CREATOR)
 	private UserPojo creator;
 	public UserPojo getCreator() { return creator; }
 	public void setCreator(UserPojo creator) { this.creator = creator; }
 	
+	// link to the position in a specific workflow this job executes
+    @RDFProperty(value = NS.OMNOM.PROP_EXECUTES_POSITION)
+    WorkflowPositionPojo executesPosition;
+	public WorkflowPositionPojo getExecutesPosition() { return executesPosition; }
+	public void setExecutesPosition(WorkflowPositionPojo executesPosition) { this.executesPosition = executesPosition; }
+
 
 }

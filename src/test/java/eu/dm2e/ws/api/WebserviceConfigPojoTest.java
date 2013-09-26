@@ -137,4 +137,24 @@ public class WebserviceConfigPojoTest  extends OmnomUnitTest {
 		}
 	}
 
+	@Test
+	public void testExecutesPosition() {
+		{
+		WebserviceConfigPojo wsconf = new WebserviceConfigPojo();
+		wsconf.setId("htp://foo/conf1");
+		WorkflowPositionPojo posPojo = new WorkflowPositionPojo();
+		posPojo.setId("http://foo/pos1");
+		wsconf.setExecutesPosition(posPojo);
+		log.debug(wsconf.getTerseTurtle());
+		}
+		{
+			String asTTL = "@prefix omnom: <http://onto.dm2e.eu/omnom#> . " 
+				+ "<http://foo/conf1>"
+		        + "a                       omnom:WebserviceConfig ;"
+		        + "omnom:executesPosition  <http://foo/pos1> .";
+			Grafeo g = new GrafeoImpl();
+			g.readHeuristically(asTTL);
+			log.debug(g.getTerseTurtle());
+		}
+	}
 }
