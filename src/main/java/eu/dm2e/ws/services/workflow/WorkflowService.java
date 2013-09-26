@@ -726,6 +726,9 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 				}
 				else if (webserviceJob.isFinished()) {
 					workflowJob.info("Job " + webserviceJob + " of Webservice " + ws + "finished successfully, moving on to next position.");
+					for (ParameterAssignmentPojo ass : webserviceJob.getOutputParameterAssignments()) {
+						workflowJob.addOutputParameterAssignment(ass.getLabel(), ass.getParameterValue());
+					}
 				}
 				workflowJob.publishToService();
 
@@ -740,6 +743,8 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 			// TODO why can't I throw this here but in AbstractTransformationService??
 			// throw t
 		} finally {
+			
+			// output one giant log containing everything for debugging
 			JobPojo dummyJob = new JobPojo();
 			Set<AbstractJobPojo> allLoggingJobs = new HashSet<>();
 			allLoggingJobs.addAll(finishedJobs.values());
