@@ -670,6 +670,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 				 * Publish the WebserviceConfig, so it becomes stable
 				 */
 				wsconf.resetId();
+				wsconf.setExecutesPosition(pos);
 				wsconf.publishToService(client.getConfigWebTarget());
 				if (null == wsconf.getId()) {
 					throw new RuntimeException("Could not publish webservice config " + wsconf);
@@ -692,8 +693,6 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 				 */
 				long timePassed = 0;
 				JobPojo webserviceJob = new JobPojo(resp.getLocation());
-				webserviceJob.setExecutesPosition(pos);
-				webserviceJob.publishToService();
 
 				// persist change of the workflow job
 				workflowJob.getRunningJobs().add(webserviceJob);
