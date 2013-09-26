@@ -606,8 +606,9 @@ public abstract class AbstractJobService extends AbstractRDFService {
     	for (JobPojo job : jobs) {
     		job.loadFromURI(job.getId());
     	}
-		return jobs;
-
+    	// remove duplicates
+    	ArrayList<JobPojo> uniq = new ArrayList<>(new HashSet<>(jobs));
+		return uniq;
     }
 
 }
