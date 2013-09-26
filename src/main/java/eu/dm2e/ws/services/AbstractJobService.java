@@ -600,15 +600,17 @@ public abstract class AbstractJobService extends AbstractRDFService {
     	}
     	WorkflowJobPojo wfJob = new WorkflowJobPojo();
     	wfJob.loadFromURI(uri);
-    	List<JobPojo> jobs = new ArrayList<>();
+    	Set<JobPojo> jobs = new HashSet<>();
     	jobs.addAll(wfJob.getFinishedJobs());
     	jobs.addAll(wfJob.getRunningJobs());
+    	
+    	// instantiate jobs
     	for (JobPojo job : jobs) {
     		job.loadFromURI(job.getId());
     	}
+//    	return jobs;
     	// remove duplicates
-    	ArrayList<JobPojo> uniq = new ArrayList<>(new HashSet<>(jobs));
-		return uniq;
+    	return new ArrayList<>(jobs);
     }
 
 }

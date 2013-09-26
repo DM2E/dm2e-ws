@@ -727,14 +727,17 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 				else if (webserviceJob.isFinished()) {
 					workflowJob.info("Job " + webserviceJob + " of Webservice " + ws + "finished successfully, moving on to next position.");
 					for (ParameterAssignmentPojo ass : webserviceJob.getOutputParameterAssignments()) {
-						workflowJob.addOutputParameterAssignment(ass.getLabel(), ass.getParameterValue());
+						try {
+							workflowJob.addOutputParameterAssignment(ass.getLabel(), ass.getParameterValue());
+						} catch (Exception e) {
+							// TODO FIXME HACK BAD BAD
+						}
 					}
 				}
 				workflowJob.publishToService();
 
 			} // end position loop
 
-			// TODO
 			workflowJob.setFinished();
 		} catch (Throwable t) {
 			log.error("Workflow " + workflowJob +  " FAILED: " + t + "\n" + ExceptionUtils.getStackTrace(t));
