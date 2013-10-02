@@ -45,4 +45,9 @@ public class UserPojo extends AbstractPersistentPojo<UserPojo> {
 	private Set<WebservicePojo> webServices = new HashSet<>();
 	public Set<WebservicePojo> getWebServices() { return webServices; }
 	public void setWebServices(Set<WebservicePojo> webServices) { this.webServices = webServices; }
+
+	@RDFProperty(NS.OMNOM.PROP_GLOBAL_USER_FILTER)
+	private String globalUserFilter; // = THEMES.LIGHT.getName();
+	public String getGlobalUserFilter() { return globalUserFilter; }
+	public void setGlobalUserFilter(String globalUserFilter) { this.globalUserFilter = globalUserFilter; }
 }

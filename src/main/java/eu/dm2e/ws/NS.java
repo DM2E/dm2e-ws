@@ -70,7 +70,6 @@ public final class NS {
 		public static final String PROP_PARAMETER_CONNECTOR = BASE + "parameterConnector";
 		public static final String PROP_PARAMETER_TYPE      = BASE + "parameterType";
 		public static final String PROP_PARAMETER_VALUE     = BASE + "parameterValue";
-		public static final String PROP_PREFERRED_THEME     = BASE + "preferredTheme";
 		public static final String PROP_WORKFLOW_POSITION   = BASE + "workflowPosition";
 		public static final String PROP_TO_PARAM            = BASE + "toParam";
 		public static final String PROP_TO_POSITION         = BASE + "toPosition";
@@ -87,6 +86,8 @@ public final class NS {
 
 		public static final String PROP_EXECUTES_POSITION = BASE + "executesPosition";
 
+		public static final String PROP_PREFERRED_THEME     = BASE + "preferredTheme";
+		public static final String PROP_GLOBAL_USER_FILTER     = BASE + "globalUserFilter";
 	}
 
 	/**
