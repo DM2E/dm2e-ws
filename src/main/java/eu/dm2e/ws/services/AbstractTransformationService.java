@@ -11,6 +11,7 @@ import javax.ws.rs.core.Response;
 
 import org.joda.time.DateTime;
 
+import eu.dm2e.utils.UriUtils;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -83,9 +84,9 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
         	rdfsLabelSB.append(" for ");
         	rdfsLabelSB.append(
         			null != wsConf.getCreator()
-        			? wsConf.getCreator().getId()
+        			? UriUtils.lastUriSegment(wsConf.getCreator().getId())
         			: null != wsConf.getWasGeneratedBy()
-        					? wsConf.getWasGeneratedBy().getId()
+        					? UriUtils.lastUriSegment(wsConf.getWasGeneratedBy().getId())
         					: "Unknown Creator");
         	job.setLabel(rdfsLabelSB.toString());
         }

@@ -24,6 +24,7 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 
+import eu.dm2e.utils.UriUtils;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
@@ -175,7 +176,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 				rdfLabel += DateTime.now();
 				rdfLabel += " by ";
 				rdfLabel += null != workflowPojo.getCreator()
-						? workflowPojo.getCreator().getId()
+						? UriUtils.lastUriSegment(workflowPojo.getCreator().getId())
 						: "Unknown User";
 				rdfLabel += "]";
 				jobPojo.setLabel(rdfLabel);
