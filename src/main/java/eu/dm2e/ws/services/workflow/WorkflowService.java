@@ -43,7 +43,6 @@ import eu.dm2e.ws.api.WorkflowJobPojo;
 import eu.dm2e.ws.api.WorkflowPojo;
 import eu.dm2e.ws.api.WorkflowPositionPojo;
 import eu.dm2e.ws.grafeo.GResource;
-import eu.dm2e.ws.grafeo.GValue;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.jena.SparqlUpdate;
@@ -163,6 +162,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		 * Build WorkflowJobPojo
 		 */
 		WorkflowJobPojo jobPojo = new WorkflowJobPojo();
+		jobPojo.setCreated(DateTime.now());
 		jobPojo.setWorkflow(workflowPojo);
 		jobPojo.setWorkflowConfig(wfConf);
 		
@@ -173,7 +173,7 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 						? workflowPojo.getLabel() 
 						: "";
 				rdfLabel += "' [";
-				rdfLabel += DateTime.now();
+				rdfLabel += jobPojo.getCreated().toString();
 				rdfLabel += " by ";
 				rdfLabel += null != workflowPojo.getCreator()
 						? UriUtils.lastUriSegment(workflowPojo.getCreator().getId())

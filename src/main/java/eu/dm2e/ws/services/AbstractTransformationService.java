@@ -71,6 +71,7 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
          * */
         JobPojo job = new JobPojo();
         job.setWebService(wsConf.getWebservice());
+        job.setCreated(DateTime.now());
         job.setWebserviceConfig(wsConf);
         log.info("Creating human-readable label");
         {
@@ -80,7 +81,7 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
         	rdfsLabelSB.append(wsConf.getWebservice().getLabel());
         	rdfsLabelSB.append("'");
         	rdfsLabelSB.append(" ["); 
-        	rdfsLabelSB.append(DateTime.now().toString());
+        	rdfsLabelSB.append(job.getCreated().toString());
         	rdfsLabelSB.append(" for ");
         	rdfsLabelSB.append(
         			null != wsConf.getCreator()
