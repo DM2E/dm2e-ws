@@ -88,6 +88,8 @@ public class XsltServiceITCase extends OmnomTestCase {
     	JobPojo job = new JobPojo();
     	job.loadFromURI(jobUri);
     	
+    	assertNotNull(job.getLabel());
+    	
     	int maxWait = 10;
     	int i = 0;
     	while (!(job.isFinished() || job.isFailed())) {

@@ -9,6 +9,8 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.joda.time.DateTime;
+
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.grafeo.Grafeo;
@@ -69,6 +71,24 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
         JobPojo job = new JobPojo();
         job.setWebService(wsConf.getWebservice());
         job.setWebserviceConfig(wsConf);
+        log.info("Creating human-readable label");
+        {
+        	StringBuilder rdfsLabelSB = new StringBuilder();
+        	rdfsLabelSB.append("Web service Job ");
+        	rdfsLabelSB.append("'");
+        	rdfsLabelSB.append(wsConf.getWebservice().getLabel());
+        	rdfsLabelSB.append("'");
+        	rdfsLabelSB.append(" ["); 
+        	rdfsLabelSB.append(DateTime.now().toString());
+        	rdfsLabelSB.append(" for ");
+        	rdfsLabelSB.append(
+        			null != wsConf.getCreator()
+        			? wsConf.getCreator().getId()
+        			: null != wsConf.getWasGeneratedBy()
+        					? wsConf.getWasGeneratedBy().getId()
+        					: "Unknown Creator");
+        	job.setLabel(rdfsLabelSB.toString());
+        }
         job.addLogEntry("JobPojo constructed by AbstractTransformationService", "TRACE");
         try {
         	log.debug("Posting job to job service <{}>", client.getJobWebTarget());

@@ -22,6 +22,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.joda.time.DateTime;
 
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ConfigProp;
@@ -41,6 +42,7 @@ import eu.dm2e.ws.api.WorkflowJobPojo;
 import eu.dm2e.ws.api.WorkflowPojo;
 import eu.dm2e.ws.api.WorkflowPositionPojo;
 import eu.dm2e.ws.grafeo.GResource;
+import eu.dm2e.ws.grafeo.GValue;
 import eu.dm2e.ws.grafeo.Grafeo;
 import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.grafeo.jena.SparqlUpdate;
@@ -162,6 +164,24 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		WorkflowJobPojo jobPojo = new WorkflowJobPojo();
 		jobPojo.setWorkflow(workflowPojo);
 		jobPojo.setWorkflowConfig(wfConf);
+		
+		log.info("Create human-readable label for the job.");
+		{
+				String rdfLabel = "Workflow Job '";
+				rdfLabel += null != workflowPojo.getLabel() 
+						? workflowPojo.getLabel() 
+						: "";
+				rdfLabel += "' [";
+				rdfLabel += DateTime.now();
+				rdfLabel += " by ";
+				rdfLabel += null != workflowPojo.getCreator()
+						? workflowPojo.getCreator().getId()
+						: "Unknown User";
+				rdfLabel += "]";
+				jobPojo.setLabel(rdfLabel);
+		}
+		
+
 		log.info("WorkflowJobPojo constructed by WorkflowService: {}", jobPojo);
 		jobPojo.addLogEntry("WorkflowJobPojo constructed by WorkflowService", "TRACE");
 		try {

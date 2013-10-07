@@ -4,10 +4,8 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -395,6 +393,7 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 		do {
 			workflowJob.loadFromURI(resp.getLocation());
 			log.info(workflowJob.toLogString());
+			assertNotNull(workflowJob.getLabel());
 			Thread.sleep(1000);
 //			assertEquals("[Loop #" + loopCount + "] Sub-Job running.", 1, workflowJob.getRunningJobs().size());
 			log.error("[Loop #" + loopCount + "] Sub-Job running: " + workflowJob.getRunningJobs());
