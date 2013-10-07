@@ -33,6 +33,7 @@ import org.apache.commons.io.IOUtils;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.joda.time.DateTime;
 
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.utils.PojoUtils;
@@ -738,6 +739,7 @@ public class FileService extends AbstractRDFService {
 		filePojo.setId(uri.toString());
 		filePojo.setFileRetrievalURI(uri.toString());
 		filePojo.setExtent(f.length());
+		filePojo.setModified(DateTime.now());
 
 		// these are only available if this is an upload field and not just a
 		// form field
