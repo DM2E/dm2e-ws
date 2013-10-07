@@ -298,5 +298,15 @@ public abstract class AbstractJobPojo extends AbstractPersistentPojo<AbstractJob
 	public Set<ParameterAssignmentPojo> getOutputParameterAssignments() { return outputParameterAssignments; }
 	public void setOutputParameterAssignments(Set<ParameterAssignmentPojo> outputParameters) { this.outputParameterAssignments = outputParameters; }
 
+	@RDFProperty(NS.DCTERMS.PROP_MODIFIED)
+	private DateTime modified = DateTime.now();
+	public DateTime getModified() { return modified; }
+	public void setModified(DateTime modified) { this.modified = modified; }
+
+	@RDFProperty(NS.DCTERMS.PROP_CREATED)
+	private DateTime created = DateTime.now();
+	public DateTime getCreated() { return created; }
+	public void setCreated(DateTime created) { this.created = created; }
+
 
 }
