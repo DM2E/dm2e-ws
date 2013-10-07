@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.joda.time.DateTime;
 
+import eu.dm2e.utils.UriUtils;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.grafeo.annotations.RDFProperty;
 
@@ -95,7 +96,9 @@ public abstract class AbstractConfigPojo<T> extends AbstractPersistentPojo<T> im
     public String getParameterValueByName(String needle) {
 		ParameterAssignmentPojo ass = this.getParameterAssignmentForParam(needle);
 		if (null != ass) {
-			return ass.getParameterValue();
+			String value = ass.getParameterValue();
+			value = UriUtils.sanitizeInput(value);
+			return value;
 		}
         log.info("No value found for: " + needle);
 		return null;
