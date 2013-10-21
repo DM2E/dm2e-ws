@@ -42,10 +42,10 @@ import eu.dm2e.ws.api.WorkflowConfigPojo;
 import eu.dm2e.ws.api.WorkflowJobPojo;
 import eu.dm2e.ws.api.WorkflowPojo;
 import eu.dm2e.ws.api.WorkflowPositionPojo;
-import eu.dm2e.ws.grafeo.GResource;
-import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
-import eu.dm2e.ws.grafeo.jena.SparqlUpdate;
+import eu.dm2e.grafeo.GResource;
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.SparqlUpdate;
 import eu.dm2e.ws.services.AbstractAsynchronousRDFService;
 import eu.dm2e.ws.services.WorkerExecutorSingleton;
 

@@ -8,9 +8,9 @@ import org.junit.Test;
 
 import eu.dm2e.ws.OmnomUnitTest;
 import eu.dm2e.ws.api.json.OmnomJsonSerializer;
-import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
-import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.junit.GrafeoAssert;
 //import eu.dm2e.ws.services.xslt.XsltService;
 
 public class WebservicePojoTest extends OmnomUnitTest {

@@ -14,7 +14,7 @@ import org.joda.time.DateTime;
 import eu.dm2e.utils.UriUtils;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
-import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.grafeo.Grafeo;
 
 /**
  * Abstract Base Class for services that transform data.

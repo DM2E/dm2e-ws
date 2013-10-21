@@ -27,7 +27,7 @@ import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.api.AbstractPersistentPojo;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.SerializablePojo;
-import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.grafeo.Grafeo;
 
 /**
  * Wrapper for a JAX-RS client with POJO posting/loading abilities and helpers for publishing files.

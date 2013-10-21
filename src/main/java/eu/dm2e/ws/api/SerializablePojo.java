@@ -15,11 +15,11 @@ import com.google.gson.JsonObject;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.json.OmnomJsonSerializer;
-import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.annotations.RDFClass;
-import eu.dm2e.ws.grafeo.annotations.RDFId;
-import eu.dm2e.ws.grafeo.annotations.RDFProperty;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.grafeo.annotations.RDFClass;
+import eu.dm2e.grafeo.annotations.RDFId;
+import eu.dm2e.grafeo.annotations.RDFProperty;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
 
 /**
  * Abstract Base class for Pojos with serialization/deserialization abilities from RDF/JSON.

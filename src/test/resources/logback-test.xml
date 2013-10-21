@@ -94,7 +94,7 @@
         </encoder>
     </appender>
 
-    <logger level="INFO" name="eu.dm2e.ws.grafeo.gom" />
+    <logger level="INFO" name="eu.dm2e.grafeo.gom" />
 
     <logger level="WARN" name="org.apache.jena.fuseki" />
     <logger level="WARN" name="com.hp.hpl.jena.shared" />

@@ -26,13 +26,13 @@
               [ a       omnom:ParameterAssignment ;
                 omnom:forParam <http://data.dm2e.eu/data/services/xslt/xsltInParam> ;
                 omnom:parameterValue
-                        "http://141.20.126.155/api/file/50c7266ee18a91933e000003/data"^^<java:eu.dm2e.ws.grafeo.jena.GLiteralImpl>
+                        "http://141.20.126.155/api/file/50c7266ee18a91933e000003/data"^^<java:eu.dm2e.grafeo.jena.GLiteralImpl>
               ] ;
       omnom:assignment
               [ a       omnom:ParameterAssignment ;
                 omnom:forParam <http://data.dm2e.eu/data/services/xslt/xmlInParam> ;
                 omnom:parameterValue
-                        "http://141.20.126.155/api/file/50c73992e18a91933e00001a/data"^^<java:eu.dm2e.ws.grafeo.jena.GLiteralImpl>
+                        "http://141.20.126.155/api/file/50c73992e18a91933e00001a/data"^^<java:eu.dm2e.grafeo.jena.GLiteralImpl>
               ] ;
       omnom:hasWebservice <http://localhost:9998/service/xslt> .
 

@@ -22,8 +22,8 @@ import org.junit.Test;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.api.IWebservice;
-import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
 
 public class AbstractRDFServiceTest extends OmnomTestCase{
 	

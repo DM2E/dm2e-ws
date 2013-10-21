@@ -4,9 +4,9 @@ import java.net.URI;
 import java.util.Set;
 
 import eu.dm2e.ws.NS;
-import eu.dm2e.ws.grafeo.annotations.RDFClass;
-import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
-import eu.dm2e.ws.grafeo.annotations.RDFProperty;
+import eu.dm2e.grafeo.annotations.RDFClass;
+import eu.dm2e.grafeo.annotations.RDFInstancePrefix;
+import eu.dm2e.grafeo.annotations.RDFProperty;
 
 /** Pojo for a webservice Job */
 @RDFClass(NS.OMNOM.CLASS_JOB)

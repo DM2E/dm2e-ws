@@ -28,7 +28,7 @@ import com.hp.hpl.jena.sparql.core.DatasetGraphFactory;
 
 import eu.dm2e.ws.SerializablePojoListMessageBodyWriter;
 import eu.dm2e.ws.SerializablePojoProvider;
-import eu.dm2e.ws.grafeo.jaxrs.GrafeoMessageBodyWriter;
+import eu.dm2e.grafeo.jaxrs.GrafeoMessageBodyWriter;
 //import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 /**

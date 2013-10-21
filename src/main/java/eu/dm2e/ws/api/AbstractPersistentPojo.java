@@ -6,8 +6,8 @@ import java.net.URI;
 import javax.ws.rs.client.WebTarget;
 
 import eu.dm2e.utils.PojoUtils;
-import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.Client;
 
 /**

@@ -8,7 +8,7 @@ import javax.ws.rs.core.Application;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
-import eu.dm2e.ws.grafeo.jaxrs.GrafeoMessageBodyWriter;
+import eu.dm2e.grafeo.jaxrs.GrafeoMessageBodyWriter;
 
 /**
  * Jersey application with custom features enabled.

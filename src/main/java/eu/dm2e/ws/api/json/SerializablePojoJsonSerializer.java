@@ -28,7 +28,7 @@ import com.google.gson.JsonSerializer;
 
 import eu.dm2e.utils.PojoUtils;
 import eu.dm2e.ws.api.SerializablePojo;
-import eu.dm2e.ws.grafeo.annotations.RDFProperty;
+import eu.dm2e.grafeo.annotations.RDFProperty;
 
 /**
  * Serialize / Deserialize SerializablePojos to/from JSON

@@ -85,7 +85,7 @@
 		</encoder>
 	</appender>
 
-    <logger level="DEBUG" name="eu.dm2e.ws.grafeo.gom" />
+    <logger level="DEBUG" name="eu.dm2e.grafeo.gom" />
     <logger level="WARN" name="org.apache.jena.fuseki" />
     <logger level="WARN" name="com.hp.hpl.jena.shared" />
     <logger level="INFO" name="org.apache.http" />
@@ -98,7 +98,7 @@
     <!-- Set this to WARN or higher to disable Jersey logging -->
     <logger level="INFO" name="org.glassfish.jersey.filter.LoggingFilter" />
 
-    <logger name="eu.dm2e.ws.grafeo.gom" level="DEBUG" />
+    <logger name="eu.dm2e.grafeo.gom" level="DEBUG" />
     <logger name="org.apache.jena.fuseki.Fuseki" level="WARN" />
 
     <root level="DEBUG">

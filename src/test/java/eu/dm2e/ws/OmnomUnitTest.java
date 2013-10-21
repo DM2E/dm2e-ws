@@ -11,7 +11,7 @@ import com.google.gson.GsonBuilder;
 
 import eu.dm2e.ws.api.json.JodaDateTimeSerializer;
 import eu.dm2e.ws.api.json.OmnomJsonSerializer;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
 public class OmnomUnitTest {
 	
 	protected Logger log = LoggerFactory.getLogger(getClass().getName());

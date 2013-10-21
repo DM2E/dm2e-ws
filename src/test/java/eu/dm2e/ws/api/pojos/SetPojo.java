@@ -1,8 +1,8 @@
 package eu.dm2e.ws.api.pojos;
 
-import eu.dm2e.ws.grafeo.annotations.RDFClass;
-import eu.dm2e.ws.grafeo.annotations.RDFId;
-import eu.dm2e.ws.grafeo.annotations.RDFProperty;
+import eu.dm2e.grafeo.annotations.RDFClass;
+import eu.dm2e.grafeo.annotations.RDFId;
+import eu.dm2e.grafeo.annotations.RDFProperty;
 
 import java.util.HashSet;
 import java.util.Set;

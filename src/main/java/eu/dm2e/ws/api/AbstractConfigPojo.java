@@ -7,7 +7,7 @@ import org.joda.time.DateTime;
 
 import eu.dm2e.utils.UriUtils;
 import eu.dm2e.ws.NS;
-import eu.dm2e.ws.grafeo.annotations.RDFProperty;
+import eu.dm2e.grafeo.annotations.RDFProperty;
 
 /**
  * Abstract Base Class for ConfigPojos.

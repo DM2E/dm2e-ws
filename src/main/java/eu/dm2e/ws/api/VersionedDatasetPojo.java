@@ -8,10 +8,10 @@ import org.joda.time.DateTime;
 import com.hp.hpl.jena.query.ResultSet;
 
 import eu.dm2e.ws.NS;
-import eu.dm2e.ws.grafeo.annotations.Namespaces;
-import eu.dm2e.ws.grafeo.annotations.RDFClass;
-import eu.dm2e.ws.grafeo.annotations.RDFProperty;
-import eu.dm2e.ws.grafeo.jena.SparqlSelect;
+import eu.dm2e.grafeo.annotations.Namespaces;
+import eu.dm2e.grafeo.annotations.RDFClass;
+import eu.dm2e.grafeo.annotations.RDFProperty;
+import eu.dm2e.grafeo.jena.SparqlSelect;
 //import java.util.Date;
 
 /**

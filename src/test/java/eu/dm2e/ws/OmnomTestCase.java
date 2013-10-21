@@ -16,8 +16,8 @@ import org.junit.Before;
 
 import eu.dm2e.utils.TemplateEngine;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
-import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.Client;
 import eu.dm2e.ws.wsmanager.ManageService;
 

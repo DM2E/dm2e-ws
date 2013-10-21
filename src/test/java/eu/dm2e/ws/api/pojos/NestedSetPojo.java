@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import eu.dm2e.ws.api.AbstractPersistentPojo;
-import eu.dm2e.ws.grafeo.annotations.RDFClass;
-import eu.dm2e.ws.grafeo.annotations.RDFProperty;
+import eu.dm2e.grafeo.annotations.RDFClass;
+import eu.dm2e.grafeo.annotations.RDFProperty;
 
 @RDFClass("omnom:NestedSet")
 public class NestedSetPojo extends AbstractPersistentPojo<NestedSetPojo> {

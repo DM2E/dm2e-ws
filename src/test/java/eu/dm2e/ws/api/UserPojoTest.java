@@ -13,7 +13,7 @@ import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.OmnomUnitTest;
 import eu.dm2e.ws.api.json.OmnomJsonSerializer;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
 
 public class UserPojoTest extends OmnomUnitTest {
 

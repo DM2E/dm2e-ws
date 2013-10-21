@@ -8,8 +8,8 @@ import javax.ws.rs.core.Response;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.api.WebservicePojo;
-import eu.dm2e.ws.grafeo.GResource;
-import eu.dm2e.ws.grafeo.Grafeo;
+import eu.dm2e.grafeo.GResource;
+import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.ws.services.AbstractJobService;
 
 // TODO @GET /{id}/result with JSON

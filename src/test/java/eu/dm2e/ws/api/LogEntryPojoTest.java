@@ -12,8 +12,8 @@ import com.google.gson.JsonObject;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.OmnomUnitTest;
 import eu.dm2e.ws.api.json.OmnomJsonSerializer;
-import eu.dm2e.ws.grafeo.annotations.RDFClass;
-import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
+import eu.dm2e.grafeo.annotations.RDFClass;
+import eu.dm2e.grafeo.junit.GrafeoAssert;
 
 public class LogEntryPojoTest extends OmnomUnitTest{
 	private String logId = "http://log.foo/bar/1234";

@@ -34,8 +34,8 @@ import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.FilePojo;
-import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
 
 /**
  * Translates resources in MINT to dm2e-ws by using the MINT UrlApi.

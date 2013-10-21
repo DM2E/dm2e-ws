@@ -1,8 +1,8 @@
 package eu.dm2e.ws.api.pojos;
 
 import eu.dm2e.ws.api.SerializablePojo;
-import eu.dm2e.ws.grafeo.annotations.RDFClass;
-import eu.dm2e.ws.grafeo.annotations.RDFProperty;
+import eu.dm2e.grafeo.annotations.RDFClass;
+import eu.dm2e.grafeo.annotations.RDFProperty;
 
 @RDFClass("omnom:IntegerPojo")
 public class IntegerPojo extends SerializablePojo<IntegerPojo> {

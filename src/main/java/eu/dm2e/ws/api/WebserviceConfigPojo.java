@@ -2,10 +2,10 @@ package eu.dm2e.ws.api;
 
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
-import eu.dm2e.ws.grafeo.annotations.Namespaces;
-import eu.dm2e.ws.grafeo.annotations.RDFClass;
-import eu.dm2e.ws.grafeo.annotations.RDFInstancePrefix;
-import eu.dm2e.ws.grafeo.annotations.RDFProperty;
+import eu.dm2e.grafeo.annotations.Namespaces;
+import eu.dm2e.grafeo.annotations.RDFClass;
+import eu.dm2e.grafeo.annotations.RDFInstancePrefix;
+import eu.dm2e.grafeo.annotations.RDFProperty;
 
 /**
  * Configuration of a webservice

@@ -1,9 +1,9 @@
 package eu.dm2e.ws.api;
 
 import eu.dm2e.ws.NS;
-import eu.dm2e.ws.grafeo.annotations.Namespaces;
-import eu.dm2e.ws.grafeo.annotations.RDFClass;
-import eu.dm2e.ws.grafeo.annotations.RDFProperty;
+import eu.dm2e.grafeo.annotations.Namespaces;
+import eu.dm2e.grafeo.annotations.RDFClass;
+import eu.dm2e.grafeo.annotations.RDFProperty;
 
 /** Pojo for a parameter assignment */
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/"})

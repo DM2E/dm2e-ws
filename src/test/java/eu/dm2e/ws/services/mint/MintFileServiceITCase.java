@@ -21,8 +21,8 @@ import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.OmnomTestCase;
 import eu.dm2e.ws.api.FilePojo;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
-import eu.dm2e.ws.grafeo.jena.SparqlSelect;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.SparqlSelect;
 
 public class MintFileServiceITCase extends OmnomTestCase {
 

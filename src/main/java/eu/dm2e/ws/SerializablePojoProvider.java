@@ -22,10 +22,10 @@ import org.slf4j.LoggerFactory;
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.api.SerializablePojo;
 import eu.dm2e.ws.api.json.OmnomJsonSerializer;
-import eu.dm2e.ws.grafeo.GResource;
-import eu.dm2e.ws.grafeo.GStatement;
-import eu.dm2e.ws.grafeo.annotations.RDFClass;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.GResource;
+import eu.dm2e.grafeo.GStatement;
+import eu.dm2e.grafeo.annotations.RDFClass;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
 
 /**
  * JAX-RS MessageBodyWriter/MessageBodyReader for SerializablePojos.

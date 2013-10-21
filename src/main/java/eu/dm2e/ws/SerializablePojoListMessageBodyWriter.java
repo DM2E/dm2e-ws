@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.api.SerializablePojo;
 import eu.dm2e.ws.api.json.OmnomJsonSerializer;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
 
 /**
  * JAX-RS MessageBodyWriter for lists of SerializablePojos.

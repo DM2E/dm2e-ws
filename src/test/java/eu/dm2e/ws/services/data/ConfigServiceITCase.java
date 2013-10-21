@@ -1,32 +1,26 @@
 // <<<<<<< HEAD
 package eu.dm2e.ws.services.data;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.junit.matchers.JUnitMatchers.*;
-
-import java.io.File;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.Arrays;
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.junit.GrafeoAssert;
+import eu.dm2e.ws.*;
+import eu.dm2e.ws.services.Client;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.File;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Arrays;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.ErrorMsg;
-import eu.dm2e.ws.NS;
-import eu.dm2e.ws.OmnomTestCase;
-import eu.dm2e.ws.OmnomTestResources;
-import eu.dm2e.ws.grafeo.Grafeo;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
-import eu.dm2e.ws.grafeo.junit.GrafeoAssert;
-import eu.dm2e.ws.services.Client;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+import static org.junit.matchers.JUnitMatchers.containsString;
 
 public class ConfigServiceITCase extends OmnomTestCase {
 

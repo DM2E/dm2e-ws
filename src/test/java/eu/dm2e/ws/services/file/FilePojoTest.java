@@ -18,7 +18,7 @@ import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.SerializablePojo;
 import eu.dm2e.ws.api.UserPojo;
 import eu.dm2e.ws.api.json.OmnomJsonSerializer;
-import eu.dm2e.ws.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
 
 public class FilePojoTest extends OmnomUnitTest{
 	
