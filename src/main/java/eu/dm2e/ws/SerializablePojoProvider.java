@@ -1,11 +1,14 @@
 package eu.dm2e.ws;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Set;
+import eu.dm2e.grafeo.GResource;
+import eu.dm2e.grafeo.GStatement;
+import eu.dm2e.grafeo.annotations.RDFClass;
+import eu.dm2e.grafeo.gom.SerializablePojo;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
+import eu.dm2e.logback.LogbackMarkers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -15,17 +18,12 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import eu.dm2e.logback.LogbackMarkers;
-import eu.dm2e.ws.api.SerializablePojo;
-import eu.dm2e.ws.api.json.OmnomJsonSerializer;
-import eu.dm2e.grafeo.GResource;
-import eu.dm2e.grafeo.GStatement;
-import eu.dm2e.grafeo.annotations.RDFClass;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Set;
 
 /**
  * JAX-RS MessageBodyWriter/MessageBodyReader for SerializablePojos.
@@ -136,7 +134,7 @@ public class SerializablePojoProvider implements MessageBodyWriter<SerializableP
 			java.util.Scanner s = scanner.useDelimiter("\\A");
 			String str = s.hasNext() ? s.next() : null;
 			scanner.close();
-			pojo = (SerializablePojo) OmnomJsonSerializer.deserializeFromJSON(str, pojoClass);
+			pojo = (SerializablePojo) GrafeoJsonSerializer.deserializeFromJSON(str, pojoClass);
 		} else if (DM2E_MediaType.isRdfMediaType(mediaType)) {
 			GrafeoImpl g = new GrafeoImpl(entityStream);
 			// TODO find top blank node etc.

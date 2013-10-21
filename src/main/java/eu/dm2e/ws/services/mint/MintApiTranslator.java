@@ -1,23 +1,15 @@
 package eu.dm2e.ws.services.mint;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.GZIPInputStream;
-
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Form;
-import javax.ws.rs.core.Response;
-
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.logback.LogbackMarkers;
+import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.FilePojo;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.utils.IOUtils;
@@ -25,17 +17,17 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import eu.dm2e.logback.LogbackMarkers;
-import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.NS;
-import eu.dm2e.ws.api.FilePojo;
-import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.Form;
+import javax.ws.rs.core.Response;
+import java.io.*;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Translates resources in MINT to dm2e-ws by using the MINT UrlApi.
@@ -115,7 +107,7 @@ public final class MintApiTranslator {
 	 * 
 	 * @return true if logged in, false otherwise
 	 */
-	protected boolean isLoggedIn() {
+	public boolean isLoggedIn() {
 		Response resp = mintClient
 				.target(mint_uri_home)
 				.header("Origin", "http://mint-projects.image.ntua.gr")
@@ -140,7 +132,7 @@ public final class MintApiTranslator {
 	/**
 	 * Make sure that we're logged in into MINT so the UrlApi works.
 	 */
-	protected void ensureLoggedIn() {
+	public void ensureLoggedIn() {
 
 		log.trace("Cookies: " + mintClient.cookies);
 		if (isLoggedIn())
@@ -483,7 +475,7 @@ public final class MintApiTranslator {
 	 * Translate one JSON representation of a MINT DataUpload to a Omnom
 	 * FilePojo.
 	 * 
-	 * @param json
+	 * @param jsonStr
 	 * @return
 	 */
 	public FilePojo parseFilePojoFromDataUploadJson(String jsonStr) {
@@ -562,7 +554,7 @@ public final class MintApiTranslator {
 	/**
 	 * Translate one JSON representation of a MINT Mapping to a Omnom FilePojo.
 	 * 
-	 * @param json
+	 * @param jsonStr
 	 * @return
 	 */
 	public FilePojo parseFilePojoFromMappingJson(String jsonStr) {
@@ -621,4 +613,7 @@ public final class MintApiTranslator {
 		return fp;
 	}
 
+    public MintClient getMintClient() {
+        return mintClient;
+    }
 }

@@ -1,45 +1,32 @@
 package eu.dm2e.ws.services.config;
 
-import java.io.File;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import eu.dm2e.grafeo.GResource;
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.grafeo.annotations.RDFClass;
+import eu.dm2e.grafeo.gom.SerializablePojo;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.SparqlUpdate;
+import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
+import eu.dm2e.logback.LogbackMarkers;
+import eu.dm2e.ws.*;
+import eu.dm2e.ws.api.AbstractConfigPojo;
+import eu.dm2e.ws.api.WebserviceConfigPojo;
+import eu.dm2e.ws.api.WebservicePojo;
+import eu.dm2e.ws.api.WorkflowConfigPojo;
+import eu.dm2e.ws.services.AbstractRDFService;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-
-import eu.dm2e.logback.LogbackMarkers;
-import eu.dm2e.ws.Config;
-import eu.dm2e.ws.ConfigProp;
-import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.ErrorMsg;
-import eu.dm2e.ws.NS;
-import eu.dm2e.ws.api.AbstractConfigPojo;
-import eu.dm2e.ws.api.SerializablePojo;
-import eu.dm2e.ws.api.WebserviceConfigPojo;
-import eu.dm2e.ws.api.WebservicePojo;
-import eu.dm2e.ws.api.WorkflowConfigPojo;
-import eu.dm2e.ws.api.json.OmnomJsonSerializer;
-import eu.dm2e.grafeo.GResource;
-import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.annotations.RDFClass;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
-import eu.dm2e.grafeo.jena.SparqlUpdate;
-import eu.dm2e.ws.services.AbstractRDFService;
+import java.io.File;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Service for storing and retrieving configurations for workflows and webservices.
@@ -61,8 +48,6 @@ public class ConfigService extends AbstractRDFService {
 	
     /**
      * GET /{id}		Accept: RDF, JSON
-     * @param uriInfo
-     * @param id
      * @return
      */
     @GET
@@ -108,10 +93,9 @@ public class ConfigService extends AbstractRDFService {
     @Path("list")
     public Response getConfigList(@Context UriInfo uriInfo) {
     	
-    	List<Class<? extends AbstractConfigPojo<?>>> pojoClasses = Arrays.asList(
-			WebserviceConfigPojo.class,
-			WorkflowConfigPojo.class
-		);
+    	List<Class<? extends AbstractConfigPojo<?>>> pojoClasses = new ArrayList<>();
+        pojoClasses.add(WebserviceConfigPojo.class);
+        pojoClasses.add(WorkflowConfigPojo.class);
         List<SerializablePojo> configList = new ArrayList<>();
     	for (Class<? extends AbstractConfigPojo<?>> pojoClass  : pojoClasses) {
     		GrafeoImpl g = new GrafeoImpl();
@@ -273,10 +257,10 @@ public class ConfigService extends AbstractRDFService {
 		SerializablePojo pojo;
 		boolean isWorkflow = false;
 		if (rdfType.equals(NS.OMNOM.CLASS_WEBSERVICE_CONFIG)) {
-			pojo = OmnomJsonSerializer.deserializeFromJSON(input, WebserviceConfigPojo.class);
+			pojo = GrafeoJsonSerializer.deserializeFromJSON(input, WebserviceConfigPojo.class);
 		} else if (rdfType.equals(NS.OMNOM.CLASS_WORKFLOW_CONFIG)) { 
 			isWorkflow = true;
-			pojo = OmnomJsonSerializer.deserializeFromJSON(input, WorkflowConfigPojo.class);
+			pojo = GrafeoJsonSerializer.deserializeFromJSON(input, WorkflowConfigPojo.class);
 		} else {
 			return throwServiceError(ErrorMsg.WRONG_RDF_TYPE);
 		}
@@ -321,10 +305,10 @@ public class ConfigService extends AbstractRDFService {
 		SerializablePojo pojo;
 		boolean isWorkflow = false;
 		if (rdfType.equals(NS.OMNOM.CLASS_WEBSERVICE_CONFIG)) {
-			pojo = OmnomJsonSerializer.deserializeFromJSON(input, WebserviceConfigPojo.class);
+			pojo = GrafeoJsonSerializer.deserializeFromJSON(input, WebserviceConfigPojo.class);
 		} else if (rdfType.equals(NS.OMNOM.CLASS_WORKFLOW_CONFIG)) { 
 			isWorkflow = true;
-			pojo = OmnomJsonSerializer.deserializeFromJSON(input, WorkflowConfigPojo.class);
+			pojo = GrafeoJsonSerializer.deserializeFromJSON(input, WorkflowConfigPojo.class);
 		} else {
 			return throwServiceError(ErrorMsg.WRONG_RDF_TYPE);
 		}
@@ -349,8 +333,6 @@ public class ConfigService extends AbstractRDFService {
 
 	/**
 	 * GET /{id}/validate
-	 * @param g
-	 * @param res
 	 */
 	@GET
 	@Path("{id}/validate")

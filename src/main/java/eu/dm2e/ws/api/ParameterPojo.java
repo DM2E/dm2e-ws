@@ -1,5 +1,6 @@
 package eu.dm2e.ws.api;
 
+import eu.dm2e.grafeo.gom.SerializablePojo;
 import eu.dm2e.ws.NS;
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.annotations.Namespaces;
@@ -15,7 +16,7 @@ import eu.dm2e.grafeo.jena.GrafeoImpl;
 			 "dc", NS.DC.BASE
 			 })
 @RDFClass(NS.OMNOM.CLASS_PARAMETER)
-public class ParameterPojo extends SerializablePojo<ParameterPojo>{
+public class ParameterPojo extends SerializablePojo<ParameterPojo> {
 	
 	/******************
 	 * CONSTRUCTORS

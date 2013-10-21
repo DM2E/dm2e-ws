@@ -1,12 +1,27 @@
 
 package eu.dm2e.ws.services.file;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import eu.dm2e.grafeo.GResource;
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.SparqlUpdate;
+import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
+import eu.dm2e.grafeo.util.PojoUtils;
+import eu.dm2e.logback.LogbackMarkers;
+import eu.dm2e.ws.*;
+import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.api.WebservicePojo;
+import eu.dm2e.ws.services.AbstractRDFService;
+import org.apache.commons.io.IOUtils;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.joda.time.DateTime;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -16,40 +31,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.apache.commons.io.IOUtils;
-import org.glassfish.jersey.media.multipart.FormDataBodyPart;
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.joda.time.DateTime;
-
-import eu.dm2e.logback.LogbackMarkers;
-import eu.dm2e.utils.PojoUtils;
-import eu.dm2e.ws.Config;
-import eu.dm2e.ws.ConfigProp;
-import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.ErrorMsg;
-import eu.dm2e.ws.NS;
-import eu.dm2e.ws.api.FilePojo;
-import eu.dm2e.ws.api.WebservicePojo;
-import eu.dm2e.ws.api.json.OmnomJsonSerializer;
-import eu.dm2e.grafeo.GResource;
-import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
-import eu.dm2e.grafeo.jena.SparqlUpdate;
-import eu.dm2e.ws.services.AbstractRDFService;
 
 /**
  * The service includes all necessary methods to upload a new file (no matter
@@ -77,7 +58,6 @@ public class FileService extends AbstractRDFService {
 	 * GET /{id}
 	 *  Retrieve metadata/file data for a locally stored file
 	 * 
-	 * @param fileId
 	 * @return
 	 */
 	@GET
@@ -100,7 +80,6 @@ public class FileService extends AbstractRDFService {
 	 * GET /list
 	 *  Retrieve metadata/file data for a locally stored file
 	 * 
-	 * @param fileId
 	 * @return
 	 */
 	@GET
@@ -122,7 +101,7 @@ public class FileService extends AbstractRDFService {
         	fp.loadFromURI(fileUri.getUri());
         	fileList.add(fp);
         }
-        String jsonStr = OmnomJsonSerializer.serializeToJSON(fileList, FilePojo.class);
+        String jsonStr = GrafeoJsonSerializer.serializeToJSON(fileList, FilePojo.class);
 		return Response.ok(jsonStr).build();
 	}
 	
@@ -390,7 +369,7 @@ public class FileService extends AbstractRDFService {
 	 * Returns the file. If the file is not stored by the file storage the
 	 * request is redirected. Otherwise the internal file is returned directly.
 	 * 
-	 * @param uriObject
+	 * @param uri
 	 *            the identifier of the file.
 	 * @return the file or redirected to the location of the file.
 	 */
@@ -517,7 +496,6 @@ public class FileService extends AbstractRDFService {
 	/**
 	 * POST /{id}/patch
 	 * Replace statements about a file with new statements.
-	 * @param uriStr
 	 * @param bodyInputStream
 	 * @return
 	 */
@@ -586,7 +564,7 @@ public class FileService extends AbstractRDFService {
 	 *  Retrieve metadata/file data by passing a 'uri' parameter
 	 * Decides whether to fire the get method for file data or metadata.
 	 * 
-	 * @param uriStr
+	 * @param uri
 	 * @return
 	 */
 	@GET

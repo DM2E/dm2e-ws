@@ -97,37 +97,37 @@ public abstract class AbstractRDFService {
 	@Context 
 	protected HttpHeaders headers;
 	
-    protected Response throwServiceError(ErrorMsg msg, int status) {
+    public Response throwServiceError(ErrorMsg msg, int status) {
     	return this.throwServiceError(msg.toString(), status);
 	}
-	protected Response throwServiceError(ErrorMsg badRdf, Throwable t) {
+    public Response throwServiceError(ErrorMsg badRdf, Throwable t) {
 		String errStr = badRdf.toString();
 		Response resp = this.throwServiceError(new RuntimeException(t));
 		errStr = resp.getEntity() + ": " + errStr;
 		return this.throwServiceError(errStr);
 	}
- 
-	protected Response throwServiceError(String msg, int status) {
+
+    public Response throwServiceError(String msg, int status) {
 		log.warn("EXCEPTION: " + msg);
 		return Response.status(status).entity(msg).build();
 	}
-	protected Response throwServiceError(String msg) {
+    public Response throwServiceError(String msg) {
 		return throwServiceError(msg, 400);
 	}
-	protected Response throwServiceError(Exception e) {
+    public Response throwServiceError(Exception e) {
 		return throwServiceError(e.toString() + "\n" + ExceptionUtils.getStackTrace(e), 400);
 	}
-	protected Response throwServiceError(ErrorMsg err) {
+    public Response throwServiceError(ErrorMsg err) {
 		return throwServiceError(err.toString());
 	}
-	protected Response throwServiceError(String badString, ErrorMsg err) {
+    public Response throwServiceError(String badString, ErrorMsg err) {
 		return throwServiceError(badString + ": " + err.toString());
 	}
-	protected Response throwServiceError(String badString, ErrorMsg err, int status) {
+    public Response throwServiceError(String badString, ErrorMsg err, int status) {
 		return throwServiceError(badString + ": " + err.toString(), status);
 	}
-	
-	protected URI getUriForString(String uriStr) throws URISyntaxException {
+
+    public URI getUriForString(String uriStr) throws URISyntaxException {
 		if (null == uriStr)
 			throw new URISyntaxException("", "Must provide 'uri' query parameter.");
 		
@@ -142,7 +142,7 @@ public abstract class AbstractRDFService {
 		
 	}
 
-	protected URI getRequestUriWithoutQuery() {
+    public URI getRequestUriWithoutQuery() {
 		UriBuilder ub =  uriInfo.getRequestUriBuilder();
 		ub.replaceQuery("");
 		return ub.build();
@@ -355,13 +355,13 @@ public abstract class AbstractRDFService {
 //		}
 //
 //	}
-	
-	protected URI appendPath(String... paths) {
+
+    public URI appendPath(String... paths) {
 		URI uri = uriInfo.getRequestUri();
 		return this.appendPath(uri, paths);
 	}
 
-    protected URI appendPath(URI uri, String... paths) {
+    public URI appendPath(URI uri, String... paths) {
         String query = uri.getQuery();
         String u = uri.toString();
         log.trace("URI: " + u);
@@ -383,19 +383,19 @@ public abstract class AbstractRDFService {
             throw new RuntimeException("An exception occurred: " + e, e);
         }
     }
-    
-	protected URI popPath() {
+
+    public URI popPath() {
 		URI uri = uriInfo.getRequestUri();
 		return this.popPath(uri, null);
 	}
-	protected URI popPath(URI uri) {
+    public URI popPath(URI uri) {
 		return this.popPath(uri, null);
 	}
-	protected URI popPath(String path) {
+    public URI popPath(String path) {
 		URI uri = uriInfo.getRequestUri();
 		return this.popPath(uri, path);
 	}
-    protected URI popPath(URI uri, String path) {
+    public URI popPath(URI uri, String path) {
         String query = uri.getQuery();
         String u = uri.toString();
         log.trace("URI: " + u);

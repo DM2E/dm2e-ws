@@ -1,17 +1,13 @@
 package eu.dm2e.ws.services;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.grafeo.gom.SerializablePojo;
+import eu.dm2e.logback.LogbackMarkers;
+import eu.dm2e.ws.Config;
+import eu.dm2e.ws.ConfigProp;
+import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.api.AbstractPersistentPojo;
+import eu.dm2e.ws.api.FilePojo;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
@@ -20,14 +16,16 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.dm2e.logback.LogbackMarkers;
-import eu.dm2e.ws.Config;
-import eu.dm2e.ws.ConfigProp;
-import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.api.AbstractPersistentPojo;
-import eu.dm2e.ws.api.FilePojo;
-import eu.dm2e.ws.api.SerializablePojo;
-import eu.dm2e.grafeo.Grafeo;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 
 /**
  * Wrapper for a JAX-RS client with POJO posting/loading abilities and helpers for publishing files.

@@ -34,7 +34,7 @@ import eu.dm2e.ws.api.AbstractJobPojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.LogEntryPojo;
 import eu.dm2e.ws.api.ParameterAssignmentPojo;
-import eu.dm2e.ws.api.SerializablePojo;
+import eu.dm2e.grafeo.gom.SerializablePojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.api.WorkflowJobPojo;
 import eu.dm2e.ws.api.WorkflowPojo;

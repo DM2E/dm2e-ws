@@ -1,19 +1,18 @@
 package eu.dm2e.ws.services.mint;
 
-import java.net.URI;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import org.glassfish.jersey.client.ClientProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.NewCookie;
-
-import org.glassfish.jersey.client.ClientProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.net.URI;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A wrapper for Jersey Client that
@@ -64,5 +63,8 @@ public class MintClient {
 		log.trace("Built WebResource Builder for <{}>", uri);
 		return reqB;
 	}
-	
+
+    public Set<Cookie> getCookies() {
+        return cookies;
+    }
 }
