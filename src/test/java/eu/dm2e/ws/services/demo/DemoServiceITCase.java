@@ -10,6 +10,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import eu.dm2e.ws.Config;
@@ -47,6 +48,7 @@ public class DemoServiceITCase extends OmnomTestCase {
 	}
 
 	@Test
+	@Ignore("DemoService has no more 'test' path")
 	public void testPostReader() {
 		FilePojo fp = new FilePojo();
 		fp.setId("http://foo");
