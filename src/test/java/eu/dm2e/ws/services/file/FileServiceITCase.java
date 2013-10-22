@@ -299,7 +299,7 @@ public class FileServiceITCase extends OmnomTestCase {
 					g.containsTriple(fileUriStr, NS.DCTERMS.PROP_EXTENT, "?x");
 					g.containsTriple(fileUriStr, NS.DCTERMS.PROP_FORMAT, "?x");
 					log.info(g.getTerseTurtle());
-					assertEquals(7, g.size());
+					assertEquals(8, g.size());
 				}
 			}
 		}
