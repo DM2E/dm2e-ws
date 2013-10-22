@@ -207,7 +207,7 @@ public class FileService extends AbstractRDFService {
 		try {
 			filePojo.loadFromURI(uriStr);
 		} catch (Exception e) {
-			log.error("Could reload job pojo." + e);
+			log.error("Could not reload file pojo." + e);
 			throwServiceError(e);
 		}
 		GrafeoImpl g = new GrafeoImpl();
@@ -716,6 +716,7 @@ public class FileService extends AbstractRDFService {
 				"%s/%s",
 				Config.get(ConfigProp.FILE_STOREDIR),
 				fileName));
+		long fileSize = f.length();
         if (!f.getParentFile().exists()) {
             f.getParentFile().mkdirs();
         }
@@ -738,7 +739,7 @@ public class FileService extends AbstractRDFService {
 		filePojo.setInternalFileLocation(f.getAbsolutePath()); // TODO not a good "solution"
 		filePojo.setId(uri.toString());
 		filePojo.setFileRetrievalURI(uri.toString());
-		filePojo.setExtent(f.length());
+		filePojo.setExtent(fileSize); // NOTE: fileSize must be determined before file is opened!
 		filePojo.setModified(DateTime.now());
 
 		// these are only available if this is an upload field and not just a
