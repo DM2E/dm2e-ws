@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.net.URI;
 
+import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -76,11 +77,20 @@ public class FilePojoTest extends OmnomUnitTest{
 			jobObj.addProperty(NS.OMNOM.PROP_JOB_STATUS, "NOT_STARTED");
 			jobObj.add(NS.OMNOM.PROP_LOG_ENTRY, new JsonArray());
 			jobObj.add(NS.OMNOM.PROP_ASSIGNMENT, new JsonArray());
+			jobObj.addProperty(NS.DCTERMS.PROP_MODIFIED, DateTime.now().toString());
+			jobObj.addProperty(NS.DCTERMS.PROP_CREATED, DateTime.now().toString());
 			expect.add(NS.PROV.PROP_WAS_GENERATED_BY, jobObj);
 			expect.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, fp.getRDFClassUri());
 			
-			assertEquals(testGson.toJson(expect), OmnomJsonSerializer.serializeToJSON(fp, FilePojo.class));
-			assertEquals(testGson.toJson(expect), fp.toJson());
+			String cleanExpect = testGson.toJson(expect);
+			cleanExpect = cleanExpect.replaceAll("\"201\\d[^\"]+\"", "\"\"");
+			String cleanSerializeToJSON = OmnomJsonSerializer.serializeToJSON(fp, FilePojo.class);
+			cleanSerializeToJSON = cleanSerializeToJSON.replaceAll("\"201\\d[^\"]+\"", "\"\"");
+			String cleanToJSON = fp.toJson();
+			cleanToJSON = cleanToJSON.replaceAll("\"201\\d[^\"]+\"", "\"\"");
+
+			assertEquals(cleanExpect, cleanSerializeToJSON);
+			assertEquals(cleanExpect, cleanToJSON);
 		}
 		
 	}

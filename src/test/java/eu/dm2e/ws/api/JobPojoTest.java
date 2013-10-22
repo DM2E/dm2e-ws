@@ -4,6 +4,7 @@ package eu.dm2e.ws.api;
 
 import static org.junit.Assert.*;
 
+import org.joda.time.DateTime;
 import org.junit.Test;
 
 import com.google.gson.JsonArray;
@@ -29,6 +30,8 @@ public class JobPojoTest extends OmnomUnitTest {
 		expect.addProperty(NS.OMNOM.PROP_JOB_STATUS, JobStatus.STARTED.name());
 		expect.add(NS.OMNOM.PROP_LOG_ENTRY, new JsonArray());
 		expect.add(NS.OMNOM.PROP_ASSIGNMENT, new JsonArray());
+		expect.addProperty(NS.DCTERMS.PROP_MODIFIED, DateTime.now().toString());
+		expect.addProperty(NS.DCTERMS.PROP_CREATED, DateTime.now().toString());
 		expect.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, job.getRDFClassUri());
 
 		assertEquals(job, OmnomJsonSerializer.deserializeFromJSON(expect.toString(), JobPojo.class));
