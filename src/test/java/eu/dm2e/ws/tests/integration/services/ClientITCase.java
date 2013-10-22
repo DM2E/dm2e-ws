@@ -26,6 +26,8 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
+import org.joda.time.DateTime;
+import eu.dm2e.logback.LogbackMarkers;
 
 public class ClientITCase extends OmnomTestCase {
 	
@@ -34,6 +36,7 @@ public class ClientITCase extends OmnomTestCase {
 	private static final String ORIGINAL_NAME = "FOO.BAR";
 	private FilePojo FILE_POJO = new FilePojo();
 	private File TEMP_FILE;
+	private DateTime DUMMY_TIME = DateTime.now();
 	
 	private boolean isCorrectlyPosted(String uri) {
 		Invocation invoc = client.target(uri).request().build("GET");
@@ -48,11 +51,17 @@ public class ClientITCase extends OmnomTestCase {
 		try {
 			fp.loadFromURI(fileUri);
 		} catch (Exception e) {
-			log.error("Could reload job pojo." + e);
+			log.error("Could not reload file pojo. " + e);
 			e.printStackTrace();
 			return false;
 		}
+		assertTrue(fp.getGrafeo().size() > 0);
+		fp.setModified(DUMMY_TIME);
+		fp.setFileRetrievalURI("http://dummy");
+		log.debug(LogbackMarkers.DATA_DUMP, "METADATA WAS: " + fp.getGrafeo().getTerseTurtle());
+		log.debug(LogbackMarkers.DATA_DUMP, "METADATA EXPECTED: " + FILE_POJO.getGrafeo().getTerseTurtle());
 		GrafeoAssert.graphContainsGraphStructurally(fp.getGrafeo(), FILE_POJO.getGrafeo());
+
 		return true;
 //		if (null == fp.getOriginalName()
 //				||
@@ -67,6 +76,7 @@ public class ClientITCase extends OmnomTestCase {
 
         client = new Client();
 		FILE_POJO.setOriginalName(ORIGINAL_NAME);
+		FILE_POJO.setModified(DUMMY_TIME);
 		TEMP_FILE = File.createTempFile("omnom_test", "txt");
 		IOUtils.copy(IOUtils.toInputStream(FILE_CONTENTS), new FileOutputStream(TEMP_FILE));
 	}

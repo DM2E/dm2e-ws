@@ -415,7 +415,7 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 			final String respStr = respRelatedJobs.readEntity(String.class);
 			log.debug("Response body: " + respStr);
 		}
-		// System.in.read();
+//		System.in.read();
 //		for (JobPojo finishedJob : workflowJob.getFinishedJobs()) {
 //			finishedJob.loadFromURI(finishedJob.getId());
 //			assertNotNull(runningJob.getExecutesPosition());

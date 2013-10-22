@@ -1,6 +1,10 @@
 package eu.dm2e.ws.tests.unit.api;
 
 
+
+import org.joda.time.DateTime;
+import org.junit.Test;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import eu.dm2e.grafeo.gom.SerializablePojo;
@@ -9,7 +13,6 @@ import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.tests.OmnomUnitTest;
 import eu.dm2e.ws.model.JobStatus;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,15 +31,16 @@ public class JobPojoTest extends OmnomUnitTest {
 		expect.addProperty(SerializablePojo.JSON_FIELD_UUID, job.getUuid());
 		expect.addProperty(NS.OMNOM.PROP_JOB_STATUS, JobStatus.STARTED.name());
 		expect.add(NS.OMNOM.PROP_LOG_ENTRY, new JsonArray());
-        expect.add(NS.OMNOM.PROP_ASSIGNMENT, new JsonArray());
-        expect.addProperty(NS.DCTERMS.PROP_MODIFIED, job.getModified().toString());
-        expect.addProperty(NS.DCTERMS.PROP_CREATED, job.getCreated().toString());
-        expect.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, job.getRDFClassUri());
+		expect.add(NS.OMNOM.PROP_ASSIGNMENT, new JsonArray());
+		expect.addProperty(NS.DCTERMS.PROP_MODIFIED, job.getModified().toString());
+		expect.addProperty(NS.DCTERMS.PROP_CREATED, job.getCreated().toString());
+		expect.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, job.getRDFClassUri());
 
 		assertEquals(job, GrafeoJsonSerializer.deserializeFromJSON(expect.toString(), JobPojo.class));
 		String expectString =  testGson.toJson(expect);
+        // expectString = expectString.replaceAll("\"201\\d[^\"]+\"", "\"\"");
         String actual = GrafeoJsonSerializer.serializeToJSON(job, JobPojo.class);
-        log.info("Expected: " + expectString);
+        // actual = actual.replaceAll("\"201\\d[^\"]+\"", "\"\"");log.info("Expected: " + expectString);
         log.info("Actual: " + actual);
         assertEquals(expectString, actual);
 		assertEquals(testGson.toJson(expect), job.toJson());

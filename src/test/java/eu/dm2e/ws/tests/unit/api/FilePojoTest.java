@@ -1,4 +1,12 @@
 package eu.dm2e.ws.tests.unit.api;
+import static org.junit.Assert.assertEquals;
+
+import java.net.URI;
+
+import org.joda.time.DateTime;
+import org.json.JSONException;
+import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -74,18 +82,20 @@ public class FilePojoTest extends OmnomUnitTest{
 			jobObj.addProperty(NS.OMNOM.PROP_JOB_STATUS, "NOT_STARTED");
 			jobObj.add(NS.OMNOM.PROP_LOG_ENTRY, new JsonArray());
 			jobObj.add(NS.OMNOM.PROP_ASSIGNMENT, new JsonArray());
-            jobObj.addProperty(NS.DCTERMS.PROP_MODIFIED, job.getModified().toString());
-            jobObj.addProperty(NS.DCTERMS.PROP_CREATED, job.getCreated().toString());
-            expect.add(NS.PROV.PROP_WAS_GENERATED_BY, jobObj);
+			jobObj.addProperty(NS.DCTERMS.PROP_MODIFIED, job.getModified().toString());
+			jobObj.addProperty(NS.DCTERMS.PROP_CREATED, job.getCreated().toString());
+			expect.add(NS.PROV.PROP_WAS_GENERATED_BY, jobObj);
 			expect.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, fp.getRDFClassUri());
+			
+			String cleanExpect = testGson.toJson(expect);
+			// cleanExpect = cleanExpect.replaceAll("\"201\\d[^\"]+\"", "\"\"");
+			String cleanSerializeToJSON = GrafeoJsonSerializer.serializeToJSON(fp, FilePojo.class);
+			// cleanSerializeToJSON = cleanSerializeToJSON.replaceAll("\"201\\d[^\"]+\"", "\"\"");
+			String cleanToJSON = fp.toJson();
+			// cleanToJSON = cleanToJSON.replaceAll("\"201\\d[^\"]+\"", "\"\"");
 
-            String expectString =  testGson.toJson(expect);
-            String actual = GrafeoJsonSerializer.serializeToJSON(fp, FilePojo.class);
-            log.info("Expected: " + expectString);
-            log.info("Actual: " + actual);
-
-			assertEquals(expectString, actual);
-			assertEquals(testGson.toJson(expect), fp.toJson());
+			assertEquals(cleanExpect, cleanSerializeToJSON);
+			assertEquals(cleanExpect, cleanToJSON);
 		}
 		
 	}

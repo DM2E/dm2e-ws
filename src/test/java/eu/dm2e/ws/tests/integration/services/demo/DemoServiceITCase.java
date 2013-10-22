@@ -19,6 +19,18 @@ import java.net.URI;
 
 import static org.junit.Assert.*;
 import static org.junit.matchers.JUnitMatchers.containsString;
+import org.junit.Ignore;
+
+import eu.dm2e.ws.Config;
+import eu.dm2e.ws.ConfigProp;
+import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.ErrorMsg;
+import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.AbstractJobPojo;
+import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.api.WebserviceConfigPojo;
+import eu.dm2e.ws.api.WebservicePojo;
 
 /**
  * This file was created within the DM2E project. http://dm2e.eu
@@ -37,6 +49,7 @@ public class DemoServiceITCase extends OmnomTestCase {
 	}
 
 	@Test
+	@Ignore("DemoService has no more 'test' path")
 	public void testPostReader() {
 		FilePojo fp = new FilePojo();
 		fp.setId("http://foo");
