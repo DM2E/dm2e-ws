@@ -1,12 +1,14 @@
 package eu.dm2e.ws.api;
 
-import java.net.URI;
-import java.util.Set;
-
-import eu.dm2e.ws.NS;
 import eu.dm2e.grafeo.annotations.RDFClass;
 import eu.dm2e.grafeo.annotations.RDFInstancePrefix;
 import eu.dm2e.grafeo.annotations.RDFProperty;
+import eu.dm2e.utils.UriUtils;
+import eu.dm2e.ws.NS;
+
+import java.net.URI;
+import java.util.HashSet;
+import java.util.Set;
 
 /** Pojo for a webservice Job */
 @RDFClass(NS.OMNOM.CLASS_JOB)
@@ -59,6 +61,37 @@ public class JobPojo extends AbstractJobPojo {
     private WebserviceConfigPojo webserviceConfig;
 	public WebserviceConfigPojo getWebserviceConfig() { return webserviceConfig; }
 	public void setWebserviceConfig(WebserviceConfigPojo webserviceConfig) { this.webserviceConfig = webserviceConfig; }
+
+    @RDFProperty(value = NS.OMNOM.PROP_FINISHED_JOB, serializeAsURI=true)
+    private Set<JobPojo> finishedJobs = new HashSet<>();
+    public Set<JobPojo> getFinishedJobs() { return finishedJobs; }
+    public void setFinishedJobs(Set<JobPojo> finishedJobs) { this.finishedJobs = finishedJobs; }
+
+    @RDFProperty(value = NS.OMNOM.PROP_RUNNING_JOB, serializeAsURI=true)
+    private Set<JobPojo> runningJobs = new HashSet<>();
+    public Set<JobPojo> getRunningJobs() { return runningJobs; }
+    public void setRunningJobs(Set<JobPojo> runningJobs) { this.runningJobs = runningJobs; }
+
+    public void setHumanReadableLabel() {
+        log.info("Creating human-readable label");
+        {
+            StringBuilder rdfsLabelSB = new StringBuilder();
+            rdfsLabelSB.append("Web service Job ");
+            rdfsLabelSB.append("'");
+            rdfsLabelSB.append(getWebService().getLabel());
+            rdfsLabelSB.append("'");
+            rdfsLabelSB.append(" [");
+            rdfsLabelSB.append(getCreated().toString());
+            rdfsLabelSB.append(" for ");
+            rdfsLabelSB.append(
+                    null != getWebserviceConfig().getCreator()
+                            ? UriUtils.lastUriSegment(getWebserviceConfig().getCreator().getId())
+                            : null != getWebserviceConfig().getWasGeneratedBy()
+                            ? UriUtils.lastUriSegment(getWebserviceConfig().getWasGeneratedBy().getId())
+                            : "Unknown Creator");
+            setLabel(rdfsLabelSB.toString());
+        }
+    }
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()

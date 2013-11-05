@@ -74,8 +74,10 @@ public final class NS {
 		public static final String PROP_TO_PARAM            = BASE + "toParam";
 		public static final String PROP_TO_POSITION         = BASE + "toPosition";
 		public static final String PROP_TO_WORKFLOW         = BASE + "toWorkflow";
-		public static final String PROP_WEBSERVICE          = BASE + "webservice";
-		public static final String PROP_WEBSERVICE_CONFIG   = BASE + "webserviceConfig";
+        public static final String PROP_WEBSERVICE          = BASE + "webservice";
+        public static final String PROP_WEBSERVICE_ID          = BASE + "implementationID";
+        public static final String PROP_EXEC_WEBSERVICE          = BASE + "isExecutableAt";
+        public static final String PROP_WEBSERVICE_CONFIG   = BASE + "webserviceConfig";
 		public static final String PROP_WORKFLOW            = BASE + "workflow";
 		public static final String PROP_WORKFLOW_CONFIG     = BASE + "workflowConfig";
 

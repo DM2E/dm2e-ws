@@ -30,8 +30,6 @@ public class OmnomUnitTest {
         GrafeoJsonSerializer.registerType(VersionedDatasetPojo.class);
         GrafeoJsonSerializer.registerType(WebserviceConfigPojo.class);
         GrafeoJsonSerializer.registerType(WebservicePojo.class);
-        GrafeoJsonSerializer.registerType(WorkflowConfigPojo.class);
-        GrafeoJsonSerializer.registerType(WorkflowJobPojo.class);
         GrafeoJsonSerializer.registerType(WorkflowPojo.class);
         GrafeoJsonSerializer.registerType(WorkflowPositionPojo.class);
     }

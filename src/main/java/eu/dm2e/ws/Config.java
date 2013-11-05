@@ -1,10 +1,10 @@
 package eu.dm2e.ws;
 
-import java.io.File;
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.DefaultConfigurationBuilder;
+
+import java.io.File;
 
 
 /**
@@ -26,6 +26,8 @@ public enum Config {
 		DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
 		builder.setFile(new File(DM2E_WS_CONFIG));
 		try {
+
+
 			c =  builder.getConfiguration();
 		} catch (ConfigurationException e) {
 			c = null;

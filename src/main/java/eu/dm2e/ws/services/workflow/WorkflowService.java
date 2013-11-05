@@ -1,76 +1,36 @@
 package eu.dm2e.ws.services.workflow;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.joda.time.DateTime;
-
-import eu.dm2e.utils.UriUtils;
-import eu.dm2e.ws.Config;
-import eu.dm2e.ws.ConfigProp;
-import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.ErrorMsg;
-import eu.dm2e.ws.NS;
-import eu.dm2e.ws.api.AbstractJobPojo;
-import eu.dm2e.ws.api.JobPojo;
-import eu.dm2e.ws.api.LogEntryPojo;
-import eu.dm2e.ws.api.ParameterAssignmentPojo;
-import eu.dm2e.ws.api.ParameterConnectorPojo;
-import eu.dm2e.ws.api.ParameterPojo;
-import eu.dm2e.ws.api.WebserviceConfigPojo;
-import eu.dm2e.ws.api.WebservicePojo;
-import eu.dm2e.ws.api.WorkflowConfigPojo;
-import eu.dm2e.ws.api.WorkflowJobPojo;
-import eu.dm2e.ws.api.WorkflowPojo;
-import eu.dm2e.ws.api.WorkflowPositionPojo;
 import eu.dm2e.grafeo.GResource;
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
 import eu.dm2e.grafeo.jena.SparqlUpdate;
-import eu.dm2e.ws.services.AbstractAsynchronousRDFService;
-import eu.dm2e.ws.services.WorkerExecutorSingleton;
+import eu.dm2e.ws.*;
+import eu.dm2e.ws.api.ParameterPojo;
+import eu.dm2e.ws.api.WebservicePojo;
+import eu.dm2e.ws.api.WorkflowPojo;
+import eu.dm2e.ws.services.AbstractRDFService;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Service for the creation and execution of workflows
  */
 @Path("/workflow")
-public class WorkflowService extends AbstractAsynchronousRDFService {
+public class WorkflowService extends AbstractRDFService {
 
 	public static String PARAM_POLL_INTERVAL = "pollInterval";
 	public static String PARAM_JOB_TIMEOUT = "jobTimeout";
 	public static String PARAM_COMPLETE_LOG = "completeLog";
 
-	/**
-	 * The WorkflowJob object for the worker part of the service (to be used in
-	 * the run() method)
-	 */
-	private WorkflowJobPojo workflowJobPojo;
-	public WorkflowJobPojo getWorkflowJobPojo() { return this.workflowJobPojo; };
-	public void setWorkflowJobPojo(WorkflowJobPojo wfJobPojo) { this.workflowJobPojo = wfJobPojo; };
-
-	@Override
+    @Override
 	public WebservicePojo getWebServicePojo() {
 		WebservicePojo ws = new WebservicePojo();
-		ws.setLabel("Workflow Service");
+		ws.setLabel("Workflow Storage Service");
 		return ws;
 	}
 
@@ -106,120 +66,6 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 
 
 	/**
-	 * PUT /{id}
-	 *
-	 *  (non-Javadoc)
-	 * @see eu.dm2e.ws.services.AbstractAsynchronousRDFService#putConfigToService(java.lang.String)
-	 */
-	@PUT
-	@Path("/{id}")
-	@Consumes({DM2E_MediaType.TEXT_PLAIN})
-	@Produces({
-		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
-		DM2E_MediaType.APPLICATION_RDF_XML,
-		DM2E_MediaType.APPLICATION_X_TURTLE,
-//		 DM2E_MediaType.TEXT_PLAIN,
-		DM2E_MediaType.TEXT_RDF_N3,
-		DM2E_MediaType.TEXT_TURTLE,
-		MediaType.APPLICATION_JSON
-	})
-	public Response putConfigToService(String workflowConfigURI) {
-
-		URI workflowUri = getRequestUriWithoutQuery();
-		/*
-		 * Build workflow
-		 */
-		WorkflowPojo workflowPojo = new WorkflowPojo();
-		try {
-			workflowPojo.loadFromURI(workflowUri);
-		} catch (Exception e2) {
-			return throwServiceError(e2);
-		}
-
-
-		/*
-		 * Resolve configURI to WebserviceConfigPojo
-		 */
-		log.warn("Loading workflow config wfConfig " + workflowConfigURI);
-		WorkflowConfigPojo wfConf = new WorkflowConfigPojo();
-		try {
-			wfConf.loadFromURI(workflowConfigURI, 1);
-		} catch (Exception e) {
-			return throwServiceError(e);
-		}
-
-		/*
-		 * Validate the configuration
-		 */
-		log.warn("Validating workflow config");
-		try {
-			wfConf.validate();
-		} catch (Exception e) {
-			return throwServiceError(e);
-		}
-
-		/*
-		 * Build WorkflowJobPojo
-		 */
-		WorkflowJobPojo jobPojo = new WorkflowJobPojo();
-		jobPojo.setCreated(DateTime.now());
-		jobPojo.setWorkflow(workflowPojo);
-		jobPojo.setWorkflowConfig(wfConf);
-		
-		log.info("Create human-readable label for the job.");
-		{
-				String rdfLabel = "Workflow Job '";
-				rdfLabel += null != workflowPojo.getLabel() 
-						? workflowPojo.getLabel() 
-						: "";
-				rdfLabel += "' [";
-				rdfLabel += jobPojo.getCreated().toString();
-				rdfLabel += " by ";
-				rdfLabel += null != workflowPojo.getCreator()
-						? UriUtils.lastUriSegment(workflowPojo.getCreator().getId())
-						: "Unknown User";
-				rdfLabel += "]";
-				jobPojo.setLabel(rdfLabel);
-		}
-		
-
-		log.info("WorkflowJobPojo constructed by WorkflowService: {}", jobPojo);
-		jobPojo.addLogEntry("WorkflowJobPojo constructed by WorkflowService", "TRACE");
-		try {
-			jobPojo.publishToService(client.getJobWebTarget());
-		} catch (Exception e1) {
-			return throwServiceError(e1);
-		}
-
-		/*
-		 * Let the asynchronous worker handle the job
-		 */
-		log.info("WorkflowJob is before instantiation :" + jobPojo);
-		try {
-			WorkflowService instance = this.getClass().newInstance();
-			Method method = getClass().getMethod("setWorkflowJobPojo", WorkflowJobPojo.class);
-			method.invoke(instance, jobPojo);
-			WorkerExecutorSingleton.INSTANCE.handleJob(instance);
-		} catch ( NoSuchMethodException |
-					InvocationTargetException |
-					InstantiationException |
-					IllegalAccessException
-					e) {
-			log.error("Could not initialize worker WorkflowService: " + e + ExceptionUtils.getFullStackTrace(e));
-			return throwServiceError(e);
-		} catch (Exception e) {
-			log.error("Could not initialize worker WorkflowService: " + e + ExceptionUtils.getFullStackTrace(e));
-			return throwServiceError(e);
-		}
-
-		/*
-		 * Return JobPojo
-		 */
-		return Response.status(202).location(jobPojo.getIdAsURI()).entity(jobPojo).build();
-	}
-
-
-	/**
 	 * GET /{id}
 	 * @return
 	 */
@@ -237,31 +83,6 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 	}
 
 
-    /**
-     * GET {id}/blankConfig
-     * @return
-     */
-    @GET
-    @Path("{id}/blankConfig")
-    public Response getEmptyConfigForWorkflow() {
-		URI wfUri = popPath(getRequestUriWithoutQuery());
-		GrafeoImpl g = new GrafeoImpl();
-		g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), wfUri);
-		if (g.isEmpty()) {
-			return Response.status(404).build();
-		}
-		WorkflowPojo wf = g.getObjectMapper().getObject(WorkflowPojo.class, wfUri);
-		WorkflowConfigPojo wfconf = new WorkflowConfigPojo();
-		wfconf.setWorkflow(wf);
-		for (ParameterPojo inputParam : wf.getInputParams()) {
-			ParameterAssignmentPojo ass = wfconf.addParameterAssignment(inputParam.getId(), inputParam.getDefaultValue());
-			ass.setLabel(inputParam.getLabel());
-		}
-//		for (ParameterPojo inputParam : wf.getOutputParams()) {
-//			wfconf.addParameterAssignment(inputParam.getId(), "BLANK");
-//		}
-		return Response.ok().entity(wfconf).build();
-    }
 
 	/**
 	 * PUT {workflowID} 	Accept: json
@@ -308,6 +129,9 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 	public Response putGrafeo(Grafeo g) {
 		final URI wfUri = getRequestUriWithoutQuery();
 		final String wfUriStr = getRequestUriWithoutQuery().toString();
+
+        // Link to the default webservice (WorkflowExecutionService)
+        g.addTriple(g.resource(wfUri), NS.OMNOM.PROP_EXEC_WEBSERVICE, g.resource(pushPathFromBeginning(getRequestUriWithoutQuery(), "exec")));
 
 		// TODO FIXME What if the user changed the default parameters defined in post?
 
@@ -360,7 +184,43 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		return postGrafeo(wf.getGrafeo());
 	}
 
-	@Override
+    /**
+     * Convenience method that accepts a configuration, publishes it
+     * directly to the ConfigurationService and then calls the TransformationService
+     * with the persistent URI.
+     *
+     * <del>Only to be used for development, not for production!</del>
+     * This is necessary for workflows. [kb, Jul 15, 2013 12:03:08 AM]
+     *
+     * TODO test whether we can replace this with the MessageBodyWriter<Grafeo>
+     *
+     * @param rdfString
+     * @return
+     */
+    @POST
+    @Consumes({
+            DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+            DM2E_MediaType.APPLICATION_RDF_XML,
+            DM2E_MediaType.APPLICATION_X_TURTLE,
+            DM2E_MediaType.TEXT_RDF_N3,
+            DM2E_MediaType.TEXT_TURTLE
+            // , MediaType.TEXT_HTML
+            // , DM2E_MediaType.TEXT_PLAIN,
+            // , MediaType.APPLICATION_JSON
+    })
+    public Response postRDF(String rdfString) {
+        Grafeo g = null;
+        try {
+            g = new GrafeoImpl();
+            g.readHeuristically(rdfString);
+            assert(g != null);
+        }
+        catch (Exception e) {
+            throwServiceError(e);
+        }
+        return this.postGrafeo(g);
+    }
+
 	public Response postGrafeo(Grafeo g) {
 		GResource wfRes = g.findTopBlank(NS.OMNOM.CLASS_WORKFLOW);
 		log.trace("Workflow before Posting: " + g.getTerseTurtle());
@@ -369,8 +229,12 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		if (null == wfRes) {
 			return throwServiceError(NS.OMNOM.CLASS_WORKFLOW, ErrorMsg.NO_TOP_BLANK_NODE);
 		}
-		String wfUri = getRequestUriWithoutQuery() + "/" + createUniqueStr();
+		String uid =   createUniqueStr();
+        String wfUri = getRequestUriWithoutQuery() + "/" + uid;
 		wfRes.rename(wfUri);
+
+        // Link to the default webservice (WorkflowExecutionService)
+        g.addTriple(wfRes, NS.OMNOM.PROP_EXEC_WEBSERVICE, g.resource(pushPathFromBeginning(getRequestUriWithoutQuery(),"exec") + "/" + uid));
 
 		/*
 		 * Add global workflow parameters
@@ -596,194 +460,5 @@ public class WorkflowService extends AbstractAsynchronousRDFService {
 		return Response.seeOther(workflowUri).build();
 	}
 
-	/**
-	 * @see java.lang.Runnable#run()
-	 */
-	@Override
-	public void run() {
-		WorkflowJobPojo workflowJob = this.getWorkflowJobPojo();
-		WorkflowConfigPojo workflowConfig = workflowJob.getWorkflowConfig();
-		WorkflowPojo workflow = workflowJob.getWorkflowConfig().getWorkflow();
-		Map<String,JobPojo> finishedJobs = new HashMap<>();
-		try {
-			try {
-				workflowJob.getId().toString();
-				workflow.getId().toString();
-				workflowConfig.getId().toString();
-				log.info("Workflow in run before validation: " + workflow.getTerseTurtle());
-			} catch (NullPointerException e) {
-				throw e;
-			}
 
-			log.info("Job used in run(): " + workflowJob);
-
-			/*
-			 * Validate
-			 */
-			try {
-				workflowConfig.validate();
-			} catch (Throwable t) {
-				throw(t);
-			}
-
-			/*
-			 * Get global meta parameters (pollinterval, jobtimeout ...)
-			 */
-			long pollInterval = Long.parseLong(workflow.getParamByName(PARAM_POLL_INTERVAL).getDefaultValue());
-			if (null != workflowConfig.getParameterAssignmentForParam(PARAM_POLL_INTERVAL)) {
-				pollInterval = Long.parseLong(workflowConfig.getParameterAssignmentForParam(PARAM_POLL_INTERVAL).getParameterValue());
-			}
-			long jobTimeoutInterval = Long.parseLong(workflow.getParamByName(PARAM_JOB_TIMEOUT).getDefaultValue());
-			if (null != workflowConfig.getParameterAssignmentForParam(PARAM_JOB_TIMEOUT)) {
-				jobTimeoutInterval = Long.parseLong(workflowConfig.getParameterAssignmentForParam(PARAM_JOB_TIMEOUT).getParameterValue());
-			}
-
-			/*
-			 *
-			 */
-			workflowJob.setStarted();
-
-			/*
-			 * Iterate Positions
-			 */
-			for (WorkflowPositionPojo pos : workflow.getPositions()) {
-				WebservicePojo ws = pos.getWebservice();
-				workflowJob.addLogEntry("Re-loading webservice description", "TRACE");
-				ws.loadFromURI(ws.getId());
-				WebserviceConfigPojo wsconf = new WebserviceConfigPojo();
-				wsconf.setWebservice(ws);
-				wsconf.setWasGeneratedBy(workflowJob);
-
-				/*
-				 * Iterate Input Parameters of the Webservice at this position
-				 */
-				workflowJob.addLogEntry("About to iterate parameters", "TRACE");
-				nextParam:
-				for (ParameterPojo param : ws.getInputParams()) {
-					workflowJob.trace("Generating assignment for param " + param);
-//					workflowJob.addLogEntry("Current param: " + param, "TRACE");
-					workflowJob.publishToService();
-					log.trace("Current param: " + param);
-
-					// if there is a connector to this parameter at this position
-					ParameterConnectorPojo conn = workflow.getConnectorToPositionAndParam(pos, param);
-					if (null == conn) continue nextParam;
-
-					final ParameterAssignmentPojo ass;
-					if (conn.hasFromWorkflow()) {
-						// FIXME this is not working for whatever reason
-						// if the connector is from the workflow, take the value assigned to the workflow parameter
-						ass = workflowConfig.getParameterAssignmentForParam(conn.getFromParam());
-					} else {
-						// if the connector is from a previous position, take the value from the corresponding previous job
-						ass = finishedJobs.get(conn.getFromPosition().getId()).getOutputParameterAssignmentForParam(conn.getFromParam());
-						workflowJob.debug("Finished Jobs: " + finishedJobs.keySet());
-						workflowJob.debug("This connector fromPosition: " + conn.getFromPosition());
-					}
-					if (ass == null) {
-						workflowJob.debug(workflowConfig.getTerseTurtle());
-						throw new RuntimeException("Couldn't get the assignment for param " + param);
-					}
-					wsconf.addParameterAssignment(param.getId(), ass.getParameterValue());
-				}
-
-				/*
-				 * Publish the WebserviceConfig, so it becomes stable
-				 */
-				wsconf.resetId();
-				wsconf.setExecutesPosition(pos);
-				wsconf.publishToService(client.getConfigWebTarget());
-				if (null == wsconf.getId()) {
-					throw new RuntimeException("Could not publish webservice config " + wsconf);
-				}
-
-				/*
-				 * Run the webservice
-				 */
-				Response resp = client.target(ws.getId())
-						.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
-						.put(Entity.text(wsconf.getId()));
-				if (202 != resp.getStatus() || null == resp.getLocation()) {
-//					workflowJob.debug(wsconf.getTerseTurtle());
-					throw new RuntimeException("Request to start web service " + ws + " with config " + wsconf + "failed: " + resp);
-				}
-
-
-				/*
-				 * start the job
-				 */
-				long timePassed = 0;
-				JobPojo webserviceJob = new JobPojo(resp.getLocation());
-
-				// persist change of the workflow job
-				workflowJob.getRunningJobs().add(webserviceJob);
-				workflowJob.publishToService();
-				do {
-					webserviceJob.loadFromURI(webserviceJob.getId());
-					workflowJob.trace("Sleeping for " + pollInterval + "ms, waiting for job " + webserviceJob + " to finish.");
-					try {
-						Thread.sleep(pollInterval);
-					} catch (Exception e) {
-						throw new RuntimeException(e);
-					}
-					timePassed += pollInterval;
-					if (timePassed > jobTimeoutInterval*1000) {
-						throw new RuntimeException("Job " + webserviceJob + " took more than " + jobTimeoutInterval + "s too long to finish :(");
-					}
-					log.info("JOB STATUS: " +webserviceJob.getTerseTurtle());
-					
-				} while (webserviceJob.isStillRunning());
-
-				// just clearing the runningjobs set will be a problem for parallel jobs
-				workflowJob.getRunningJobs().remove(webserviceJob);
-
-				finishedJobs.put(pos.getId(), webserviceJob);
-				workflowJob.getFinishedJobs().add(webserviceJob);
-				workflowJob.getFinishedPositions().add(pos);
-
-				workflowJob.publishToService();
-				if (webserviceJob.isFailed()) {
-					throw new RuntimeException("Job " + webserviceJob + " of Webservice " + ws + "failed, hence workflow " + workflow + "failed. :(");
-				}
-				else if (webserviceJob.isFinished()) {
-					workflowJob.info("Job " + webserviceJob + " of Webservice " + ws + "finished successfully, moving on to next position.");
-					for (ParameterAssignmentPojo ass : webserviceJob.getOutputParameterAssignments()) {
-						try {
-							workflowJob.addOutputParameterAssignment(ass.getLabel(), ass.getParameterValue());
-						} catch (Exception e) {
-							// TODO FIXME HACK BAD BAD
-						}
-					}
-				}
-				workflowJob.publishToService();
-
-			} // end position loop
-
-			workflowJob.setFinished();
-		} catch (Throwable t) {
-			log.error("Workflow " + workflowJob +  " FAILED: " + t + "\n" + ExceptionUtils.getStackTrace(t));
-			workflowJob.fatal("Workflow " + workflowJob +  " FAILED: " + t + "\n" + ExceptionUtils.getStackTrace(t));
-			workflowJob.setFailed();
-			// TODO why can't I throw this here but in AbstractTransformationService??
-			// throw t
-		} finally {
-			
-			// output one giant log containing everything for debugging
-			JobPojo dummyJob = new JobPojo();
-			Set<AbstractJobPojo> allLoggingJobs = new HashSet<>();
-			allLoggingJobs.addAll(finishedJobs.values());
-			allLoggingJobs.add(workflowJob);
-			for (AbstractJobPojo job : allLoggingJobs) {
-				for (LogEntryPojo logEntry : job.getLogEntries()) {
-					LogEntryPojo newLogEntry = new LogEntryPojo();
-					newLogEntry.setTimestamp(logEntry.getTimestamp());
-					newLogEntry.setLevel(logEntry.getLevel());
-					newLogEntry.setMessage( job + ": " + logEntry.getMessage());
-					dummyJob.getLogEntries().add(newLogEntry);
-				}
-			}
-			workflowJob.addOutputParameterAssignment(PARAM_COMPLETE_LOG, dummyJob.toLogString());
-			workflowJob.publishToService();
-		}
-	}
 }

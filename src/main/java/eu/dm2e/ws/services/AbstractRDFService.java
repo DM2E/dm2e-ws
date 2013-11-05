@@ -1,5 +1,22 @@
 package eu.dm2e.ws.services;
 
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.Config;
+import eu.dm2e.ws.ConfigProp;
+import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.ErrorMsg;
+import eu.dm2e.ws.api.WebservicePojo;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.validator.routines.UrlValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -10,38 +27,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.UUID;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.core.Variant;
-
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.validator.routines.UrlValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-
-import eu.dm2e.ws.Config;
-import eu.dm2e.ws.ConfigProp;
-import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.ErrorMsg;
-import eu.dm2e.ws.api.WebservicePojo;
-import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
 
 /**
  * Abstract Base class for all RDF services.
@@ -179,6 +164,7 @@ public abstract class AbstractRDFService {
             String path = this.getClass().getAnnotation(Path.class).value();
             if (base.endsWith("/") && path.startsWith("/")) base = base.substring(0,base.length()-1);
             webservicePojo.setId(base + path);
+            webservicePojo.setImplementationID(this.getClass().getCanonicalName());
         }
         return webservicePojo;
     }
@@ -188,7 +174,6 @@ public abstract class AbstractRDFService {
      * Implementation of the default behaviour, which is a 303 redirect
      * from the base URI to /describe, where the webservice description is returned.
      *
-     * @param uriInfo
      * @return
      */
     @GET
@@ -223,7 +208,7 @@ public abstract class AbstractRDFService {
     /**
      * The serialization of the webservice description is returned.
      *
-     * @param uriInfo
+     *
      * @return
      */
     @GET
@@ -395,6 +380,13 @@ public abstract class AbstractRDFService {
 		URI uri = uriInfo.getRequestUri();
 		return this.popPath(uri, path);
 	}
+
+    /**
+     * Removes last path element or the given path from a URI. Query remains unaffected.
+     * @param uri
+     * @param path
+     * @return
+     */
     public URI popPath(URI uri, String path) {
         String query = uri.getQuery();
         String u = uri.toString();
@@ -426,7 +418,66 @@ public abstract class AbstractRDFService {
         }
     }
 
-	protected class RDFOutput implements StreamingOutput {
+    /**
+     * Removes first occurrence of the given path element from a URI. Query remains unaffected.
+     * @param uri
+     * @param path
+     * @return
+     */
+    public URI popPathFromBeginning(URI uri, String path) {
+        String u = uri.toString();
+        log.trace("URI: " + u);
+        u = u.replaceFirst("/" + path + "/", "/");
+        log.trace("Result: " + u);
+        try {
+            return new URI(u);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("An exception occurred: " + e, e);
+        }
+    }
+
+    /**
+     * Adds the given path element to the beginning of a URI. Query remains unaffected.
+     * @param uri
+     * @param path
+     * @return
+     */
+    public URI pushPathFromBeginning(URI uri, String path) {
+        String u = uri.toString();
+        String p = uri.getPath();
+        log.trace("URI: " + u);
+        u = u.replaceFirst(p, "/" + path + p);
+        log.trace("Result: " + u);
+        try {
+            return new URI(u);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("An exception occurred: " + e, e);
+        }
+    }
+
+    public String lastPathElement(URI uri) {
+        String query = uri.getQuery();
+        String u = uri.toString();
+        log.trace("URI: " + u);
+        if (query!=null) {
+            log.trace("Query: " + query);
+            u = u.replace("?" + query,"");
+        }
+        return lastPathElement(u);
+    }
+    public String lastPathElement(String uri) {
+        if (uri.endsWith("/")) {
+            uri = uri.replaceAll("/$", "");
+        }
+        String tmp = uri.replaceAll("/[^/]+$", "");
+        return uri.substring(tmp.length());
+
+    }
+
+
+
+
+    protected class RDFOutput implements StreamingOutput {
 		Logger log = LoggerFactory.getLogger(getClass().getName());
 		Model model;
 		MediaType mediaType;

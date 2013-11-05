@@ -1,23 +1,14 @@
 package eu.dm2e.ws.tests.unit.api;
-import static org.junit.Assert.assertEquals;
-
-import java.net.URI;
-
-import org.joda.time.DateTime;
-import org.json.JSONException;
-import org.junit.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import eu.dm2e.grafeo.gom.SerializablePojo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
 import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
 import eu.dm2e.ws.NS;
-import eu.dm2e.ws.tests.OmnomUnitTest;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.UserPojo;
+import eu.dm2e.ws.tests.OmnomUnitTest;
 import org.json.JSONException;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -79,7 +70,9 @@ public class FilePojoTest extends OmnomUnitTest{
 			expect.addProperty(NS.OMNOM.PROP_FILE_STATUS, fileStatus);
 			JsonObject jobObj = new JsonObject();
 			jobObj.addProperty(SerializablePojo.JSON_FIELD_ID, jobId);
-			jobObj.addProperty(NS.OMNOM.PROP_JOB_STATUS, "NOT_STARTED");
+            jobObj.add(NS.OMNOM.PROP_FINISHED_JOB, new JsonArray());
+            jobObj.add(NS.OMNOM.PROP_RUNNING_JOB, new JsonArray());
+            jobObj.addProperty(NS.OMNOM.PROP_JOB_STATUS, "NOT_STARTED");
 			jobObj.add(NS.OMNOM.PROP_LOG_ENTRY, new JsonArray());
 			jobObj.add(NS.OMNOM.PROP_ASSIGNMENT, new JsonArray());
 			jobObj.addProperty(NS.DCTERMS.PROP_MODIFIED, job.getModified().toString());

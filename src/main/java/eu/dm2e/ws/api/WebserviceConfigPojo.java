@@ -81,9 +81,9 @@ public class WebserviceConfigPojo extends AbstractConfigPojo<WebserviceConfigPoj
 
 	// link to the parent workflow that created this config
 	@RDFProperty(NS.PROV.PROP_WAS_GENERATED_BY)
-	private WorkflowJobPojo wasGeneratedBy;
-	public WorkflowJobPojo getWasGeneratedBy() { return wasGeneratedBy; }
-	public void setWasGeneratedBy(WorkflowJobPojo wasGeneratedBy) { this.wasGeneratedBy = wasGeneratedBy; }
+	private JobPojo wasGeneratedBy;
+	public JobPojo getWasGeneratedBy() { return wasGeneratedBy; }
+	public void setWasGeneratedBy(JobPojo wasGeneratedBy) { this.wasGeneratedBy = wasGeneratedBy; }
 
 	// link to a person if it is a workflow config
 	@RDFProperty(NS.DCTERMS.PROP_CREATOR)

@@ -64,7 +64,7 @@ public class JobServiceITCase extends OmnomTestCase {
 		Response resp = webTarget.request().get();
 		Grafeo g = new GrafeoImpl(resp.readEntity(InputStream.class));
 		log.info(g.getNTriples());
-		GrafeoAssert.sizeEquals(g, 2);
+		GrafeoAssert.sizeEquals(g, 3);
 	}
 
 	/**
@@ -312,7 +312,7 @@ public class JobServiceITCase extends OmnomTestCase {
 	
 	@Test
 	public void testWorkflowPojoPublish() {
-		WorkflowJobPojo job = new WorkflowJobPojo();
+		JobPojo job = new JobPojo();
 		{
 			assertThat(job.getId(), is(nullValue()));
 			job.info("FOO");

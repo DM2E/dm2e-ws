@@ -1,20 +1,17 @@
 package eu.dm2e.ws.services;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.api.WebserviceConfigPojo;
+import org.joda.time.DateTime;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.joda.time.DateTime;
-
-import eu.dm2e.utils.UriUtils;
-import eu.dm2e.ws.api.JobPojo;
-import eu.dm2e.ws.api.WebserviceConfigPojo;
-import eu.dm2e.grafeo.Grafeo;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * Abstract Base Class for services that transform data.
@@ -73,24 +70,7 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
         job.setWebService(wsConf.getWebservice());
         job.setCreated(DateTime.now());
         job.setWebserviceConfig(wsConf);
-        log.info("Creating human-readable label");
-        {
-        	StringBuilder rdfsLabelSB = new StringBuilder();
-        	rdfsLabelSB.append("Web service Job ");
-        	rdfsLabelSB.append("'");
-        	rdfsLabelSB.append(wsConf.getWebservice().getLabel());
-        	rdfsLabelSB.append("'");
-        	rdfsLabelSB.append(" ["); 
-        	rdfsLabelSB.append(job.getCreated().toString());
-        	rdfsLabelSB.append(" for ");
-        	rdfsLabelSB.append(
-        			null != wsConf.getCreator()
-        			? UriUtils.lastUriSegment(wsConf.getCreator().getId())
-        			: null != wsConf.getWasGeneratedBy()
-        					? UriUtils.lastUriSegment(wsConf.getWasGeneratedBy().getId())
-        					: "Unknown Creator");
-        	job.setLabel(rdfsLabelSB.toString());
-        }
+        job.setHumanReadableLabel();
         job.addLogEntry("JobPojo constructed by AbstractTransformationService", "TRACE");
         try {
         	log.debug("Posting job to job service <{}>", client.getJobWebTarget());

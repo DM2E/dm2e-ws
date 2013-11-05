@@ -201,6 +201,12 @@
 	        <version>1.1.1</version>
 	        <scope>test</scope>
 	    </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>2.1.9</version>
+        </dependency>
+
 	</dependencies>
 	<build>
 
@@ -227,7 +233,7 @@
                             <outputDirectory>${project.build.directory}/jacoco-report</outputDirectory>
                         </configuration>
                     </execution>
-                    <execution>
+                    <!--<execution>
                         <id>check</id>
                         <goals>
                             <goal>check</goal>
@@ -246,7 +252,7 @@
                                 </rule>
                             </rules>
                         </configuration>
-                    </execution>
+                    </execution> -->
                     <execution>
                         <id>pre-integration-test</id>
                         <phase>pre-integration-test</phase>
@@ -307,6 +313,15 @@
                         </goals>
                         <configuration>
                             <mainClass>${exec.mainClass.override}</mainClass>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>groovy</id>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>groovy.ui.Console</mainClass>
                         </configuration>
                     </execution>
                     <execution>
@@ -409,7 +424,9 @@
 		<sesame.version>2.6.10</sesame.version>
         <exec.mainClass.override>eu.dm2e.ws.Main</exec.mainClass.override>
         <old-jersey-version>1.17</old-jersey-version>
-  	</properties>
+          <version.xerces>2.11.0</version.xerces>
+          <ver.xerces>2.11.0</ver.xerces>
+      </properties>
 	<repositories>
         <repository>
 			<id>m2.java.net</id>

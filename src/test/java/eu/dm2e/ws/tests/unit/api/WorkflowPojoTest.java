@@ -220,7 +220,7 @@ public class WorkflowPojoTest extends OmnomUnitTest {
 		
 		final String wfid = "http://bar";
 		
-		WorkflowJobPojo wfjob = new WorkflowJobPojo();
+		JobPojo wfjob = new JobPojo();
 		wfjob.setId(wfid);
 		wfjob.getFinishedJobs().add(finishedJob1);
 		
@@ -229,7 +229,7 @@ public class WorkflowPojoTest extends OmnomUnitTest {
 		g.getObjectMapper().addObject(wfjob);
 		
 		Grafeo g2 = g.copy();
-		WorkflowJobPojo wfjob2 = g2.getObjectMapper().getObject(WorkflowJobPojo.class, wfid);
+		JobPojo wfjob2 = g2.getObjectMapper().getObject(JobPojo.class, wfid);
 		
 		log.info(g2.getTerseTurtle());
 		GrafeoAssert.graphsAreEquivalent(wfjob.getGrafeo(), wfjob2.getGrafeo());

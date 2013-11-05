@@ -13,8 +13,6 @@ import org.junit.runners.Suite.SuiteClasses;
 	UserPojoTest.class,
 	WebserviceConfigPojoTest.class,
 	WebservicePojoTest.class,
-	WorkflowConfigPojoTest.class,
-	WorkflowJobPojoTest.class,
 	WorkflowPojoTest.class })
 public class SuiteOfPojoTests {
 

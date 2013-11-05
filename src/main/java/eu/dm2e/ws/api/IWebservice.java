@@ -25,4 +25,8 @@ public interface IWebservice {
 
 	public abstract void setOutputParams(Set<ParameterPojo> outputParams);
 
+    public abstract String getImplementationID();
+
+    public abstract void setImplementationID(String id);
+
 }

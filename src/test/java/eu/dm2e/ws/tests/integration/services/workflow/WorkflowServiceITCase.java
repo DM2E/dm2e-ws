@@ -104,10 +104,14 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 
 	@Test
 	public void testValidate()
-			throws IOException {
+			throws Exception {
 		{
-			WorkflowConfigPojo wfconf = new WorkflowConfigPojo();
-			wfconf.setWorkflow(xsltWorkflow);
+			WebserviceConfigPojo wfconf = new WebserviceConfigPojo();
+            for (WebservicePojo ws:xsltWorkflow.getWebservices()) {
+                wfconf.setWebservice(ws);
+                break;
+            }
+            assertNotNull(wfconf.getWebservice());
 			wfconf.addParameterAssignment(_ws_param_xmlinput, _file_xml_in);
 			wfconf.addParameterAssignment(_ws_param_xsltinput, _file_xslt_in);
 			wfconf.addParameterAssignment(_ws_param_datasetLabel, "A fascinating dataset indeed.");
@@ -277,9 +281,13 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 	@Test
 	@Ignore("Working but jetty in fuseki croaks on the large form post")
 	public void testRunWorkflow() throws Exception {
-		WorkflowConfigPojo wfconf = new WorkflowConfigPojo();
-		wfconf.setWorkflow(xsltWorkflow);
-		log.debug(LogbackMarkers.DATA_DUMP, xsltWorkflow.getTerseTurtle());
+		WebserviceConfigPojo wfconf = new WebserviceConfigPojo();
+        for (WebservicePojo ws:xsltWorkflow.getWebservices()) {
+            wfconf.setWebservice(ws);
+            break;
+        }
+        assertNotNull(wfconf.getWebservice());
+        log.debug(LogbackMarkers.DATA_DUMP, xsltWorkflow.getTerseTurtle());
 		wfconf.addParameterAssignment(_ws_param_xmlinput, _file_xml_in);
 		wfconf.addParameterAssignment(_ws_param_xsltinput, _file_xslt_in);
 		wfconf.addParameterAssignment(_ws_param_datasetLabel, "A fascinating dataset indeed.");
@@ -296,19 +304,19 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 		log.info("</VALIDATE>");
 		Assert.assertNotNull(wfconf.getId());
 		
-		WorkflowConfigPojo wfconf2 = new WorkflowConfigPojo();
+		WebserviceConfigPojo wfconf2 = new WebserviceConfigPojo();
 		wfconf2.loadFromURI(wfconf.getId());
 		GrafeoAssert.graphsAreEquivalent(wfconf.getGrafeo(), wfconf2.getGrafeo());
 		
 		log.info("RUNNING WORKFLOW");
 		Response resp = client
-			.target(xsltWorkflow.getId())
+			.target(wfconf.getWebservice().getId())
 			.request()
 			.put(Entity.text(wfconf.getId()));
-		log.info("RESPONSE FROM WORKFLOW " + xsltWorkflow.getId() +": "+ resp);
+		log.info("RESPONSE FROM WORKFLOW SERVICE " + wfconf.getWebservice().getId() +": "+ resp);
 		Assert.assertEquals(202, resp.getStatus());
 		log.info("Location: " + resp.getLocation());
-		WorkflowJobPojo workflowJob = new WorkflowJobPojo();
+		JobPojo workflowJob = new JobPojo();
 		
 		int loopCount = 0;
 		do {
@@ -371,16 +379,20 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 	}
 	@Test
 	public void testRunSimpleWorkflow() throws Exception {
-		WorkflowConfigPojo wfconf = new WorkflowConfigPojo();
-		wfconf.setWorkflow(simpleWorkflow);
+		WebserviceConfigPojo wfconf = new WebserviceConfigPojo();
+        for (WebservicePojo ws:simpleWorkflow.getWebservices()) {
+            wfconf.setWebservice(ws);
+            break;
+        }
+        assertNotNull(wfconf.getWebservice());
 		wfconf.publishToService(client.getConfigWebTarget());
-		WorkflowJobPojo workflowJob = new WorkflowJobPojo();
+		JobPojo workflowJob = new JobPojo();
 		log.info("RUNNING WORKFLOW");
 		Response resp = client
-			.target(simpleWorkflow.getId())
+			.target(wfconf.getWebservice().getId())
 			.request()
 			.put(Entity.text(wfconf.getId()));
-		log.info("RESPONSE FROM WORKFLOW " + simpleWorkflow.getId() +": "+ resp);
+		log.info("RESPONSE FROM WORKFLOW SERVICE" + wfconf.getWebservice().getId() +": "+ resp);
 		Assert.assertEquals(202, resp.getStatus());
 		
 		int loopCount = 0;

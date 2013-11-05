@@ -1,20 +1,19 @@
 package eu.dm2e.ws.api;
 
-import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.commons.beanutils.BeanUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import eu.dm2e.ws.NS;
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.annotations.Namespaces;
 import eu.dm2e.grafeo.annotations.RDFClass;
 import eu.dm2e.grafeo.annotations.RDFProperty;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.NS;
+import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Pojo for a webservice.
@@ -105,11 +104,16 @@ public class WebservicePojo extends AbstractPersistentPojo<WebservicePojo> imple
     private Set<ParameterPojo> inputParams = new HashSet<>();
 	@Override public Set<ParameterPojo> getInputParams() { return inputParams; }
 	@Override public void setInputParams(Set<ParameterPojo> inputParams) { this.inputParams = inputParams; }
-	
+
     @RDFProperty(NS.OMNOM.PROP_OUTPUT_PARAM)
     private Set<ParameterPojo> outputParams = new HashSet<>();
-	@Override public Set<ParameterPojo> getOutputParams() { return outputParams; }
-	@Override public void setOutputParams(Set<ParameterPojo> outputParams) { this.outputParams = outputParams; }
+    @Override public Set<ParameterPojo> getOutputParams() { return outputParams; }
+    @Override public void setOutputParams(Set<ParameterPojo> outputParams) { this.outputParams = outputParams; }
+
+    @RDFProperty(NS.OMNOM.PROP_WEBSERVICE_ID)
+    private String implementationID = null;
+    public String getImplementationID() { return implementationID; }
+    public void setImplementationID(String implementationID) { this.implementationID = implementationID; }
 
 
 }
