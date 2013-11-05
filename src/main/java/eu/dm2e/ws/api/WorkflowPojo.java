@@ -177,10 +177,10 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
     	
     }
 
-    public WorkflowPositionPojo setPosition(String needle, WebservicePojo ws) {
+    public WorkflowPositionPojo addPosition(WebservicePojo ws) {
         WorkflowPositionPojo pos = new WorkflowPositionPojo();
-        pos.setId(this.getId() + "/pos/" + needle);
         pos.setWebservice(ws);
+        pos.setWorkflow(this);
         addPosition(pos);
         return pos;
     }

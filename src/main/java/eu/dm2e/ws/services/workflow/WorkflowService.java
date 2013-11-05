@@ -131,11 +131,11 @@ public class WorkflowService extends AbstractRDFService {
 		final String wfUriStr = getRequestUriWithoutQuery().toString();
 
         // Link to the default webservice (WorkflowExecutionService)
-        g.addTriple(g.resource(wfUri), NS.OMNOM.PROP_EXEC_WEBSERVICE, g.resource(pushPathFromBeginning(getRequestUriWithoutQuery(), "exec")));
+        g.addTriple(g.resource(wfUri), NS.OMNOM.PROP_EXEC_WEBSERVICE, g.resource(pushPathFromBeginning(uriInfo, "exec")));
 
 		// TODO FIXME What if the user changed the default parameters defined in post?
 
-		log.info("Skolemnizing parameters.");
+		log.info("Skolemizing parameters.");
 		{
 			g.skolemizeByLabel(wfUriStr, NS.OMNOM.PROP_INPUT_PARAM, "param");
 			g.skolemizeByLabel(wfUriStr, NS.OMNOM.PROP_OUTPUT_PARAM, "param");
@@ -146,7 +146,7 @@ public class WorkflowService extends AbstractRDFService {
 			g.skolemizeSequential(wfUriStr, NS.OMNOM.PROP_WORKFLOW_POSITION, "position");
 		}
 
-		log.info("Skolemnizing Connectors.");
+		log.info("Skolemizing Connectors.");
 		{
 			g.skolemizeSequential(wfUriStr, NS.OMNOM.PROP_PARAMETER_CONNECTOR, "connector");
 		}
@@ -234,7 +234,8 @@ public class WorkflowService extends AbstractRDFService {
 		wfRes.rename(wfUri);
 
         // Link to the default webservice (WorkflowExecutionService)
-        g.addTriple(wfRes, NS.OMNOM.PROP_EXEC_WEBSERVICE, g.resource(pushPathFromBeginning(getRequestUriWithoutQuery(),"exec") + "/" + uid));
+
+        g.addTriple(wfRes, NS.OMNOM.PROP_EXEC_WEBSERVICE, g.resource(pushPathFromBeginning(uriInfo,"exec") + "/" + uid));
 
 		/*
 		 * Add global workflow parameters

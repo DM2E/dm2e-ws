@@ -70,14 +70,14 @@ public class FilePojoTest extends OmnomUnitTest{
 			expect.addProperty(NS.OMNOM.PROP_FILE_STATUS, fileStatus);
 			JsonObject jobObj = new JsonObject();
 			jobObj.addProperty(SerializablePojo.JSON_FIELD_ID, jobId);
-            jobObj.add(NS.OMNOM.PROP_FINISHED_JOB, new JsonArray());
-            jobObj.add(NS.OMNOM.PROP_RUNNING_JOB, new JsonArray());
             jobObj.addProperty(NS.OMNOM.PROP_JOB_STATUS, "NOT_STARTED");
 			jobObj.add(NS.OMNOM.PROP_LOG_ENTRY, new JsonArray());
 			jobObj.add(NS.OMNOM.PROP_ASSIGNMENT, new JsonArray());
 			jobObj.addProperty(NS.DCTERMS.PROP_MODIFIED, job.getModified().toString());
 			jobObj.addProperty(NS.DCTERMS.PROP_CREATED, job.getCreated().toString());
-			expect.add(NS.PROV.PROP_WAS_GENERATED_BY, jobObj);
+            jobObj.add(NS.OMNOM.PROP_FINISHED_JOB, new JsonArray());
+            jobObj.add(NS.OMNOM.PROP_RUNNING_JOB, new JsonArray());
+            expect.add(NS.PROV.PROP_WAS_GENERATED_BY, jobObj);
 			expect.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, fp.getRDFClassUri());
 			
 			String cleanExpect = testGson.toJson(expect);

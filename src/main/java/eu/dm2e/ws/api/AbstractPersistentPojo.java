@@ -13,7 +13,7 @@ import java.net.URI;
 /**
  * Abstract Base Class for Grafeo-annotated Pojos that can be persisted in or loaded from a service.
  */
-public abstract class AbstractPersistentPojo<T> extends SerializablePojo<T> {
+public abstract class AbstractPersistentPojo<T extends SerializablePojo> extends SerializablePojo<T> {
 	
 	protected static transient Client client = new Client();
 	
@@ -39,6 +39,7 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo<T> {
 			log.info("Time spent: " + timeElapsed + "ms.");
 			log.debug("DONE Loading from " + uri);
             log.debug("No of Triples loaded from URI " + uri + ": " + g.size());
+            // log.debug("Triples: " + g.getTerseTurtle());
 		} catch (Exception e1) {
 			log.warn("Failed to initialize Pojo from URI: " + e1);
 			return;
@@ -49,6 +50,8 @@ public abstract class AbstractPersistentPojo<T> extends SerializablePojo<T> {
         try {
         	log.debug("Copying properties from Pojo " + uri);
             PojoUtils.copyProperties(this, theNewPojo);
+            // log.debug("theNewPojo: " + theNewPojo.getTerseTurtle());
+            // log.debug("this: " + this.getTerseTurtle());
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("An exception occurred: " + e, e);
         }

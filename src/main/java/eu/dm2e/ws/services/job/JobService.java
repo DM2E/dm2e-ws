@@ -103,13 +103,13 @@ public class JobService extends AbstractRDFService {
 			JobPojo.class
 		);
         List<SerializablePojo> jobList = new ArrayList<>();
-    	for (Class<? extends AbstractJobPojo> pojoClass  : pojoClasses) {
+    	for (Class<JobPojo> pojoClass  : pojoClasses) {
     		GrafeoImpl g = new GrafeoImpl();
     		String pojoRdfClass = pojoClass.getAnnotation(RDFClass.class).value();
     		g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, NS.RDF.PROP_TYPE, g.resource(pojoRdfClass));
     		for (GResource gres : g.listSubjects()) {
     			if (gres.isAnon()) continue;
-    			AbstractJobPojo pojo = null;
+    			JobPojo pojo = null;
 				try {
 					pojo = pojoClass.newInstance();
 				} catch (InstantiationException | IllegalAccessException e) {
@@ -319,7 +319,7 @@ public class JobService extends AbstractRDFService {
 		String resourceUriStr = getRequestUriWithoutQuery().toString().replaceAll("/status$", "");
 		// this must be a concrete JobPojo but it still uses only the means of AbstractJobPojo
 		// so it should work for workflowjobs as well.
-		AbstractJobPojo jobPojo = new JobPojo();
+		JobPojo jobPojo = new JobPojo();
 		try {
 			jobPojo.loadFromURI(resourceUriStr);
 			return Response.ok(jobPojo.getJobStatus()).build();
@@ -446,7 +446,7 @@ public class JobService extends AbstractRDFService {
 	public Response listLogEntries(@QueryParam("minLevel") String minLevelStr, @QueryParam("maxLevel") String maxLevelStr) {
 	
 		URI resourceUri  = popPath(getRequestUriWithoutQuery());
-		AbstractJobPojo jobPojo = new JobPojo();
+		JobPojo jobPojo = new JobPojo();
 		try {
 			jobPojo.loadFromURI(resourceUri);
 		} catch (Exception e) {
@@ -472,7 +472,7 @@ public class JobService extends AbstractRDFService {
 	@Produces(DM2E_MediaType.TEXT_X_LOG)
 	public Response listLogEntriesAsLogFile(@QueryParam("minLevel") String minLevelStr, @QueryParam("maxLevel") String maxLevelStr) {
 		String resourceUriStr = getRequestUriWithoutQuery().toString().replaceAll("/log$", "");
-		AbstractJobPojo jobPojo = new JobPojo();
+		JobPojo jobPojo = new JobPojo();
 		try {
 			jobPojo.loadFromURI(resourceUriStr);
 		} catch (Exception e) {
@@ -489,9 +489,9 @@ public class JobService extends AbstractRDFService {
 		DM2E_MediaType.TEXT_RDF_N3,
 		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
 		DM2E_MediaType.APPLICATION_RDF_XML })
-	public AbstractJobPojo getSingleLogEntry() {
+	public JobPojo getSingleLogEntry() {
 		URI resourceUri  = popPath(popPath(getRequestUriWithoutQuery()));
-		AbstractJobPojo jobPojo = new JobPojo();
+		JobPojo jobPojo = new JobPojo();
 		try {
 			jobPojo.loadFromURI(resourceUri);
 		} catch (Exception e) {

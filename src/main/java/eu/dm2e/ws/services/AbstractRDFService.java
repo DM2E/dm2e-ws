@@ -442,8 +442,8 @@ public abstract class AbstractRDFService {
      * @param path
      * @return
      */
-    public URI pushPathFromBeginning(URI uri, String path) {
-        String u = uri.toString();
+    public URI pushPathFromBeginning(UriInfo uri, String path) {
+        String u = uri.getRequestUri().toString();
         String p = uri.getPath();
         log.trace("URI: " + u);
         u = u.replaceFirst(p, "/" + path + p);
@@ -469,7 +469,7 @@ public abstract class AbstractRDFService {
         if (uri.endsWith("/")) {
             uri = uri.replaceAll("/$", "");
         }
-        String tmp = uri.replaceAll("/[^/]+$", "");
+        String tmp = uri.replaceAll("[^/]+$", "");
         return uri.substring(tmp.length());
 
     }

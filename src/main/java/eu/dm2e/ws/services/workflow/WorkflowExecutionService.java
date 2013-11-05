@@ -93,6 +93,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         WebservicePojo webservicePojo = new WebservicePojo();
         try {
             webservicePojo.loadFromURI(workflowExecutionUri);
+            log.debug("Web Service to be executed: "+ webservicePojo.getTerseTurtle());
         } catch (Exception e2) {
             return throwServiceError(e2);
         }
@@ -159,7 +160,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         String base = Config.get(ConfigProp.BASE_URI);
         String path = this.getClass().getAnnotation(Path.class).value();
         if (base.endsWith("/") && path.startsWith("/")) base = base.substring(0,base.length()-1);
-        ws.setId(base + path + lastPathElement(wf.getId()));
+        ws.setId(base + path + "/" + lastPathElement(wf.getId()));
         ws.setImplementationID(this.getClass().getCanonicalName());
         ws.setLabel("Service for WF: " + wf.getLabel());
         for (ParameterPojo p:wf.getInputParams()) {
@@ -269,9 +270,10 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
 	@Override
 	public void run() {
 		JobPojo job = getJobPojo();
+        log.info("Workflow job run() for " + job.getWebService());
         WebserviceConfigPojo workflowConfig = job.getWebserviceConfig();
 		WorkflowPojo workflow = new WorkflowPojo();
-        workflow.loadFromURI(workflowConfig.getWebservice().getParamByName(PARAM_WORKFLOW).getDefaultValue());
+        workflow.loadFromURI(job.getWebService().getParamByName(PARAM_WORKFLOW).getDefaultValue());
         Set<JobPojo> runningJobs = new HashSet<>();
         Map<String,JobPojo> finishedJobs = new HashMap<>();
 
@@ -438,10 +440,10 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
 			
 			// output one giant log containing everything for debugging
 			JobPojo dummyJob = new JobPojo();
-			Set<AbstractJobPojo> allLoggingJobs = new HashSet<>();
+			Set<JobPojo> allLoggingJobs = new HashSet<>();
 			allLoggingJobs.addAll(finishedJobs.values());
 			allLoggingJobs.add(job);
-			for (AbstractJobPojo j : allLoggingJobs) {
+			for (JobPojo j : allLoggingJobs) {
 				for (LogEntryPojo logEntry : j.getLogEntries()) {
 					LogEntryPojo newLogEntry = new LogEntryPojo();
 					newLogEntry.setTimestamp(logEntry.getTimestamp());

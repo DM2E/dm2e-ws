@@ -1,29 +1,26 @@
 package eu.dm2e.ws.tests.integration.services.publish;
 
-import static org.junit.Assert.*;
-
-import java.io.InputStream;
-import java.net.URI;
-
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
-
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.logback.LogbackMarkers;
+import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.api.WebserviceConfigPojo;
+import eu.dm2e.ws.api.WebservicePojo;
+import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.services.publish.PublishService;
+import eu.dm2e.ws.tests.OmnomTestCase;
+import eu.dm2e.ws.tests.OmnomTestResources;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import eu.dm2e.logback.LogbackMarkers;
-import eu.dm2e.ws.NS;
-import eu.dm2e.ws.tests.OmnomTestCase;
-import eu.dm2e.ws.tests.OmnomTestResources;
-import eu.dm2e.ws.api.AbstractJobPojo;
-import eu.dm2e.ws.api.JobPojo;
-import eu.dm2e.ws.api.WebserviceConfigPojo;
-import eu.dm2e.ws.api.WebservicePojo;
-import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
-import eu.dm2e.ws.model.JobStatus;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.Response;
+import java.io.InputStream;
+import java.net.URI;
+
+import static org.junit.Assert.*;
 
 /**
  * This file was created within the DM2E project.
@@ -112,7 +109,7 @@ public class PublishServiceITCase extends OmnomTestCase {
             long i = 0 ,
 	             maxTries = 100,
 	             sleeptime = 1500;
-            AbstractJobPojo job = new JobPojo(joburi);
+            JobPojo job = new JobPojo(joburi);
 			do {
             	if (i++ >= maxTries) {
             		fail("Publishing took more than" + (maxTries * sleeptime / 1000) + " seconds.");
@@ -174,7 +171,7 @@ public class PublishServiceITCase extends OmnomTestCase {
              */
 
             String status = JobStatus.NOT_STARTED.name();
-            AbstractJobPojo job = null;
+            JobPojo job = null;
             while (status.equals(JobStatus.NOT_STARTED.name()) || status.equals(JobStatus.STARTED.name())) {
                 Grafeo g = new GrafeoImpl(joburi.toString());
                 job = g.getObjectMapper().getObject(JobPojo.class, joburi.toString());

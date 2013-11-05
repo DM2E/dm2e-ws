@@ -4,12 +4,16 @@ import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
 import eu.dm2e.grafeo.jena.SparqlConstruct;
 import eu.dm2e.ws.*;
-import eu.dm2e.ws.api.*;
+import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.api.WebserviceConfigPojo;
+import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.tests.OmnomTestCase;
 import eu.dm2e.ws.tests.OmnomTestResources;
 import eu.dm2e.ws.wsmanager.ManageService;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.ws.rs.client.Entity;
@@ -19,18 +23,6 @@ import java.net.URI;
 
 import static org.junit.Assert.*;
 import static org.junit.matchers.JUnitMatchers.containsString;
-import org.junit.Ignore;
-
-import eu.dm2e.ws.Config;
-import eu.dm2e.ws.ConfigProp;
-import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.ErrorMsg;
-import eu.dm2e.ws.NS;
-import eu.dm2e.ws.api.AbstractJobPojo;
-import eu.dm2e.ws.api.FilePojo;
-import eu.dm2e.ws.api.JobPojo;
-import eu.dm2e.ws.api.WebserviceConfigPojo;
-import eu.dm2e.ws.api.WebservicePojo;
 
 /**
  * This file was created within the DM2E project. http://dm2e.eu
@@ -182,7 +174,7 @@ public class DemoServiceITCase extends OmnomTestCase {
 			throw new RuntimeException("An exception occurred: " + e, e);
 		}
 		Grafeo g = new GrafeoImpl(joburi.toString());
-		AbstractJobPojo job = g.getObjectMapper().getObject(JobPojo.class, joburi.toString());
+		JobPojo job = g.getObjectMapper().getObject(JobPojo.class, joburi.toString());
 		String status = job.getJobStatus();
 		log.info("Status after 1 seconds: " + status);
 		assert (status.equals(JobStatus.STARTED.name()));

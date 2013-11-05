@@ -302,7 +302,7 @@ public class JobServiceITCase extends OmnomTestCase {
 			GrafeoImpl getjobGrafeo = new GrafeoImpl(getJobNT, true);
 			log.info(getjobGrafeo.getTurtle());
 			
-			AbstractJobPojo getjob = getjobGrafeo.getObjectMapper().getObject(JobPojo.class, job.getId());
+			JobPojo getjob = getjobGrafeo.getObjectMapper().getObject(JobPojo.class, job.getId());
 			assertEquals(JobStatus.FAILED.toString(), getjob.getJobStatus());
 			client.target(job.getId()).path("status").request().put(Entity.text("FINISHED"));
 			getjob.loadFromURI(job.getId());

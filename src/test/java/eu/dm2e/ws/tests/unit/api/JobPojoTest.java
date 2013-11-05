@@ -27,14 +27,14 @@ public class JobPojoTest extends OmnomUnitTest {
 
 		JsonObject expect = new JsonObject();
 		expect.addProperty(SerializablePojo.JSON_FIELD_UUID, job.getUuid());
-        expect.add(NS.OMNOM.PROP_FINISHED_JOB, new JsonArray());
-        expect.add(NS.OMNOM.PROP_RUNNING_JOB, new JsonArray());
         expect.addProperty(NS.OMNOM.PROP_JOB_STATUS, JobStatus.STARTED.name());
 		expect.add(NS.OMNOM.PROP_LOG_ENTRY, new JsonArray());
 		expect.add(NS.OMNOM.PROP_ASSIGNMENT, new JsonArray());
 		expect.addProperty(NS.DCTERMS.PROP_MODIFIED, job.getModified().toString());
 		expect.addProperty(NS.DCTERMS.PROP_CREATED, job.getCreated().toString());
-		expect.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, job.getRDFClassUri());
+        expect.add(NS.OMNOM.PROP_FINISHED_JOB, new JsonArray());
+        expect.add(NS.OMNOM.PROP_RUNNING_JOB, new JsonArray());
+        expect.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, job.getRDFClassUri());
 
 		assertEquals(job, GrafeoJsonSerializer.deserializeFromJSON(expect.toString(), JobPojo.class));
 		String expectString =  testGson.toJson(expect);

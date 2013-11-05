@@ -11,7 +11,6 @@ import eu.dm2e.grafeo.jena.SparqlUpdate;
 import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.*;
-import eu.dm2e.ws.api.AbstractConfigPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.services.AbstractRDFService;
@@ -89,27 +88,18 @@ public class ConfigService extends AbstractRDFService {
     @Path("list")
     public Response getConfigList(@Context UriInfo uriInfo) {
     	
-    	List<Class<? extends AbstractConfigPojo<?>>> pojoClasses = new ArrayList<>();
-        pojoClasses.add(WebserviceConfigPojo.class);
-        List<SerializablePojo> configList = new ArrayList<>();
-    	for (Class<? extends AbstractConfigPojo<?>> pojoClass  : pojoClasses) {
+    	List<SerializablePojo> configList = new ArrayList<>();
     		GrafeoImpl g = new GrafeoImpl();
-    		String pojoRdfClass = pojoClass.getAnnotation(RDFClass.class).value();
+    		String pojoRdfClass = WebserviceConfigPojo.class.getAnnotation(RDFClass.class).value();
     		g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, NS.RDF.PROP_TYPE, g.resource(pojoRdfClass));
     		for (GResource gres : g.listSubjects()) {
     			if (gres.isAnon()) continue;
-    			AbstractConfigPojo<?> pojo = null;
-				try {
-					pojo = pojoClass.newInstance();
-				} catch (InstantiationException | IllegalAccessException e) {
-					log.error("Could not instantiate {} for URI {}", pojoClass, gres);
-					return throwServiceError("INTERNAL ERROR ");
-				}
-    			pojo.setId(gres.getUri());
+    			WebserviceConfigPojo pojo = null;
+				pojo = new WebserviceConfigPojo();
+				pojo.setId(gres.getUri());
 				pojo.loadFromURI(pojo.getId());
     			configList.add(pojo);
     		}
-    	}
     	return Response.ok(configList).build();
     }
 

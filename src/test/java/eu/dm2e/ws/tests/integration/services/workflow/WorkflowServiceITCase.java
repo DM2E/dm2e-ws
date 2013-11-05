@@ -392,18 +392,20 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 			.target(wfconf.getWebservice().getId())
 			.request()
 			.put(Entity.text(wfconf.getId()));
-		log.info("RESPONSE FROM WORKFLOW SERVICE" + wfconf.getWebservice().getId() +": "+ resp);
+		log.info("RESPONSE FROM WORKFLOW SERVICE " + wfconf.getWebservice().getId() +": "+ resp.getLocation());
 		Assert.assertEquals(202, resp.getStatus());
 		
 		int loopCount = 0;
 		do {
 			workflowJob.loadFromURI(resp.getLocation());
-			log.info(workflowJob.toLogString());
+            log.info("Job status in iteration {}: {}", loopCount, workflowJob.getJobStatus());
+            log.info(workflowJob.toLogString());
 			assertNotNull(workflowJob.getLabel());
 			Thread.sleep(1000);
 //			assertEquals("[Loop #" + loopCount + "] Sub-Job running.", 1, workflowJob.getRunningJobs().size());
 			log.error("[Loop #" + loopCount + "] Sub-Job running: " + workflowJob.getRunningJobs());
-			for (JobPojo runningJob : workflowJob.getRunningJobs()) {
+
+            for (JobPojo runningJob : workflowJob.getRunningJobs()) {
 				runningJob.loadFromURI(runningJob.getId());
 //				log.debug("" + runningJob.getExecutesPosition());
 //				log.debug(runningJob.getTerseTurtle());
