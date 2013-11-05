@@ -264,4 +264,45 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
     public void setWebservices(Set<WebservicePojo> webservices) { this.webservices = webservices; }
     public void addWebservice(WebservicePojo it) { this.getWebservices().add(it); }
 
+
+    public String getDotId() {
+        return "" + getId().hashCode();
+    }
+
+    public String getDot() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("digraph workflow {");
+        sb.append("node [shape=Mrecord];");
+        sb.append(getWorkflowPositionDot());
+        for (WorkflowPositionPojo pos:getPositions()) {
+            sb.append(pos.getDot());
+        }
+        for (ParameterConnectorPojo con:getParameterConnectors()) {
+            sb.append(con.getDot());
+        }
+        sb.append("}");
+        return sb.toString();
+
+    }
+
+    private String getWorkflowPositionDot() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getDotId()).append("[");
+        sb.append("label=\"{");
+        boolean first = true;
+        for (ParameterPojo p : getInputParams()) {
+            if (first) { first=false; } else { sb.append("|"); }
+            sb.append("<").append(p.getDotId()).append(">").append(p.getLabel());
+        }
+        sb.append("}|").append("WORKFLOW").append("|{");
+        first = true;
+        for (ParameterPojo p : getOutputParams()) {
+            if (first) { first=false; } else { sb.append("|"); }
+            sb.append("<").append(p.getDotId()).append(">").append(p.getLabel());
+        }
+        sb.append("}");
+        sb.append("\"");
+        sb.append("];");
+        return sb.toString();
+    }
 }

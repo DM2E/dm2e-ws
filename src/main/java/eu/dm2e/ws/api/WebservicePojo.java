@@ -87,14 +87,19 @@ public class WebservicePojo extends AbstractPersistentPojo<WebservicePojo> imple
     	// to make BeanUtils happy
     }
 
-    public WebservicePojo(URI uri) {
-        Grafeo g = new GrafeoImpl(uri.toString());
+    public WebservicePojo(String uri) {
+        Grafeo g = new GrafeoImpl(uri);
         IWebservice ws = g.getObjectMapper().getObject(WebservicePojo.class, uri);
         try {
             BeanUtils.copyProperties(this, ws);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("An exception occurred: " + e, e);
         }
+    }
+
+
+    public WebservicePojo(URI uri) {
+        this(uri.toString());
     }
     /*********************
      * GETTERS/SETTERS

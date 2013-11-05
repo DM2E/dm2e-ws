@@ -53,4 +53,29 @@ public class WorkflowPositionPojo extends SerializablePojo<WorkflowPositionPojo>
 	public WorkflowPojo getWorkflow() { return workflow; }
 	public void setWorkflow(WorkflowPojo workflow) { this.workflow = workflow; }
 
+
+    public String getDotId() {
+        return "" + getId().hashCode();
+    }
+
+    public String getDot() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getDotId()).append("[");
+        sb.append("label=\"{");
+        boolean first = true;
+        for (ParameterPojo p : getWebservice().getInputParams()) {
+            if (first) { first=false; } else { sb.append("|"); }
+            sb.append("<").append(p.getDotId()).append(">").append(p.getLabel());
+        }
+        sb.append("}|").append(getWebservice().getLabel()).append("|{");
+        first = true;
+        for (ParameterPojo p : getWebservice().getOutputParams()) {
+            if (first) { first=false; } else { sb.append("|"); }
+            sb.append("<").append(p.getDotId()).append(">").append(p.getLabel());
+        }
+        sb.append("}");
+        sb.append("\"");
+        sb.append("];");
+        return sb.toString();
+    }
 }

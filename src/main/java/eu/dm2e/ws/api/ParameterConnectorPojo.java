@@ -96,4 +96,15 @@ public class ParameterConnectorPojo extends SerializablePojo<ParameterConnectorP
 			throw new RuntimeException("ParameterConnector must have a fromPosition or a fromWorkflow pair.");
 		}
 	}
+
+    public String getDot() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(fromPosition!=null?fromPosition.getDotId():fromWorkflow.getDotId());
+        sb.append(":").append(fromParam.getDotId());
+        sb.append(" -> ");
+        sb.append(toPosition!=null?toPosition.getDotId():toWorkflow.getDotId());
+        sb.append(":").append(toParam.getDotId());
+        sb.append(";");
+        return sb.toString();
+    }
 }

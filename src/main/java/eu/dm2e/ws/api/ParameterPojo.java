@@ -106,6 +106,10 @@ public class ParameterPojo extends SerializablePojo<ParameterPojo> {
 		this.parameterType = g.expand(parameterType); 
 	}
 
+    public String getDotId() {
+        return "" + getId().hashCode();
+    }
+
 
 
 }
