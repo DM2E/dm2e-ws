@@ -1,7 +1,26 @@
 package eu.dm2e.ws.services.config;
 
+import java.io.File;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.UriInfo;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+
 import eu.dm2e.grafeo.GResource;
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.annotations.RDFClass;
@@ -10,21 +29,14 @@ import eu.dm2e.grafeo.jena.GrafeoImpl;
 import eu.dm2e.grafeo.jena.SparqlUpdate;
 import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
 import eu.dm2e.logback.LogbackMarkers;
-import eu.dm2e.ws.*;
+import eu.dm2e.ws.Config;
+import eu.dm2e.ws.ConfigProp;
+import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.ErrorMsg;
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.services.AbstractRDFService;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.UriInfo;
-import java.io.File;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Service for storing and retrieving configurations for workflows and webservices.
@@ -228,7 +240,6 @@ public class ConfigService extends AbstractRDFService {
 
 		String rdfType = json.getAsJsonObject().get(NS.RDF.PROP_TYPE).getAsString();
 		SerializablePojo pojo;
-		boolean isWorkflow = false;
 		if (rdfType.equals(NS.OMNOM.CLASS_WEBSERVICE_CONFIG)) {
 			pojo = GrafeoJsonSerializer.deserializeFromJSON(input, WebserviceConfigPojo.class);
 		} else {
@@ -273,7 +284,6 @@ public class ConfigService extends AbstractRDFService {
 
 		String rdfType = json.getAsJsonObject().get(NS.RDF.PROP_TYPE).getAsString();
 		SerializablePojo pojo;
-		boolean isWorkflow = false;
 		if (rdfType.equals(NS.OMNOM.CLASS_WEBSERVICE_CONFIG)) {
 			pojo = GrafeoJsonSerializer.deserializeFromJSON(input, WebserviceConfigPojo.class);
 		} else {

@@ -199,16 +199,17 @@ public class UserPojoTest extends OmnomUnitTest {
 		userPojo.setId(uri);
 
 		log.info("to ntriples");
-		{
-			final String ttlStr = ""
-					+"<"+uri+"> <" + NS.OMNOM.PROP_FILE_SERVICE  +"> <" + fs1_uri + "> .\n"
-					+"<"+uri+"> <" + NS.OMNOM.PROP_FILE_SERVICE  +"> <" + fs2_uri + "> .\n"
-					+"<"+uri+"> <" + NS.OMNOM.PROP_WEBSERVICE  +"> <" + ws1_uri + "> .\n"
-					+"<"+uri+"> <" + NS.OMNOM.PROP_WEBSERVICE  +"> <" + ws2_uri + "> .\n"
-					+"<"+uri+"> <" + NS.RDF.PROP_TYPE  +"> <" + NS.FOAF.CLASS_PERSON + "> ."
-					;
-//			assertEquals(ttlStr, userPojo.getCanonicalNTriples());
-		}
+		// TODO
+//		{
+//			final String ttlStr = ""
+//					+"<"+uri+"> <" + NS.OMNOM.PROP_FILE_SERVICE  +"> <" + fs1_uri + "> .\n"
+//					+"<"+uri+"> <" + NS.OMNOM.PROP_FILE_SERVICE  +"> <" + fs2_uri + "> .\n"
+//					+"<"+uri+"> <" + NS.OMNOM.PROP_WEBSERVICE  +"> <" + ws1_uri + "> .\n"
+//					+"<"+uri+"> <" + NS.OMNOM.PROP_WEBSERVICE  +"> <" + ws2_uri + "> .\n"
+//					+"<"+uri+"> <" + NS.RDF.PROP_TYPE  +"> <" + NS.FOAF.CLASS_PERSON + "> ."
+//					;
+////			assertEquals(ttlStr, userPojo.getCanonicalNTriples());
+//		}
 		log.info("to json");
 		{
 			String jsonStr = "{\n"
