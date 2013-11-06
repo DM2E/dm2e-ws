@@ -97,14 +97,15 @@ public class ParameterConnectorPojo extends SerializablePojo<ParameterConnectorP
 		}
 	}
 
-    public String getDot() {
+    public String getDot(String color) {
         StringBuilder sb = new StringBuilder();
-        sb.append(fromPosition!=null?fromPosition.getDotId():fromWorkflow.getDotId());
+        sb.append("   ").append(fromPosition!=null?fromPosition.getDotId():fromWorkflow.getDotId()+"1");
         sb.append(":").append(fromParam.getDotId());
         sb.append(" -> ");
-        sb.append(toPosition!=null?toPosition.getDotId():toWorkflow.getDotId());
+        sb.append(toPosition!=null?toPosition.getDotId():toWorkflow.getDotId()+"2");
         sb.append(":").append(toParam.getDotId());
-        sb.append(";");
+        if (color!=null) sb.append(" [color=\"").append(color).append("\"]");
+        sb.append(";\n");
         return sb.toString();
     }
 }

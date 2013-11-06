@@ -1,10 +1,14 @@
 package eu.dm2e.ws.api;
 
-import eu.dm2e.grafeo.gom.SerializablePojo;
-import eu.dm2e.ws.NS;
 import eu.dm2e.grafeo.annotations.Namespaces;
 import eu.dm2e.grafeo.annotations.RDFClass;
 import eu.dm2e.grafeo.annotations.RDFProperty;
+import eu.dm2e.grafeo.gom.SerializablePojo;
+import eu.dm2e.utils.DotUtils;
+import eu.dm2e.ws.NS;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Pojo representing an instance of a webservice within a workflow
@@ -60,22 +64,27 @@ public class WorkflowPositionPojo extends SerializablePojo<WorkflowPositionPojo>
 
     public String getDot() {
         StringBuilder sb = new StringBuilder();
-        sb.append(getDotId()).append("[");
-        sb.append("label=\"{");
-        boolean first = true;
+        sb.append("   ").append(getDotId()).append(" [");
+        sb.append("label=<");
+        List<String> labels = new ArrayList<>();
+        List<String> ports = new ArrayList<>();
+        List<String> rowLabels = new ArrayList<>();
         for (ParameterPojo p : getWebservice().getInputParams()) {
-            if (first) { first=false; } else { sb.append("|"); }
-            sb.append("<").append(p.getDotId()).append(">").append(p.getLabel());
+            ports.add(p.getDotId());
+            labels.add(p.getLabel());
         }
-        sb.append("}|").append(getWebservice().getLabel()).append("|{");
-        first = true;
+        rowLabels.add(DotUtils.getColumn(labels, ports));
+        rowLabels.add(DotUtils.getColumn(getWebservice().getLabel()));
+        labels.clear();
+        ports.clear();
         for (ParameterPojo p : getWebservice().getOutputParams()) {
-            if (first) { first=false; } else { sb.append("|"); }
-            sb.append("<").append(p.getDotId()).append(">").append(p.getLabel());
+            ports.add(p.getDotId());
+            labels.add(p.getLabel());
         }
-        sb.append("}");
-        sb.append("\"");
-        sb.append("];");
+        rowLabels.add(DotUtils.getColumn(labels, ports));
+        sb.append(DotUtils.getRow(rowLabels,null,"gray90"));
+        sb.append(">");
+        sb.append("];\n");
         return sb.toString();
     }
 }

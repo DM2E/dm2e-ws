@@ -5,6 +5,7 @@ import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.annotations.Namespaces;
 import eu.dm2e.grafeo.annotations.RDFClass;
 import eu.dm2e.grafeo.annotations.RDFProperty;
+import eu.dm2e.utils.DotUtils;
 import eu.dm2e.ws.NS;
 import org.joda.time.DateTime;
 
@@ -269,40 +270,60 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
         return "" + getId().hashCode();
     }
 
+    private String[] colors = {"black", "blue3", "brown2", "burlywood2", "cadetblue2", "chartreuse2", "chocolate2", "cyan4", "darkorange", "dodgerblue4", "darkslategray4", "firebrick4"};
     public String getDot() {
         StringBuilder sb = new StringBuilder();
-        sb.append("digraph workflow {");
-        sb.append("node [shape=Mrecord];");
+        sb.append("digraph workflow {\n");
+        sb.append("   ").append("node [shape=none];\n");
+        sb.append("   ").append("rankdir=LR;\n");
         sb.append(getWorkflowPositionDot());
         for (WorkflowPositionPojo pos:getPositions()) {
             sb.append(pos.getDot());
         }
+        int color=0;
         for (ParameterConnectorPojo con:getParameterConnectors()) {
-            sb.append(con.getDot());
+            sb.append(con.getDot(colors[color]));
+            if (++color==colors.length) color=0;
         }
-        sb.append("}");
+        sb.append("}\n");
         return sb.toString();
 
     }
 
     private String getWorkflowPositionDot() {
         StringBuilder sb = new StringBuilder();
-        sb.append(getDotId()).append("[");
-        sb.append("label=\"{");
-        boolean first = true;
+        sb.append("   ").append(getDotId()).append("1 [");
+        sb.append("label=<");
+
+        List<String> labels = new ArrayList<>();
+        List<String> ports = new ArrayList<>();
+        List<String> rowLabels = new ArrayList<>();
+        rowLabels.add(DotUtils.getColumn("WORKFLOW"));
         for (ParameterPojo p : getInputParams()) {
-            if (first) { first=false; } else { sb.append("|"); }
-            sb.append("<").append(p.getDotId()).append(">").append(p.getLabel());
+            ports.add(p.getDotId());
+            labels.add(p.getLabel());
         }
-        sb.append("}|").append("WORKFLOW").append("|{");
-        first = true;
+        rowLabels.add(DotUtils.getColumn(labels, ports));
+        sb.append(DotUtils.getRow(rowLabels,null,"gray90"));
+
+        sb.append(">");
+        sb.append("];\n");
+
+        sb.append("   ").append(getDotId()).append("2 [");
+        sb.append("label=<");
+        labels.clear();
+        ports.clear();
+        rowLabels.clear();
         for (ParameterPojo p : getOutputParams()) {
-            if (first) { first=false; } else { sb.append("|"); }
-            sb.append("<").append(p.getDotId()).append(">").append(p.getLabel());
+            ports.add(p.getDotId());
+            labels.add(p.getLabel());
         }
-        sb.append("}");
-        sb.append("\"");
-        sb.append("];");
+        rowLabels.add(DotUtils.getColumn(labels, ports));
+        rowLabels.add(DotUtils.getColumn("WORKFLOW"));
+        sb.append(DotUtils.getRow(rowLabels,null,"gray90"));
+        sb.append(">");
+        sb.append("];\n");
+
         return sb.toString();
     }
 }
