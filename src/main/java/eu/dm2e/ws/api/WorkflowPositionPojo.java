@@ -72,9 +72,16 @@ public class WorkflowPositionPojo extends SerializablePojo<WorkflowPositionPojo>
         List<String> labels = new ArrayList<>();
         List<String> ports = new ArrayList<>();
         List<String> rowLabels = new ArrayList<>();
+        WorkflowPojo nestedWf = null;
+        String nestedInput = null;
         for (ParameterPojo p : getWebservice().getInputParams()) {
             ports.add(p.getDotId());
             labels.add(DotUtils.xmlEscape(p.getLabel()));
+            if (p.getId().endsWith("workflow")) {
+                nestedWf = new WorkflowPojo();
+                nestedWf.loadFromURI(p.getDefaultValue());
+                nestedInput = p.getDotId();
+            }
         }
         rowLabels.add(DotUtils.getColumn(labels, ports));
         rowLabels.add(DotUtils.getColumn(DotUtils.xmlEscape(getWebservice().getLabel())));
@@ -88,6 +95,11 @@ public class WorkflowPositionPojo extends SerializablePojo<WorkflowPositionPojo>
         sb.append(DotUtils.getRow(rowLabels,null,"gray90"));
         sb.append(">");
         sb.append("];\n");
+        if (nestedWf!=null) {
+            sb.append(nestedWf.getDot());
+            sb.append(DotUtils.connect("clusterNode_"+nestedWf.getDotIdIn(),null,getDotId(),nestedInput,null));
+        }
+
         return sb.toString();
     }
 }

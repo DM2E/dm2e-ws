@@ -287,8 +287,9 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
     public String getDot() {
         StringBuilder sb = new StringBuilder();
         sb.append("subgraph cluster_").append(getDotIdIn()).append(" {\n");
-        sb.append("color=gray95;\n");
-        sb.append("style=filled;\n");
+        sb.append("clusterNode_").append(getDotIdIn()).append(" [label=\"\", fixedsize=\"false\", width=0, height=0, shape=none];\n");
+        sb.append("color=blue;\n");
+        sb.append("style=solid;\n");
         String label = getLabelorURI();
         if (label!=null) label.replaceAll("\"","\\\"");
         else label="NO LABEL OR URI SET";

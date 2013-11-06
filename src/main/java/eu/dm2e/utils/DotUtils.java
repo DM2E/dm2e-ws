@@ -53,4 +53,16 @@ public class DotUtils {
         in = in.replaceAll("&","");
         return in;
     }
+
+    public static String connect(String from, String fromPort, String to, String toPort, String color) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("   ").append(from);
+        if (fromPort!=null) sb.append(":").append(fromPort);
+        sb.append(" -> ");
+        sb.append(to);
+        if (toPort!=null) sb.append(":").append(toPort);
+        if (color!=null) sb.append(" [color=\"").append(color).append("\"]");
+        sb.append(";\n");
+        return sb.toString();
+    }
 }
