@@ -157,7 +157,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
     public  WebservicePojo getWebServicePojo(WorkflowPojo wf) {
         if (serviceDescriptions.containsKey(wf.getId())) return serviceDescriptions.get(wf.getId());
         WebservicePojo ws = new WebservicePojo();
-        String base = Config.get(ConfigProp.BASE_URI);
+        String base = uriInfo.getBaseUri().toString();
         String path = this.getClass().getAnnotation(Path.class).value();
         if (base.endsWith("/") && path.startsWith("/")) base = base.substring(0,base.length()-1);
         ws.setId(base + path + "/" + lastPathElement(wf.getId()));

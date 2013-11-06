@@ -13,7 +13,7 @@ import java.net.URI;
 /**
  * Abstract Base Class for Grafeo-annotated Pojos that can be persisted in or loaded from a service.
  */
-public abstract class AbstractPersistentPojo<T extends SerializablePojo> extends SerializablePojo<T> {
+public abstract class AbstractPersistentPojo<T extends AbstractPersistentPojo> extends SerializablePojo<T> {
 	
 	protected static transient Client client = new Client();
 	
@@ -55,7 +55,17 @@ public abstract class AbstractPersistentPojo<T extends SerializablePojo> extends
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("An exception occurred: " + e, e);
         }
+        loaded=true;
     }
+
+    boolean loaded = false;
+    public T refresh(int expansionSteps, boolean force) {
+        if (getId()==null) throw new RuntimeException("Can't refresh a Pojo without ID.");
+        if (!force && loaded) return (T) this;
+        loadFromURI(getId(), expansionSteps);
+        return (T) this;
+    }
+
 	
 	public String publishToService(WebTarget wr) {
 		log.debug("Publishing myself (pojo) to " + wr.getUri());

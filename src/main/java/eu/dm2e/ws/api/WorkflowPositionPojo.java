@@ -59,7 +59,10 @@ public class WorkflowPositionPojo extends SerializablePojo<WorkflowPositionPojo>
 
 
     public String getDotId() {
-        return "" + getId().hashCode();
+        int h = getId()!=null?getId().hashCode():hashCode();
+        if (h<0) h = h*-1;
+        return "" + h;
+
     }
 
     public String getDot() {
@@ -71,15 +74,15 @@ public class WorkflowPositionPojo extends SerializablePojo<WorkflowPositionPojo>
         List<String> rowLabels = new ArrayList<>();
         for (ParameterPojo p : getWebservice().getInputParams()) {
             ports.add(p.getDotId());
-            labels.add(p.getLabel());
+            labels.add(DotUtils.xmlEscape(p.getLabel()));
         }
         rowLabels.add(DotUtils.getColumn(labels, ports));
-        rowLabels.add(DotUtils.getColumn(getWebservice().getLabel()));
+        rowLabels.add(DotUtils.getColumn(DotUtils.xmlEscape(getWebservice().getLabel())));
         labels.clear();
         ports.clear();
         for (ParameterPojo p : getWebservice().getOutputParams()) {
             ports.add(p.getDotId());
-            labels.add(p.getLabel());
+            labels.add(DotUtils.xmlEscape(p.getLabel()));
         }
         rowLabels.add(DotUtils.getColumn(labels, ports));
         sb.append(DotUtils.getRow(rowLabels,null,"gray90"));

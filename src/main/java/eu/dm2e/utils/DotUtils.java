@@ -44,4 +44,13 @@ public class DotUtils {
         sb.append("</TR></TABLE>");
         return sb.toString();
     }
+
+    // TODO: For now I just delete bad characters, a proper replacement would be nice ;-)
+    public static String xmlEscape(String in) {
+        in = in.replaceAll("\"","");
+        in = in.replaceAll("<","");
+        in = in.replaceAll(">","");
+        in = in.replaceAll("&","");
+        return in;
+    }
 }

@@ -264,16 +264,35 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
     public Set<WebservicePojo> getWebservices() { return webservices; }
     public void setWebservices(Set<WebservicePojo> webservices) { this.webservices = webservices; }
     public void addWebservice(WebservicePojo it) { this.getWebservices().add(it); }
+    public WebservicePojo getWebservice() {
+        for (WebservicePojo ws:webservices) {
+            return ws.refresh(0,true);
+        }
+        return null;
+    }
 
 
-    public String getDotId() {
-        return "" + getId().hashCode();
+    public String getDotIdIn() {
+        int h = getId()!=null?getId().hashCode():hashCode();
+        if (h<0) h = h*-1;
+        return "" + h + "1";
+    }
+    public String getDotIdOut() {
+        int h = getId()!=null?getId().hashCode():hashCode();
+        if (h<0) h = h*-1;
+        return "" + h + "2";
     }
 
     private String[] colors = {"black", "blue3", "brown2", "burlywood2", "cadetblue2", "chartreuse2", "chocolate2", "cyan4", "darkorange", "dodgerblue4", "darkslategray4", "firebrick4"};
     public String getDot() {
         StringBuilder sb = new StringBuilder();
-        sb.append("digraph workflow {\n");
+        sb.append("subgraph cluster_").append(getDotIdIn()).append(" {\n");
+        sb.append("color=gray95;\n");
+        sb.append("style=filled;\n");
+        String label = getLabelorURI();
+        if (label!=null) label.replaceAll("\"","\\\"");
+        else label="NO LABEL OR URI SET";
+        sb.append("label=\"WORKFLOW: ").append(label).append("\";\n");
         sb.append("   ").append("node [shape=none];\n");
         sb.append("   ").append("rankdir=LR;\n");
         sb.append(getWorkflowPositionDot());
@@ -290,18 +309,28 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
 
     }
 
+    public String getFullDot() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("digraph ").append("G" + getDotIdIn()).append(" {\n");
+        sb.append("   ").append("rankdir=LR;\n");
+        sb.append(getDot());
+        sb.append("}\n");
+        return sb.toString();
+
+    }
+
     private String getWorkflowPositionDot() {
         StringBuilder sb = new StringBuilder();
-        sb.append("   ").append(getDotId()).append("1 [");
+        sb.append("   ").append(getDotIdIn()).append(" [");
         sb.append("label=<");
 
         List<String> labels = new ArrayList<>();
         List<String> ports = new ArrayList<>();
         List<String> rowLabels = new ArrayList<>();
-        rowLabels.add(DotUtils.getColumn("WORKFLOW"));
+        // rowLabels.add(DotUtils.getColumn("WORKFLOW"));
         for (ParameterPojo p : getInputParams()) {
             ports.add(p.getDotId());
-            labels.add(p.getLabel());
+            labels.add(DotUtils.xmlEscape(p.getLabel()));
         }
         rowLabels.add(DotUtils.getColumn(labels, ports));
         sb.append(DotUtils.getRow(rowLabels,null,"gray90"));
@@ -309,17 +338,17 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
         sb.append(">");
         sb.append("];\n");
 
-        sb.append("   ").append(getDotId()).append("2 [");
+        sb.append("   ").append(getDotIdOut()).append(" [");
         sb.append("label=<");
         labels.clear();
         ports.clear();
         rowLabels.clear();
         for (ParameterPojo p : getOutputParams()) {
             ports.add(p.getDotId());
-            labels.add(p.getLabel());
+            labels.add(DotUtils.xmlEscape(p.getLabel()));
         }
         rowLabels.add(DotUtils.getColumn(labels, ports));
-        rowLabels.add(DotUtils.getColumn("WORKFLOW"));
+        // rowLabels.add(DotUtils.getColumn("WORKFLOW"));
         sb.append(DotUtils.getRow(rowLabels,null,"gray90"));
         sb.append(">");
         sb.append("];\n");

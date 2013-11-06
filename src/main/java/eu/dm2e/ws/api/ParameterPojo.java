@@ -107,7 +107,10 @@ public class ParameterPojo extends SerializablePojo<ParameterPojo> {
 	}
 
     public String getDotId() {
-        return "" + getId().hashCode();
+        int h = getId()!=null?getId().hashCode():hashCode();
+        if (h<0) h = h*-1;
+        return "" + h;
+
     }
 
 
