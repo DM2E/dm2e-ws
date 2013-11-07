@@ -16,6 +16,7 @@ import java.net.URI;
 public abstract class AbstractPersistentPojo<T extends AbstractPersistentPojo> extends SerializablePojo<T> {
 	
 	protected static transient Client client = new Client();
+    private transient boolean loaded = false;
 	
 	public void loadFromURI(String uri) {
 		this.loadFromURI(uri, 0);
@@ -55,10 +56,10 @@ public abstract class AbstractPersistentPojo<T extends AbstractPersistentPojo> e
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("An exception occurred: " + e, e);
         }
+        log.debug("DONE Copying properties from Pojo " + uri);
         loaded=true;
     }
 
-    boolean loaded = false;
     public T refresh(int expansionSteps, boolean force) {
         if (getId()==null) throw new RuntimeException("Can't refresh a Pojo without ID.");
         if (!force && loaded) return (T) this;
