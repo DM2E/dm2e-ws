@@ -37,7 +37,6 @@ public final class NS {
         public static final String CLASS_WEBSERVICE           = BASE + "Webservice";
         public static final String CLASS_WEBSERVICE_CONFIG    = BASE + "WebserviceConfig";
         public static final String CLASS_WORKFLOW             = BASE + "Workflow";
-        public static final String CLASS_WORKFLOW_CONFIG      = BASE + "WorkflowConfig";
         public static final String CLASS_WORKFLOW_JOB         = BASE + "WorkflowJob";
         public static final String CLASS_WORKFLOW_POSITION    = BASE + "WorkflowPosition";
 
@@ -79,7 +78,6 @@ public final class NS {
         public static final String PROP_EXEC_WEBSERVICE          = BASE + "isExecutableAt";
         public static final String PROP_WEBSERVICE_CONFIG   = BASE + "webserviceConfig";
 		public static final String PROP_WORKFLOW            = BASE + "workflow";
-		public static final String PROP_WORKFLOW_CONFIG     = BASE + "workflowConfig";
 
 		public static final String PROP_FILE_SERVICE = BASE + "fileservice";
 		public static final String PROP_FILE_OWNER = BASE + "fileOwner";

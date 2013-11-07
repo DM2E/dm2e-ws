@@ -141,9 +141,6 @@ public class ConfigService extends AbstractRDFService {
         }
         log.info("Looking for top blank node.");
         GResource res = g.findTopBlank(NS.OMNOM.CLASS_WEBSERVICE_CONFIG);
-        if (null == res) {
-        	res = g.findTopBlank(NS.OMNOM.CLASS_WORKFLOW_CONFIG);
-        }
         if (null == res)  {
         	res = g.resource(uri);
         } else {
