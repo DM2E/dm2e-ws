@@ -17,6 +17,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -93,7 +94,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         WebservicePojo webservicePojo = new WebservicePojo();
         try {
             webservicePojo.loadFromURI(workflowExecutionUri);
-            log.debug("Web Service to be executed: "+ webservicePojo.getTerseTurtle());
+            log.debug("Web Service to be executed: " + webservicePojo.getTerseTurtle());
         } catch (Exception e2) {
             return throwServiceError(e2);
         }
@@ -220,6 +221,21 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         log.trace(wsDesc.getTerseTurtle());
         return Response.ok().entity(wsDesc).build();
 	}
+
+    @GET
+    @Path("{id}/param/{paramId}")
+    public Response getParamDescription() {
+        String baseURIstr = getRequestUriWithoutQuery().toString();
+        baseURIstr = baseURIstr.replaceAll("/param/[^/]+$", "");
+        URI baseURI;
+        try {
+            baseURI = new URI(baseURIstr);
+        } catch (URISyntaxException e) {
+//			throw(e);
+            return throwServiceError(e);
+        }
+        return Response.seeOther(baseURI).build();
+    }
 
 
     /**
@@ -352,11 +368,13 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
 						job.debug("Finished Jobs: " + finishedJobs.keySet());
 						job.debug("This connector fromPosition: " + conn.getFromPosition());
 					}
-					if (ass == null) {
+                                    // a connection can exist and still there is no assignment if the parameter is not
+                                    // required...
+                    if (ass == null && param.getIsRequired()) {
 						job.debug(workflowConfig.getTerseTurtle());
 						throw new RuntimeException("Couldn't get the assignment for param " + param);
 					}
-					wsconf.addParameterAssignment(param.getId(), ass.getParameterValue());
+					if (ass!=null) wsconf.addParameterAssignment(param.getId(), ass.getParameterValue());
 				}
 
 				/*
