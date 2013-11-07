@@ -1,6 +1,7 @@
 package eu.dm2e.ws.api;
 
 import eu.dm2e.grafeo.gom.SerializablePojo;
+import eu.dm2e.utils.UriUtils;
 import eu.dm2e.ws.NS;
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.annotations.Namespaces;
@@ -111,6 +112,10 @@ public class ParameterPojo extends SerializablePojo<ParameterPojo> {
         if (h<0) h = h*-1;
         return "" + h;
 
+    }
+
+    public String getNeedle() {
+        return UriUtils.lastUriSegment(getId());
     }
 
 
