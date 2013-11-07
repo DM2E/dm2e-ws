@@ -83,11 +83,6 @@ public class ParameterPojo extends SerializablePojo<ParameterPojo> {
 	public WorkflowPojo getWorkflow() { return workflow; }
 	public void setWorkflow(WorkflowPojo workflow) { this.workflow = workflow; }
     
-    @RDFProperty(NS.RDFS.PROP_COMMENT)
-    private String comment;
-    public String getComment() { return comment; }
-	public void setComment(String comment) { this.comment = comment; }
-	
     @RDFProperty(NS.OMNOM.PROP_DEFAULT_VALUE)
     private String defaultValue;
     public String getDefaultValue() { return defaultValue; }
