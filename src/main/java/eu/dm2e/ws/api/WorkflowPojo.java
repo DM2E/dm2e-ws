@@ -113,7 +113,7 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
     			return conn;
     		}
     	}
-    	log.warn("No connector for position " + pos + " and param " + needle);
+    	log.debug("No connector for position " + pos + " and param " + needle);
     	return null;
     }
     
@@ -271,6 +271,41 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
         return null;
     }
 
+    /**
+     * Creates and connects all unconnected
+     * webservice params to the workflow
+      */
+    public void autowire() {
+       for (WorkflowPositionPojo pos: getPositions()) {
+           if (pos.getWebservice()==null) continue;
+           log.debug("Checking pos " + pos.getLabelorURI() + " for autowiring...");
+           for (ParameterPojo param:pos.getWebservice().getInputParams()) {
+               log.debug("   Checking param " + param.getLabelorURI() + " for autowiring...");
+               if (getConnectorToPositionAndParam(pos, param)==null) {
+                    log.debug("   Autowiring parameter " + param.getNeedle());
+                    ParameterPojo wp = addInputParameter(param.getNeedle());
+                    wp.setIsRequired(param.getIsRequired());
+                    wp.setDefaultValue(param.getDefaultValue());
+                    wp.setComment(param.getComment());
+                    wp.setParameterType(param.getParameterType());
+                    addConnectorFromWorkflowToPosition(wp.getLabelorURI(),pos,param.getId());
+                 }
+           }
+           for (ParameterPojo param:pos.getWebservice().getOutputParams()) {
+               log.debug("   Checking param " + param.getLabelorURI() + " for autowiring...");
+               if (getConnectorToPositionAndParam(pos, param)==null) {
+                   log.debug("   Autowiring parameter " + param.getNeedle());
+                   ParameterPojo wp = addOutputParameter(param.getNeedle());
+                   wp.setIsRequired(param.getIsRequired());
+                   wp.setDefaultValue(param.getDefaultValue());
+                   wp.setComment(param.getComment());
+                   wp.setParameterType(param.getParameterType());
+                   addConnectorFromPositionToWorkflow(pos,param.getId(),wp.getLabelorURI());
+               }
+           }
+       }
+       log.debug("Autowiring finished.");
+    }
 
     public String getDotIdIn() {
         int h = getId()!=null?getId().hashCode():hashCode();
