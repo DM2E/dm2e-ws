@@ -28,6 +28,7 @@ public enum OmnomTestResources {
     , MINT_DATASET_SINGLE_DATAUPLOAD_JSON_XML("/mint-api/single-dataupload-xml.json")
     , MINT_DATASET_SINGLE_DATAUPLOAD_JSON_ZIPXML("/mint-api/single-dataupload-zipxml.json")
     , MINT_DATASET_SINGLE_DATAUPLOAD_JSON_TGZXML("/mint-api/single-dataupload-tgzxml.json")
+    , WORKFLOW_WEBSERVICE_DESC("/workflow/2013-11-07.ttl")
     ;
 
 	final String path;

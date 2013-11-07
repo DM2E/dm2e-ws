@@ -34,8 +34,6 @@ public class OmnomTestCase extends OmnomUnitTest{
 		Config.set(ConfigProp.BASE_URI, URI_BASE);
 	}
 	protected static Client client = new Client();
-	protected static Map<OmnomTestResources, String> configString = new HashMap<>();
-	protected Map<OmnomTestResources, File> configFile = new HashMap<>();;
 	
 //	@Before
 //	public void setUp() throws Exception {
@@ -53,15 +51,6 @@ public class OmnomTestCase extends OmnomUnitTest{
         GrafeoJsonSerializer.registerType(WorkflowPojo.class);
         GrafeoJsonSerializer.registerType(WorkflowPositionPojo.class);
 
-		for (OmnomTestResources res : OmnomTestResources.values()) { 
-			URL testConfigURL = OmnomTestCase.class.getResource(res.getPath());
-			try {
-				configFile.put(res, new File(testConfigURL.getFile()));
-				configString.put(res, IOUtils.toString(testConfigURL.openStream()));
-			} catch (Exception e) {
-				org.junit.Assert.fail(res + " not found: " + e.toString());
-			}
-		}
 	}
 	
 	@Before

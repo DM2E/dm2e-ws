@@ -1,0 +1,61 @@
+@prefix dc:    <http://purl.org/dc/elements/1.1/> .
+@prefix ogp:   <http://ogp.me/ns#> .
+@prefix edm:   <http://www.europeana.eu/schemas/edm/> .
+@prefix geo:   <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix oo:    <http://purl.org/openorg/> .
+@prefix dm2e:  <http://onto.dm2e.eu/omnom/> .
+@prefix omnom_types: <http://onto.dm2e.eu/omnom-types/> .
+@prefix void:  <http://rdfs.org/ns/void#> .
+@prefix ore:   <http://www.openarchives.org/ore/terms/> .
+@prefix omnom: <http://onto.dm2e.eu/omnom/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix sioc:  <http://rdfs.org/sioc/ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix co:    <http://purl.org/co/> .
+@prefix dct:   <http://purl.org/dc/terms/> .
+@prefix bibo:  <http://purl.org/ontology/bibo/> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix gr:    <http://purl.org/goodrelations/v1#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix cc:    <http://creativecommons.org/ns#> .
+
+<http://localhost:9998/api/exec/workflow/ddfa3a03-cdf0-4298-937e-e69cb863a48b/param/workflow>
+        a                   omnom:Parameter ;
+        rdfs:comment        "Do not set or change this parameter value!"^^xsd:string ;
+        rdfs:label          "The workflow connected to this service: http://localhost:9998/api/workflow/ddfa3a03-cdf0-4298-937e-e69cb863a48b"^^xsd:string ;
+        omnom:defaultValue  "http://localhost:9998/api/workflow/ddfa3a03-cdf0-4298-937e-e69cb863a48b"^^xsd:string ;
+        omnom:isRequired    false ;
+        omnom:webservice    <http://localhost:9998/api/exec/workflow/ddfa3a03-cdf0-4298-937e-e69cb863a48b> .
+
+<http://localhost:9998/api/exec/workflow/ddfa3a03-cdf0-4298-937e-e69cb863a48b/param/completeLog>
+        a                 omnom:Parameter ;
+        rdfs:comment      "The complete log file of the workflow job and its webservice jobs."^^xsd:string ;
+        rdfs:label        "completeLog"^^xsd:string ;
+        omnom:isRequired  false ;
+        omnom:webservice  <http://localhost:9998/api/exec/workflow/ddfa3a03-cdf0-4298-937e-e69cb863a48b> .
+
+<http://localhost:9998/api/exec/workflow/ddfa3a03-cdf0-4298-937e-e69cb863a48b>
+        a                       omnom:Webservice ;
+        rdfs:label              "Service for WF: null"^^xsd:string ;
+        omnom:implementationID  "eu.dm2e.ws.services.workflow.WorkflowExecutionService"^^xsd:string ;
+        omnom:inputParam        <http://localhost:9998/api/exec/workflow/ddfa3a03-cdf0-4298-937e-e69cb863a48b/param/pollInterval> , <http://localhost:9998/api/exec/workflow/ddfa3a03-cdf0-4298-937e-e69cb863a48b/param/jobTimeout> , <http://localhost:9998/api/exec/workflow/ddfa3a03-cdf0-4298-937e-e69cb863a48b/param/workflow> ;
+        omnom:outputParam       <http://localhost:9998/api/exec/workflow/ddfa3a03-cdf0-4298-937e-e69cb863a48b/param/completeLog> .
+
+<http://localhost:9998/api/exec/workflow/ddfa3a03-cdf0-4298-937e-e69cb863a48b/param/pollInterval>
+        a                   omnom:Parameter ;
+        rdfs:comment        "Time to wait between polls for job status, in milliseconds. [Default: 2000ms]"^^xsd:string ;
+        rdfs:label          "pollInterval"^^xsd:string ;
+        omnom:defaultValue  "2000"^^xsd:string ;
+        omnom:isRequired    false ;
+        omnom:webservice    <http://localhost:9998/api/exec/workflow/ddfa3a03-cdf0-4298-937e-e69cb863a48b> .
+
+<http://localhost:9998/api/exec/workflow/ddfa3a03-cdf0-4298-937e-e69cb863a48b/param/jobTimeout>
+        a                   omnom:Parameter ;
+        rdfs:comment        "Maximum time to wait for a job to finish, in seconds. [Default: 120s]"^^xsd:string ;
+        rdfs:label          "jobTimeout"^^xsd:string ;
+        omnom:defaultValue  "120"^^xsd:string ;
+        omnom:isRequired    false ;
+        omnom:webservice    <http://localhost:9998/api/exec/workflow/ddfa3a03-cdf0-4298-937e-e69cb863a48b> .

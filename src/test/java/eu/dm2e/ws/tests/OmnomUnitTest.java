@@ -1,16 +1,34 @@
 package eu.dm2e.ws.tests;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
-import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
-import eu.dm2e.grafeo.json.JodaDateTimeSerializer;
-import eu.dm2e.ws.api.*;
+import java.io.File;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import org.apache.commons.io.IOUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.UUID;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
+import eu.dm2e.grafeo.json.JodaDateTimeSerializer;
+import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.api.LogEntryPojo;
+import eu.dm2e.ws.api.ParameterAssignmentPojo;
+import eu.dm2e.ws.api.ParameterConnectorPojo;
+import eu.dm2e.ws.api.ParameterPojo;
+import eu.dm2e.ws.api.UserPojo;
+import eu.dm2e.ws.api.VersionedDatasetPojo;
+import eu.dm2e.ws.api.WebserviceConfigPojo;
+import eu.dm2e.ws.api.WebservicePojo;
+import eu.dm2e.ws.api.WorkflowPojo;
+import eu.dm2e.ws.api.WorkflowPositionPojo;
 public class OmnomUnitTest {
 	
 	protected Logger log = LoggerFactory.getLogger(getClass().getName());
@@ -18,7 +36,8 @@ public class OmnomUnitTest {
 			.registerTypeAdapter(DateTime.class, new JodaDateTimeSerializer())
 			.setPrettyPrinting()
 			.create();
-
+	protected static Map<OmnomTestResources, String> configString = new HashMap<>();
+	protected Map<OmnomTestResources, File> configFile = new HashMap<>();;
     public OmnomUnitTest() {
         GrafeoJsonSerializer.registerType(JobPojo.class);
         GrafeoJsonSerializer.registerType(FilePojo.class);
@@ -32,6 +51,15 @@ public class OmnomUnitTest {
         GrafeoJsonSerializer.registerType(WebservicePojo.class);
         GrafeoJsonSerializer.registerType(WorkflowPojo.class);
         GrafeoJsonSerializer.registerType(WorkflowPositionPojo.class);
+		for (OmnomTestResources res : OmnomTestResources.values()) { 
+			URL testConfigURL = OmnomTestCase.class.getResource(res.getPath());
+			try {
+				configFile.put(res, new File(testConfigURL.getFile()));
+				configString.put(res, IOUtils.toString(testConfigURL.openStream()));
+			} catch (Exception e) {
+				org.junit.Assert.fail(res + " not found: " + e.toString());
+			}
+		}
     }
 
     static {
