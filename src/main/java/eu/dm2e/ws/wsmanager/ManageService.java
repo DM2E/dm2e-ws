@@ -26,9 +26,22 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import com.hp.hpl.jena.sparql.core.DatasetGraphFactory;
 
+import eu.dm2e.grafeo.jaxrs.GrafeoMessageBodyWriter;
+import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
 import eu.dm2e.ws.SerializablePojoListMessageBodyWriter;
 import eu.dm2e.ws.SerializablePojoProvider;
-import eu.dm2e.grafeo.jaxrs.GrafeoMessageBodyWriter;
+import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.api.LogEntryPojo;
+import eu.dm2e.ws.api.ParameterAssignmentPojo;
+import eu.dm2e.ws.api.ParameterConnectorPojo;
+import eu.dm2e.ws.api.ParameterPojo;
+import eu.dm2e.ws.api.UserPojo;
+import eu.dm2e.ws.api.VersionedDatasetPojo;
+import eu.dm2e.ws.api.WebserviceConfigPojo;
+import eu.dm2e.ws.api.WebservicePojo;
+import eu.dm2e.ws.api.WorkflowPojo;
+import eu.dm2e.ws.api.WorkflowPositionPojo;
 //import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 /**
@@ -52,6 +65,19 @@ public class ManageService {
 		 // add SLF4JBridgeHandler to j.u.l's root logger, should be done once during
 		 // the initialization phase of your application
 		 SLF4JBridgeHandler.install();
+
+		 GrafeoJsonSerializer.registerType(JobPojo.class);
+		 GrafeoJsonSerializer.registerType(FilePojo.class);
+		 GrafeoJsonSerializer.registerType(LogEntryPojo.class);
+		 GrafeoJsonSerializer.registerType(ParameterAssignmentPojo.class);
+		 GrafeoJsonSerializer.registerType(ParameterConnectorPojo.class);
+		 GrafeoJsonSerializer.registerType(ParameterPojo.class);
+		 GrafeoJsonSerializer.registerType(UserPojo.class);
+		 GrafeoJsonSerializer.registerType(VersionedDatasetPojo.class);
+		 GrafeoJsonSerializer.registerType(WebserviceConfigPojo.class);
+		 GrafeoJsonSerializer.registerType(WebservicePojo.class);
+		 GrafeoJsonSerializer.registerType(WorkflowPojo.class);
+		 GrafeoJsonSerializer.registerType(WorkflowPositionPojo.class);
 	}
 	
 	private static final int FUSEKI_PORT = 9997;
