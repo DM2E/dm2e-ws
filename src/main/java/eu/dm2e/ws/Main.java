@@ -5,10 +5,12 @@ import java.io.IOException;
 import org.apache.jena.fuseki.server.SPARQLServer;
 import org.glassfish.grizzly.http.server.HttpServer;
 
+import eu.dm2e.utils.GuiConsole;
 import eu.dm2e.ws.wsmanager.ManageService;
 
 /**
  * @deprecated
+ * @see GuiConsole
  */
 public class Main {
 

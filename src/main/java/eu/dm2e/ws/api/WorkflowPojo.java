@@ -318,7 +318,7 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
         return "" + h + "2";
     }
 
-    private String[] colors = {"black", "blue3", "brown2", "burlywood2", "cadetblue2", "chartreuse2", "chocolate2", "cyan4", "darkorange", "dodgerblue4", "darkslategray4", "firebrick4"};
+    private transient String[] colors = {"black", "blue3", "brown2", "burlywood2", "cadetblue2", "chartreuse2", "chocolate2", "cyan4", "darkorange", "dodgerblue4", "darkslategray4", "firebrick4"};
     public String getDot() {
         StringBuilder sb = new StringBuilder();
         sb.append("subgraph cluster_").append(getDotIdIn()).append(" {\n");
