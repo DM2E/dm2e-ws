@@ -22,7 +22,7 @@ update_maven_update_grapes() {
     artifactId=$2
     repo=$3
     cd $repo
-    mvn -o -DskipTests -Djacoco.haltOnFailure=false install
+    mvn -o -DskipTests -Djacoco.skip=false -Dmaven.test.skip=true install
     remove_old_grapes $groupId $artifactId
     cd $oldpwd
 }
