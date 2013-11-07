@@ -1,5 +1,7 @@
 package eu.dm2e.ws.tests.unit.api;
 
+import java.io.File;
+
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
 import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
@@ -7,7 +9,10 @@ import eu.dm2e.grafeo.junit.GrafeoAssert;
 import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
+import eu.dm2e.ws.tests.OmnomTestResources;
 import eu.dm2e.ws.tests.OmnomUnitTest;
+
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -92,6 +97,15 @@ public class WebservicePojoTest extends OmnomUnitTest {
 		wsconf.validate();
 		
 	}
-
+	
+	@Test
+	public void testWorkflowWebservice() throws Exception {
+		String wfwsTTL = configString.get(OmnomTestResources.WORKFLOW_WEBSERVICE_DESC);
+		GrafeoImpl g = new GrafeoImpl();
+		g.readHeuristically(wfwsTTL);
+		WebservicePojo wfws = g.getObjectMapper().getObject(WebservicePojo.class, "http://localhost:9998/api/exec/workflow/ddfa3a03-cdf0-4298-937e-e69cb863a48b");
+//		log.debug("" + GrafeoJsonSerializer.getGson().getAdapter(WebservicePojo.class));
+		wfws.toJson();
+	}
 
 }
