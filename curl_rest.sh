@@ -31,6 +31,7 @@ CT_JSON='Content-Type: application/json'
 AC_JSON='Accept: application/json'
 
 alias POST="curl -v -X POST"
+alias POSTT="curl -v -X POST -H $AC_TURTLE"
 alias GET="curl -v -X GET"
 alias GETT="GET -H '$AC_TURTLE'"
 alias GETTURTLE="GET -H '$AC_TURTLE'"
