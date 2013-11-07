@@ -12,6 +12,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
@@ -236,6 +237,25 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         WebservicePojo wsDesc = this.getWebServicePojo(workflowPojo);
         log.trace(LogbackMarkers.DATA_DUMP, wsDesc.getTerseTurtle());
         return Response.ok().entity(wsDesc).build();
+	}
+    /**
+	 * GET /{id}/describe
+	 * @return
+	 */
+	@GET
+	@Path("{id}/createConfig")
+	public WebserviceConfigPojo createConfig() {
+        URI workflowExecutionUri = popPath();
+        URI workflowUri = popPathFromBeginning(workflowExecutionUri, "exec");
+        WorkflowPojo workflowPojo = new WorkflowPojo();
+        log.trace("Loading workflow from " + workflowUri);
+        try {
+            workflowPojo.loadFromURI(workflowUri);
+        } catch (Exception e2) {
+            throw new WebApplicationException(e2);
+        }
+        WebservicePojo wsDesc = this.getWebServicePojo(workflowPojo);
+        return wsDesc.createConfig();
 	}
 
     @GET
