@@ -71,7 +71,8 @@ public class FilePojoTest extends OmnomUnitTest{
 			JsonObject jobObj = new JsonObject();
 			jobObj.addProperty(SerializablePojo.JSON_FIELD_ID, jobId);
             jobObj.addProperty(NS.OMNOM.PROP_JOB_STATUS, "NOT_STARTED");
-			jobObj.add(NS.OMNOM.PROP_LOG_ENTRY, new JsonArray());
+            jobObj.addProperty(NS.OMNOM.PROP_JOB_LATEST_RESULT, job.getLatestResult());
+            jobObj.add(NS.OMNOM.PROP_LOG_ENTRY, new JsonArray());
 			jobObj.add(NS.OMNOM.PROP_ASSIGNMENT, new JsonArray());
 			jobObj.addProperty(NS.DCTERMS.PROP_MODIFIED, job.getModified().toString());
 			jobObj.addProperty(NS.DCTERMS.PROP_CREATED, job.getCreated().toString());

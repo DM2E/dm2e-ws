@@ -90,10 +90,15 @@ public class ParameterPojo extends SerializablePojo<ParameterPojo> {
 
     @RDFProperty(NS.OMNOM.PROP_IS_REQUIRED)
     private boolean isRequired;
-	public boolean getIsRequired() { return isRequired; }
-	public void setIsRequired(boolean isRequired) { this.isRequired = isRequired; }
-	
-	// TODO should be URI
+    public boolean getIsRequired() { return isRequired; }
+    public void setIsRequired(boolean isRequired) { this.isRequired = isRequired; }
+
+    @RDFProperty(NS.OMNOM.PROP_HAS_ITERATIONS)
+    private boolean hasIterations;
+    public boolean getHasIterations() { return hasIterations; }
+    public void setHasIterations(boolean hasIterations) { this.hasIterations= hasIterations; }
+
+    // TODO should be URI
 	@RDFProperty(NS.OMNOM.PROP_PARAMETER_TYPE)
 	private String parameterType;
 	public String getParameterType() { return parameterType; }

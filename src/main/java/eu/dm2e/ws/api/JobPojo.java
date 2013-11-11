@@ -15,7 +15,22 @@ import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.*;
 
-/** Pojo for a webservice Job */
+/**
+ * The Pojo for the representation of a webservice job.
+ *
+ * A job has one of the following status: NOT_STARTED, RUNNING, ITERATING, FINISHED, FAILED.
+ *
+ * Results can be obtained from the assignments of the output parameters.
+ * Parameters can support iterations (hasIterations) or not.
+ * If they don't support iterations, an assignment of an output parameter must only be
+ * consumed when the status of the job is FINISHED.
+ *
+ * For all parameters that support iterations, assignments can be consumed when the status of
+ * the job is ITERATING or FINISHED, but only for assignments with serials less or equal to
+ * the latestSerial of the job.
+ *
+ */
+
 @RDFClass(NS.OMNOM.CLASS_JOB)
 @RDFInstancePrefix("http://localhost:9998/job/")
 public class JobPojo extends AbstractPersistentPojo<JobPojo> {
@@ -137,6 +152,15 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
         publishJobStatus(this.getJobStatus());
     }
 
+    public void iterate() {
+        this.setLatestResult(this.getLatestResult()+1);
+        if (!this.getJobStatus().equals(JobStatus.ITERATING)) {
+            this.trace("Status change: " + this.getJobStatus() + " => " + JobStatus.ITERATING);
+            this.setJobStatus(JobStatus.ITERATING.toString());
+            publishJobStatus(this.getJobStatus());
+        }
+    }
+
     public void setFinished() {
         this.trace("Status change: " + this.getJobStatus() + " => " + JobStatus.FINISHED);
         this.setJobStatus(JobStatus.FINISHED.toString());
@@ -201,6 +225,7 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
         ass.setLabel(paramName);
         ass.setForParam(param);
         ass.setParameterValue(paramValue);
+        ass.setParameterSerial(getLatestResult() + 1);
         this.getOutputParameterAssignments().add(ass);
         return ass;
     }
@@ -272,6 +297,14 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
         return JobStatus.NOT_STARTED.toString();
     }
     public void setJobStatus(String status) { this.jobStatus = status; }
+
+    @RDFProperty(NS.OMNOM.PROP_JOB_LATEST_RESULT)
+    int latestResult = 0;
+    public int getLatestResult() {
+        return latestResult;
+    }
+    public void setLatestResult(int latestResult) { this.latestResult = latestResult; }
+
 
     @RDFProperty(NS.OMNOM.PROP_LOG_ENTRY)
     Set<LogEntryPojo> logEntries = new HashSet<>();

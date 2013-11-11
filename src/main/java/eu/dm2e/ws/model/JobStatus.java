@@ -13,8 +13,9 @@ package eu.dm2e.ws.model;
  */
 public enum JobStatus {
 	NOT_STARTED,
-	STARTED,
-	WAITING,
+    STARTED,
+    ITERATING,
+    WAITING,
 	FINISHED,
 	FAILED
 }
