@@ -71,10 +71,6 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
 		return ws;
 	}
 
-
-
-
-
 	/**
 	 * PUT /{id}
 	 *
@@ -238,25 +234,6 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         log.trace(LogbackMarkers.DATA_DUMP, wsDesc.getTerseTurtle());
         return Response.ok().entity(wsDesc).build();
 	}
-    /**
-	 * GET /{id}/describe
-	 * @return
-	 */
-	@GET
-	@Path("{id}/createConfig")
-	public WebserviceConfigPojo createConfig() {
-        URI workflowExecutionUri = popPath();
-        URI workflowUri = popPathFromBeginning(workflowExecutionUri, "exec");
-        WorkflowPojo workflowPojo = new WorkflowPojo();
-        log.trace("Loading workflow from " + workflowUri);
-        try {
-            workflowPojo.loadFromURI(workflowUri);
-        } catch (Exception e2) {
-            throw new WebApplicationException(e2);
-        }
-        WebservicePojo wsDesc = this.getWebServicePojo(workflowPojo);
-        return wsDesc.createConfig();
-	}
 
     @GET
     @Path("{id}/param/{paramId}")
@@ -272,7 +249,6 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         }
         return Response.seeOther(baseURI).build();
     }
-
 
     /**
      * GET {id}/blankConfig
