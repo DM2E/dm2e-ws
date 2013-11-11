@@ -23,7 +23,7 @@ public class IteratorService extends AbstractTransformationService {
 
     public IteratorService() {
         final WebservicePojo ws = getWebServicePojo();
-        ws.setLabel("Demo");
+        ws.setLabel("Iterator");
 
 		ParameterPojo sleeptimeParam = ws.addInputParameter(PARAM_SLEEPTIME);
         sleeptimeParam.setParameterType(NS.XSD.INT);

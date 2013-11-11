@@ -102,22 +102,59 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
     				null != needle
     			&&
     				conn.hasToPosition()
-				&&
-    				conn.getToPosition().hasId()
-				&&
+				&&  ((
+    				        conn.getToPosition().hasId()
+                            &&
+                            conn.getToPosition().getId().equals(pos.getId())
+                            ) || (
+                            conn.getToPosition().equals(pos) // Added, as otherwise a connection can only
+                            // be detected after publishing.
+                ))
+                &&
     				conn.getToParam().hasId()
-				&&
-					conn.getToPosition().getId().equals(pos.getId())
 				&&
 	    			conn.getToParam().matchesParameterName(needle)) {
     			return conn;
     		}
-    	}
+
+
+        }
     	log.debug("No connector for position " + pos + " and param " + needle);
     	return null;
     }
-    
-    
+
+    public ParameterConnectorPojo getConnectorFromPositionAndParam(WorkflowPositionPojo pos, ParameterPojo param) {
+        return getConnectorFromPositionAndParam(pos, param.getId());
+    }
+    public ParameterConnectorPojo getConnectorFromPositionAndParam(WorkflowPositionPojo pos, String needle) {
+        for (ParameterConnectorPojo conn : this.getParameterConnectors()) {
+            if (
+                    null != needle
+                            &&
+                            conn.hasFromPosition()
+                            &&  ((
+                            conn.getFromPosition().hasId()
+                                    &&
+                                    conn.getFromPosition().getId().equals(pos.getId())
+                    ) || (
+                            conn.getFromPosition().equals(pos) // Added, as otherwise a connection can only
+                            // be detected after publishing.
+                    ))
+                            &&
+                            conn.getFromParam().hasId()
+                            &&
+                            conn.getFromParam().matchesParameterName(needle)) {
+                return conn;
+            }
+
+
+        }
+        log.debug("No connector for position " + pos + " and param " + needle);
+        return null;
+    }
+
+
+
     /**
      * Add a connector from an input parameter of this workflow to a position/parameter pair
      * 
@@ -293,7 +330,7 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
            }
            for (ParameterPojo param:pos.getWebservice().getOutputParams()) {
                log.debug("   Checking param " + param.getLabelorURI() + " for autowiring...");
-               if (getConnectorToPositionAndParam(pos, param)==null) {
+               if (getConnectorFromPositionAndParam(pos, param)==null) {
                    log.debug("   Autowiring parameter " + param.getNeedle());
                    ParameterPojo wp = addOutputParameter(param.getNeedle());
                    wp.setIsRequired(param.getIsRequired());
