@@ -26,4 +26,11 @@ public class ParameterAssignmentPojo  extends AbstractPersistentPojo<ParameterAs
 	public void setParameterValue(String parameterValue) { this.parameterValue = parameterValue; }
 	public boolean hasParameterValue() { return this.parameterValue != null; }
 
+    @RDFProperty(NS.OMNOM.PROP_PARAMETER_SERIAL)
+    private Integer parameterSerial;
+    public Integer getParameterSerial() { return parameterSerial; }
+    public void setParameterSerial(Integer parameterSerial) { this.parameterSerial = parameterSerial; }
+    public boolean hasParameterSerial() { return this.parameterSerial != null; }
+
+
 }
