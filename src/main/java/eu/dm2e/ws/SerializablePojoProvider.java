@@ -103,7 +103,7 @@ public class SerializablePojoProvider implements MessageBodyWriter<SerializableP
 					jenaLng, g.getTerseTurtle());
 			g.getModel().write(entityStream, jenaLng);
 		}
-		log.debug("Finished writing to entityStream");
+		log.trace("Finished writing to entityStream");
 	}
 
 	@Override

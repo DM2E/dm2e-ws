@@ -157,8 +157,9 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
         if (!this.getJobStatus().equals(JobStatus.ITERATING)) {
             this.trace("Status change: " + this.getJobStatus() + " => " + JobStatus.ITERATING);
             this.setJobStatus(JobStatus.ITERATING.toString());
-            publishJobStatus(this.getJobStatus());
+
         }
+        publishToService();
     }
 
     public void setFinished() {
@@ -316,6 +317,23 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
     public Set<ParameterAssignmentPojo> getOutputParameterAssignments() { return outputParameterAssignments; }
     public void setOutputParameterAssignments(Set<ParameterAssignmentPojo> outputParameters) { this.outputParameterAssignments = outputParameters; }
 
+    public Set<ParameterAssignmentPojo> getOutputParameterAssignments(int iteration) {
+        Set<ParameterAssignmentPojo> res = new HashSet<>();
+        for (ParameterAssignmentPojo ass:outputParameterAssignments) {
+            if (ass.getParameterSerial()==iteration && ass.getForParam().getHasIterations()) res.add(ass);
+        }
+        return res;
+    }
+
+    public Set<ParameterAssignmentPojo> getNonIteratingOutputParameterAssignments() {
+        Set<ParameterAssignmentPojo> res = new HashSet<>();
+        for (ParameterAssignmentPojo ass:outputParameterAssignments) {
+            if (!ass.getForParam().getHasIterations()) res.add(ass);
+        }
+        return res;
+    }
+
+
     @RDFProperty(NS.DCTERMS.PROP_MODIFIED)
     private DateTime modified = DateTime.now();
     public DateTime getModified() { return modified; }
@@ -402,6 +420,7 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
         }
     }
 
+	// TODO Why this special equals, why not getId.equals(getId)? This led to problems in WorkflowExecutionService
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */

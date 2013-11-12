@@ -1,42 +1,28 @@
 package eu.dm2e.ws.services.workflow;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.util.LogbackMarkers;
+import eu.dm2e.utils.Misc;
+import eu.dm2e.ws.Config;
+import eu.dm2e.ws.ConfigProp;
+import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.api.*;
+import eu.dm2e.ws.services.AbstractAsynchronousRDFService;
+import eu.dm2e.ws.services.WorkerExecutorSingleton;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.joda.time.DateTime;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.joda.time.DateTime;
-
-import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
-import eu.dm2e.grafeo.util.LogbackMarkers;
-import eu.dm2e.ws.Config;
-import eu.dm2e.ws.ConfigProp;
-import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.api.JobPojo;
-import eu.dm2e.ws.api.LogEntryPojo;
-import eu.dm2e.ws.api.ParameterAssignmentPojo;
-import eu.dm2e.ws.api.ParameterConnectorPojo;
-import eu.dm2e.ws.api.ParameterPojo;
-import eu.dm2e.ws.api.WebserviceConfigPojo;
-import eu.dm2e.ws.api.WebservicePojo;
-import eu.dm2e.ws.api.WorkflowPojo;
-import eu.dm2e.ws.api.WorkflowPositionPojo;
-import eu.dm2e.ws.services.AbstractAsynchronousRDFService;
-import eu.dm2e.ws.services.WorkerExecutorSingleton;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Service for the creation and execution of workflows
@@ -295,8 +281,74 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
     }
 
 
+    public boolean checkPositionInputComplete(WorkflowPositionPojo pos, WebserviceConfigPojo config) {
+        for (ParameterPojo param:config.getWebservice().getInputParams()) {
+            if (pos.getWorkflow().getConnectorToPositionAndParam(pos,param)!=null && config.getParameterAssignmentForParam(param)==null)  {
+                log.debug("Config not ready at position " + pos.getId() + ", no value for " + param.getLabelorURI());
+                return false;
+            }
+            if (param.getIsRequired() && config.getParameterAssignmentForParam(param)==null) {
+                log.debug("Really?");
+                return false; // Somewhat redundant, a required param should have a connection...
+            }
+        }
+        log.info("Position " + pos.getLabelorURI() + " is ready to run!");
+        return true;
+    }
 
-	/**
+    public JobPojo runPosition(WorkflowPositionPojo pos, WebserviceConfigPojo wsconf) {
+        /*
+				 * Publish the WebserviceConfig, so it becomes stable
+				 */
+        wsconf.resetId();
+        wsconf.setExecutesPosition(pos);
+        wsconf.publishToService(client.getConfigWebTarget());
+        if (null == wsconf.getId()) {
+            throw new RuntimeException("Could not publish webservice config " + wsconf);
+        }
+
+        /*
+                   * Run the webservice
+                   */
+        Response resp = client.target(wsconf.getWebservice().getId())
+                .request(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+                .put(Entity.text(wsconf.getId()));
+        if (202 != resp.getStatus() || null == resp.getLocation()) {
+//					job.debug(wsconf.getTerseTurtle());
+            throw new RuntimeException("Request to start web service " + wsconf.getWebservice() + " with config " + wsconf + "failed: " + resp);
+        }
+
+
+        /*
+                   * start the job
+                   */
+        // long timePassed = 0;
+        JobPojo webserviceJob = new JobPojo(resp.getLocation());
+
+        // persist change of the workflow job
+        positionsToRun.remove(pos.getId());
+        log.debug("Initializing job maps, new job: " + webserviceJob);
+        log.debug("THIS is an integer: " + new Integer(0));
+        log.debug("Consumed iterations before: " + Misc.output(consumedIterations));
+        consumedIterations.put(webserviceJob.getId(), new Integer(0));
+        log.debug("Consumed iterations after: " + Misc.output(consumedIterations));
+        // NOT HERE due to concurrent modification when we iterate over this map
+        // runningJobs.put(webserviceJob.getId(),webserviceJob);
+        job2Position.put(webserviceJob.getId(), pos);
+        position2Job.put(pos.getId(), webserviceJob);
+        return webserviceJob;
+    }
+
+
+
+    private Map<String,WebserviceConfigPojo> positionsToRun = new HashMap<>();  // key is position
+    private Map<String, JobPojo> runningJobs = new HashMap<>(); // key is job
+    private Map<String, WorkflowPositionPojo> job2Position = new HashMap<>(); // key is job
+    private Map<String, Integer> consumedIterations = new HashMap<>(); // key is job
+    private Map<String, JobPojo> finishedJobs = new HashMap<>(); // key is job
+    private Map<String, JobPojo> position2Job = new HashMap<>(); // key is position
+
+    /**
 	 * @see Runnable#run()
 	 */
 	@Override
@@ -306,8 +358,6 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         WebserviceConfigPojo workflowConfig = job.getWebserviceConfig();
 		WorkflowPojo workflow = new WorkflowPojo();
         workflow.loadFromURI(job.getWebService().getParamByName(PARAM_WORKFLOW).getDefaultValue());
-        Set<JobPojo> runningJobs = new HashSet<>();
-        Map<String,JobPojo> finishedJobs = new HashMap<>();
 
         try {
 			try {
@@ -347,121 +397,183 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
 			 */
 			job.setStarted();
 
+
+
+
 			/*
-			 * Iterate Positions
+			 * New scheduling and routing algorithm
 			 */
-			for (WorkflowPositionPojo pos : workflow.getPositions()) {
-				WebservicePojo ws = pos.getWebservice();
-				job.addLogEntry("Re-loading webservice description", "TRACE");
-				ws.loadFromURI(ws.getId());
-				WebserviceConfigPojo wsconf = new WebserviceConfigPojo();
-				wsconf.setWebservice(ws);
-				wsconf.setWasGeneratedBy(job);
+            log.info("Checking connections from workflow inputs...");
+            for (ParameterPojo param:workflow.getInputParams()) {
+                log.debug("Checking WF param: " + param.getLabelorURI());
+                ParameterAssignmentPojo ass = workflowConfig.getParameterAssignmentForParam(param);
+                 String value = ass!=null?ass.getParameterValue():param.getDefaultValue();
+                log.debug("PARAM:" + param.getLabelorURI() + " VALUE: " + value + " #CONNS: " + workflow.getConnectorFromWorkflowInputParam(param).size());
+                 for (ParameterConnectorPojo conn:workflow.getConnectorFromWorkflowInputParam(param)) {
+                     if (conn.hasToWorkflow()) {
+                         if (job.getOutputParameterAssignmentForParam(conn.getToParam())!=null) {
+                             throw new RuntimeException("Multiple assignments for workflow outputs not yet supported!");
+                         }
+                         job.addOutputParameterAssignment(conn.getToParam().getId(),value);
+                     }
+                     WorkflowPositionPojo target = conn.getToPosition();
+                     if (!positionsToRun.containsKey(target.getId())) positionsToRun.put(target.getId(),target.getWebservice().createConfig());
+                     WebserviceConfigPojo config = positionsToRun.get(target.getId());
+                     config.addParameterAssignment(conn.getToParam().getId(), value);
+                     if (checkPositionInputComplete(target,config)) {
+                             JobPojo newJob = runPosition(target,config);
+                            runningJobs.put(newJob.getId(), newJob);
 
-				/*
-				 * Iterate Input Parameters of the Webservice at this position
-				 */
-				job.addLogEntry("About to iterate parameters", "TRACE");
-				nextParam:
-				for (ParameterPojo param : ws.getInputParams()) {
-					job.trace("Generating assignment for param " + param);
-//					job.addLogEntry("Current param: " + param, "TRACE");
-					job.publishToService();
-					log.trace("Current param: " + param);
+                     }
+                 }
 
-					// if there is a connector to this parameter at this position
-					ParameterConnectorPojo conn = workflow.getConnectorToPositionAndParam(pos, param);
-					if (null == conn) continue nextParam;
+             }
+            job.publishToService();
 
-					final ParameterAssignmentPojo ass;
-					if (conn.hasFromWorkflow()) {
-						// FIXME this is not working for whatever reason
-						// if the connector is from the workflow, take the value assigned to the workflow parameter
-						ass = workflowConfig.getParameterAssignmentForParam(conn.getFromParam());
-					} else {
-						// if the connector is from a previous position, take the value from the corresponding previous job
-						ass = finishedJobs.get(conn.getFromPosition().getId()).getOutputParameterAssignmentForParam(conn.getFromParam());
-						job.debug("Finished Jobs: " + finishedJobs.keySet());
-						job.debug("This connector fromPosition: " + conn.getFromPosition());
-					}
-                                    // a connection can exist and still there is no assignment if the parameter is not
-                                    // required...
-                    if (ass == null && param.getIsRequired()) {
-						job.debug(workflowConfig.getTerseTurtle());
-						throw new RuntimeException("Couldn't get the assignment for param " + param);
-					}
-					if (ass!=null) wsconf.addParameterAssignment(param.getId(), ass.getParameterValue());
-				}
+            log.info("Start polling... Interval: " + pollInterval);
+            while (!positionsToRun.isEmpty() || !runningJobs.isEmpty()) {
+                job.trace("Sleeping for " + pollInterval + "ms, waiting for jobs  to finish.");
+                try {
+                    Thread.sleep(pollInterval);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
 
-				/*
-				 * Publish the WebserviceConfig, so it becomes stable
-				 */
-				wsconf.resetId();
-				wsconf.setExecutesPosition(pos);
-				wsconf.publishToService(client.getConfigWebTarget());
-				if (null == wsconf.getId()) {
-					throw new RuntimeException("Could not publish webservice config " + wsconf);
-				}
+                log.debug("Checking all running jobs.");
+                log.debug("Running Jobs: " + Misc.output(runningJobs));
+                log.debug("Positions to run: " + Misc.output(positionsToRun));
+                if (runningJobs.isEmpty() && !positionsToRun.isEmpty()) throw new RuntimeException("Should not happen!");
 
-				/*
-				 * Run the webservice
-				 */
-				Response resp = client.target(ws.getId())
-						.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
-						.put(Entity.text(wsconf.getId()));
-				if (202 != resp.getStatus() || null == resp.getLocation()) {
-//					job.debug(wsconf.getTerseTurtle());
-					throw new RuntimeException("Request to start web service " + ws + " with config " + wsconf + "failed: " + resp);
-				}
+                Map<String,JobPojo> tmpRunningJobs = new HashMap<>();
+                Iterator it = runningJobs.keySet().iterator();
+                while (it.hasNext()) {
+                        String key = (String) it.next();
+                        JobPojo webserviceJob = runningJobs.get(key);
+                        webserviceJob.refresh(0,true);
+                        /*
+                        timePassed += pollInterval;
+                        if (timePassed > jobTimeoutInterval*1000) {
+                            throw new RuntimeException("Job " + webserviceJob + " took more than " + jobTimeoutInterval + "s too long to finish :(");
+                        }
+                        log.info("JOB STATUS: " +webserviceJob.getTerseTurtle());
+                         */
+                    log.debug("Consumed Iterations: " + Misc.output(consumedIterations));
+                    log.debug("Latest Result: " + webserviceJob.getLatestResult());
+                    if (!webserviceJob.isStillRunning() || webserviceJob.getLatestResult()>consumedIterations.get(webserviceJob.getId())) {
+                            log.info("Finished job or new iteration");
+
+                    if (!webserviceJob.isStillRunning()) {
+                        // just clearing the runningjobs set will be a problem for parallel jobs
+                        log.info("Job finished, cleaning up.");
+                        it.remove();
+                        finishedJobs.put(webserviceJob.getId(), webserviceJob);
+                        job.publishToService();
+                    }
+
+                    if (webserviceJob.isFailed()) {
+                        log.error("JOB FAILED");
+                        throw new RuntimeException("Job " + webserviceJob + " of Webservice " + job2Position.get(webserviceJob.getId()).getWebservice() + "failed, hence workflow " + workflow + "failed. :(");
+                    }
+                    else  {
+
+                        job.info("Job " + webserviceJob + " of Webservice " + job2Position.get(webserviceJob.getId()).getWebservice() + "finished or iterated successfully, propagating to next position.");
+
+                        int alreadySeen = consumedIterations.get(webserviceJob.getId());
+                        int available = webserviceJob.getLatestResult();
+                        for (int i = alreadySeen+1;i<=available;i++) {
+                            log.info("Loading new results from (not inclusive) " + alreadySeen + " to  " + available);
+                            for (ParameterAssignmentPojo ass : webserviceJob.getOutputParameterAssignments(i)) {
+                                log.debug("Output param: " + ass.getForParam().getLabelorURI());
+                                String value = ass.getParameterValue();
+                                for (ParameterConnectorPojo conn:workflow.getConnectorFromPositionAndParam(job2Position.get(webserviceJob.getId()),ass.getForParam())) {
+                                    if (conn.hasToWorkflow()) {
+                                        job.addOutputParameterAssignment(conn.getToParam().getId(),value);
+                                    } else {
+                                        WorkflowPositionPojo target = conn.getToPosition();
+                                        // DONE: If there are other input parameters than iterating ones, we have to reassign them to the new config
+                                        WebserviceConfigPojo config = null;
+                                        if (!positionsToRun.containsKey(target.getId())) {
+                                            log.debug("Creating new config for next position: " + target.getLabelorURI());
+                                            positionsToRun.put(target.getId(),target.getWebservice().createConfig());
+                                            config = positionsToRun.get(target.getId());
+                                            for (ParameterPojo param:conn.getToPosition().getWebservice().getInputParams()) {
+                                                ParameterConnectorPojo backConn = workflow.getConnectorToPositionAndParam(conn.getToPosition(),param);
+                                                log.debug("Checking param for reassignment: " + param.getLabelorURI() + "(backConn: " + backConn.getLabelorURI() + ")");
+                                                if (backConn==null) {
+                                                    log.debug("No connection");
+                                                    continue;
+                                                }
+                                                if (backConn.getFromParam().getHasIterations()) {
+                                                    log.debug("Iterating parameter, skipping");
+                                                    continue;
+                                                }
+                                                if (backConn.hasFromWorkflow()) {
+                                                    ParameterAssignmentPojo a = workflowConfig.getParameterAssignmentForParam(backConn.getFromParam());
+                                                    String v = a!=null?a.getParameterValue():backConn.getFromParam().getDefaultValue();
+                                                    if (v==null) {
+                                                        log.debug("No value found.");
+                                                        continue;
+                                                    }
+                                                    log.debug("Reassigning value from workflow param " + backConn.getFromParam().getLabelorURI());
+                                                    config.addParameterAssignment(param.getId(),v);
+                                                }  else if (backConn.hasFromPosition()) {
+                                                    ParameterAssignmentPojo a = position2Job.get(backConn.getFromPosition()).getInputParameterAssignmentForParam(backConn.getFromParam());
+                                                    if (a==null) continue;
+                                                    log.debug("Reassigning value from position " + backConn.getFromPosition().getLabelorURI() + "/ param " + backConn.getFromParam().getLabelorURI());
+                                                    config.addParameterAssignment(param.getId(),a.getParameterValue());
+                                                }   else {
+                                                    throw new RuntimeException("MUST NOT BE!");
+                                                }
+                                            }
+                                        } else {
+                                            config = positionsToRun.get(target.getId());
+                                        }
+                                        config.addParameterAssignment(conn.getToParam().getId(), value);
+                                        if (checkPositionInputComplete(target,config)) {
+                                            JobPojo newJob= runPosition(target,config);
+                                            tmpRunningJobs.put(newJob.getId(), newJob);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        consumedIterations.put(webserviceJob.getId(), available);
+                        if (webserviceJob.isFinished()) {
+                            for (ParameterAssignmentPojo ass : webserviceJob.getNonIteratingOutputParameterAssignments()) {
+
+                                String value = ass.getParameterValue();
+                                for (ParameterConnectorPojo conn:workflow.getConnectorFromWorkflowInputParam(ass.getForParam())) {
+                                    if (conn.hasToWorkflow()) {
+                                        if (job.getOutputParameterAssignmentForParam(conn.getToParam())!=null) {
+                                            throw new RuntimeException("Multiple assignments for workflow outputs not yet supported!");
+                                        }
+                                        job.addOutputParameterAssignment(conn.getToParam().getId(),value);
+                                    } else {
+                                        WorkflowPositionPojo target = conn.getToPosition();
+                                        if (!positionsToRun.containsKey(target.getId())) positionsToRun.put(target.getId(),target.getWebservice().createConfig());
+                                        WebserviceConfigPojo config = positionsToRun.get(target.getId());
+                                        config.addParameterAssignment(conn.getToParam().getId(), value);
+                                        if (checkPositionInputComplete(target,config)) {
+                                            JobPojo newJob= runPosition(target,config);
+                                            tmpRunningJobs.put(newJob.getId(), newJob);
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+
+                    }
+                }
+                // Add new running jobs
+                runningJobs.putAll(tmpRunningJobs);
+                tmpRunningJobs.clear();
+
+            }
 
 
-				/*
-				 * start the job
-				 */
-				long timePassed = 0;
-				JobPojo webserviceJob = new JobPojo(resp.getLocation());
 
-                // persist change of the workflow job
-				runningJobs.add(webserviceJob);
-				job.publishToService();
-				do {
-					webserviceJob.loadFromURI(webserviceJob.getId());
-					job.trace("Sleeping for " + pollInterval + "ms, waiting for job " + webserviceJob + " to finish.");
-					try {
-						Thread.sleep(pollInterval);
-					} catch (Exception e) {
-						throw new RuntimeException(e);
-					}
-					timePassed += pollInterval;
-					if (timePassed > jobTimeoutInterval*1000) {
-						throw new RuntimeException("Job " + webserviceJob + " took more than " + jobTimeoutInterval + "s too long to finish :(");
-					}
-					log.info("JOB STATUS: " +webserviceJob.getTerseTurtle());
-					
-				} while (webserviceJob.isStillRunning());
-
-				// just clearing the runningjobs set will be a problem for parallel jobs
-				runningJobs.remove(webserviceJob);
-
-				finishedJobs.put(pos.getId(), webserviceJob);
-
-				job.publishToService();
-				if (webserviceJob.isFailed()) {
-					throw new RuntimeException("Job " + webserviceJob + " of Webservice " + ws + "failed, hence workflow " + workflow + "failed. :(");
-				}
-				else if (webserviceJob.isFinished()) {
-					job.info("Job " + webserviceJob + " of Webservice " + ws + "finished successfully, moving on to next position.");
-					for (ParameterAssignmentPojo ass : webserviceJob.getOutputParameterAssignments()) {
-						try {
-							job.addOutputParameterAssignment(ass.getLabel(), ass.getParameterValue());
-						} catch (Exception e) {
-							// TODO FIXME HACK BAD BAD
-						}
-					}
-				}
-				job.publishToService();
-
-			} // end position loop
 
 			job.setFinished();
 		} catch (Throwable t) {
@@ -469,11 +581,11 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
 			job.fatal("Workflow " + job + " FAILED: " + t + "\n" + ExceptionUtils.getStackTrace(t));
 			job.setFailed();
 			// TODO why can't I throw this here but in AbstractTransformationService??
-			// throw t
+			throw new RuntimeException(t);
 		} finally {
 			
 			// output one giant log containing everything for debugging
-			JobPojo dummyJob = new JobPojo();
+	/*		JobPojo dummyJob = new JobPojo();
 			Set<JobPojo> allLoggingJobs = new HashSet<>();
 			allLoggingJobs.addAll(finishedJobs.values());
 			allLoggingJobs.add(job);
@@ -488,6 +600,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
 			}
 			job.addOutputParameterAssignment(PARAM_COMPLETE_LOG, dummyJob.toLogString());
 			job.publishToService();
+			*/
 		}
 	}
 }
