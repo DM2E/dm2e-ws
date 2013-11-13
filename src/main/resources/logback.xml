@@ -69,10 +69,15 @@
 		</encoder>
 	</appender>
 
-	<logger name="eu.dm2e.grafeo.gom" level="DEBUG" />
+    <!-- <logger name="eu.dm2e.grafeo.gom" level="DEBUG" />        -->
+    <logger name="eu.dm2e.grafeo" level="WARN" />
+    <logger name="org.apache" level="WARN" />
+    <logger name="org.eclipse" level="WARN" />
+    <logger name="org.glassfish" level="WARN" />
+    <logger name="com.hp.hpl" level="WARN" />
 
 
-	<root level="INFO">
+    <root level="DEBUG">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="FILE" />
 	</root>
