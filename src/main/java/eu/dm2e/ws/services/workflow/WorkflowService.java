@@ -289,13 +289,13 @@ public class WorkflowService extends AbstractRDFService {
 //			}
 //		}
 
-		log.info("Writing workflow to config.");
+		log.info("Writing workflow to triple store.");
 		try {
 			g.putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), wfUri);
 		} catch (Exception e) {
 			return throwServiceError(e);
 		}
-		log.info("Done Writing workflow to config: " + wfUri);
+		log.info("Done Writing workflow to triple store: " + wfUri);
 
 		WorkflowPojo wf = g.getObjectMapper().getObject(WorkflowPojo.class, wfUri);
 

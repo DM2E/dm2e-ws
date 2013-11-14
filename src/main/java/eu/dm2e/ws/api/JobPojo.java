@@ -154,7 +154,8 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
 
     public void iterate() {
         this.setLatestResult(this.getLatestResult()+1);
-        if (!this.getJobStatus().equals(JobStatus.ITERATING)) {
+        log.debug("Iteration: " + getLatestResult());
+        if (!this.getJobStatus().equals(JobStatus.ITERATING.toString())) {
             this.trace("Status change: " + this.getJobStatus() + " => " + JobStatus.ITERATING);
             this.setJobStatus(JobStatus.ITERATING.toString());
 

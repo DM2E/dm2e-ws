@@ -113,7 +113,7 @@ public class Client {
 			long timeElapsed = System.currentTimeMillis() - timeStart;
 			log.info(LogbackMarkers.TRACE_TIME, "Time spent: " + timeElapsed + "ms.");
 		} catch (Exception e) {
-			log.warn("Could reload pojo." + e);
+			log.warn("Could not reload pojo." + e);
 		}
 		return resp.getLocation().toString();
     }

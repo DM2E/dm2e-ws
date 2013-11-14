@@ -1,6 +1,9 @@
 package eu.dm2e.utils;
 
-import org.eclipse.jetty.util.UrlEncoded;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.StringTokenizer;
 
 public class UriUtils {
 	
@@ -27,7 +30,32 @@ public class UriUtils {
 	}
 	
 	public static String uriEncode(String uri) {
-		return UrlEncoded.encodeString(uri);
-	}
+        try {
+            return URLEncoder.encode(uri, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("An exception occurred: " + e, e);
+        }
+    }
+
+    public static String uriDecode(String uri) {
+        try {
+            return URLDecoder.decode(uri, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("An exception occurred: " + e, e);
+        }
+    }
+
+    public static String uriEncodePathElements(String path) {
+        StringTokenizer st = new StringTokenizer(path, "/",true);
+        StringBuilder res = new StringBuilder();
+        while (st.hasMoreTokens()) {
+            String token = st.nextToken();
+            if ("/".equals(token)) res.append("/");
+            else res.append(uriEncode(token));
+        }
+        return res.toString();
+    }
+
+
 
 }

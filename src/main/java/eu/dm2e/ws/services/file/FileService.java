@@ -405,9 +405,13 @@ public class FileService extends AbstractRDFService {
 //		String originalName = originalNameNode != null ? originalNameNode.toString() : "rdf_file_info";
 		
 		FilePojo filePojo = g.getObjectMapper().getObject(FilePojo.class, uri);
-		if (null == filePojo || null == filePojo.getInternalFileLocation()) {
+		if (null == filePojo || (null == filePojo.getInternalFileLocation() && null==filePojo.getFileRetrievalURI())) {
 			return Response.status(404).entity(uri + " was not found.").build();
 		}
+
+        if (filePojo.getFileRetrievalURI()!=null && !filePojo.getFileRetrievalURI().toString().startsWith(baseUri.toString())) {
+            return Response.temporaryRedirect(filePojo.getFileRetrievalURI()).build();
+        }
 		
 		FileInputStream fis;
 		try {
