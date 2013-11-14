@@ -3,8 +3,11 @@ package eu.dm2e.ws;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.DefaultConfigurationBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.Iterator;
 
 
 /**
@@ -17,7 +20,7 @@ public enum Config {
 	INSTANCE
 	;
 	
-	private static final String DM2E_WS_CONFIG = "/config.xml";
+	private static final String DM2E_WS_CONFIG = "/dm2e-ws.config.xml";
 	private final Configuration config;
 //	private Logger log = LoggerFactory.getLogger(Config.class.getName());
 	
@@ -27,6 +30,13 @@ public enum Config {
 		builder.setFile(new File(DM2E_WS_CONFIG));
 		try {
 			c =  builder.getConfiguration();
+			Logger log = LoggerFactory.getLogger(Config.class);
+			log.debug("Configured options: ");
+			Iterator<String> iter = c.getKeys();
+			while (iter.hasNext()){
+				String k = iter.next();
+				log.debug("  * " + k);
+			}
 		} catch (ConfigurationException e) {
 			c = null;
 			throw new RuntimeException(e);

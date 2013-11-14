@@ -31,9 +31,6 @@ public enum ConfigProp {
 	, MINT_USERNAME("dm2e.service.mint-file.username")
 	, MINT_PASSWORD("dm2e.service.mint-file.password")
 	
-	// Debugging
-	, NO_EXTERNAL_URL("dm2e.no_external_url")
-
 	;
 	  
 //	public enum WORKFLOW {
