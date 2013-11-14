@@ -290,6 +290,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
 
     public boolean checkPositionInputComplete(WorkflowPositionPojo pos, WebserviceConfigPojo config) {
         for (ParameterPojo param : config.getWebservice().getInputParams()) {
+        	log.debug(pos.getTerseTurtle());
             if (pos.getWorkflow().getConnectorToPositionAndParam(pos, param) != null && config.getParameterAssignmentForParam(param) == null) {
                 log.debug("Config not ready at position " + pos.getId() + ", no value for " + param.getLabelorURI());
                 return false;
@@ -457,7 +458,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         log.info("Workflow job run() for " + job.getWebService());
         WebserviceConfigPojo workflowConfig = job.getWebserviceConfig();
         WorkflowPojo workflow = new WorkflowPojo();
-        workflow.loadFromURI(job.getWebService().getParamByName(PARAM_WORKFLOW).getDefaultValue());
+        workflow.loadFromURI(job.getWebService().getParamByName(PARAM_WORKFLOW).getDefaultValue(), 1);
 
         try {
             try {
@@ -533,7 +534,6 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                         JobPojo newJob = runPosition(target, config);
                         // Running a position means to remove it from the positionsToRun and add its job to the runningJobs
                         runningJobs.put(newJob.getId(), newJob);
-
                     }
                 }
 
