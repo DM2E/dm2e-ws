@@ -30,6 +30,9 @@ AC_LOG='Accept: text/x-log'
 CT_JSON='Content-Type: application/json'
 AC_JSON='Accept: application/json'
 
+CT_DOT='Content-Type: text/vnd.graphviz'
+AC_DOT='Accept: text/vnd.graphviz'
+
 alias POST="curl -v -X POST"
 alias POSTT="curl -v -X POST -H $AC_TURTLE"
 alias GET="curl -v -X GET"
@@ -38,6 +41,8 @@ alias GETTURTLE="GET -H '$AC_TURTLE'"
 alias GET_TURTLE="GET -H '$AC_TURTLE'"
 alias GET_LOG="GET -H '$AC_LOG'"
 alias GETLOG="GET -H '$AC_LOG'"
+alias GET_DOT="GET -H '$AC_DOT'"
+alias GETDOT="GET -H '$AC_DOT'"
 alias GETL="GET -H '$AC_LOG'"
 alias GET_JSON="GET -H '$AC_JSON'"
 alias GETJSON="GET -H '$AC_JSON'"
