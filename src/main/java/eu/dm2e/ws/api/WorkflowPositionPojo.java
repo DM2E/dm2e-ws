@@ -5,6 +5,7 @@ import eu.dm2e.grafeo.annotations.RDFClass;
 import eu.dm2e.grafeo.annotations.RDFProperty;
 import eu.dm2e.grafeo.gom.SerializablePojo;
 import eu.dm2e.utils.DotUtils;
+import eu.dm2e.utils.UriUtils;
 import eu.dm2e.ws.NS;
 
 import java.util.ArrayList;
@@ -84,7 +85,11 @@ public class WorkflowPositionPojo extends SerializablePojo<WorkflowPositionPojo>
             }
         }
         rowLabels.add(DotUtils.getColumn(labels, ports));
-        rowLabels.add(DotUtils.getColumn(DotUtils.xmlEscape(getWebservice().getLabel())));
+        if (getWebservice().getLabel() != null) {
+        	rowLabels.add(DotUtils.getColumn(DotUtils.xmlEscape(getWebservice().getLabel())));
+        } else {
+        	rowLabels.add(DotUtils.getColumn(DotUtils.xmlEscape(UriUtils.lastUriSegment(getWebservice().getId()))));
+        }
         labels.clear();
         ports.clear();
         for (ParameterPojo p : getWebservice().getOutputParams()) {

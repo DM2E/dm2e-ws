@@ -47,6 +47,7 @@ public class DotUtils {
 
     // TODO: For now I just delete bad characters, a proper replacement would be nice ;-)
     public static String xmlEscape(String in) {
+    	if (null == in) return "";
         in = in.replaceAll("\"","");
         in = in.replaceAll("<","");
         in = in.replaceAll(">","");

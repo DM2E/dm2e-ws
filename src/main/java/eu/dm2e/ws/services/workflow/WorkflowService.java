@@ -1,21 +1,38 @@
 package eu.dm2e.ws.services.workflow;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import eu.dm2e.grafeo.GResource;
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
 import eu.dm2e.grafeo.jena.SparqlUpdate;
-import eu.dm2e.ws.*;
+import eu.dm2e.ws.Config;
+import eu.dm2e.ws.ConfigProp;
+import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.ErrorMsg;
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.api.WorkflowPojo;
+import eu.dm2e.ws.api.WorkflowPositionPojo;
 import eu.dm2e.ws.services.AbstractRDFService;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Service for the creation and execution of workflows
@@ -62,14 +79,21 @@ public class WorkflowService extends AbstractRDFService {
 
 		return Response.ok(wfList).build();
 	}
-
-
-
 	/**
 	 * GET /{id}
 	 * @return
 	 */
 	@GET
+	@Produces({
+		MediaType.WILDCARD,
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML,
+		DM2E_MediaType.APPLICATION_X_TURTLE,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.TEXT_TURTLE,
+		DM2E_MediaType.TEXT_PLAIN,
+		MediaType.APPLICATION_JSON
+	})
 	@Path("{id}")
 	public Response getWorkflow() {
 		URI wfUri = getRequestUriWithoutQuery();
@@ -80,6 +104,79 @@ public class WorkflowService extends AbstractRDFService {
 		}
 		WorkflowPojo wf = g.getObjectMapper().getObject(WorkflowPojo.class, wfUri);
 		return Response.ok(wf).build();
+	}
+
+	/**
+	 * GET /{id}/png		[AC: * / *]
+	 * 
+	 * Get DOT visualization of workflow
+	 * 
+	 * @return
+	 * @throws IOException 
+	 */
+	@GET
+	@Produces({"image/png"})
+	@Path("{id}/png")
+	public Response getWorkflowPngByUrl() throws IOException {
+		URI wfUri = popPath(getRequestUriWithoutQuery());
+		GrafeoImpl g = new GrafeoImpl();
+		g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), wfUri.toString());
+		if (g.isEmpty()) {
+			return Response.status(404).build();
+		}
+		WorkflowPojo wf = g.getObjectMapper().getObject(WorkflowPojo.class, wfUri);
+		for (WorkflowPositionPojo pos : wf.getPositions()) {
+			pos.getWebservice().refresh(1, true);
+		}
+		String cmd = "dot -Tpng";
+		Process p = Runtime.getRuntime().exec(cmd);
+		InputStream is = p.getInputStream();
+		OutputStream os = p.getOutputStream();
+		OutputStreamWriter osWriter = new OutputStreamWriter(os);
+		BufferedWriter out = new BufferedWriter(osWriter);
+		out.write(wf.getFullDot());
+		out.write("\n");
+		out.flush();
+		out.close();
+		return Response.ok(is).build();
+	}
+	/**
+	 * GET /{id}		[CT: image/png]
+	 * 
+	 * Get DOT visualization of workflow
+	 * 
+	 * @return
+	 * @throws IOException 
+	 */
+	@GET
+	@Produces({"image/png"})
+	@Path("{id}")
+	public Response getWorkflowPNG() throws IOException {
+		return Response.seeOther(appendPath(getRequestUriWithoutQuery(), "png")).build();
+	}
+
+	/**
+	 * GET /{id}		[CT: text/vnd.graphviz]
+	 * 
+	 * Get DOT visualization of workflow
+	 * 
+	 * @return
+	 */
+	@GET
+	@Produces({"text/vnd.graphviz"})
+	@Path("{id}")
+	public Response getWorkflowDOT() {
+		URI wfUri = getRequestUriWithoutQuery();
+		GrafeoImpl g = new GrafeoImpl();
+		g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), wfUri.toString());
+		if (g.isEmpty()) {
+			return Response.status(404).build();
+		}
+		WorkflowPojo wf = g.getObjectMapper().getObject(WorkflowPojo.class, wfUri);
+		for (WorkflowPositionPojo pos : wf.getPositions()) {
+			pos.getWebservice().refresh(1, true);
+		}
+		return Response.ok(wf.getFullDot()).build();
 	}
 
 
