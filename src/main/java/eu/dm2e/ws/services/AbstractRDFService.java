@@ -231,6 +231,11 @@ public abstract class AbstractRDFService {
     @GET
 	@Path("/describe")
     @Produces({
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML,
+		DM2E_MediaType.APPLICATION_X_TURTLE,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.TEXT_TURTLE,
     	MediaType.APPLICATION_JSON
     })
 	public Response getDescription()  {
