@@ -347,6 +347,7 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
                     wp.setDefaultValue(param.getDefaultValue());
                     wp.setComment(param.getComment());
                     wp.setParameterType(param.getParameterType());
+                    wp.setHasIterations(param.getHasIterations());
                     addConnectorFromWorkflowToPosition(wp.getLabelorURI(),pos,param.getId());
                  }
            }
@@ -355,11 +356,14 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
                if (getConnectorFromPositionAndParam(pos, param).isEmpty()) {
                    log.debug("   Autowiring parameter " + param.getNeedle());
                    ParameterPojo wp = addOutputParameter(param.getNeedle());
+                   log.debug("WP: " + wp.getId());
+                   log.debug("Param: " + param.getId());
                    wp.setIsRequired(param.getIsRequired());
                    wp.setDefaultValue(param.getDefaultValue());
                    wp.setComment(param.getComment());
                    wp.setParameterType(param.getParameterType());
                    wp.setHasIterations(param.getHasIterations());
+                   log.debug("Iterating parameter? " + param.getHasIterations() + " Workflow param: " + wp.getHasIterations());
                    addConnectorFromPositionToWorkflow(pos,param.getId(),wp.getLabelorURI());
                }
            }

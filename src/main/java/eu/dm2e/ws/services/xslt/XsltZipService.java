@@ -1,11 +1,6 @@
 package eu.dm2e.ws.services.xslt;
 
-import java.io.StringWriter;
-import java.security.InvalidParameterException;
-import java.util.Map;
-
-import javax.ws.rs.Path;
-
+import eu.dm2e.utils.FileUtils;
 import eu.dm2e.utils.XsltUtils;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.JobPojo;
@@ -13,6 +8,11 @@ import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.services.AbstractTransformationService;
 import eu.dm2e.ws.services.Client;
+
+import javax.ws.rs.Path;
+import java.io.StringWriter;
+import java.security.InvalidParameterException;
+import java.util.Map;
 
 /**
  * Service for transforming XML to (RDF)XML using a zipped hierarchy of XSLT scripts.
@@ -80,9 +80,10 @@ public class XsltZipService extends AbstractTransformationService {
 		jobPojo.debug("Starting to handle XSLT transformation job");
 		String xsltZipUrl, xmlUrl, providerId, datasetId, providerIdKey, datasetIdKey;
 		try {
-			
-			XsltUtils xsltUtils = new XsltUtils(client, jobPojo);
-			Map<String, String> paramMap;
+
+            XsltUtils xsltUtils = new XsltUtils(client, jobPojo);
+            FileUtils fileUtils = new FileUtils(client, jobPojo);
+            Map<String, String> paramMap;
 			try {
 				// XSLTZIP_IN_PARAM_NAME
 				xsltZipUrl = jobPojo.getWebserviceConfig().getParameterValueByName(PARAM_XSLTZIP_IN);
@@ -119,7 +120,7 @@ public class XsltZipService extends AbstractTransformationService {
 
 			// download and extract zip
 			jobPojo.debug("Downloading XML/ZIP");
-			java.nio.file.Path zipdir = xsltUtils.downloadAndExtractZip(xsltZipUrl);
+			String zipdir = fileUtils.downloadAndExtractArchive(xsltZipUrl,"zip");
 			jobPojo.debug("Done unzipping XSLTZIP.");
 
 			jobPojo.debug("Determining root stylesheet.");

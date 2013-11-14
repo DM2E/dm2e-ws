@@ -104,6 +104,16 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
         return null;
     }
 
+    public String getParameterValueOrDefaultByName(String needle) {
+        String value = getParameterValueByName(needle);
+        if (value==null) {
+            value = getParamByName(needle).getDefaultValue();
+            value = UriUtils.sanitizeInput(value);
+        }
+        log.debug("Value returned for " + needle + ": " + value);
+        return value;
+    }
+
 
     /*********************
      * GETTERS/SETTERS

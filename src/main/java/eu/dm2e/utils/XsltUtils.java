@@ -1,44 +1,30 @@
 package eu.dm2e.utils;
 
-import static org.grep4j.core.Grep4j.*;
-import static org.grep4j.core.fluent.Dictionary.*;
-import static org.grep4j.core.options.Option.*;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.text.ParseException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.ws.rs.core.Response;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
-
-import org.apache.commons.io.IOUtils;
+import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.services.Client;
+import eu.dm2e.ws.services.xslt.OmnomErrorListener;
 import org.grep4j.core.model.Profile;
 import org.grep4j.core.model.ProfileBuilder;
 import org.grep4j.core.result.GrepResult;
 import org.grep4j.core.result.GrepResults;
 
-import eu.dm2e.ws.api.JobPojo;
-import eu.dm2e.ws.services.Client;
-import eu.dm2e.ws.services.xslt.OmnomErrorListener;
+import javax.xml.transform.*;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import static org.grep4j.core.Grep4j.constantExpression;
+import static org.grep4j.core.Grep4j.grep;
+import static org.grep4j.core.fluent.Dictionary.*;
+import static org.grep4j.core.options.Option.filesMatching;
 
 /**
  * Collection of tools for XSLT transformation
@@ -152,83 +138,17 @@ public class XsltUtils {
 	}
 	
 	
-	/**
-	 * @param xsltZipUrl
-	 * @param jobPojo
-	 * @return
-	 */
-	public java.nio.file.Path downloadAndExtractZip(String xsltZipUrl) {
-		Response resp = client.target(xsltZipUrl).request().get();
-		if (resp.getStatus() >= 400) {
-			jobPojo.fatal("Could not download XML/ZIP: " + resp.readEntity(String.class));
-			jobPojo.setFailed();
-			return null;
-		}
-		jobPojo.debug("File is available.");
 
-		jobPojo.debug("Create tempfile");
-		java.nio.file.Path zipfile;
-		FileOutputStream zipfile_fos;
-		try {
-			zipfile = Files.createTempFile("omnom_xsltzip_", ".zip");
-		} catch (IOException e1) {
-			jobPojo.fatal("Could not download XML/ZIP: " + resp.readEntity(String.class));
-			jobPojo.setFailed();
-			return null;
-		}
-
-		jobPojo.debug("XML/ZIP will be stored as " + zipfile);
-
-		try {
-			zipfile_fos = new FileOutputStream(zipfile.toFile());
-		} catch (FileNotFoundException e1) {
-			jobPojo.fatal("Could not write out XML/ZIP: " + resp.readEntity(String.class));
-			jobPojo.setFailed();
-			return null;
-		}
-		try {
-			IOUtils.copy(resp.readEntity(InputStream.class), zipfile_fos);
-		} catch (IOException e) {
-			jobPojo.fatal("Could not store XML/ZIP: " + e);
-			jobPojo.setFailed();
-			return null;
-		} finally {
-			IOUtils.closeQuietly(zipfile_fos);
-		}
-		jobPojo.debug("XML/ZIP was stored as " + zipfile);
-
-		jobPojo.debug("Creating temp directory.");
-		java.nio.file.Path zipdir;
-		try {
-			zipdir = Files.createTempDirectory("omnom_xsltzip_");
-		} catch (IOException e) {
-			jobPojo.fatal(e);
-			jobPojo.setFailed();
-			return null;
-		}
-		jobPojo.debug("Temp directory is " + zipdir);
-
-		jobPojo.debug("Unzipping " + zipfile + " to " + zipdir.toString());
-		try {
-			ZipFile zipFile = new ZipFile(zipfile.toFile());
-			zipFile.extractAll(zipdir.toString());
-		} catch (ZipException e) {
-			jobPojo.fatal(e);
-			jobPojo.setFailed();
-			return null;
-		}
-		return zipdir;
-	}
 
 	/**
 	 * @param zipdir
 	 * @return
 	 */
-	public String grepRootStylesheet(java.nio.file.Path zipdir) {
+	public String grepRootStylesheet(String zipdir) {
 		Profile xsltDirProfile = ProfileBuilder
 			.newBuilder()
 			.name("Files in XSLT directory")
-			.filePath(zipdir.toString() + "/*")
+			.filePath(zipdir + "/*")
 			.onLocalhost()
 			.build();
 		GrepResults results = grep(constantExpression("xsl:template match=\"/\""),
