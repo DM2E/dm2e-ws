@@ -68,6 +68,10 @@ public class Client {
     }
     
     public String publishPojo(AbstractPersistentPojo pojo, WebTarget serviceEndpoint) {
+    	return publishPojo(pojo, serviceEndpoint, false);
+    }
+    
+    public String publishPojo(AbstractPersistentPojo pojo, WebTarget serviceEndpoint, boolean reloadOnPublish) {
 		Response resp;
 		String method = "POST";
 //		log.info("Size of NTRIPLES before post/put: " + pojo.getNTriples().length());
@@ -107,19 +111,21 @@ public class Client {
 			throw new RuntimeException(method +"ing " + pojo + " to " + serviceEndpoint.toString() +  " did not return a location. Body was " + respStr);
 		}
 		pojo.setId(resp.getLocation().toString());
-		try {
-			long timeStart = System.currentTimeMillis();
-			pojo.loadFromURI(pojo.getId());
-			long timeElapsed = System.currentTimeMillis() - timeStart;
-			log.info(LogbackMarkers.TRACE_TIME, "Time spent: " + timeElapsed + "ms.");
-		} catch (Exception e) {
-			log.warn("Could not reload pojo." + e);
+		if (reloadOnPublish) {
+			try {
+				long timeStart = System.currentTimeMillis();
+				pojo.loadFromURI(pojo.getId());
+				long timeElapsed = System.currentTimeMillis() - timeStart;
+				log.info(LogbackMarkers.TRACE_TIME, "Time spent: " + timeElapsed + "ms.");
+			} catch (Exception e) {
+				log.warn("Could not reload pojo." + e);
+			}
 		}
 		return resp.getLocation().toString();
     }
-    public String publishPojo(AbstractPersistentPojo pojo, String serviceURI) { return this.publishPojo(pojo, this.target(serviceURI)); }
-    public String publishPojoToJobService(AbstractPersistentPojo pojo) { return this.publishPojo(pojo, this.getJobWebTarget()); }
-    public String publishPojoToConfigService(AbstractPersistentPojo pojo) { return this.publishPojo(pojo, this.getConfigWebTarget()); }
+    public String publishPojo(AbstractPersistentPojo pojo, String serviceURI) { return this.publishPojo(pojo, this.target(serviceURI), false); }
+    public String publishPojoToJobService(AbstractPersistentPojo pojo) { return this.publishPojo(pojo, this.getJobWebTarget(), false); }
+    public String publishPojoToConfigService(AbstractPersistentPojo pojo) { return this.publishPojo(pojo, this.getConfigWebTarget(), false); }
     
     public String publishFile(String file) { return this.publishFile(file, (String)null); }
     public String publishFile(String is, Grafeo metadata) { return this.publishFile(is, metadata.getNTriples()); }
