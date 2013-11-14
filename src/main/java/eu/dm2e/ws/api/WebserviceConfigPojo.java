@@ -69,7 +69,7 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
         log.info("Adding parameter assignment for {}", paramName);
         ParameterPojo param = this.getParamByName(paramName);
         if (null == param) {
-            throw new RuntimeException("Webservice/Workflow contains no such parameter: " + paramName);
+            throw new RuntimeException("Webservice/Workflow " + this.toString() + " contains no such parameter: " + paramName);
         }
         if (null == paramValue) {
             throw new RuntimeException("Parameter value for param " + param.getId() + " is null!");
