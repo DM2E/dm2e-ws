@@ -26,8 +26,6 @@ public enum Config {
 		DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
 		builder.setFile(new File(DM2E_WS_CONFIG));
 		try {
-
-
 			c =  builder.getConfiguration();
 		} catch (ConfigurationException e) {
 			c = null;
@@ -55,7 +53,11 @@ public enum Config {
 	 * @return Config value as String
 	 */
 	public static String get(ConfigProp configProp) {
-		return INSTANCE.config.getString(configProp.getPropertiesName());
+		String value = INSTANCE.config.getString(configProp.getPropertiesName());
+		if (null == value) {
+			throw new RuntimeException("Unconfigured config property " + configProp.getPropertiesName());
+		}
+		return value;
 	}
 	/**
 	 * Set a configuration setting.
