@@ -1,5 +1,24 @@
 package eu.dm2e.ws.services.workflow;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.joda.time.DateTime;
+
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
 import eu.dm2e.grafeo.util.LogbackMarkers;
@@ -7,22 +26,16 @@ import eu.dm2e.utils.Misc;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.api.*;
+import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.api.ParameterAssignmentPojo;
+import eu.dm2e.ws.api.ParameterConnectorPojo;
+import eu.dm2e.ws.api.ParameterPojo;
+import eu.dm2e.ws.api.WebserviceConfigPojo;
+import eu.dm2e.ws.api.WebservicePojo;
+import eu.dm2e.ws.api.WorkflowPojo;
+import eu.dm2e.ws.api.WorkflowPositionPojo;
 import eu.dm2e.ws.services.AbstractAsynchronousRDFService;
 import eu.dm2e.ws.services.WorkerExecutorSingleton;
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.joda.time.DateTime;
-
-import javax.ws.rs.*;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * Service for the creation and execution of workflows
@@ -58,9 +71,8 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         ws.setComment("This service can not be called directly. " +
                 "Instead, it provides services for workflows. " +
                 "Just add the ID of the worflow as path parameter.");
-        return ws;
-    }
-
+		return ws;
+	}
 
     /**
      * PUT /{id}
@@ -244,7 +256,6 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         }
         return Response.seeOther(baseURI).build();
     }
-
 
     /**
      * GET {id}/blankConfig

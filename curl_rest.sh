@@ -35,6 +35,7 @@ AC_DOT='Accept: text/vnd.graphviz'
 
 alias POST="curl -v -X POST"
 alias POSTT="curl -v -X POST -H $AC_TURTLE"
+alias POSTJ="curl -v -X POST -H $AC_JSON"
 alias GET="curl -v -X GET"
 alias GETT="GET -H '$AC_TURTLE'"
 alias GETTURTLE="GET -H '$AC_TURTLE'"
