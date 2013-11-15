@@ -470,6 +470,9 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         WebserviceConfigPojo workflowConfig = job.getWebserviceConfig();
         WorkflowPojo workflow = new WorkflowPojo();
         workflow.loadFromURI(job.getWebService().getParamByName(PARAM_WORKFLOW).getDefaultValue(), 1);
+        for (WorkflowPositionPojo pos : workflow.getPositions()) {
+        	pos.setWorkflow(workflow);
+        }
 
         try {
             try {
