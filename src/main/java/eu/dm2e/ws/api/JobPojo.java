@@ -40,11 +40,11 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
      * LOGGING
      *
      ********************/
-    public void addLogEntry(LogEntryPojo entry) {
+    public synchronized void addLogEntry(LogEntryPojo entry) {
         this.getLogEntries().add(entry);
-        publishLogEntry(entry);
+        // publishLogEntry(entry);
     }
-    public LogEntryPojo addLogEntry(String message, String level) {
+    public synchronized LogEntryPojo addLogEntry(String message, String level) {
         LogEntryPojo entry = new LogEntryPojo();
         entry.setMessage(message);
         entry.setLevel(level);
@@ -142,17 +142,17 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
      * Updating status
      *
      ********************/
-    public void setStatus(JobStatus status) {
+    public synchronized void setStatus(JobStatus status) {
         setJobStatus(status.toString());
     }
 
-    public void setStarted() {
+    public synchronized void setStarted() {
         this.trace("Status change: " + this.getJobStatus() + " => " + JobStatus.STARTED);
         this.setJobStatus(JobStatus.STARTED.toString());
-        publishJobStatus(this.getJobStatus());
+        // publishJobStatus(this.getJobStatus());
     }
 
-    public void iterate() {
+    public synchronized void iterate() {
         this.setLatestResult(this.getLatestResult()+1);
         log.debug("Iteration: " + getLatestResult());
         if (!this.getJobStatus().equals(JobStatus.ITERATING.toString())) {
@@ -160,19 +160,19 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
             this.setJobStatus(JobStatus.ITERATING.toString());
 
         }
-        publishToService();
+        // publishToService();
     }
 
-    public void setFinished() {
+    public synchronized void setFinished() {
         this.trace("Status change: " + this.getJobStatus() + " => " + JobStatus.FINISHED);
         this.setJobStatus(JobStatus.FINISHED.toString());
-        publishJobStatus(this.getJobStatus());
+        // publishJobStatus(this.getJobStatus());
     }
 
-    public void setFailed() {
+    public synchronized void setFailed() {
         this.trace("Status change: " + this.getJobStatus() + " => " + JobStatus.FAILED);
         this.setJobStatus(JobStatus.FAILED.toString());
-        publishJobStatus(this.getJobStatus());
+        // publishJobStatus(this.getJobStatus());
     }
 
     public boolean isFinished() { return this.getJobStatus().equals(JobStatus.FINISHED.toString()); }
@@ -217,7 +217,7 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
      *
      ********************/
 
-    public ParameterAssignmentPojo addOutputParameterAssignment(String paramName, String paramValue) {
+    public synchronized ParameterAssignmentPojo addOutputParameterAssignment(String paramName, String paramValue) {
         log.info("adding parameter assignment");
         ParameterPojo param = this.getOutputParamByName(paramName);
         if (null == param) {
@@ -298,25 +298,25 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
         if (null != jobStatus) return jobStatus;
         return JobStatus.NOT_STARTED.toString();
     }
-    public void setJobStatus(String status) { this.jobStatus = status; }
+    public synchronized void setJobStatus(String status) { this.jobStatus = status; }
 
     @RDFProperty(NS.OMNOM.PROP_JOB_LATEST_RESULT)
     int latestResult = 0;
     public int getLatestResult() {
         return latestResult;
     }
-    public void setLatestResult(int latestResult) { this.latestResult = latestResult; }
+    public synchronized void setLatestResult(int latestResult) { this.latestResult = latestResult; }
 
 
     @RDFProperty(NS.OMNOM.PROP_LOG_ENTRY)
     Set<LogEntryPojo> logEntries = new HashSet<>();
     public Set<LogEntryPojo> getLogEntries() { return logEntries; }
-    public void setLogEntries(Set<LogEntryPojo> logEntries) { this.logEntries = logEntries; }
+    public synchronized void setLogEntries(Set<LogEntryPojo> logEntries) { this.logEntries = logEntries; }
 
     @RDFProperty(NS.OMNOM.PROP_ASSIGNMENT)
     Set<ParameterAssignmentPojo> outputParameterAssignments = new HashSet<>();
     public Set<ParameterAssignmentPojo> getOutputParameterAssignments() { return outputParameterAssignments; }
-    public void setOutputParameterAssignments(Set<ParameterAssignmentPojo> outputParameters) { this.outputParameterAssignments = outputParameters; }
+    public synchronized void setOutputParameterAssignments(Set<ParameterAssignmentPojo> outputParameters) { this.outputParameterAssignments = outputParameters; }
 
     public Set<ParameterAssignmentPojo> getOutputParameterAssignments(int iteration) {
         Set<ParameterAssignmentPojo> res = new HashSet<>();
@@ -338,12 +338,12 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
     @RDFProperty(NS.DCTERMS.PROP_MODIFIED)
     private DateTime modified = DateTime.now();
     public DateTime getModified() { return modified; }
-    public void setModified(DateTime modified) { this.modified = modified; }
+    public synchronized void setModified(DateTime modified) { this.modified = modified; }
 
     @RDFProperty(NS.DCTERMS.PROP_CREATED)
     private DateTime created = DateTime.now();
     public DateTime getCreated() { return created; }
-    public void setCreated(DateTime created) { this.created = created; }
+    public synchronized void setCreated(DateTime created) { this.created = created; }
 
 
 
@@ -383,24 +383,24 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
     @RDFProperty(NS.OMNOM.PROP_WEBSERVICE)
     private WebservicePojo webService;
 	public WebservicePojo getWebService() { return webService; }
-	public void setWebService(WebservicePojo webService) { this.webService = webService; }
+	public synchronized void setWebService(WebservicePojo webService) { this.webService = webService; }
 
     @RDFProperty(NS.OMNOM.PROP_WEBSERVICE_CONFIG)
     private WebserviceConfigPojo webserviceConfig;
 	public WebserviceConfigPojo getWebserviceConfig() { return webserviceConfig; }
-	public void setWebserviceConfig(WebserviceConfigPojo webserviceConfig) { this.webserviceConfig = webserviceConfig; }
+	public synchronized void setWebserviceConfig(WebserviceConfigPojo webserviceConfig) { this.webserviceConfig = webserviceConfig; }
 
     @RDFProperty(value = NS.OMNOM.PROP_FINISHED_JOB, serializeAsURI=true)
     private Set<JobPojo> finishedJobs = new HashSet<>();
     public Set<JobPojo> getFinishedJobs() { return finishedJobs; }
-    public void setFinishedJobs(Set<JobPojo> finishedJobs) { this.finishedJobs = finishedJobs; }
+    public synchronized void setFinishedJobs(Set<JobPojo> finishedJobs) { this.finishedJobs = finishedJobs; }
 
     @RDFProperty(value = NS.OMNOM.PROP_RUNNING_JOB, serializeAsURI=true)
     private Set<JobPojo> runningJobs = new HashSet<>();
     public Set<JobPojo> getRunningJobs() { return runningJobs; }
-    public void setRunningJobs(Set<JobPojo> runningJobs) { this.runningJobs = runningJobs; }
+    public synchronized void setRunningJobs(Set<JobPojo> runningJobs) { this.runningJobs = runningJobs; }
 
-    public void setHumanReadableLabel() {
+    public synchronized void setHumanReadableLabel() {
         log.info("Creating human-readable label");
         {
             StringBuilder rdfsLabelSB = new StringBuilder();
