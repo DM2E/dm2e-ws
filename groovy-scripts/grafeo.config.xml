@@ -1,0 +1,10 @@
+<configuration>
+    <!-- Load the system properties -->
+    <system />
+    <!-- Now load the config file, using a system property as file name -->
+<!--     <override> -->
+<!--         <properties fileName="${dm2e-ws.test.properties_file}" config-optional="true" /> -->
+            <properties fileName="grafeo.local.properties" config-optional="true"  throwExceptionOnMissing="false"/>
+            <properties fileName="grafeo.default.properties" throwExceptionOnMissing="true" />
+<!--     </override> -->
+</configuration>

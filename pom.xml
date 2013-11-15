@@ -175,6 +175,11 @@
 			<artifactId>mimepull</artifactId>
 			<version>1.9.1</version>
 		</dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>${jersey-version}</version>
+        </dependency>
 		<dependency>
 		    <groupId>org.glassfish.jersey.media</groupId>
 		    <artifactId>jersey-media-multipart</artifactId>
@@ -195,7 +200,7 @@
 	        <artifactId>jul-to-slf4j</artifactId>
 	        <version>1.7.2</version>
 	    </dependency>
-	    <dependency>
+        <dependency>
 	        <groupId>org.skyscreamer</groupId>
 	        <artifactId>jsonassert</artifactId>
 	        <version>1.1.1</version>
