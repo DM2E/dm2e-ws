@@ -1,5 +1,27 @@
 package eu.dm2e.ws.services.workflow;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.joda.time.DateTime;
+
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
 import eu.dm2e.grafeo.util.LogbackMarkers;
@@ -7,23 +29,16 @@ import eu.dm2e.utils.Misc;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.api.*;
+import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.api.ParameterAssignmentPojo;
+import eu.dm2e.ws.api.ParameterConnectorPojo;
+import eu.dm2e.ws.api.ParameterPojo;
+import eu.dm2e.ws.api.WebserviceConfigPojo;
+import eu.dm2e.ws.api.WebservicePojo;
+import eu.dm2e.ws.api.WorkflowPojo;
+import eu.dm2e.ws.api.WorkflowPositionPojo;
 import eu.dm2e.ws.services.AbstractAsynchronousRDFService;
 import eu.dm2e.ws.services.WorkerExecutorSingleton;
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.joda.time.DateTime;
-
-import javax.ws.rs.*;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * Service for the creation and execution of workflows
@@ -103,7 +118,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
     }
 
     /**
-     * GET /{id}/status			Accept: *		Content-Type: TEXT
+     * GET /{id}/job/{resourceId}/status			Accept: *		Content-Type: TEXT
      * Get the job status as a string.
      * @param resourceId
      * @return
@@ -120,6 +135,28 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         return Response.ok(job.getJobStatus()).build();
     }
 
+
+	/**
+	 * GET /{id}/job/{resourceId}/log			Accept: *		Content-Type: TEXT_LOG
+	 * @param minLevelStr
+	 * @param maxLevelStr
+	 * @return
+	 */
+	@GET
+	@Path("{id}/job/{resourceId}/log")
+	@Produces(DM2E_MediaType.TEXT_X_LOG)
+	public Response listLogEntriesAsLogFile(
+			@PathParam("resourceId") String resourceId,
+			@QueryParam("minLevel") String minLevelStr,
+			@QueryParam("maxLevel") String maxLevelStr) {
+        log.debug("Job log requested: " + resourceId);
+        JobPojo job = WorkerExecutorSingleton.INSTANCE.getJob(resourceId);
+        if (job==null) {
+        	log.debug("Job not found: " + resourceId);
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+		return Response.ok().entity(job.toLogString(minLevelStr, maxLevelStr)).build();
+	}
     /**
      * PUT /{id}
      * <p/>
