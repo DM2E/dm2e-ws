@@ -157,7 +157,7 @@ public class XsltZipService extends AbstractTransformationService {
 
 			jobPojo.info("Store result URI on the job (" + fileLocation + ").");
 			jobPojo.addOutputParameterAssignment(PARAM_XML_OUT, fileLocation);
-			client.publishPojoToJobService(jobPojo);
+			// client.publishPojoToJobService(jobPojo);
 
 			// Update job status
 			jobPojo.info("XSLT Transformation complete.");
@@ -168,7 +168,7 @@ public class XsltZipService extends AbstractTransformationService {
 			jobPojo.setFailed();
 		}
 		finally {
-			jobPojo.publishToService();
+			// jobPojo.publishToService();
 		}
 	}
 

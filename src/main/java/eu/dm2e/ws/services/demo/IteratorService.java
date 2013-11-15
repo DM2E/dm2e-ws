@@ -77,7 +77,7 @@ public class IteratorService extends AbstractTransformationService {
     		jobPojo.fatal(e.toString());
     		throw new RuntimeException(e);
     	} finally {
-    		client.publishPojoToJobService(jobPojo);
+    		// client.publishPojoToJobService(jobPojo);
     	}
     }
 

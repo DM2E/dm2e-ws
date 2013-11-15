@@ -70,7 +70,7 @@ public abstract class AbstractPersistentPojo<T extends AbstractPersistentPojo> e
 	
 	public String publishToService(WebTarget wr) {
 		log.debug("Publishing myself (pojo) to " + wr.getUri());
-		String loc = client.publishPojo(this, wr);
+		String loc = client.publishPojo(this, wr, true);
 		log.debug("Done Publishing myself (pojo) to " + wr.getUri());
 		return loc;
 	}

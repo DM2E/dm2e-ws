@@ -1,21 +1,19 @@
 package eu.dm2e.ws.services.publish;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import javax.ws.rs.Path;
-
-import org.joda.time.DateTime;
-
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.api.IWebservice;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.VersionedDatasetPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
-import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
 import eu.dm2e.ws.services.AbstractTransformationService;
+import org.joda.time.DateTime;
+
+import javax.ws.rs.Path;
+import java.net.URI;
+import java.net.URISyntaxException;
 //import java.util.Date;
 
 /**
@@ -112,7 +110,7 @@ public class PublishService extends AbstractTransformationService {
             jobPojo.setFailed();
             throw t;
  		} finally {
-			jobPojo.publishToService();
+			// jobPojo.publishToService();
 		}
     }
 }
