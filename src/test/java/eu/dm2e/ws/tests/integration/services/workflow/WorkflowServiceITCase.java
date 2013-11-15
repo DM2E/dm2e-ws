@@ -1,14 +1,18 @@
 package eu.dm2e.ws.tests.integration.services.workflow;
 
-import static org.junit.Assert.*;
-
-import java.io.File;
-import java.io.IOException;
-
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.junit.GrafeoAssert;
+import eu.dm2e.logback.LogbackMarkers;
+import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.*;
+import eu.dm2e.ws.services.demo.DemoService;
+import eu.dm2e.ws.services.publish.PublishService;
+import eu.dm2e.ws.services.workflow.WorkflowService;
+import eu.dm2e.ws.services.xslt.XsltService;
+import eu.dm2e.ws.tests.OmnomTestCase;
+import eu.dm2e.ws.tests.OmnomTestResources;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -17,24 +21,14 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
-import eu.dm2e.grafeo.junit.GrafeoAssert;
-import eu.dm2e.logback.LogbackMarkers;
-import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.NS;
-import eu.dm2e.ws.api.JobPojo;
-import eu.dm2e.ws.api.ParameterConnectorPojo;
-import eu.dm2e.ws.api.WebserviceConfigPojo;
-import eu.dm2e.ws.api.WebservicePojo;
-import eu.dm2e.ws.api.WorkflowPojo;
-import eu.dm2e.ws.api.WorkflowPositionPojo;
-import eu.dm2e.ws.services.demo.DemoService;
-import eu.dm2e.ws.services.publish.PublishService;
-import eu.dm2e.ws.services.workflow.WorkflowService;
-import eu.dm2e.ws.services.xslt.XsltService;
-import eu.dm2e.ws.tests.OmnomTestCase;
-import eu.dm2e.ws.tests.OmnomTestResources;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.File;
+import java.io.IOException;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class WorkflowServiceITCase extends OmnomTestCase {
 
@@ -113,10 +107,7 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 			throws Exception {
 		{
 			WebserviceConfigPojo wfconf = new WebserviceConfigPojo();
-            for (WebservicePojo ws:xsltWorkflow.getWebservices()) {
-                wfconf.setWebservice(ws);
-                break;
-            }
+            wfconf.setWebservice(xsltWorkflow.getWebservice());
             assertNotNull(wfconf.getWebservice());
 			wfconf.addParameterAssignment(_ws_param_xmlinput, _file_xml_in);
 			wfconf.addParameterAssignment(_ws_param_xsltinput, _file_xslt_in);

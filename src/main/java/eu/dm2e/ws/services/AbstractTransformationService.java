@@ -1,17 +1,18 @@
 package eu.dm2e.ws.services;
 
 import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import org.joda.time.DateTime;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.PUT;
+import javax.ws.rs.*;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.UUID;
 
 /**
  * Abstract Base Class for services that transform data.
@@ -23,6 +24,7 @@ import java.lang.reflect.Method;
  *
  * @author Konstantin Baierer
  */
+
 public abstract class AbstractTransformationService extends AbstractAsynchronousRDFService {
 	
 	/**
@@ -31,6 +33,66 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
 	private JobPojo jobPojo;
 	public JobPojo getJobPojo() {return this.jobPojo; };
 	public void setJobPojo(JobPojo jobPojo) { this.jobPojo = jobPojo; };
+
+
+
+
+    /**
+     * GET /{resourceID}		Accept: *		Content-Type: RDF
+     * @return
+     */
+    @GET
+    @Path("/job/{resourceId}")
+    @Produces({
+            DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+            DM2E_MediaType.APPLICATION_RDF_XML,
+            DM2E_MediaType.APPLICATION_X_TURTLE,
+            DM2E_MediaType.TEXT_PLAIN,
+            DM2E_MediaType.TEXT_RDF_N3,
+            DM2E_MediaType.TEXT_TURTLE
+    })
+    public Response getJobRDFHandler(@PathParam("resourceId") String resourceId) {
+        log.debug("Job requested as RDF: " + resourceId);
+        JobPojo job = WorkerExecutorSingleton.INSTANCE.jobs.get(resourceId);
+        if (job==null) {
+            log.debug("Job not found: " + resourceId);
+            return Response.status(404).build();
+        }
+        return Response.ok().entity(getResponseEntity(job.getGrafeo())).build();
+    }
+
+    @GET
+    @Path("/job/{resourceId}")
+    @Produces({
+            MediaType.APPLICATION_JSON
+    })
+    public Response getJobJSONHandler(@PathParam("resourceId") String resourceId) {
+        log.debug("Job requested as JSON: " + resourceId);
+        JobPojo job = WorkerExecutorSingleton.INSTANCE.jobs.get(resourceId);
+        if (job==null) {
+            log.debug("Job not found: " + resourceId);
+            return Response.status(404).build();
+        }
+        return Response.ok().entity(job).build();
+    }
+
+    /**
+     * GET /{id}/status			Accept: *		Content-Type: TEXT
+     * Get the job status as a string.
+     * @param resourceId
+     * @return
+     */
+    @GET
+    @Path("/job/{resourceId}/status")
+    public Response getJobStatus(@PathParam("resourceId") String resourceId) {
+        log.debug("Job status requested: " + resourceId);
+        JobPojo job = WorkerExecutorSingleton.INSTANCE.jobs.get(resourceId);
+        if (job==null) {
+            log.debug("Job not found: " + resourceId);
+            return Response.status(404).build();
+        }
+        return Response.ok(job.getJobStatus()).build();
+    }
 
 
     /* (non-Javadoc)
@@ -67,17 +129,14 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
          * Build JobPojo
          * */
         JobPojo job = new JobPojo();
+        String uuid = UUID.randomUUID().toString();
+        job.setId(this.getWebServicePojo().getId() + "/job/" + uuid);
         job.setWebService(wsConf.getWebservice());
         job.setCreated(DateTime.now());
         job.setWebserviceConfig(wsConf);
         job.setHumanReadableLabel();
         job.addLogEntry("JobPojo constructed by AbstractTransformationService", "TRACE");
-        try {
-        	log.debug("Posting job to job service <{}>", client.getJobWebTarget());
-			job.publishToService(client.getJobWebTarget());
-		} catch (Exception e1) {
-			return throwServiceError(e1);
-		}
+        WorkerExecutorSingleton.INSTANCE.jobs.put(uuid,job);
 
         /*
          * Let the asynchronous worker handle the job
@@ -87,28 +146,39 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
             Method method = getClass().getMethod("setJobPojo",JobPojo.class);
             method.invoke(instance, job);
             log.info("Job is before instantiation :" + job);
-            WorkerExecutorSingleton.INSTANCE.handleJob(instance);
+            WorkerExecutorSingleton.INSTANCE.handleJob(uuid, instance);
+            log.debug("Thread should now have started...");
         } catch (NoSuchMethodException e) {
-        	return throwServiceError(e);
+            log.error("Error 1");
+            return throwServiceError(e);
         } catch (InvocationTargetException e) {
-        	return throwServiceError(e);
+            log.error("Error 2");
+            return throwServiceError(e);
         } catch (InstantiationException e) {
-        	return throwServiceError(e);
+            log.error("Error 3");
+            return throwServiceError(e);
         } catch (IllegalAccessException e) {
-        	return throwServiceError(e);
+            log.error("Error 4");
+            return throwServiceError(e);
         } catch (Exception e) {
-        	return throwServiceError(e);
+            log.error("Error 5");
+            return throwServiceError(e);
         	
         }
 
         /*
          * Return JobPojo
          */
-        return Response
+        log.debug("Returning 202");
+        try {
+            return Response
         		.status(202)
                 .location(job.getIdAsURI())
                 .entity(getResponseEntity(job.getGrafeo()))
                 .build();
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
     }
 
 //    @Override

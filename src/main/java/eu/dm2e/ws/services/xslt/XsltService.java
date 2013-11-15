@@ -1,12 +1,5 @@
 package eu.dm2e.ws.services.xslt;
 
-import java.io.StringWriter;
-import java.util.Map;
-
-import javax.ws.rs.Path;
-
-import org.joda.time.DateTime;
-
 import eu.dm2e.utils.XsltUtils;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.FilePojo;
@@ -15,6 +8,11 @@ import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.services.AbstractTransformationService;
 import eu.dm2e.ws.services.Client;
+import org.joda.time.DateTime;
+
+import javax.ws.rs.Path;
+import java.io.StringWriter;
+import java.util.Map;
 
 /**
  * Service for transforming XML to (RDF)XML using a self-contained XSLT script
@@ -121,7 +119,7 @@ public class XsltService extends AbstractTransformationService {
 			jobPojo.fatal("An error occured during XsltService.run: " + t);
 			jobPojo.setFailed();
 		} finally {
-			jobPojo.publishToService();
+			// jobPojo.publishToService();
 		}
 	}
 }
