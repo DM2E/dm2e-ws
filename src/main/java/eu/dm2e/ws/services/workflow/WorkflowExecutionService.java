@@ -557,7 +557,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
             // Next: Constantly iterate over all running jobs and propagate new results to positions until no further jobs are running
             log.info("Start polling... Interval: " + pollInterval);
             while (!positionsToRun.isEmpty() || !runningJobs.isEmpty()) {
-                job.trace("Sleeping for " + pollInterval + "ms, waiting for jobs  to finish.");
+                job.trace("Sleeping for " + pollInterval + "ms, waiting for jobs to finish.");
                 try {
                     Thread.sleep(pollInterval);
                 } catch (Exception e) {
@@ -567,13 +567,14 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                 log.debug("Checking all running jobs.");
                 log.debug("Running Jobs: " + Misc.output(runningJobs));
                 log.debug("Positions to run: " + Misc.output(positionsToRun));
-                if (runningJobs.isEmpty() && !positionsToRun.isEmpty())
+                if (runningJobs.isEmpty() && !positionsToRun.isEmpty()) {
                     // As it is said, this should not happen. After the first propagations,
                     // at least one position must run or the system would not change any more.
                     // When nothing runs, nothing can change any more, so either we are finished
                     // or we have a problem.
                     // TODO: not terminating workflows are not yet detected properly. ALso a pretest for cycles or unreachable positions would be nice.
                     throw new RuntimeException("Should not happen!");
+                }
 
                 Map<String, JobPojo> tmpRunningJobs = new HashMap<>();
                 Iterator it = runningJobs.keySet().iterator();
@@ -686,10 +687,8 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                                         }
                                     }
                                 }
-
                             }
                         }
-
                     }
                 }
                 // Add new running jobs
