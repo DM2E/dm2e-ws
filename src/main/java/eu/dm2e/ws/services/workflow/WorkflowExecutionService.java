@@ -412,12 +412,12 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         // iterate over all input params of the connected position
         for (ParameterPojo param : conn.getToPosition().getWebservice().getInputParams()) {
             ParameterConnectorPojo backConn = workflow.getConnectorToPositionAndParam(conn.getToPosition(), param);
-            log.debug("Checking param for reassignment: " + param.getLabelorURI() + "(backConn: " + backConn.getLabelorURI() + ")");
             // if there is no connection, we have nothing to do
             if (backConn == null) {
-                log.debug("No connection");
+                log.debug("No connection for param: " + param.getLabelorURI());
                 continue;
             }
+            log.debug("Checking param for reassignment: " + param.getLabelorURI() + "(backConn: " + backConn.getLabelorURI() + ")");
             // if the parameter is iterating, we get new results, nothing to do
             if (backConn.getFromParam().getHasIterations()) {
                 log.debug("Iterating parameter, skipping");
