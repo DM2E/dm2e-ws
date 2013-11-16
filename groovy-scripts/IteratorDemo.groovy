@@ -14,7 +14,8 @@
 @GrabExclude(group = 'org.eclipse.jetty.orbit', module = 'javax.servlet', version = '3.0.0.v201112011016'),
 @GrabExclude(group = 'org.eclipse.jetty', module = '*', version = '*'),
 @Grab(group = 'eu.dm2e.grafeo', module = 'grafeo', version = '1.0-SNAPSHOT'),
-@Grab(group = 'eu.dm2e.ws', module = 'dm2e-ws', version = '1.0-SNAPSHOT', changing=true)
+@Grab(group = 'eu.dm2e.ws', module = 'dm2e-ws', version = '1.0-SNAPSHOT', changing=true),
+@Grab(group = 'commons-collections', module = 'commons-collections', version = '3.0')
 ])
 import eu.dm2e.grafeo.Grafeo
 import eu.dm2e.grafeo.jena.GrafeoImpl
@@ -34,6 +35,7 @@ import javax.jws.WebService
 
 
 def static doit() {
+    print("huhu");	
     Logger log = LoggerFactory.getLogger(getClass().getName());
     def base = "http://localhost:9998/api/"
     def demoUrl = base + "service/demo"

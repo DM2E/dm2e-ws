@@ -636,6 +636,10 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                     // whenever a new assignment is propagated, we test if the position ha all connected inputs to run
                     if (checkPositionInputComplete(target, config)) {
                         JobPojo newJob = runPosition(target, config);
+                        //set the parent/child job
+                        newJob.setParentJob(job);
+                        job.addStartedJob(newJob);
+                        log.debug("Parent job of "+newJob.getLabelorURI() + " is "+newJob.getParentJob().getLabelorURI());
                         // Running a position means to remove it from the positionsToRun and add its job to the runningJobs
                         runningJobs.put(newJob.getId(), newJob);
                     }
@@ -742,6 +746,9 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                                             // if the position is ready, run it
                                             if (checkPositionInputComplete(target, config)) {
                                                 JobPojo newJob = runPosition(target, config);
+                                                newJob.setParentJob(webserviceJob);
+                                                webserviceJob.addStartedJob(newJob);
+                                                log.debug("Parent job of "+newJob.getLabelorURI() + " is "+newJob.getParentJob().getLabelorURI());
                                                 tmpRunningJobs.put(newJob.getId(), newJob);
                                             }
                                         }
@@ -784,6 +791,9 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
 
                                             if (checkPositionInputComplete(target, config)) {
                                                 JobPojo newJob = runPosition(target, config);
+                                                newJob.setParentJob(webserviceJob);
+                                                webserviceJob.addStartedJob(newJob);
+                                                log.debug("Parent job of "+newJob.getLabelorURI() + " is "+newJob.getParentJob().getLabelorURI());
                                                 tmpRunningJobs.put(newJob.getId(), newJob);
                                             }
                                         }

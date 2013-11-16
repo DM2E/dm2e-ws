@@ -10,4 +10,4 @@ repository as source. Simply put the grapeConfig.xml under ~/.groovy (at least u
 Adjust the path to your local maven repo in the config. Default shoud be ~/.m2/repository
 
 To update, you have to delete your locally cached copy (tell me if you find a way around that...)
-A "rm -rf ~/.groovy/grapes/eu.dm2e.*" should work.
+    A "rm -rf ~/.groovy/grapes/eu.dm2e.*" should work.

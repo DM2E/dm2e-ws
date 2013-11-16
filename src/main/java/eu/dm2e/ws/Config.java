@@ -22,11 +22,11 @@ public enum Config {
 	
 	private static final String DM2E_WS_CONFIG = "/dm2e-ws.config.xml";
 	private final Configuration config;
-//	private Logger log = LoggerFactory.getLogger(Config.class.getName());
-	
 	private Config() {
 		Configuration c;
-		DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
+//	private Logger log = LoggerFactory.getLogger(Config.class.getName());
+
+        DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
 		builder.setFile(new File(DM2E_WS_CONFIG));
 		try {
 			c =  builder.getConfiguration();
