@@ -3,6 +3,7 @@ package eu.dm2e.ws.services.workflow;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
@@ -805,6 +806,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                     propagateWorkflowOutputAssignmentsToWebservice(job.getOutputParameterAssignmentForParam(param),job);
             }
 
+            job.setFinishedJobs(new HashSet(finishedJobs.values()));
             job.setFinished();
         } catch (Throwable t) {
             log.error("Workflow " + job + " FAILED: " + t + "\n" + ExceptionUtils.getStackTrace(t));

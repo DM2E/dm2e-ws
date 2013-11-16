@@ -279,6 +279,9 @@ public class JobService extends AbstractRDFService {
         return this.getJob(g, g.resource(uri));
     }
 	
+	/*
+	 * GET /{resourceID}		Accept: *		Content-Type: JSON
+	 */
 	@GET
 	@Path("{id}")
 	@Produces({
