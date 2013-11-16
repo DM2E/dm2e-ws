@@ -350,7 +350,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
 
     public boolean checkPositionInputComplete(WorkflowPositionPojo pos, WebserviceConfigPojo config) {
         for (ParameterPojo param : config.getWebservice().getInputParams()) {
-        	log.debug(pos.getTerseTurtle());
+        	log.trace(pos.getTerseTurtle());
             if (pos.getWorkflow().getConnectorToPositionAndParam(pos, param) != null && config.getParameterAssignmentForParam(param) == null) {
                 log.debug("Config not ready at position " + pos.getId() + ", no value for " + param.getLabelorURI());
                 return false;
@@ -412,6 +412,10 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         // iterate over all input params of the connected position
         for (ParameterPojo param : conn.getToPosition().getWebservice().getInputParams()) {
             ParameterConnectorPojo backConn = workflow.getConnectorToPositionAndParam(conn.getToPosition(), param);
+            if (newConfig.getParameterAssignmentForParam(param)!=null) {
+                log.debug("Parameter assigned, skipping");
+                continue;
+            }
             // if there is no connection, we have nothing to do
             if (backConn == null) {
                 log.debug("No connection for param: " + param.getLabelorURI());
@@ -710,21 +714,33 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                             consumedIterations.put(webserviceJob.getId(), available);
                             // During an iteration, only iterating parameters are propagated. When finished, propagate also non-iterating parameters, if available
                             if (webserviceJob.isFinished()) {
+                                log.info("Job is finished, propagating results...");
                                 for (ParameterAssignmentPojo ass : webserviceJob.getNonIteratingOutputParameterAssignments()) {
-
+                                    log.debug("Param: " + ass.getForParam().getLabelorURI());
                                     String value = ass.getParameterValue();
-                                    for (ParameterConnectorPojo conn : workflow.getConnectorFromWorkflowInputParam(ass.getForParam())) {
+                                    for (ParameterConnectorPojo conn : workflow.getConnectorFromPositionAndParam(job2Position.get(webserviceJob.getId()),ass.getForParam())) {
                                         if (conn.hasToWorkflow()) {
                                             if (job.getOutputParameterAssignmentForParam(conn.getToParam()) != null) {
-                                                throw new RuntimeException("Multiple assignments of a non-iterating workflow output!");
+                                                // TODO: Here we need a conceptional solution...
+                                                log.error("Multiple assignments of a non-iterating workflow output!");
                                             }
                                             job.addOutputParameterAssignment(conn.getToParam().getId(), value);
                                         } else {
                                             WorkflowPositionPojo target = conn.getToPosition();
-                                            if (!positionsToRun.containsKey(target.getId()))
+                                            WebserviceConfigPojo config = null;
+                                            if (!positionsToRun.containsKey(target.getId())) {
                                                 positionsToRun.put(target.getId(), target.getWebservice().createConfig());
-                                            WebserviceConfigPojo config = positionsToRun.get(target.getId());
-                                            config.addParameterAssignment(conn.getToParam().getId(), value);
+                                                config = positionsToRun.get(target.getId());
+                                                // If there are other input parameters than iterating ones, we have to reassign them to the new config
+                                                // This is necessary as parameter assignments are pushed when they are available, not pulled when they are consumed
+                                                config.addParameterAssignment(conn.getToParam().getId(), value);
+                                                propagateAvailableAssignments(config,conn,workflow,workflowConfig);
+                                            } else {
+                                                config = positionsToRun.get(target.getId());
+                                                config.addParameterAssignment(conn.getToParam().getId(), value);
+                                            }
+
+
                                             if (checkPositionInputComplete(target, config)) {
                                                 JobPojo newJob = runPosition(target, config);
                                                 tmpRunningJobs.put(newJob.getId(), newJob);

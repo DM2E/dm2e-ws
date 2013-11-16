@@ -238,12 +238,18 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
     }
 
     public WorkflowPositionPojo addPosition(WebservicePojo ws) {
+        return addPosition("", ws);
+    }
+
+    public WorkflowPositionPojo addPosition(String label, WebservicePojo ws) {
         WorkflowPositionPojo pos = new WorkflowPositionPojo();
         pos.setWebservice(ws);
         pos.setWorkflow(this);
+        pos.setLabel(label + "/" + ws.getLabel());
         addPosition(pos);
         return pos;
     }
+
 
 
 
