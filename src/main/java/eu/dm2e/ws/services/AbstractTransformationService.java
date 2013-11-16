@@ -1,18 +1,26 @@
 package eu.dm2e.ws.services;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.UUID;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.joda.time.DateTime;
+
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
-import org.joda.time.DateTime;
-
-import javax.ws.rs.*;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.UUID;
 
 /**
  * Abstract Base Class for services that transform data.
@@ -94,6 +102,29 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
         return Response.ok(job.getJobStatus()).build();
     }
 
+
+	/**
+	 * GET /{id}/log			Accept: *		Content-Type: TEXT_LOG
+	 * @param minLevelStr
+	 * @param maxLevelStr
+	 * @return
+	 */
+	@GET
+	@Path("/job/{resourceId}/log")
+	@Produces(DM2E_MediaType.TEXT_X_LOG)
+	public Response listLogEntriesAsLogFile(
+			@PathParam("resourceId") String resourceId,
+			@QueryParam("minLevel") String minLevelStr,
+			@QueryParam("maxLevel") String maxLevelStr) {
+        log.debug("Job log requested: " + resourceId);
+        JobPojo job = WorkerExecutorSingleton.INSTANCE.jobs.get(resourceId);
+        if (job==null) {
+        	log.debug("Job not found: " + resourceId);
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+		return Response.ok().entity(job.toLogString(minLevelStr, maxLevelStr)).build();
+	}
+	
 
     /* (non-Javadoc)
      * @see eu.dm2e.ws.services.AbstractAsynchronousRDFService#putConfigToService(java.lang.String)

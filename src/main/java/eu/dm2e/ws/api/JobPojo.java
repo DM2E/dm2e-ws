@@ -321,7 +321,9 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
     public Set<ParameterAssignmentPojo> getOutputParameterAssignments(int iteration) {
         Set<ParameterAssignmentPojo> res = new HashSet<>();
         for (ParameterAssignmentPojo ass:outputParameterAssignments) {
-            if (ass.getParameterSerial()==iteration && ass.getForParam().getHasIterations()) res.add(ass);
+// kb Fri Nov 15 16:18:38 CET 2013
+//            if (ass.getParameterSerial()==iteration && ass.getForParam().getHasIterations()) res.add(ass);
+            if (ass.getParameterSerial()==iteration) res.add(ass);
         }
         return res;
     }
