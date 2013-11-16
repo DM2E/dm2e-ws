@@ -216,4 +216,24 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
 	public void setExecutesPosition(WorkflowPositionPojo executesPosition) { this.executesPosition = executesPosition; }
 
 
+    /*@RDFProperty(NS.OMNOM.PROP_JOB_STARTED)
+    Set<JobPojo> startedJobs = new HashSet<>();
+    public void setStartedJobs(Set<JobPojo> startedJobs) {
+        this.startedJobs = startedJobs;
+    }
+    public Set<JobPojo> getStartedJobs() {
+        return startedJobs;
+    }
+
+
+    @RDFProperty(NS.OMNOM.PROP_JOB_PARENT)
+    JobPojo parentJob;
+    public void setParentJob(JobPojo job) {
+        parentJob = job;
+    }
+    public JobPojo getParentJob() {
+        return parentJob;
+    }        */
+
+
 }

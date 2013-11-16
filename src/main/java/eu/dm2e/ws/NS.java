@@ -61,9 +61,9 @@ public final class NS {
         public static final String PROP_ITEM_LABEL_XPATH    = BASE + "itemLabelXPath";
 		public static final String PROP_ITEM_ROOT_XPATH     = BASE + "itemRootXPath";
         public static final String PROP_JOB_STATUS          = BASE + "status";
-        public static final String PROP_JOB_STARTED         = BASE + "startedJobs";
-        public static final String PROP_JOB_PARENT          = BASE + "parentJob";
-        public static final String PROP_JOB_LATEST_RESULT     = BASE + "latestResult";
+        //public static final String PROP_JOB_STARTED         = BASE + "startedJobs";
+        //public static final String PROP_JOB_PARENT          = BASE + "parentJob";
+        public static final String PROP_JOB_LATEST_RESULT   = BASE + "latestResult";
         public static final String PROP_LOG_ENTRY           = BASE + "logEntries";
 		public static final String PROP_LOG_LEVEL           = BASE + "hasLogLevel";
 		public static final String PROP_LOG_MESSAGE         = BASE + "hasLogMessage";

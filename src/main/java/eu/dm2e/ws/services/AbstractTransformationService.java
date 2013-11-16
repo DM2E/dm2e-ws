@@ -166,6 +166,7 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
         job.setCreated(DateTime.now());
         job.setWebserviceConfig(wsConf);
         job.setHumanReadableLabel();
+        //job.setParentJob(job);
         job.addLogEntry("JobPojo constructed by AbstractTransformationService", "TRACE");
         WorkerExecutorSingleton.INSTANCE.jobs.put(uuid,job);
 
