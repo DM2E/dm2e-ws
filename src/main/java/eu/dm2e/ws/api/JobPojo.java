@@ -7,11 +7,13 @@ import eu.dm2e.utils.UriUtils;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.model.LogLevel;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
+
 import java.net.URI;
 import java.util.*;
 
@@ -393,9 +395,15 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
 	public synchronized void setWebserviceConfig(WebserviceConfigPojo webserviceConfig) { this.webserviceConfig = webserviceConfig; }
 
     @RDFProperty(value = NS.OMNOM.PROP_FINISHED_JOB, serializeAsURI=true)
-    private Set<JobPojo> finishedJobs = new HashSet<>();
-    public Set<JobPojo> getFinishedJobs() { return finishedJobs; }
-    public synchronized void setFinishedJobs(Set<JobPojo> finishedJobs) { this.finishedJobs = finishedJobs; }
+    private List<JobPojo> finishedJobs = new ArrayList<>();
+    public List<JobPojo> getFinishedJobs() { return finishedJobs; }
+    public synchronized void setFinishedJobs(List<JobPojo> finishedJobs) { this.finishedJobs = finishedJobs; }
+    public synchronized void addFinishedJob(JobPojo finishedJob) { this.finishedJobs.add(finishedJob); }
+
+	@RDFProperty(NS.OMNOM.PROP_POSITIONS_TO_RUN)
+	private Set<WorkflowPositionPojo> positionsToRun = new HashSet<>();
+	public Set<WorkflowPositionPojo> getPositionsToRun() { return positionsToRun; }
+	public synchronized void setPositionsToRun(Set<WorkflowPositionPojo> positionsToRun) { this.positionsToRun = positionsToRun; }
 
     @RDFProperty(value = NS.OMNOM.PROP_RUNNING_JOB, serializeAsURI=true)
     private Set<JobPojo> runningJobs = new HashSet<>();

@@ -48,7 +48,7 @@ public final class NS {
 		public static final String PROP_FILE_STATUS         = BASE + "fileStatus";
 		public static final String PROP_FILE_TYPE           = BASE + "fileType";
 		public static final String PROP_FINISHED_JOB        = BASE + "finishedJobs";
-		public static final String PROP_FINISHED_POSITION   = BASE + "finishedPosition";
+//		public static final String PROP_FINISHED_POSITION   = BASE + "finishedPositions";
 		public static final String PROP_FOR_PARAM           = BASE + "forParam";
 		public static final String PROP_FOR_SLOT            = BASE + "forSlot";
 		public static final String PROP_FROM_PARAM          = BASE + "fromParam";
@@ -91,6 +91,8 @@ public final class NS {
 
 		public static final String PROP_PREFERRED_THEME     = BASE + "preferredTheme";
 		public static final String PROP_GLOBAL_USER_FILTER     = BASE + "globalUserFilter";
+
+		public static final String PROP_POSITIONS_TO_RUN = BASE + "positionsToRun";
 	}
 
 	/**
