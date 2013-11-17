@@ -233,6 +233,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         newJobPojo.setWebService(webservicePojo);
         newJobPojo.setWebserviceConfig(wfConf);
         newJobPojo.setHumanReadableLabel();
+        //newJobPojo.setParentJob(newJobPojo);
         WorkerExecutorSingleton.INSTANCE.addJobPojo(uuid,newJobPojo);
 
         log.info("JobPojo for workflow constructed by WorkflowExecutionService: {}", newJobPojo);
@@ -404,12 +405,13 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         return true;
     }
 
-    public JobPojo runPosition(WorkflowPositionPojo pos, WebserviceConfigPojo wsconf) {
+    public JobPojo runPosition(WorkflowPositionPojo pos, WebserviceConfigPojo wsconf, JobPojo startedJob) {
         /*
 				 * Publish the WebserviceConfig, so it becomes stable
 				 */
         wsconf.resetId();
         wsconf.setExecutesPosition(pos);
+        //wsconf.setParentJob(startedJob);
         wsconf.publishToService(client.getConfigWebTarget());
         if (null == wsconf.getId()) {
             throw new RuntimeException("Could not publish webservice config " + wsconf);
@@ -423,7 +425,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                 .put(Entity.text(wsconf.getId()));
         if (202 != resp.getStatus() || null == resp.getLocation()) {
 //					job.debug(wsconf.getTerseTurtle());
-            throw new RuntimeException("Request to start web service " + wsconf.getWebservice() + " with config " + wsconf + "failed: " + resp.getStatus());
+            throw new RuntimeException("Request to start web service " + wsconf.getWebservice() + " with config " + wsconf + "failed: " + resp.getStatus() + " startedJob " + startedJob.getLabelorURI());
         }
 
 
@@ -638,7 +640,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                     config.addParameterAssignment(conn.getToParam().getId(), value);
                     // whenever a new assignment is propagated, we test if the position ha all connected inputs to run
                     if (checkPositionInputComplete(target, config)) {
-                        JobPojo newJob = runPosition(target, config);
+                        JobPojo newJob = runPosition(target, config, job);
                         // Running a position means to remove it from the positionsToRun and add its job to the runningJobs
                         runningJobs.put(newJob.getId(), newJob);
                     }
@@ -745,7 +747,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                                             config.addParameterAssignment(conn.getToParam().getId(), value);
                                             // if the position is ready, run it
                                             if (checkPositionInputComplete(target, config)) {
-                                                JobPojo newJob = runPosition(target, config);
+                                                JobPojo newJob = runPosition(target, config, webserviceJob);
                                                 tmpRunningJobs.put(newJob.getId(), newJob);
                                             }
                                         }
@@ -787,7 +789,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
 
 
                                             if (checkPositionInputComplete(target, config)) {
-                                                JobPojo newJob = runPosition(target, config);
+                                                JobPojo newJob = runPosition(target, config, webserviceJob);
                                                 tmpRunningJobs.put(newJob.getId(), newJob);
                                             }
                                         }
