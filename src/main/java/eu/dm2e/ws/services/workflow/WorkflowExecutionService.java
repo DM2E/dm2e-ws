@@ -2,7 +2,12 @@ package eu.dm2e.ws.services.workflow;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -28,6 +33,7 @@ import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.api.LogEntryPojo;
 import eu.dm2e.ws.api.ParameterAssignmentPojo;
 import eu.dm2e.ws.api.ParameterConnectorPojo;
 import eu.dm2e.ws.api.ParameterPojo;
@@ -698,6 +704,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                             log.info("Job finished, cleaning up.");
                             it.remove();
                             finishedJobs.put(webserviceJob.getId(), webserviceJob);
+                            job.addFinishedJob(webserviceJob);
                             // job.publishToService();
                         }
 
@@ -803,7 +810,6 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                 // Add new running jobs
                 runningJobs.putAll(tmpRunningJobs);
                 tmpRunningJobs.clear();
-
             }
 
             // Handling non-iterating workflow outputs and propagating them to the service... ugly...
@@ -822,7 +828,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         } finally {
 
             // output one giant log containing everything for debugging
-            /*		JobPojo dummyJob = new JobPojo();
+               JobPojo dummyJob = new JobPojo();
                Set<JobPojo> allLoggingJobs = new HashSet<>();
                allLoggingJobs.addAll(finishedJobs.values());
                allLoggingJobs.add(job);
@@ -836,8 +842,12 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                    }
                }
                job.addOutputParameterAssignment(PARAM_COMPLETE_LOG, dummyJob.toLogString());
-               job.publishToService();
-               */
+//               job.publishToService();
+               client.getJobWebTarget()
+               		 .path("byURI")
+               		 .queryParam("uri", job.getId())
+               		 .request()
+               		 .put(job.getNTriplesEntity());
         }
     }
 }
