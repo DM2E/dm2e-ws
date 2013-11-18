@@ -399,7 +399,7 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
 	public WebserviceConfigPojo getWebserviceConfig() { return webserviceConfig; }
 	public synchronized void setWebserviceConfig(WebserviceConfigPojo webserviceConfig) { this.webserviceConfig = webserviceConfig; }
 
-    @RDFProperty(value = NS.OMNOM.PROP_FINISHED_JOB, serializeAsURI=true)
+    @RDFProperty(value = NS.OMNOM.PROP_FINISHED_JOB, serializeAsURI=false)
     private List<JobPojo> finishedJobs = new ArrayList<>();
     public List<JobPojo> getFinishedJobs() { return finishedJobs; }
     public synchronized void setFinishedJobs(List<JobPojo> finishedJobs) { this.finishedJobs = finishedJobs; }
