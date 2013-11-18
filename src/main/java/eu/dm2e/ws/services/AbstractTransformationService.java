@@ -1,26 +1,16 @@
 package eu.dm2e.ws.services;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.UUID;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.joda.time.DateTime;
-
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
+import org.joda.time.DateTime;
+
+import javax.ws.rs.*;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.UUID;
 
 /**
  * Abstract Base Class for services that transform data.
@@ -175,17 +165,10 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
          */
         try {
             AbstractTransformationService instance = this.getClass().newInstance();
-            Method method = getClass().getMethod("setJobPojo",JobPojo.class);
-            method.invoke(instance, job);
+            instance.setJobPojo(job);
             log.info("Job is before instantiation :" + job);
             WorkerExecutorSingleton.INSTANCE.handleJob(uuid, instance);
             log.debug("Thread should now have started...");
-        } catch (NoSuchMethodException e) {
-            log.error("Error 1");
-            return throwServiceError(e);
-        } catch (InvocationTargetException e) {
-            log.error("Error 2");
-            return throwServiceError(e);
         } catch (InstantiationException e) {
             log.error("Error 3");
             return throwServiceError(e);

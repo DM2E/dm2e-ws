@@ -309,24 +309,10 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
     }
     public synchronized void setLatestResult(int latestResult) { this.latestResult = latestResult; }
 
-    /*@RDFProperty(NS.OMNOM.PROP_JOB_STARTED)
+    @RDFProperty(NS.OMNOM.PROP_JOB_STARTED)
     Set<JobPojo> startedJobs = new HashSet<>();
-    public void setStartedJobs(Set<JobPojo> startedJobs) {
-        this.startedJobs = startedJobs;
-    }
-    public Set<JobPojo> getStartedJobs() {
-        return startedJobs;
-    }
-
-
-    @RDFProperty(NS.OMNOM.PROP_JOB_PARENT)
-    JobPojo parentJob;
-    public void setParentJob(JobPojo job) {
-        parentJob = job;
-    }
-    public JobPojo getParentJob() {
-        return parentJob;
-    }                          */
+    public void setStartedJobs(Set<JobPojo> startedJobs) { this.startedJobs = startedJobs;}
+    public Set<JobPojo> getStartedJobs() {return startedJobs;}
 
 
     @RDFProperty(NS.OMNOM.PROP_LOG_ENTRY)
