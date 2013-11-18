@@ -17,6 +17,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.glassfish.grizzly.compression.lzma.impl.Base;
 import org.joda.time.DateTime;
 
 import eu.dm2e.grafeo.Grafeo;
@@ -405,8 +406,15 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
 				 */
         wsconf.resetId();
         wsconf.setExecutesPosition(pos);
-        //wsconf.setParentJob(startedJob);
+        wsconf.setParentJob(startedJob);
         wsconf.publishToService(client.getConfigWebTarget());
+
+        /*Set<WebserviceConfigPojo> startedJobs = startedJob.getWebserviceConfig().getStartedJobs();
+        startedJobs.add(wsconf);
+        System.out.println(wsconf.getId());
+        startedJob.getWebserviceConfig().setStartedJobs(startedJobs);
+        System.out.println("domiii: "+ Misc.output(startedJob.getWebserviceConfig().getStartedJobs()));         */
+
         if (null == wsconf.getId()) {
             throw new RuntimeException("Could not publish webservice config " + wsconf);
         }
