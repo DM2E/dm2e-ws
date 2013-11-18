@@ -35,6 +35,7 @@ public class JobPojoTest extends OmnomUnitTest {
 		expect.addProperty(NS.DCTERMS.PROP_CREATED, job.getCreated().toString());
         //expect.addProperty(NS.OMNOM.PROP_JOB_PARENT, job.getParentJob().toString());
         expect.add(NS.OMNOM.PROP_FINISHED_JOB, new JsonArray());
+        expect.add(NS.OMNOM.PROP_POSITIONS_TO_RUN, new JsonArray());
         expect.add(NS.OMNOM.PROP_RUNNING_JOB, new JsonArray());
         //expect.add(NS.OMNOM.PROP_JOB_STARTED, new JsonArray());
         expect.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, job.getRDFClassUri());
