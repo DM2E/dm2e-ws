@@ -77,6 +77,7 @@ public class FilePojoTest extends OmnomUnitTest{
 			jobObj.addProperty(NS.DCTERMS.PROP_MODIFIED, job.getModified().toString());
 			jobObj.addProperty(NS.DCTERMS.PROP_CREATED, job.getCreated().toString());
             jobObj.add(NS.OMNOM.PROP_FINISHED_JOB, new JsonArray());
+            jobObj.add(NS.OMNOM.PROP_POSITIONS_TO_RUN, new JsonArray());
             jobObj.add(NS.OMNOM.PROP_RUNNING_JOB, new JsonArray());
             expect.add(NS.PROV.PROP_WAS_GENERATED_BY, jobObj);
 			expect.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, fp.getRDFClassUri());

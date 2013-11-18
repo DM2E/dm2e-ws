@@ -229,6 +229,8 @@ public class WorkflowPojoTest extends OmnomUnitTest {
 		g.getObjectMapper().addObject(wfjob);
 		
 		Grafeo g2 = g.copy();
+		assertEquals(g.size(), g2.size());
+		GrafeoAssert.graphsAreEquivalent(g, g2);
 		JobPojo wfjob2 = g2.getObjectMapper().getObject(JobPojo.class, wfid);
 		
 		log.info(g2.getTerseTurtle());
