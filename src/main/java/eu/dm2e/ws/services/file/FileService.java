@@ -94,6 +94,7 @@ public class FileService extends AbstractRDFService {
         	log.info("Resource: " + fileUri.getUri());
         	if (null == fileUri.getUri()) {
         		log.warn("There is a blank node file without an ID in the triplestore.");
+        		continue;
         	}
         	// FIXME possibly very inefficient
         	g.load(fileUri.getUri());

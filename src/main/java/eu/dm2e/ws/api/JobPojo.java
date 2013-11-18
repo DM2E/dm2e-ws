@@ -7,11 +7,13 @@ import eu.dm2e.utils.UriUtils;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.model.LogLevel;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
+
 import java.net.URI;
 import java.util.*;
 
@@ -307,6 +309,25 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
     }
     public synchronized void setLatestResult(int latestResult) { this.latestResult = latestResult; }
 
+    /*@RDFProperty(NS.OMNOM.PROP_JOB_STARTED)
+    Set<JobPojo> startedJobs = new HashSet<>();
+    public void setStartedJobs(Set<JobPojo> startedJobs) {
+        this.startedJobs = startedJobs;
+    }
+    public Set<JobPojo> getStartedJobs() {
+        return startedJobs;
+    }
+
+
+    @RDFProperty(NS.OMNOM.PROP_JOB_PARENT)
+    JobPojo parentJob;
+    public void setParentJob(JobPojo job) {
+        parentJob = job;
+    }
+    public JobPojo getParentJob() {
+        return parentJob;
+    }                          */
+
 
     @RDFProperty(NS.OMNOM.PROP_LOG_ENTRY)
     Set<LogEntryPojo> logEntries = new HashSet<>();
@@ -321,7 +342,9 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
     public Set<ParameterAssignmentPojo> getOutputParameterAssignments(int iteration) {
         Set<ParameterAssignmentPojo> res = new HashSet<>();
         for (ParameterAssignmentPojo ass:outputParameterAssignments) {
-            if (ass.getParameterSerial()==iteration && ass.getForParam().getHasIterations()) res.add(ass);
+// kb Fri Nov 15 16:18:38 CET 2013
+//            if (ass.getParameterSerial()==iteration && ass.getForParam().getHasIterations()) res.add(ass);
+            if (ass.getParameterSerial()==iteration) res.add(ass);
         }
         return res;
     }
@@ -390,10 +413,16 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
 	public WebserviceConfigPojo getWebserviceConfig() { return webserviceConfig; }
 	public synchronized void setWebserviceConfig(WebserviceConfigPojo webserviceConfig) { this.webserviceConfig = webserviceConfig; }
 
-    @RDFProperty(value = NS.OMNOM.PROP_FINISHED_JOB, serializeAsURI=true)
-    private Set<JobPojo> finishedJobs = new HashSet<>();
-    public Set<JobPojo> getFinishedJobs() { return finishedJobs; }
-    public synchronized void setFinishedJobs(Set<JobPojo> finishedJobs) { this.finishedJobs = finishedJobs; }
+    @RDFProperty(value = NS.OMNOM.PROP_FINISHED_JOB, serializeAsURI=false)
+    private List<JobPojo> finishedJobs = new ArrayList<>();
+    public List<JobPojo> getFinishedJobs() { return finishedJobs; }
+    public synchronized void setFinishedJobs(List<JobPojo> finishedJobs) { this.finishedJobs = finishedJobs; }
+    public synchronized void addFinishedJob(JobPojo finishedJob) { this.finishedJobs.add(finishedJob); }
+
+	@RDFProperty(NS.OMNOM.PROP_POSITIONS_TO_RUN)
+	private Set<WorkflowPositionPojo> positionsToRun = new HashSet<>();
+	public Set<WorkflowPositionPojo> getPositionsToRun() { return positionsToRun; }
+	public synchronized void setPositionsToRun(Set<WorkflowPositionPojo> positionsToRun) { this.positionsToRun = positionsToRun; }
 
     @RDFProperty(value = NS.OMNOM.PROP_RUNNING_JOB, serializeAsURI=true)
     private Set<JobPojo> runningJobs = new HashSet<>();

@@ -238,12 +238,18 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
     }
 
     public WorkflowPositionPojo addPosition(WebservicePojo ws) {
+        return addPosition("", ws);
+    }
+
+    public WorkflowPositionPojo addPosition(String label, WebservicePojo ws) {
         WorkflowPositionPojo pos = new WorkflowPositionPojo();
         pos.setWebservice(ws);
         pos.setWorkflow(this);
+        pos.setLabel(label + "/" + ws.getLabel());
         addPosition(pos);
         return pos;
     }
+
 
 
 
@@ -330,16 +336,22 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
         return null;
     }
 
+
+
     /**
      * Creates and connects all unconnected
      * webservice params to the workflow
       */
-    public void autowire() {
+    public void autowire(boolean requiredOnly) {
        for (WorkflowPositionPojo pos: getPositions()) {
            if (pos.getWebservice()==null) continue;
            log.debug("Checking pos " + pos.getLabelorURI() + " for autowiring...");
            for (ParameterPojo param:pos.getWebservice().getInputParams()) {
                log.debug("   Checking param " + param.getLabelorURI() + " for autowiring...");
+               if (requiredOnly && !param.getIsRequired()) {
+                   log.debug("   Parameter not required, skipping.");
+                   continue;
+               }
                if (getConnectorToPositionAndParam(pos, param)==null) {
                     log.debug("   Autowiring parameter " + param.getNeedle());
                     ParameterPojo wp = addInputParameter(param.getNeedle());
@@ -369,6 +381,10 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
            }
        }
        log.debug("Autowiring finished.");
+    }
+
+    public void autowire() {
+      autowire(false);
     }
 
     public String getDotIdIn() {

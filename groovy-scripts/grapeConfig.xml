@@ -4,7 +4,7 @@
     <chain name="downloadGrapes" checkmodified="true" changingPattern=".*SNAPSHOT">
       <!-- todo add 'endorsed groovy extensions' resolver here -->
 
-      <ibiblio name="local" root="file:INSERT_YOUR_PATH_TO_MAVEN_REPO/repository/" m2compatible="true"/>
+      <ibiblio name="local" root="file:${user.home}/.m2/repository/" m2compatible="true"/>
 
       <filesystem name="cachedGrapes">
         <ivy pattern="${user.home}/.groovy/grapes/[organisation]/[module]/ivy-[revision].xml"/>

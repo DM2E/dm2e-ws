@@ -42,6 +42,7 @@ public class WebservicePojo extends AbstractPersistentPojo<WebservicePojo> imple
     public WebserviceConfigPojo createConfig() {
     	WebserviceConfigPojo wsconf = new WebserviceConfigPojo();
     	wsconf.setWebservice(this);
+        wsconf.setLabel("Config for " + getLabel());
     	return wsconf;
     }
     

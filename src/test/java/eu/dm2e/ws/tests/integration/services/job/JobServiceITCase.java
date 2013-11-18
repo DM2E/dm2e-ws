@@ -4,8 +4,12 @@ import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
 import eu.dm2e.grafeo.junit.GrafeoAssert;
 import eu.dm2e.logback.LogbackMarkers;
-import eu.dm2e.ws.*;
-import eu.dm2e.ws.api.*;
+import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.ErrorMsg;
+import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.api.ParameterAssignmentPojo;
+import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.services.demo.DemoService;
 import eu.dm2e.ws.services.xslt.XsltService;
@@ -13,6 +17,7 @@ import eu.dm2e.ws.tests.OmnomTestCase;
 import eu.dm2e.ws.tests.OmnomTestResources;
 import org.glassfish.jersey.client.ClientProperties;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.ws.rs.client.Entity;
@@ -35,17 +40,19 @@ public class JobServiceITCase extends OmnomTestCase {
 	@Before
 	public void setUp() throws Exception {
 
-		webTarget = client.getJerseyClient().target(URI_BASE).path("job");
+		if (webTarget==null) webTarget = client.getJerseyClient().target(URI_BASE).path("job");
 //		log.info(configString.get(OmnomTestResources.DEMO_JOB));
-		globalJob = postConfigToJob(OmnomTestResources.DEMO_JOB).getIdAsURI();
+		if (globalJob==null) {
+            globalJob = postConfigToJob(OmnomTestResources.DEMO_JOB).getIdAsURI();
 //				.type(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
 //				.accept(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
-		Response resp = webTarget
-				.request()
-				.post(Entity.text(configString.get(OmnomTestResources.DEMO_JOB)));
-		log.info(LogbackMarkers.HTTP_RESPONSE_DUMP, resp.readEntity(String.class));
-		assertEquals(201, resp.getStatus());
-		globalJob = resp.getLocation();
+            Response resp = webTarget
+                    .request()
+                    .post(Entity.text(configString.get(OmnomTestResources.DEMO_JOB)));
+            log.info(LogbackMarkers.HTTP_RESPONSE_DUMP, resp.readEntity(String.class));
+            assertEquals(201, resp.getStatus());
+            globalJob = resp.getLocation();
+        }
 	}
 	
 	private static JobPojo postConfigToJob(OmnomTestResources testRes) {
@@ -293,6 +300,7 @@ public class JobServiceITCase extends OmnomTestCase {
 	}
 	
 	@Test
+    @Ignore("Job publishing currently not available")
 	public void testPojoPublishStatus() throws Exception {
 		JobPojo job = new JobPojo();
 		job.publishToService(client.getJobWebTarget());
