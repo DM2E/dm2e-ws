@@ -10,6 +10,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.net.URI;
 import java.util.UUID;
 
 /**
@@ -151,7 +152,7 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
          * */
         JobPojo job = new JobPojo();
         String uuid = UUID.randomUUID().toString();
-        job.setId(this.getWebServicePojo().getId() + "/job/" + uuid);
+        job.setTemporaryID(URI.create(this.getWebServicePojo().getId() + "/job/" + uuid));
         job.setWebService(wsConf.getWebservice());
         job.setCreated(DateTime.now());
         job.setWebserviceConfig(wsConf);

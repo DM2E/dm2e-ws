@@ -294,6 +294,11 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
      *
      *********************/
 
+    @RDFProperty(NS.OMNOM.PROP_JOB_TEMPID)
+    URI temporaryID;
+    public URI getTemporaryID() { return temporaryID; }
+    public synchronized void setTemporaryID(URI temporaryID) { this.temporaryID = temporaryID; }
+
     @RDFProperty(NS.OMNOM.PROP_JOB_STATUS)
     String jobStatus;
     public String getJobStatus() {

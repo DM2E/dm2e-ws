@@ -243,7 +243,7 @@ public class Client {
     		javax.ws.rs.client.Client client = ClientBuilder.newClient();
     		client.register(MultiPartFeature.class);
     		this.setJerseyClient(client);
-    	}
+        }
 		return this.jerseyClient;
 	}
 	public void setJerseyClient(javax.ws.rs.client.Client jerseyClient) { this.jerseyClient = jerseyClient; }

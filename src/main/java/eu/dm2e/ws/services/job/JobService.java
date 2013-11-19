@@ -1,40 +1,14 @@
 package eu.dm2e.ws.services.job;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.apache.commons.io.IOUtils;
-import org.joda.time.DateTime;
-
 import eu.dm2e.grafeo.GResource;
+import eu.dm2e.grafeo.GValue;
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.annotations.RDFClass;
 import eu.dm2e.grafeo.gom.SerializablePojo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
 import eu.dm2e.grafeo.jena.SparqlUpdate;
 import eu.dm2e.logback.LogbackMarkers;
-import eu.dm2e.ws.Config;
-import eu.dm2e.ws.ConfigProp;
-import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.ErrorMsg;
-import eu.dm2e.ws.NS;
+import eu.dm2e.ws.*;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.LogEntryPojo;
 import eu.dm2e.ws.api.ParameterAssignmentPojo;
@@ -42,6 +16,16 @@ import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.model.LogLevel;
 import eu.dm2e.ws.services.AbstractRDFService;
+import org.apache.commons.io.IOUtils;
+import org.joda.time.DateTime;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
 
 // TODO @GET /{id}/result with JSON
 /**
@@ -235,12 +219,12 @@ public class JobService extends AbstractRDFService {
 	}
 	/**
 	 * GET /byURI#... 		Accept: *		Content-Type: RDF
-	 * @param jobUri
+	 * @param cleanURI
 	 * @return
 	 */
 	@GET
 	@Path("/byURI/{cleanURI}")
-	public Response getJobWithUriParam() {
+	public Response getJobWithUriParam(@PathParam("cleanURI") String cleanURI) {
 		final URI resolvableUri = createCleanQueryURI(uriInfo.getRequestUri());
 		GrafeoImpl g = new GrafeoImpl();
 		g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), resolvableUri);
@@ -334,7 +318,11 @@ public class JobService extends AbstractRDFService {
 				return throwServiceError(e);
 			}
 		}
-		return this.getJob(g, g.resource(uri));
+        GValue tempUriValue = g.get(uri.toString()).get(NS.OMNOM.PROP_JOB_TEMPID);
+        if (tempUriValue!=null) {
+            return Response.status(Response.Status.TEMPORARY_REDIRECT).location(URI.create(tempUriValue.resource().getUri())).build();
+        }
+        return this.getJob(g, g.resource(uri));
 	}
 
 	/*
@@ -359,6 +347,10 @@ public class JobService extends AbstractRDFService {
 				return throwServiceError(e);
 			}
 		}
+        GValue tempUriValue = g.get(uri.toString()).get(NS.OMNOM.PROP_JOB_TEMPID);
+        if (tempUriValue!=null) {
+            return Response.status(Response.Status.TEMPORARY_REDIRECT).location(URI.create(tempUriValue.resource().getUri())).build();
+        }
 		SerializablePojo pojo;
 		if(g.resource(uri).isa(NS.OMNOM.CLASS_JOB)) {
 			pojo = g.getObjectMapper().getObject(JobPojo.class, uri);
