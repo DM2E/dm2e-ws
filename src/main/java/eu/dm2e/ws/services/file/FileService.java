@@ -100,6 +100,9 @@ public class FileService extends AbstractRDFService {
         	g.load(fileUri.getUri());
         	FilePojo fp = new FilePojo();
         	fp.loadFromURI(fileUri.getUri());
+        	if (fp.getFileStatus().equals(FileStatus.DELETED)) {
+        		continue;
+        	}
         	fileList.add(fp);
         }
         String jsonStr = GrafeoJsonSerializer.serializeToJSON(fileList, FilePojo.class);
