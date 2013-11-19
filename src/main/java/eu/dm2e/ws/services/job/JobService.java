@@ -1,11 +1,13 @@
 package eu.dm2e.ws.services.job;
 
+import com.hp.hpl.jena.query.ResultSet;
 import eu.dm2e.grafeo.GResource;
 import eu.dm2e.grafeo.GValue;
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.annotations.RDFClass;
 import eu.dm2e.grafeo.gom.SerializablePojo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.SparqlSelect;
 import eu.dm2e.grafeo.jena.SparqlUpdate;
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.*;
@@ -107,16 +109,23 @@ public class JobService extends AbstractRDFService {
 		//		g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, "rdf:type", g.resource(NS.OMNOM.CLASS_WORKFLOW_JOB));
 		//		return getResponse(g);
 		GrafeoImpl g = new GrafeoImpl();
-		String pojoRdfClass = JobPojo.class.getAnnotation(RDFClass.class).value();
-		g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, NS.RDF.PROP_TYPE, g.resource(pojoRdfClass));
-		List<JobPojo> jobList = new ArrayList<>();
-		for (GResource gres : g.listSubjects()) {
-			if (gres.isAnon()) continue;
-			g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), gres.getUri());
-			JobPojo pojo = g.getObjectMapper().getObject(JobPojo.class, gres);
-			jobList.add(pojo);
-		}
-		return Response.ok(jobList).build();
+        String pojoRdfClass = JobPojo.class.getAnnotation(RDFClass.class).value();
+        SparqlSelect sparql = new SparqlSelect.Builder().endpoint(Config.get(ConfigProp.ENDPOINT_QUERY))
+                .select("?s").where("GRAPH ?s {?s a <" + pojoRdfClass + "> . ?s <" + NS.OMNOM.PROP_WEBSERVICE_CONFIG + "> ?c . FILTER( NOT EXISTS { ?c <" + NS.PROV.PROP_WAS_GENERATED_BY + "> ?p } ) }")
+                .build();
+
+        log.info("SPARQL: " + sparql.toString());
+        ResultSet result = sparql.execute();
+        List<JobPojo> jobList = new ArrayList<>();
+        if (result.hasNext())  {
+            log.info("Oh, I found something...");
+            String uri = result.next().get("?s").asResource().getURI();
+            JobPojo job = new JobPojo(URI.create(uri));
+            jobList.add(job);
+        } else {
+            log.info("Nothing found :-(");
+        }
+        return Response.ok(jobList).build();
 	}
 
 	/**
