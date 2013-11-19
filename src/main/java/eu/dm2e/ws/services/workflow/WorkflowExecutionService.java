@@ -207,12 +207,17 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
            */
         JobPojo newJobPojo = new JobPojo();
         String uuid = UUID.randomUUID().toString();
-        newJobPojo.setId(workflowExecutionUri.toString() + "/job/" + uuid);
         newJobPojo.setCreated(DateTime.now());
         newJobPojo.setWebService(webservicePojo);
         newJobPojo.setWebserviceConfig(wfConf);
         newJobPojo.setHumanReadableLabel();
         //newJobPojo.setParentJob(newJobPojo);
+        // Temporary ID handling, the job is persisted with a job service URI,
+        // but as long as the temporary ID is set, job service redirects here.
+        newJobPojo.setTemporaryID(URI.create(workflowExecutionUri.toString() + "/job/" + uuid));
+        String id = newJobPojo.publishToService(Config.get(ConfigProp.JOB_BASEURI));
+        newJobPojo.setId(id);
+
         WorkerExecutorSingleton.INSTANCE.addJobPojo(uuid,newJobPojo);
 
         log.info("JobPojo for workflow constructed by WorkflowExecutionService: {}", newJobPojo);

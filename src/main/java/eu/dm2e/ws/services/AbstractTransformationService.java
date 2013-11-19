@@ -1,6 +1,8 @@
 package eu.dm2e.ws.services;
 
 import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.ws.Config;
+import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
@@ -152,15 +154,18 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
          * */
         JobPojo job = new JobPojo();
         String uuid = UUID.randomUUID().toString();
-        job.setTemporaryID(URI.create(this.getWebServicePojo().getId() + "/job/" + uuid));
         job.setWebService(wsConf.getWebservice());
         job.setCreated(DateTime.now());
         job.setWebserviceConfig(wsConf);
         job.setHumanReadableLabel();
         //job.setParentJob(job);
         job.addLogEntry("JobPojo constructed by AbstractTransformationService", "TRACE");
+        // Temporary ID handling, the job is persisted with a job service URI,
+        // but as long as the temporary ID is set, job service redirects here.
+        job.setTemporaryID(URI.create(this.getWebServicePojo().getId() + "/job/" + uuid));
+        String id = job.publishToService(Config.get(ConfigProp.JOB_BASEURI));
+        job.setId(id);
         WorkerExecutorSingleton.INSTANCE.jobs.put(uuid,job);
-
         /*
          * Let the asynchronous worker handle the job
          */
