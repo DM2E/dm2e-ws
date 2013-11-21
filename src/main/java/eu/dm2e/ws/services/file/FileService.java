@@ -123,6 +123,11 @@ public class FileService extends AbstractRDFService {
         	if (fp.getFileStatus().equals(FileStatus.DELETED.toString())) {
         		continue;
         	}
+        	// FIXME need to find out where these invalid files come from. But in any
+        	// case don't show them in the UI
+        	if (null == fp.getFileRetrievalURI()) {
+        		continue;
+        	}
         	fileList.add(fp);
         }
         String jsonStr = GrafeoJsonSerializer.serializeToJSON(fileList, FilePojo.class);
