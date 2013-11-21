@@ -64,34 +64,39 @@ public class FilePojoTest extends OmnomUnitTest{
 			fp.setFileStatus(fileStatus);
 			fp.setWasGeneratedBy(job);
 			
-			JsonObject expect = new JsonObject();
-			expect.addProperty(SerializablePojo.JSON_FIELD_UUID, fp.getUuid());
-			expect.addProperty(NS.DCTERMS.PROP_EXTENT, 100L);
-			expect.addProperty(NS.OMNOM.PROP_FILE_STATUS, fileStatus);
-			JsonObject jobObj = new JsonObject();
-			jobObj.addProperty(SerializablePojo.JSON_FIELD_ID, jobId);
-            jobObj.addProperty(NS.OMNOM.PROP_JOB_STATUS, "NOT_STARTED");
-            jobObj.addProperty(NS.OMNOM.PROP_JOB_LATEST_RESULT, job.getLatestResult());
-            jobObj.add(NS.OMNOM.PROP_JOB_STARTED, new JsonArray());
-            jobObj.add(NS.OMNOM.PROP_LOG_ENTRY, new JsonArray());
-            jobObj.add(NS.OMNOM.PROP_ASSIGNMENT, new JsonArray());
-			jobObj.addProperty(NS.DCTERMS.PROP_MODIFIED, job.getModified().toString());
-			jobObj.addProperty(NS.DCTERMS.PROP_CREATED, job.getCreated().toString());
-            jobObj.add(NS.OMNOM.PROP_FINISHED_JOB, new JsonArray());
-            jobObj.add(NS.OMNOM.PROP_POSITIONS_TO_RUN, new JsonArray());
-            jobObj.add(NS.OMNOM.PROP_RUNNING_JOB, new JsonArray());
-            expect.add(NS.PROV.PROP_WAS_GENERATED_BY, jobObj);
-			expect.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, fp.getRDFClassUri());
 			
-			String cleanExpect = testGson.toJson(expect);
 			// cleanExpect = cleanExpect.replaceAll("\"201\\d[^\"]+\"", "\"\"");
 			String cleanSerializeToJSON = GrafeoJsonSerializer.serializeToJSON(fp, FilePojo.class);
 			// cleanSerializeToJSON = cleanSerializeToJSON.replaceAll("\"201\\d[^\"]+\"", "\"\"");
 			String cleanToJSON = fp.toJson();
 			// cleanToJSON = cleanToJSON.replaceAll("\"201\\d[^\"]+\"", "\"\"");
 
-			assertEquals(cleanExpect, cleanSerializeToJSON);
-			assertEquals(cleanExpect, cleanToJSON);
+			{
+				JsonObject expect = new JsonObject();
+				expect.addProperty(SerializablePojo.JSON_FIELD_UUID, fp.getUuid());
+				expect.addProperty(NS.DCTERMS.PROP_EXTENT, 100L);
+				expect.addProperty(NS.OMNOM.PROP_FILE_STATUS, fileStatus);
+				JsonObject jobObj = new JsonObject();
+				jobObj.addProperty(SerializablePojo.JSON_FIELD_ID, jobId);
+				jobObj.addProperty(SerializablePojo.JSON_FIELD_UUID, fp.getWasGeneratedBy().getUuid());
+				expect.add(NS.PROV.PROP_WAS_GENERATED_BY, jobObj);
+				expect.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, fp.getRDFClassUri());
+				String cleanExpect = testGson.toJson(expect);
+				assertEquals(cleanExpect, cleanSerializeToJSON);
+			}
+			{
+				JsonObject expect = new JsonObject();
+				expect.addProperty(SerializablePojo.JSON_FIELD_UUID, fp.getUuid());
+				expect.addProperty(NS.DCTERMS.PROP_EXTENT, 100L);
+				expect.addProperty(NS.OMNOM.PROP_FILE_STATUS, fileStatus);
+				JsonObject jobObj = new JsonObject();
+				jobObj.addProperty(SerializablePojo.JSON_FIELD_ID, jobId);
+				jobObj.addProperty(SerializablePojo.JSON_FIELD_UUID, fp.getWasGeneratedBy().getUuid());
+				expect.add(NS.PROV.PROP_WAS_GENERATED_BY, jobObj);
+				expect.addProperty(SerializablePojo.JSON_FIELD_RDF_TYPE, fp.getRDFClassUri());
+				String cleanExpect = testGson.toJson(expect);
+				assertEquals(cleanExpect, cleanToJSON);
+			}
 		}
 		
 	}
