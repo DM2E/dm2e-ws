@@ -117,8 +117,9 @@ public class FileService extends AbstractRDFService {
         		continue;
         	}
         	// FIXME possibly very inefficient
-        	FilePojo fp = new FilePojo();
-        	fp.loadFromURI(fileUri.getUri());
+        	g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), fileUri.getUri());
+        	FilePojo fp = g.getObjectMapper().getObject(FilePojo.class, fileUri);
+//        	fp.loadFromURI(fileUri.getUri());
         	if (fp.getFileStatus().equals(FileStatus.DELETED.toString())) {
         		continue;
         	}
