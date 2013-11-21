@@ -16,6 +16,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -34,6 +35,11 @@ import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.joda.time.DateTime;
+
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
 
 import eu.dm2e.grafeo.GResource;
 import eu.dm2e.grafeo.GStatement;
@@ -107,26 +113,47 @@ public class FileService extends AbstractRDFService {
 	@Path("list")
 	public Response getFileList() {
 		List<FilePojo> fileList = new ArrayList<FilePojo>();
-        Grafeo g = new GrafeoImpl();
+        GrafeoImpl g = new GrafeoImpl();
         log.info(Config.get(ConfigProp.ENDPOINT_QUERY));
         g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_FILE));
+        Set<GResource> fileResList = g.listSubjects();
+        ParameterizedSparqlString sb = new ParameterizedSparqlString();
+        sb.append("CONSTRUCT {\n");
+        sb.append(" ?s ?p ?o . \n");
+        sb.append("} WHERE {\n");
+        sb.append("  GRAPH ?file { ?s ?p ?o . ?file rdf:type omnom:File . }\n");
+        sb.append("}");
+        sb.setNsPrefix("omnom", NS.OMNOM.BASE);
+        sb.setNsPrefix("rdf", NS.RDF.BASE);
+        log.debug(sb.toString());
+        Query sparco = sb.asQuery();
+        QueryExecution qexec = QueryExecutionFactory.createServiceRequest(Config.get(ConfigProp.ENDPOINT_QUERY), sparco);
+		long startTime = System.currentTimeMillis();
+        log.debug("Grafeo size: " + g.size());
+        log.debug("About to execute construct query.");
+        qexec.execConstruct(g.getModel());
+        long estimatedTime = System.currentTimeMillis() - startTime;
+        log.debug(LogbackMarkers.TRACE_TIME, "CONSTRUCT took " + estimatedTime + "ms: ");
+        log.debug("Grafeo size: " + g.size());
         for (GResource fileUri : g.findByClass(NS.OMNOM.CLASS_FILE)) {
         	log.info("Resource: " + fileUri.getUri());
         	if (null == fileUri.getUri()) {
         		log.warn("There is a blank node file without an ID in the triplestore.");
         		continue;
         	}
-        	// FIXME possibly very inefficient
-        	g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), fileUri.getUri());
         	// FIXME need to find out where these invalid files come from. But in any
         	// case don't show them in the UI
-        	if (null == g.firstMatchingObject(fileUri.toString(), NS.OMNOM.PROP_FILE_RETRIEVAL_URI)) {
-        		continue;
-        	}
-        	if (! g.containsTriple(fileUri, NS.OMNOM.PROP_FILE_STATUS, g.literal(FileStatus.AVAILABLE.toString()))) {
-        		continue;
-        	}
+//        	if (null == g.firstMatchingObject(fileUri.toString(), NS.OMNOM.PROP_FILE_RETRIEVAL_URI)) {
+//        		continue;
+//        	}
+//        	if (! g.containsTriple(fileUri, NS.OMNOM.PROP_FILE_STATUS, g.literal(FileStatus.AVAILABLE.toString()))) {
+//        		continue;
+//        	}
         	FilePojo fp = g.getObjectMapper().getObject(FilePojo.class, fileUri);
+        	if (null == fp.getFileRetrievalURI())
+        		continue;
+        	if (fp.getFileStatus().equals(FileStatus.DELETED.toString()))
+        		continue;
 //        	fp.loadFromURI(fileUri.getUri());
         	fileList.add(fp);
         }
