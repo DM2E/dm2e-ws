@@ -121,7 +121,12 @@ public class FileService extends AbstractRDFService {
         sb.append("CONSTRUCT {\n");
         sb.append(" ?s ?p ?o . \n");
         sb.append("} WHERE {\n");
-        sb.append("  GRAPH ?file { ?s ?p ?o . ?file rdf:type omnom:File . }\n");
+        sb.append("  GRAPH ?file {");
+        sb.append("    ?file rdf:type omnom:File . }\n");
+        sb.append("      FILTER isIRI(?file) .\n");
+        sb.append("    ?file omnom:fileStatus ?status. \n");
+        sb.append("      FILTER STRSTARTS(STR(?status), \"AVAILABLE\") .\n");
+        sb.append("    ?s ?p ?o .\n");
         sb.append("}");
         sb.setNsPrefix("omnom", NS.OMNOM.BASE);
         sb.setNsPrefix("rdf", NS.RDF.BASE);
@@ -150,10 +155,10 @@ public class FileService extends AbstractRDFService {
 //        		continue;
 //        	}
         	FilePojo fp = g.getObjectMapper().getObject(FilePojo.class, fileUri);
-        	if (null == fp.getFileRetrievalURI())
-        		continue;
-        	if (fp.getFileStatus().equals(FileStatus.DELETED.toString()))
-        		continue;
+//        	if (null == fp.getFileRetrievalURI())
+//        		continue;
+//        	if (fp.getFileStatus().equals(FileStatus.DELETED.toString()))
+//        		continue;
 //        	fp.loadFromURI(fileUri.getUri());
         	fileList.add(fp);
         }
