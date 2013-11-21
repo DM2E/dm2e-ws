@@ -3,6 +3,7 @@ package eu.dm2e.ws.services.config;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -26,6 +27,7 @@ import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.annotations.RDFClass;
 import eu.dm2e.grafeo.gom.SerializablePojo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.SparqlAsk;
 import eu.dm2e.grafeo.jena.SparqlUpdate;
 import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
 import eu.dm2e.logback.LogbackMarkers;
@@ -34,6 +36,7 @@ import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.ParameterAssignmentPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.services.AbstractRDFService;
@@ -101,17 +104,31 @@ public class ConfigService extends AbstractRDFService {
     public Response getConfigList(@Context UriInfo uriInfo) {
     	
     	List<SerializablePojo> configList = new ArrayList<>();
-    		GrafeoImpl g = new GrafeoImpl();
-    		String pojoRdfClass = WebserviceConfigPojo.class.getAnnotation(RDFClass.class).value();
-    		g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, NS.RDF.PROP_TYPE, g.resource(pojoRdfClass));
-    		for (GResource gres : g.listSubjects()) {
-    			if (gres.isAnon()) continue;
-    			WebserviceConfigPojo pojo = null;
-				pojo = new WebserviceConfigPojo();
-				pojo.setId(gres.getUri());
-				pojo.loadFromURI(pojo.getId());
-    			configList.add(pojo);
+    	GrafeoImpl g = new GrafeoImpl();
+    	String pojoRdfClass = WebserviceConfigPojo.class.getAnnotation(RDFClass.class).value();
+    	g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, NS.RDF.PROP_TYPE, g.resource(pojoRdfClass));
+    	for (GResource gres : g.listSubjects()) {
+    		if (gres.isAnon()) {
+    			log.warn("Blank config in the triplestore. Should not hapen.");
+    			continue;
     		}
+    		SparqlAsk spask = new SparqlAsk.Builder()
+    			.ask(	"GRAPH <" + gres.getUri() + "> {" +
+    					"  <" + gres.getUri() + "> <" + NS.OMNOM.PROP_WEBSERVICE + "> ?ws ." +
+						"  ?ws <" + NS.OMNOM.PROP_WEBSERVICE_ID +"> ?implId ." +
+						"     FILTER STRSTARTS(?implId, \"eu.dm2e.ws.services.workflow.WorkflowExecutionService\") ." +
+						"}")
+				.endpoint(Config.get(ConfigProp.ENDPOINT_QUERY))
+				.build();
+    		if (! spask.execute()) {
+    			continue;
+    		}
+    		WebserviceConfigPojo pojo = new WebserviceConfigPojo();
+    		pojo.setId(gres.getUri());
+    		pojo.loadFromURI(pojo.getId());
+    		pojo.setParameterAssignments(new HashSet<ParameterAssignmentPojo>());
+    		configList.add(pojo);
+    	}
     	return Response.ok(configList).build();
     }
 
