@@ -148,7 +148,7 @@ public class FilePojo extends AbstractPersistentPojo<FilePojo>{
 	public String getFileStatus() { return fileStatus; }
 	public void setFileStatus(String fileStatus) { this.fileStatus = fileStatus; }
 	
-	@RDFProperty(NS.PROV.PROP_WAS_GENERATED_BY)
+	@RDFProperty(value = NS.PROV.PROP_WAS_GENERATED_BY, serializeAsURI = true)
 	private JobPojo wasGeneratedBy;
 	public JobPojo getWasGeneratedBy() { return wasGeneratedBy; }
 	public void setWasGeneratedBy(JobPojo generatorJob) { this.wasGeneratedBy = generatorJob; }
