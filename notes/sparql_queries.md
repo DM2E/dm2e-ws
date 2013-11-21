@@ -64,3 +64,7 @@ WHERE {
   }
 }
 ```
+
+
+# All Datasets with number of contained aggregations
+http://localhost:9997/test/sparql?query=SELECT%20?g%20%28count%28?s%29%20as%20?anz%29%20WHERE%20{%20GRAPH%20?g%20{?g%20a%20%3Chttp://rdfs.org/ns/void%23Dataset%3E%20.%20%20?s%20a%20%3Chttp://www.openarchives.org/ore/terms/Aggregation%3E}}%20group%20by%20?g

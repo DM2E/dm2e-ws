@@ -27,6 +27,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
 import eu.dm2e.grafeo.GResource;
+import eu.dm2e.grafeo.GValue;
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.gom.SerializablePojo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
@@ -149,7 +150,7 @@ public class JobService extends AbstractRDFService {
                 .build()
                 .execute();
 			if (! resultSet.hasNext()) {
-				log.debug("No match.");
+				log.debug("No match for SPARQL SELECT querying jobs.");
 				continue;
 			}
 			JobPojo jp = new JobPojo();
@@ -267,12 +268,12 @@ public class JobService extends AbstractRDFService {
 	}
 	/**
 	 * GET /byURI#... 		Accept: *		Content-Type: RDF
-	 * @param jobUri
+	 * @param cleanURI
 	 * @return
 	 */
 	@GET
 	@Path("/byURI/{cleanURI}")
-	public Response getJobWithUriParam() {
+	public Response getJobWithUriParam(@PathParam("cleanURI") String cleanURI) {
 		final URI resolvableUri = createCleanQueryURI(uriInfo.getRequestUri());
 		GrafeoImpl g = new GrafeoImpl();
 		g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), resolvableUri);
@@ -366,7 +367,11 @@ public class JobService extends AbstractRDFService {
 				return throwServiceError(e);
 			}
 		}
-		return this.getJob(g, g.resource(uri));
+        GValue tempUriValue = g.get(uri.toString()).get(NS.OMNOM.PROP_JOB_TEMPID);
+        if (tempUriValue!=null) {
+            return Response.status(Response.Status.TEMPORARY_REDIRECT).location(URI.create(tempUriValue.resource().getUri())).build();
+        }
+        return this.getJob(g, g.resource(uri));
 	}
 
 	/*
@@ -391,6 +396,10 @@ public class JobService extends AbstractRDFService {
 				return throwServiceError(e);
 			}
 		}
+        GValue tempUriValue = g.get(uri.toString()).get(NS.OMNOM.PROP_JOB_TEMPID);
+        if (tempUriValue!=null) {
+            return Response.status(Response.Status.TEMPORARY_REDIRECT).location(URI.create(tempUriValue.resource().getUri())).build();
+        }
 		SerializablePojo pojo;
 		if(g.resource(uri).isa(NS.OMNOM.CLASS_JOB)) {
 			pojo = g.getObjectMapper().getObject(JobPojo.class, uri);

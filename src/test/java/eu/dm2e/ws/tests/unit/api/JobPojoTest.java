@@ -29,8 +29,9 @@ public class JobPojoTest extends OmnomUnitTest {
 		expect.addProperty(SerializablePojo.JSON_FIELD_UUID, job.getUuid());
         expect.addProperty(NS.OMNOM.PROP_JOB_STATUS, JobStatus.STARTED.name());
         expect.addProperty(NS.OMNOM.PROP_JOB_LATEST_RESULT, job.getLatestResult());
+        expect.add(NS.OMNOM.PROP_JOB_STARTED, new JsonArray());
         expect.add(NS.OMNOM.PROP_LOG_ENTRY, new JsonArray());
-		expect.add(NS.OMNOM.PROP_ASSIGNMENT, new JsonArray());
+        expect.add(NS.OMNOM.PROP_ASSIGNMENT, new JsonArray());
 		expect.addProperty(NS.DCTERMS.PROP_MODIFIED, job.getModified().toString());
 		expect.addProperty(NS.DCTERMS.PROP_CREATED, job.getCreated().toString());
         //expect.addProperty(NS.OMNOM.PROP_JOB_PARENT, job.getParentJob().toString());

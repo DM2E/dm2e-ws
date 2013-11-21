@@ -198,7 +198,7 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
 	public void setWebservice(WebservicePojo webservice) { this.webservice = webservice; }
 
 	// link to the parent workflow that created this config
-	@RDFProperty(NS.PROV.PROP_WAS_GENERATED_BY)
+    @RDFProperty(NS.PROV.PROP_WAS_GENERATED_BY)
 	private JobPojo wasGeneratedBy;
 	public JobPojo getWasGeneratedBy() { return wasGeneratedBy; }
 	public void setWasGeneratedBy(JobPojo wasGeneratedBy) { this.wasGeneratedBy = wasGeneratedBy; }
@@ -216,16 +216,7 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
 	public void setExecutesPosition(WorkflowPositionPojo executesPosition) { this.executesPosition = executesPosition; }
 
 
-    @RDFProperty(NS.OMNOM.PROP_JOB_STARTED)
-    Set<WebserviceConfigPojo> startedJobs = new HashSet<>();
-    public void setStartedJobs(Set<WebserviceConfigPojo> startedJobs) { this.startedJobs = startedJobs;}
-    public Set<WebserviceConfigPojo> getStartedJobs() {return startedJobs;}
 
-
-    @RDFProperty(NS.OMNOM.PROP_JOB_PARENT)
-    JobPojo parentJob;
-    public void setParentJob(JobPojo job) {parentJob = job;}
-    public JobPojo getParentJob() {return parentJob;}
 
 
 }

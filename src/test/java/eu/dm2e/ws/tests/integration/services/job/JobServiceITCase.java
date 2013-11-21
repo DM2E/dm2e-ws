@@ -15,11 +15,14 @@ import eu.dm2e.ws.services.demo.DemoService;
 import eu.dm2e.ws.services.xslt.XsltService;
 import eu.dm2e.ws.tests.OmnomTestCase;
 import eu.dm2e.ws.tests.OmnomTestResources;
+import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
@@ -446,5 +449,25 @@ public class JobServiceITCase extends OmnomTestCase {
 		}
 			
 	}
+
+    @Test
+    public void testTemporaryID() {
+        log.info("Test temporary ID redirect.");
+        JobPojo job = new JobPojo();
+        job.setTemporaryID(URI.create("http://foo.bar"));
+        Response resp = webTarget.request().post(Entity.text(job.getNTriples()));
+        assertEquals(201, resp.getStatus());
+        URI id = resp.getLocation();
+        log.debug("Job created with permanent URI: " + id.toString());
+
+        ClientConfig config = new ClientConfig().property(ClientProperties.FOLLOW_REDIRECTS,false);
+        Client jerseyClient = ClientBuilder.newClient(config);
+        WebTarget wr = jerseyClient.target(id);
+        Response resp2 = wr.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES).get();
+        assertEquals(Response.Status.TEMPORARY_REDIRECT.getStatusCode(), resp2.getStatus());
+        log.debug("Redirect to: " + resp2.getLocation());
+
+
+    }
 
 }

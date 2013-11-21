@@ -60,6 +60,7 @@ public final class NS {
         public static final String PROP_IS_REQUIRED         = BASE + "isRequired";
         public static final String PROP_ITEM_LABEL_XPATH    = BASE + "itemLabelXPath";
 		public static final String PROP_ITEM_ROOT_XPATH     = BASE + "itemRootXPath";
+        public static final String PROP_JOB_TEMPID          = BASE + "temporaryID";
         public static final String PROP_JOB_STATUS          = BASE + "status";
         public static final String PROP_JOB_STARTED         = BASE + "startedJobs";
         public static final String PROP_JOB_PARENT          = BASE + "parentJob";

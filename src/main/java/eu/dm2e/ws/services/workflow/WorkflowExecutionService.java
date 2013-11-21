@@ -1,30 +1,5 @@
 package eu.dm2e.ws.services.workflow;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.glassfish.grizzly.compression.lzma.impl.Base;
-import org.joda.time.DateTime;
-
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
 import eu.dm2e.grafeo.util.LogbackMarkers;
@@ -32,17 +7,20 @@ import eu.dm2e.utils.Misc;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.api.JobPojo;
-import eu.dm2e.ws.api.LogEntryPojo;
-import eu.dm2e.ws.api.ParameterAssignmentPojo;
-import eu.dm2e.ws.api.ParameterConnectorPojo;
-import eu.dm2e.ws.api.ParameterPojo;
-import eu.dm2e.ws.api.WebserviceConfigPojo;
-import eu.dm2e.ws.api.WebservicePojo;
-import eu.dm2e.ws.api.WorkflowPojo;
-import eu.dm2e.ws.api.WorkflowPositionPojo;
+import eu.dm2e.ws.api.*;
 import eu.dm2e.ws.services.AbstractAsynchronousRDFService;
 import eu.dm2e.ws.services.WorkerExecutorSingleton;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.joda.time.DateTime;
+
+import javax.ws.rs.*;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
 
 /**
  * Service for the creation and execution of workflows
@@ -60,14 +38,14 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
      * The WorkflowJob object for the worker part of the service (to be used in
      * the run() method)
      */
-    private JobPojo jobPojo;
+    private JobPojo workflowJob;
 
-    public JobPojo getJobPojo() {
-        return jobPojo;
+    public JobPojo getWorkflowJob() {
+        return workflowJob;
     }
 
-    public void setJobPojo(JobPojo jobPojo) {
-        this.jobPojo = jobPojo;
+    public void setWorkflowJob(JobPojo workflowJob) {
+        this.workflowJob = workflowJob;
     }
 
 
@@ -229,12 +207,17 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
            */
         JobPojo newJobPojo = new JobPojo();
         String uuid = UUID.randomUUID().toString();
-        newJobPojo.setId(workflowExecutionUri.toString() + "/job/" + uuid);
         newJobPojo.setCreated(DateTime.now());
         newJobPojo.setWebService(webservicePojo);
         newJobPojo.setWebserviceConfig(wfConf);
         newJobPojo.setHumanReadableLabel();
         //newJobPojo.setParentJob(newJobPojo);
+        // Temporary ID handling, the job is persisted with a job service URI,
+        // but as long as the temporary ID is set, job service redirects here.
+        newJobPojo.setTemporaryID(URI.create(workflowExecutionUri.toString() + "/job/" + uuid));
+        String id = newJobPojo.publishToService(Config.get(ConfigProp.JOB_BASEURI));
+        newJobPojo.setId(id);
+
         WorkerExecutorSingleton.INSTANCE.addJobPojo(uuid,newJobPojo);
 
         log.info("JobPojo for workflow constructed by WorkflowExecutionService: {}", newJobPojo);
@@ -250,7 +233,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
            */
         log.info("Workflow job is before instantiation :" + newJobPojo);
         WorkflowExecutionService instance = new WorkflowExecutionService();
-        instance.setJobPojo(newJobPojo);
+        instance.setWorkflowJob(newJobPojo);
 
         WorkerExecutorSingleton.INSTANCE.handleJob(uuid,instance);
 
@@ -263,7 +246,6 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
     Map<String, WebservicePojo> serviceDescriptions = new HashMap<>();
 
     public WebservicePojo getWebServicePojo(WorkflowPojo wf) {
-        if (serviceDescriptions.containsKey(wf.getId())) return serviceDescriptions.get(wf.getId());
         WebservicePojo ws = new WebservicePojo();
         String base = uriInfo.getBaseUri().toString();
         String path = this.getClass().getAnnotation(Path.class).value();
@@ -295,7 +277,6 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
             sp.setHasIterations(p.getHasIterations());
             sp.setLabel(p.getLabel());
         }
-        serviceDescriptions.put(wf.getId(), ws);
         return ws;
     }
 
@@ -318,9 +299,13 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
      */
     @GET
     @Path("{id}/describe")
-    public Response getServiceDescription() {
+    public Response getServiceDescription(@PathParam("id") String id) {
+        if (serviceDescriptions.containsKey(id)) return Response.ok().entity(serviceDescriptions.get(id)).build();
+
+
         URI workflowExecutionUri = popPath();
         URI workflowUri = popPathFromBeginning(workflowExecutionUri, "exec");
+
         WorkflowPojo workflowPojo = new WorkflowPojo();
         log.trace("Loading workflow from " + workflowUri);
         try {
@@ -330,6 +315,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         }
         WebservicePojo wsDesc = this.getWebServicePojo(workflowPojo);
         log.trace(LogbackMarkers.DATA_DUMP, wsDesc.getTerseTurtle());
+        serviceDescriptions.put(id, wsDesc);
         return Response.ok().entity(wsDesc).build();
     }
 
@@ -406,20 +392,21 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         return true;
     }
 
-    public JobPojo runPosition(WorkflowPositionPojo pos, WebserviceConfigPojo wsconf, JobPojo startedJob) {
+    public JobPojo runPosition(WorkflowPositionPojo pos, WebserviceConfigPojo wsconf) {
         /*
 				 * Publish the WebserviceConfig, so it becomes stable
 				 */
         wsconf.resetId();
         wsconf.setExecutesPosition(pos);
-        wsconf.setParentJob(startedJob);
+        wsconf.setWasGeneratedBy(workflowJob);
         wsconf.publishToService(client.getConfigWebTarget());
 
-        /*Set<WebserviceConfigPojo> startedJobs = startedJob.getWebserviceConfig().getStartedJobs();
+
+        /*Set<WebserviceConfigPojo> startedJobs = parentJob.getWebserviceConfig().getStartedJobs();
         startedJobs.add(wsconf);
         System.out.println(wsconf.getId());
-        startedJob.getWebserviceConfig().setStartedJobs(startedJobs);
-        System.out.println("domiii: "+ Misc.output(startedJob.getWebserviceConfig().getStartedJobs()));         */
+        parentJob.getWebserviceConfig().setStartedJobs(startedJobs);
+        System.out.println("domiii: "+ Misc.output(parentJob.getWebserviceConfig().getStartedJobs()));         */
 
         if (null == wsconf.getId()) {
             throw new RuntimeException("Could not publish webservice config " + wsconf);
@@ -433,7 +420,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                 .put(Entity.text(wsconf.getId()));
         if (202 != resp.getStatus() || null == resp.getLocation()) {
 //					job.debug(wsconf.getTerseTurtle());
-            throw new RuntimeException("Request to start web service " + wsconf.getWebservice() + " with config " + wsconf + "failed: " + resp.getStatus() + " startedJob " + startedJob.getLabelorURI());
+            throw new RuntimeException("Request to start web service " + wsconf.getWebservice() + " with config " + wsconf + "failed: " + resp.getStatus() + " parentJob " + workflowJob.getLabelorURI());
         }
 
 
@@ -442,6 +429,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                    */
         // long timePassed = 0;
         JobPojo webserviceJob = new JobPojo(resp.getLocation());
+        workflowJob.getStartedJobs().add(webserviceJob);
 
         // persist change of the workflow job
         positionsToRun.remove(pos.getId());
@@ -568,18 +556,17 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
      */
     @Override
     public void run() {
-        JobPojo job = getJobPojo();
-        log.info("Workflow job run() for " + job.getWebService());
-        WebserviceConfigPojo workflowConfig = job.getWebserviceConfig();
+        log.info("Workflow workflowJob run() for " + workflowJob.getWebService());
+        WebserviceConfigPojo workflowConfig = workflowJob.getWebserviceConfig();
         WorkflowPojo workflow = new WorkflowPojo();
-        workflow.loadFromURI(job.getWebService().getParamByName(PARAM_WORKFLOW).getDefaultValue(), 1);
+        workflow.loadFromURI(workflowJob.getWebService().getParamByName(PARAM_WORKFLOW).getDefaultValue(), 1);
         for (WorkflowPositionPojo pos : workflow.getPositions()) {
         	pos.setWorkflow(workflow);
         }
 
         try {
             try {
-                job.getId().toString();
+                workflowJob.getId().toString();
                 workflow.getId().toString();
                 workflowConfig.getId().toString();
                 log.info("Workflow in run before validation: " + workflow.getTerseTurtle());
@@ -587,7 +574,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                 throw e;
             }
 
-            log.info("Job used in run(): " + job);
+            log.info("Job used in run(): " + workflowJob);
 
             /*
                 * Validate
@@ -599,7 +586,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
             }
 
             // The workflow parameters are used in the following, but the webservice has different parameters. Ugly, ugly...
-            propagateWorkflowParametersToWebservice(workflow, workflowConfig, job);
+            propagateWorkflowParametersToWebservice(workflow, workflowConfig, workflowJob);
 
 
             /*
@@ -617,7 +604,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
             /*
                 *
                 */
-            job.setStarted();
+            workflowJob.setStarted();
 
 
             /*
@@ -635,10 +622,10 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                 for (ParameterConnectorPojo conn : workflow.getConnectorFromWorkflowInputParam(param)) {
                     // it could be that an input parameter is directly connected to an output parameter
                     if (conn.hasToWorkflow()) {
-                        if (job.getOutputParameterAssignmentForParam(conn.getToParam()) != null) {
+                        if (workflowJob.getOutputParameterAssignmentForParam(conn.getToParam()) != null) {
                             throw new RuntimeException("Multiple assignments for workflow outputs not yet supported!");
                         }
-                        job.addOutputParameterAssignment(conn.getToParam().getId(), value);
+                        workflowJob.addOutputParameterAssignment(conn.getToParam().getId(), value);
                     }
                     WorkflowPositionPojo target = conn.getToPosition();
                     // all connected positions are put to our map of positions that should run at some point
@@ -648,19 +635,19 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                     config.addParameterAssignment(conn.getToParam().getId(), value);
                     // whenever a new assignment is propagated, we test if the position ha all connected inputs to run
                     if (checkPositionInputComplete(target, config)) {
-                        JobPojo newJob = runPosition(target, config, job);
-                        // Running a position means to remove it from the positionsToRun and add its job to the runningJobs
+                        JobPojo newJob = runPosition(target, config);
+                        // Running a position means to remove it from the positionsToRun and add its workflowJob to the runningJobs
                         runningJobs.put(newJob.getId(), newJob);
                     }
                 }
 
             }
-            // job.publishToService();
+            // workflowJob.publishToService();
 
             // Next: Constantly iterate over all running jobs and propagate new results to positions until no further jobs are running
             log.info("Start polling... Interval: " + pollInterval);
             while (!positionsToRun.isEmpty() || !runningJobs.isEmpty()) {
-                job.trace("Sleeping for " + pollInterval + "ms, waiting for jobs to finish.");
+                workflowJob.trace("Sleeping for " + pollInterval + "ms, waiting for jobs to finish.");
                 try {
                     Thread.sleep(pollInterval);
                 } catch (Exception e) {
@@ -695,17 +682,17 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                     */
                     log.debug("Consumed Iterations: " + Misc.output(consumedIterations));
                     log.debug("Latest Result: " + webserviceJob.getLatestResult());
-                    // when the job is finished, failed OR it is iterating and new results are available, then we have to propagate the results
+                    // when the workflowJob is finished, failed OR it is iterating and new results are available, then we have to propagate the results
                     if (!webserviceJob.isStillRunning() || webserviceJob.getLatestResult() > consumedIterations.get(webserviceJob.getId())) {
-                        log.info("Finished job or new iteration");
+                        log.info("Finished workflowJob or new iteration");
 
                         // Finished or Failed: Clean up, i.e., remove from running and put to finished.
                         if (!webserviceJob.isStillRunning()) {
                             log.info("Job finished, cleaning up.");
                             it.remove();
                             finishedJobs.put(webserviceJob.getId(), webserviceJob);
-                            job.addFinishedJob(webserviceJob);
-                            // job.publishToService();
+                            workflowJob.addFinishedJob(webserviceJob);
+                            // workflowJob.publishToService();
                         }
 
                         // Failed: throw exception
@@ -715,7 +702,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                         // Finished or iterating: propagate new results
                         } else {
 
-                            job.info("Job " + webserviceJob + " of Webservice " + job2Position.get(webserviceJob.getId()).getWebservice() + "finished or iterated successfully, propagating to next position.");
+                            workflowJob.info("Job " + webserviceJob + " of Webservice " + job2Position.get(webserviceJob.getId()).getWebservice() + "finished or iterated successfully, propagating to next position.");
 
                             // determine the results that are not yet processed
                             int alreadySeen = consumedIterations.get(webserviceJob.getId());
@@ -732,10 +719,10 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                                         // if it is a workflow parameter, propagate the assignment
                                         if (conn.hasToWorkflow()) {
                                             // The propagated params are lost whenever the pojos are reloaded... as I said: ugly...
-                                            propagateWorkflowParametersToWebservice(workflow, workflowConfig, job);
-                                            log.debug("All output params: " + Misc.output(job.getWebService().getOutputParams()));
-                                            ParameterAssignmentPojo newAss = job.addOutputParameterAssignment(conn.getToParam().getId(), value);
-                                            propagateWorkflowOutputAssignmentsToWebservice(newAss,job);
+                                            propagateWorkflowParametersToWebservice(workflow, workflowConfig, workflowJob);
+                                            log.debug("All output params: " + Misc.output(workflowJob.getWebService().getOutputParams()));
+                                            ParameterAssignmentPojo newAss = workflowJob.addOutputParameterAssignment(conn.getToParam().getId(), value);
+                                            propagateWorkflowOutputAssignmentsToWebservice(newAss, workflowJob);
                                             iteratingWorkflow = true;
                                             if (!conn.getToParam().getHasIterations()) throw new RuntimeException("Shame on you, this output parameter must be iterating, too! BTW, this=" + conn.getToParam().getId());
                                         } else {
@@ -755,7 +742,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                                             config.addParameterAssignment(conn.getToParam().getId(), value);
                                             // if the position is ready, run it
                                             if (checkPositionInputComplete(target, config)) {
-                                                JobPojo newJob = runPosition(target, config, webserviceJob);
+                                                JobPojo newJob = runPosition(target, config);
                                                 tmpRunningJobs.put(newJob.getId(), newJob);
                                             }
                                         }
@@ -763,7 +750,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                                 }
                                 // with every iteration, the workflow also iterates, if an iterating parameter
                                 // is connected to an iterating output parameter of the workflow.
-                                if (iteratingWorkflow) job.iterate();
+                                if (iteratingWorkflow) workflowJob.iterate();
 
                             }
                             consumedIterations.put(webserviceJob.getId(), available);
@@ -775,11 +762,11 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                                     String value = ass.getParameterValue();
                                     for (ParameterConnectorPojo conn : workflow.getConnectorFromPositionAndParam(job2Position.get(webserviceJob.getId()),ass.getForParam())) {
                                         if (conn.hasToWorkflow()) {
-                                            if (job.getOutputParameterAssignmentForParam(conn.getToParam()) != null) {
+                                            if (workflowJob.getOutputParameterAssignmentForParam(conn.getToParam()) != null) {
                                                 // TODO: Here we need a conceptional solution...
                                                 log.error("Multiple assignments of a non-iterating workflow output!");
                                             }
-                                            job.addOutputParameterAssignment(conn.getToParam().getId(), value);
+                                            workflowJob.addOutputParameterAssignment(conn.getToParam().getId(), value);
                                         } else {
                                             WorkflowPositionPojo target = conn.getToPosition();
                                             WebserviceConfigPojo config = null;
@@ -797,7 +784,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
 
 
                                             if (checkPositionInputComplete(target, config)) {
-                                                JobPojo newJob = runPosition(target, config, webserviceJob);
+                                                JobPojo newJob = runPosition(target, config);
                                                 tmpRunningJobs.put(newJob.getId(), newJob);
                                             }
                                         }
@@ -815,14 +802,14 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
             // Handling non-iterating workflow outputs and propagating them to the service... ugly...
             for (ParameterPojo param:workflow.getOutputParams()) {
                     if (param.getHasIterations()) continue;
-                    propagateWorkflowOutputAssignmentsToWebservice(job.getOutputParameterAssignmentForParam(param),job);
+                    propagateWorkflowOutputAssignmentsToWebservice(workflowJob.getOutputParameterAssignmentForParam(param), workflowJob);
             }
 
-            job.setFinished();
+            workflowJob.setFinished();
         } catch (Throwable t) {
-            log.error("Workflow " + job + " FAILED: " + t + "\n" + ExceptionUtils.getStackTrace(t));
-            job.fatal("Workflow " + job + " FAILED: " + t + "\n" + ExceptionUtils.getStackTrace(t));
-            job.setFailed();
+            log.error("Workflow " + workflowJob + " FAILED: " + t + "\n" + ExceptionUtils.getStackTrace(t));
+            workflowJob.fatal("Workflow " + workflowJob + " FAILED: " + t + "\n" + ExceptionUtils.getStackTrace(t));
+            workflowJob.setFailed();
             // TODO why can't I throw this here but in AbstractTransformationService??
             throw new RuntimeException(t);
         } finally {
@@ -831,7 +818,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                JobPojo dummyJob = new JobPojo();
                Set<JobPojo> allLoggingJobs = new HashSet<>();
                allLoggingJobs.addAll(finishedJobs.values());
-               allLoggingJobs.add(job);
+               allLoggingJobs.add(workflowJob);
                for (JobPojo j : allLoggingJobs) {
                    for (LogEntryPojo logEntry : j.getLogEntries()) {
                        LogEntryPojo newLogEntry = new LogEntryPojo();
@@ -841,13 +828,13 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                        dummyJob.getLogEntries().add(newLogEntry);
                    }
                }
-               job.addOutputParameterAssignment(PARAM_COMPLETE_LOG, dummyJob.toLogString());
-//               job.publishToService();
+               workflowJob.addOutputParameterAssignment(PARAM_COMPLETE_LOG, dummyJob.toLogString());
+//               workflowJob.publishToService();
                client.getJobWebTarget()
                		 .path("byURI")
-               		 .queryParam("uri", job.getId())
+               		 .queryParam("uri", workflowJob.getId())
                		 .request()
-               		 .put(job.getNTriplesEntity());
+               		 .put(workflowJob.getNTriplesEntity());
         }
     }
 }

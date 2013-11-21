@@ -58,7 +58,7 @@ public class WorkflowService extends AbstractRDFService {
 	 */
 	@GET
 	@Path("list")
-	@Consumes({
+	@Produces({
 		MediaType.APPLICATION_JSON
 	})
 	public Response getWorkflowList() {

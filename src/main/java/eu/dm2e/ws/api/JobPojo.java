@@ -296,6 +296,11 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
      *
      *********************/
 
+    @RDFProperty(NS.OMNOM.PROP_JOB_TEMPID)
+    URI temporaryID;
+    public URI getTemporaryID() { return temporaryID; }
+    public synchronized void setTemporaryID(URI temporaryID) { this.temporaryID = temporaryID; }
+
     @RDFProperty(NS.OMNOM.PROP_JOB_STATUS)
     String jobStatus;
     public String getJobStatus() {
@@ -311,24 +316,10 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
     }
     public synchronized void setLatestResult(int latestResult) { this.latestResult = latestResult; }
 
-    /*@RDFProperty(NS.OMNOM.PROP_JOB_STARTED)
+    @RDFProperty(value=NS.OMNOM.PROP_JOB_STARTED, serializeAsURI=true)
     Set<JobPojo> startedJobs = new HashSet<>();
-    public void setStartedJobs(Set<JobPojo> startedJobs) {
-        this.startedJobs = startedJobs;
-    }
-    public Set<JobPojo> getStartedJobs() {
-        return startedJobs;
-    }
-
-
-    @RDFProperty(NS.OMNOM.PROP_JOB_PARENT)
-    JobPojo parentJob;
-    public void setParentJob(JobPojo job) {
-        parentJob = job;
-    }
-    public JobPojo getParentJob() {
-        return parentJob;
-    }                          */
+    public void setStartedJobs(Set<JobPojo> startedJobs) { this.startedJobs = startedJobs;}
+    public Set<JobPojo> getStartedJobs() {return startedJobs;}
 
 
     @RDFProperty(NS.OMNOM.PROP_LOG_ENTRY)
@@ -415,7 +406,7 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
 	public WebserviceConfigPojo getWebserviceConfig() { return webserviceConfig; }
 	public synchronized void setWebserviceConfig(WebserviceConfigPojo webserviceConfig) { this.webserviceConfig = webserviceConfig; }
 
-    @RDFProperty(value = NS.OMNOM.PROP_FINISHED_JOB, serializeAsURI=false)
+    @RDFProperty(value = NS.OMNOM.PROP_FINISHED_JOB, serializeAsURI=true)
     private List<JobPojo> finishedJobs = new ArrayList<>();
     public List<JobPojo> getFinishedJobs() { return finishedJobs; }
     public synchronized void setFinishedJobs(List<JobPojo> finishedJobs) { this.finishedJobs = finishedJobs; }
