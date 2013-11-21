@@ -140,7 +140,8 @@ public class JobService extends AbstractRDFService {
 						"  <" + jobUri + "> <" + NS.DCTERMS.PROP_MODIFIED + "> ?modified ." +
 						"  <" + jobUri + "> <" + NS.DCTERMS.PROP_CREATED + "> ?created ." +
 						"  <" + jobUri + "> <" + NS.OMNOM.PROP_WEBSERVICE + "> ?ws ." +
-						"  ?ws <" + NS.OMNOM.PROP_WEBSERVICE_ID +"> \"eu.dm2e.ws.services.workflow.WorkflowExecutionService\" ." +
+						"  ?ws <" + NS.OMNOM.PROP_WEBSERVICE_ID +"> ?implId ." +
+						"     FILTER STRSTARTS(?implId, \"eu.dm2e.ws.services.workflow.WorkflowExecutionService\") ." +
 						"}" +
 						""
 						)
