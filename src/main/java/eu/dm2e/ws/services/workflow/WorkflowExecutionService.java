@@ -246,7 +246,6 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
     Map<String, WebservicePojo> serviceDescriptions = new HashMap<>();
 
     public WebservicePojo getWebServicePojo(WorkflowPojo wf) {
-        if (serviceDescriptions.containsKey(wf.getId())) return serviceDescriptions.get(wf.getId());
         WebservicePojo ws = new WebservicePojo();
         String base = uriInfo.getBaseUri().toString();
         String path = this.getClass().getAnnotation(Path.class).value();
@@ -278,7 +277,6 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
             sp.setHasIterations(p.getHasIterations());
             sp.setLabel(p.getLabel());
         }
-        serviceDescriptions.put(wf.getId(), ws);
         return ws;
     }
 
@@ -301,9 +299,13 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
      */
     @GET
     @Path("{id}/describe")
-    public Response getServiceDescription() {
+    public Response getServiceDescription(@PathParam("id") String id) {
+        if (serviceDescriptions.containsKey(id)) return Response.ok().entity(serviceDescriptions.get(id)).build();
+
+
         URI workflowExecutionUri = popPath();
         URI workflowUri = popPathFromBeginning(workflowExecutionUri, "exec");
+
         WorkflowPojo workflowPojo = new WorkflowPojo();
         log.trace("Loading workflow from " + workflowUri);
         try {
@@ -313,6 +315,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         }
         WebservicePojo wsDesc = this.getWebServicePojo(workflowPojo);
         log.trace(LogbackMarkers.DATA_DUMP, wsDesc.getTerseTurtle());
+        serviceDescriptions.put(id, wsDesc);
         return Response.ok().entity(wsDesc).build();
     }
 
