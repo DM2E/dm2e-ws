@@ -90,6 +90,10 @@ public class WebservicePojo extends AbstractPersistentPojo<WebservicePojo> imple
 
     public WebservicePojo(String uri) {
         Grafeo g = new GrafeoImpl(uri);
+        
+        // FIXME
+        // Why would we try to load a pojo from an empty model? Seems pointless
+        // kb Thu Nov 21 15:18:51 CET 2013
         IWebservice ws = g.getObjectMapper().getObject(WebservicePojo.class, uri);
         try {
             BeanUtils.copyProperties(this, ws);

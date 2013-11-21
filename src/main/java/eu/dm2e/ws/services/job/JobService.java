@@ -23,12 +23,16 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.DateTime;
 
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
+
 import eu.dm2e.grafeo.GResource;
 import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.annotations.RDFClass;
 import eu.dm2e.grafeo.gom.SerializablePojo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.SparqlSelect;
 import eu.dm2e.grafeo.jena.SparqlUpdate;
+import eu.dm2e.grafeo.util.NS.RDFS;
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ConfigProp;
@@ -118,19 +122,46 @@ public class JobService extends AbstractRDFService {
 		MediaType.APPLICATION_JSON
 	})
 	public Response getJobList() {
-		//		Grafeo g = new GrafeoImpl();
-		//		g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, "rdf:type", g.resource(NS.OMNOM.CLASS_JOB));
-		//		g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, "rdf:type", g.resource(NS.OMNOM.CLASS_WORKFLOW_JOB));
-		//		return getResponse(g);
 		GrafeoImpl g = new GrafeoImpl();
-		String pojoRdfClass = JobPojo.class.getAnnotation(RDFClass.class).value();
-		g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, NS.RDF.PROP_TYPE, g.resource(pojoRdfClass));
+		g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_JOB));
 		List<JobPojo> jobList = new ArrayList<>();
+		log.debug(LogbackMarkers.TRACE_TIME, "t0: Start loading jobs from T-Store.");
 		for (GResource gres : g.listSubjects()) {
-			if (gres.isAnon()) continue;
-			g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), gres.getUri());
-			JobPojo pojo = g.getObjectMapper().getObject(JobPojo.class, gres);
-			jobList.add(pojo);
+			if (gres.isAnon()) { 
+				log.error("There is a job without a URI in the triplestore. This should not happen.");
+				continue;
+			}
+			final String jobUri = gres.getUri();
+			ResultSet resultSet = new SparqlSelect.Builder()
+				.select("*")
+				.where(	"GRAPH ?g {" +
+						"  <" + jobUri + "> <" + NS.OMNOM.PROP_JOB_STATUS + "> ?status ." +
+						"  <" + jobUri + "> <" + RDFS.PROP_LABEL + "> ?label ." +
+						"  <" + jobUri + "> <" + NS.DCTERMS.PROP_MODIFIED + "> ?modified ." +
+						"  <" + jobUri + "> <" + NS.DCTERMS.PROP_CREATED + "> ?created ." +
+						"  <" + jobUri + "> <" + NS.OMNOM.PROP_WEBSERVICE + "> ?ws ." +
+						"  ?ws <" + NS.OMNOM.PROP_WEBSERVICE_ID +"> \"eu.dm2e.ws.services.workflow.WorkflowExecutionService\" ." +
+						"}" +
+						""
+						)
+				.endpoint(Config.get(ConfigProp.ENDPOINT_QUERY))
+                .build()
+                .execute();
+			if (! resultSet.hasNext()) {
+				log.debug("No match.");
+				continue;
+			}
+			JobPojo jp = new JobPojo();
+			QuerySolution result = resultSet.next();
+			jp.setId(jobUri);
+			jp.setLabel(result.get("?label").asLiteral().getLexicalForm());
+			jp.setStatus(JobStatus.valueOf(result.get("?status").asLiteral().getLexicalForm()));
+			jp.setModified(DateTime.parse(result.get("?modified").asLiteral().getLexicalForm()));
+			jp.setCreated(DateTime.parse(result.get("?created").asLiteral().getLexicalForm()));
+			WebservicePojo jpWs = new WebservicePojo();
+			jpWs.setId(result.get("?ws").toString());
+			jp.setWebService(jpWs);
+			jobList.add(jp);
 		}
 		return Response.ok(jobList).build();
 	}
