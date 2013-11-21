@@ -1,27 +1,12 @@
 
 package eu.dm2e.ws.services.file;
 
-import eu.dm2e.grafeo.GResource;
-import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
-import eu.dm2e.grafeo.jena.SparqlUpdate;
-import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
-import eu.dm2e.grafeo.util.PojoUtils;
-import eu.dm2e.logback.LogbackMarkers;
-import eu.dm2e.ws.*;
-import eu.dm2e.ws.api.FilePojo;
-import eu.dm2e.ws.api.WebservicePojo;
-import eu.dm2e.ws.services.AbstractRDFService;
-import org.apache.commons.io.IOUtils;
-import org.glassfish.jersey.media.multipart.FormDataBodyPart;
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.joda.time.DateTime;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -31,6 +16,41 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.apache.commons.io.IOUtils;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.joda.time.DateTime;
+
+import eu.dm2e.grafeo.GResource;
+import eu.dm2e.grafeo.GStatement;
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.SparqlUpdate;
+import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
+import eu.dm2e.grafeo.util.PojoUtils;
+import eu.dm2e.logback.LogbackMarkers;
+import eu.dm2e.ws.Config;
+import eu.dm2e.ws.ConfigProp;
+import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.ErrorMsg;
+import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.api.WebservicePojo;
+import eu.dm2e.ws.services.AbstractRDFService;
 
 /**
  * The service includes all necessary methods to upload a new file (no matter
@@ -100,7 +120,7 @@ public class FileService extends AbstractRDFService {
         	g.load(fileUri.getUri());
         	FilePojo fp = new FilePojo();
         	fp.loadFromURI(fileUri.getUri());
-        	if (fp.getFileStatus().equals(FileStatus.DELETED)) {
+        	if (fp.getFileStatus().equals(FileStatus.DELETED.toString())) {
         		continue;
         	}
         	fileList.add(fp);
@@ -211,7 +231,7 @@ public class FileService extends AbstractRDFService {
 			
 			// build a model from the input
 			GrafeoImpl newG = new GrafeoImpl(metaPart.getValueAs(InputStream.class));
-			if (newG.getModel().isEmpty()) {
+			if (newG.isEmpty()) {
 				return throwServiceError(ErrorMsg.BAD_RDF);
 			}
 			
@@ -350,7 +370,9 @@ public class FileService extends AbstractRDFService {
 				if (!filePart.isSimple()) {
 					// TODO this is wrong most of the time
 					filePojo.setFormat(filePart.getMediaType().toString());
-					filePojo.setOriginalName(fileDisposition.getFileName());
+					if (null == filePojo.getOriginalName()) {
+						filePojo.setOriginalName(fileDisposition.getFileName());
+					}
 				}
 			} catch (IOException | IllegalAccessException | InvocationTargetException e) {
                 log.error("An exception occured during file reading: " + e);
@@ -702,12 +724,13 @@ public class FileService extends AbstractRDFService {
 				"%s/%s",
 				Config.get(ConfigProp.FILE_STOREDIR),
 				fileName));
-		long fileSize = f.length();
         if (!f.getParentFile().exists()) {
             f.getParentFile().mkdirs();
         }
 		log.info("Store file as: {}", f.getAbsolutePath());
 		IOUtils.copy(fileDigestInStream, new FileOutputStream(f));
+		// File Size must be calculated after file has been streamed to the file
+		long fileSize = f.length();
 		// @formatter:on
 
 		// calculate and format checksum
@@ -727,9 +750,17 @@ public class FileService extends AbstractRDFService {
 		filePojo.setFileRetrievalURI(uri.toString());
 		filePojo.setExtent(fileSize); // NOTE: fileSize must be determined before file is opened!
 		filePojo.setModified(DateTime.now());
+		
+		// set filename if any
+		for (GStatement originalNameStmt : oldG.listStatements(null, NS.OMNOM.PROP_ORIGINAL_NAME, null)) {
+			String originalNameStr = originalNameStmt.getObject().toString();
+			log.debug("Filename from metadata part of request: " + originalNameStr);
+			filePojo.setOriginalName(originalNameStr);
+			log.debug("Filename from metadata part of request: " + filePojo.getOriginalName());
+			break;
+		}
 
-		// these are only available if this is an upload field and not just a
-		// form field
+		// why? kb Thu Nov 21 02:10:10 CET 2013
 		oldG.getObjectMapper().addObject(filePojo);
 		
 		return filePojo;
