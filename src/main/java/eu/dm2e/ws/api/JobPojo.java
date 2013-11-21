@@ -177,6 +177,8 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
         // publishJobStatus(this.getJobStatus());
     }
 
+    public boolean isIterating() { return this.getJobStatus().equals(JobStatus.ITERATING.toString()); }
+
     public boolean isFinished() { return this.getJobStatus().equals(JobStatus.FINISHED.toString()); }
 
     public boolean isFailed() { return this.getJobStatus().equals(JobStatus.FAILED.toString()); }
