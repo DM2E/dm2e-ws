@@ -118,16 +118,16 @@ public class FileService extends AbstractRDFService {
         	}
         	// FIXME possibly very inefficient
         	g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), fileUri.getUri());
-        	FilePojo fp = g.getObjectMapper().getObject(FilePojo.class, fileUri);
-//        	fp.loadFromURI(fileUri.getUri());
-        	if (fp.getFileStatus().equals(FileStatus.DELETED.toString())) {
-        		continue;
-        	}
         	// FIXME need to find out where these invalid files come from. But in any
         	// case don't show them in the UI
-        	if (null == fp.getFileRetrievalURI()) {
+        	if (null == g.firstMatchingObject(fileUri.toString(), NS.OMNOM.PROP_FILE_RETRIEVAL_URI)) {
         		continue;
         	}
+        	if (! g.containsTriple(fileUri, NS.OMNOM.PROP_FILE_STATUS, g.literal(FileStatus.AVAILABLE.toString()))) {
+        		continue;
+        	}
+        	FilePojo fp = g.getObjectMapper().getObject(FilePojo.class, fileUri);
+//        	fp.loadFromURI(fileUri.getUri());
         	fileList.add(fp);
         }
         String jsonStr = GrafeoJsonSerializer.serializeToJSON(fileList, FilePojo.class);
