@@ -93,7 +93,7 @@ public abstract class AbstractRDFService {
 
 	protected List<Variant> supportedVariants;
 	@Context
-	Request request;
+	protected Request request;
 	@Context
 	protected UriInfo uriInfo;
 	@Context 

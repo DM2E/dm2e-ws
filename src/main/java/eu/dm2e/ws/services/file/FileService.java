@@ -10,13 +10,9 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -36,6 +32,8 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.joda.time.DateTime;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -46,7 +44,6 @@ import eu.dm2e.grafeo.GStatement;
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
 import eu.dm2e.grafeo.jena.SparqlUpdate;
-import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
 import eu.dm2e.grafeo.util.PojoUtils;
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.Config;
@@ -104,35 +101,41 @@ public class FileService extends AbstractRDFService {
 	}
 	/**
 	 * GET /list
-	 *  Retrieve metadata/file data for a locally stored file
+	 *  Retrieve metadata of all files that are omnom:fileStatus AVAILABLE
 	 * 
 	 * @return
 	 */
 	@GET
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces({
+		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
+		DM2E_MediaType.APPLICATION_RDF_XML,
+		DM2E_MediaType.APPLICATION_X_TURTLE,
+		DM2E_MediaType.TEXT_RDF_N3,
+		DM2E_MediaType.TEXT_TURTLE,
+		MediaType.APPLICATION_JSON
+	})
 	@Path("list")
 	public Response getFileList() {
-		List<FilePojo> fileList = new ArrayList<FilePojo>();
-        GrafeoImpl g = new GrafeoImpl();
         log.info(Config.get(ConfigProp.ENDPOINT_QUERY));
-        g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_FILE));
-        Set<GResource> fileResList = g.listSubjects();
         ParameterizedSparqlString sb = new ParameterizedSparqlString();
-        sb.append("CONSTRUCT {\n");
-        sb.append(" ?s ?p ?o . \n");
-        sb.append("} WHERE {\n");
-        sb.append("  GRAPH ?file {");
-        sb.append("    ?file rdf:type omnom:File . }\n");
-        sb.append("      FILTER isIRI(?file) .\n");
-        sb.append("    ?file omnom:fileStatus ?status. \n");
-        sb.append("      FILTER STRSTARTS(STR(?status), \"AVAILABLE\") .\n");
-        sb.append("    ?s ?p ?o .\n");
-        sb.append("}");
         sb.setNsPrefix("omnom", NS.OMNOM.BASE);
         sb.setNsPrefix("rdf", NS.RDF.BASE);
+        sb.append("CONSTRUCT {	\n");
+        sb.append("  ?file ?p1 ?o1 .	 \n");
+        sb.append("  ?s2 ?p2 ?file .	 \n");
+        sb.append("} WHERE {  \n");
+        sb.append("  GRAPH ?file {  \n");
+        sb.append("    ?file rdf:type omnom:File .  \n");
+        sb.append("    ?file omnom:fileStatus \"AVAILABLE\" .  \n");
+        sb.append("    ?file ?p1 ?o1 .  \n");
+        sb.append("    ?s2 ?p2 ?file .  \n");
+        sb.append("  }  \n");
+        sb.append("}");
         log.debug(sb.toString());
         Query sparco = sb.asQuery();
         QueryExecution qexec = QueryExecutionFactory.createServiceRequest(Config.get(ConfigProp.ENDPOINT_QUERY), sparco);
+
+        GrafeoImpl g = new GrafeoImpl();
 		long startTime = System.currentTimeMillis();
         log.debug("Grafeo size: " + g.size());
         log.debug("About to execute construct query.");
@@ -140,30 +143,23 @@ public class FileService extends AbstractRDFService {
         long estimatedTime = System.currentTimeMillis() - startTime;
         log.debug(LogbackMarkers.TRACE_TIME, "CONSTRUCT took " + estimatedTime + "ms: ");
         log.debug("Grafeo size: " + g.size());
-        for (GResource fileUri : g.findByClass(NS.OMNOM.CLASS_FILE)) {
-        	log.info("Resource: " + fileUri.getUri());
-        	if (null == fileUri.getUri()) {
-        		log.warn("There is a blank node file without an ID in the triplestore.");
-        		continue;
-        	}
-        	// FIXME need to find out where these invalid files come from. But in any
-        	// case don't show them in the UI
-//        	if (null == g.firstMatchingObject(fileUri.toString(), NS.OMNOM.PROP_FILE_RETRIEVAL_URI)) {
-//        		continue;
-//        	}
-//        	if (! g.containsTriple(fileUri, NS.OMNOM.PROP_FILE_STATUS, g.literal(FileStatus.AVAILABLE.toString()))) {
-//        		continue;
-//        	}
-        	FilePojo fp = g.getObjectMapper().getObject(FilePojo.class, fileUri);
-//        	if (null == fp.getFileRetrievalURI())
-//        		continue;
-//        	if (fp.getFileStatus().equals(FileStatus.DELETED.toString()))
-//        		continue;
-//        	fp.loadFromURI(fileUri.getUri());
-        	fileList.add(fp);
+        
+        if (DM2E_MediaType.expectsRdfResponse(headers)) {
+        	return Response.status(Response.Status.OK).entity(g).build();
         }
-        String jsonStr = GrafeoJsonSerializer.serializeToJSON(fileList, FilePojo.class);
-		return Response.ok(jsonStr).build();
+        JsonArray jsonFiles = new JsonArray();
+        for (GResource fileUri : g.findByClass(NS.OMNOM.CLASS_FILE)) {
+        	JsonObject jsonFile = new JsonObject();
+        	jsonFile.addProperty("id", fileUri.getUri());
+        	for (GStatement stmt : g.listStatements(fileUri, null, null)) {
+        		if (stmt.getObject().isLiteral())
+        			jsonFile.addProperty(stmt.getPredicate().getUri(), stmt.getObject().literal().getValue());
+        		else if (! stmt.getObject().resource().isAnon())
+        			jsonFile.addProperty(stmt.getPredicate().getUri(), stmt.getObject().resource().getUri());
+        	}
+        	jsonFiles.add(jsonFile);
+        }
+        return Response.status(Response.Status.OK).entity(jsonFiles.toString()).build();
 	}
 	
 	/**
@@ -743,15 +739,15 @@ public class FileService extends AbstractRDFService {
 		// store the file
 		// TODO think about where to store
 		MessageDigest md = null;
-        byte[] mdBytes = null;
-		try {
-			md = MessageDigest.getInstance("MD5");
-            mdBytes = md.digest();
-		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException("MD5 algorithm not available: " + e, e);
-		}
-
-		DigestInputStream fileDigestInStream = new DigestInputStream(fileInStream, md);
+//        byte[] mdBytes = null;
+//		try {
+//			md = MessageDigest.getInstance("MD5");
+//            mdBytes = md.digest();
+//		} catch (NoSuchAlgorithmException e) {
+//			throw new RuntimeException("MD5 algorithm not available: " + e, e);
+//		}
+//
+//		DigestInputStream fileDigestInStream = new DigestInputStream(fileInStream, md);
 		// @formatter:off
 		// the file name will be the URI with everything non-alpha-numeric deleted
 		String uriStr = uri.toString();
@@ -765,23 +761,23 @@ public class FileService extends AbstractRDFService {
             f.getParentFile().mkdirs();
         }
 		log.info("Store file as: {}", f.getAbsolutePath());
-		IOUtils.copy(fileDigestInStream, new FileOutputStream(f));
+		IOUtils.copy(fileInStream, new FileOutputStream(f));
 		// File Size must be calculated after file has been streamed to the file
 		long fileSize = f.length();
 		// @formatter:on
 
 		// calculate and format checksum
 
-		StringBuilder mdStrBuilder = new StringBuilder();
-        for (byte mdByte : mdBytes) {
-            mdStrBuilder.append(Integer.toString((mdByte & 0xff) + 0x100, 16).substring(1));
-        }
-		String mdStr = mdStrBuilder.toString();
+//		StringBuilder mdStrBuilder = new StringBuilder();
+//        for (byte mdByte : mdBytes) {
+//            mdStrBuilder.append(Integer.toString((mdByte & 0xff) + 0x100, 16).substring(1));
+//        }
+//		String mdStr = mdStrBuilder.toString();
 
 		// TODO add right predicates here
 		// store file-based/implicit metadata
 		FilePojo filePojo = new FilePojo();
-		filePojo.setMd5(mdStr);
+//		filePojo.setMd5(mdStr);
 		filePojo.setInternalFileLocation(f.getAbsolutePath()); // TODO not a good "solution"
 		filePojo.setId(uri.toString());
 		filePojo.setFileRetrievalURI(uri.toString());
