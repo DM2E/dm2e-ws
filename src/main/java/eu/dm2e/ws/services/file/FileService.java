@@ -129,7 +129,8 @@ public class FileService extends AbstractRDFService {
         sb.append("} WHERE {  \n");
         sb.append("  GRAPH ?file {  \n");
         sb.append("    ?file rdf:type omnom:File .  \n");
-        sb.append("    ?file omnom:fileStatus \"AVAILABLE\" .  \n");
+        sb.append("    ?file omnom:fileStatus ?status .  \n");
+        sb.append("      FILTER (str(?status) = \"AVAILABLE\") .  \n");
         if (null != filterUser) {
         sb.append("    ?file omnom:fileOwner <" + filterUser + "> .   \n");
         }
@@ -137,7 +138,6 @@ public class FileService extends AbstractRDFService {
         sb.append("    ?file omnom:fileType <" + filterType + "> .  \n");
         }
         sb.append("    ?file ?p1 ?o1 .  \n");
-        sb.append("    ?s2 ?p2 ?file .  \n");
         sb.append("  }  \n");
         sb.append("}");
         log.debug(sb.toString());
