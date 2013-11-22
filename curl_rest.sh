@@ -4,34 +4,34 @@
 # $> URL=http:localhost:9998/file
 # $> POST $URL -H $CT_MULTI -H $AC_TURTLE -F file=@payload.xml -F meta=@metadata.ttl
 # instead of
-# $> curl -v -X POST -H "Content-Type: multipart/form-data" -H "Accept: Turtle" -F file=@payload.xml -F meta=@metadata.ttl $URL
+# $> curl -v -X POST -H "Content-Type:multipart/form-data" -H "Accept: Turtle" -F file=@payload.xml -F meta=@metadata.ttl $URL
 
-CT_TEXT='Content-Type: text/plain'
-AC_TEXT='Accept: text/plain'
+CT_TEXT='Content-Type:text/plain'
+AC_TEXT='Accept:text/plain'
 
-CT_TURTLE='Content-Type: text/turtle'
-AC_TURTLE='Accept: text/turtle'
+CT_TURTLE='Content-Type:text/turtle'
+AC_TURTLE='Accept:text/turtle'
 
-CT_NTRIPLES='Content-Type: application/rdf-triples'
-AC_NTRIPLES='Accept: application/rdf-triples'
+CT_NTRIPLES='Content-Type:application/rdf-triples'
+AC_NTRIPLES='Accept:application/rdf-triples'
 
-CT_N3='Content-Type: text/rdf+n3'
-AC_N3='Accept: text/rdf+n3'
+CT_N3='Content-Type:text/rdf+n3'
+AC_N3='Accept:text/rdf+n3'
 
-CT_RDFXML='Content-Type: application/rdf+xml'
-AC_RDFXML='Accept: application/rdf+xml'
+CT_RDFXML='Content-Type:application/rdf+xml'
+AC_RDFXML='Accept:application/rdf+xml'
 
-CT_MULTI='Content-Type: multipart/form-data'
-AC_MULTI='Accept: multipart/form-data'
+CT_MULTI='Content-Type:multipart/form-data'
+AC_MULTI='Accept:multipart/form-data'
 
-CT_LOG='Content-Type: text/x-log'
-AC_LOG='Accept: text/x-log'
+CT_LOG='Content-Type:text/x-log'
+AC_LOG='Accept:text/x-log'
 
-CT_JSON='Content-Type: application/json'
-AC_JSON='Accept: application/json'
+CT_JSON='Content-Type:application/json'
+AC_JSON='Accept:application/json'
 
-CT_DOT='Content-Type: text/vnd.graphviz'
-AC_DOT='Accept: text/vnd.graphviz'
+CT_DOT='Content-Type:text/vnd.graphviz'
+AC_DOT='Accept:text/vnd.graphviz'
 
 alias POST="curl -v -X POST"
 alias POSTT="curl -v -X POST -H $AC_TURTLE"

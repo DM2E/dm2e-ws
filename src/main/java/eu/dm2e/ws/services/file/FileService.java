@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 
@@ -115,18 +114,28 @@ public class FileService extends AbstractRDFService {
 		MediaType.APPLICATION_JSON
 	})
 	@Path("list")
-	public Response getFileList() {
+	public Response getFileList(
+			@QueryParam("limit") int resultLimit,
+			@QueryParam("start") int resultStart,
+			@QueryParam("user") String filterUser,
+			@QueryParam("type") String filterType
+			) {
         log.info(Config.get(ConfigProp.ENDPOINT_QUERY));
         ParameterizedSparqlString sb = new ParameterizedSparqlString();
         sb.setNsPrefix("omnom", NS.OMNOM.BASE);
         sb.setNsPrefix("rdf", NS.RDF.BASE);
         sb.append("CONSTRUCT {	\n");
         sb.append("  ?file ?p1 ?o1 .	 \n");
-        sb.append("  ?s2 ?p2 ?file .	 \n");
         sb.append("} WHERE {  \n");
         sb.append("  GRAPH ?file {  \n");
         sb.append("    ?file rdf:type omnom:File .  \n");
         sb.append("    ?file omnom:fileStatus \"AVAILABLE\" .  \n");
+        if (null != filterUser) {
+        sb.append("    ?file omnom:fileOwner <" + filterUser + "> .   \n");
+        }
+        if (null != filterType) {
+        sb.append("    ?file omnom:fileType <" + filterType + "> .  \n");
+        }
         sb.append("    ?file ?p1 ?o1 .  \n");
         sb.append("    ?s2 ?p2 ?file .  \n");
         sb.append("  }  \n");
@@ -148,10 +157,20 @@ public class FileService extends AbstractRDFService {
         	return Response.status(Response.Status.OK).entity(g).build();
         }
         JsonArray jsonFiles = new JsonArray();
-        for (GResource fileUri : g.findByClass(NS.OMNOM.CLASS_FILE)) {
+        int currentFileIdx = 0;
+        log.debug("Paging from " + resultStart + " to " + (resultLimit > 0 ? resultStart + resultLimit : "end") + ". ");
+        for (GResource fileRes : g.findByClass(NS.OMNOM.CLASS_FILE)) {
+        	if (resultStart > currentFileIdx) {
+        		currentFileIdx += 1;
+        		continue;
+        	}
+        	if (resultLimit > 0 && resultStart + resultLimit == currentFileIdx) {
+        		break;
+        	}
+        	currentFileIdx += 1;
         	JsonObject jsonFile = new JsonObject();
-        	jsonFile.addProperty("id", fileUri.getUri());
-        	for (GStatement stmt : g.listStatements(fileUri, null, null)) {
+        	jsonFile.addProperty("id", fileRes.getUri());
+        	for (GStatement stmt : g.listStatements(fileRes, null, null)) {
         		if (stmt.getObject().isLiteral())
         			jsonFile.addProperty(stmt.getPredicate().getUri(), stmt.getObject().literal().getValue());
         		else if (! stmt.getObject().resource().isAnon())
@@ -738,17 +757,6 @@ public class FileService extends AbstractRDFService {
 			URI uri) throws FileNotFoundException, IOException {
 		// store the file
 		// TODO think about where to store
-		MessageDigest md = null;
-//        byte[] mdBytes = null;
-//		try {
-//			md = MessageDigest.getInstance("MD5");
-//            mdBytes = md.digest();
-//		} catch (NoSuchAlgorithmException e) {
-//			throw new RuntimeException("MD5 algorithm not available: " + e, e);
-//		}
-//
-//		DigestInputStream fileDigestInStream = new DigestInputStream(fileInStream, md);
-		// @formatter:off
 		// the file name will be the URI with everything non-alpha-numeric deleted
 		String uriStr = uri.toString();
 		String fileName = uriStr.replaceAll("[^A-Za-z0-9_]", "_");
@@ -764,20 +772,10 @@ public class FileService extends AbstractRDFService {
 		IOUtils.copy(fileInStream, new FileOutputStream(f));
 		// File Size must be calculated after file has been streamed to the file
 		long fileSize = f.length();
-		// @formatter:on
-
-		// calculate and format checksum
-
-//		StringBuilder mdStrBuilder = new StringBuilder();
-//        for (byte mdByte : mdBytes) {
-//            mdStrBuilder.append(Integer.toString((mdByte & 0xff) + 0x100, 16).substring(1));
-//        }
-//		String mdStr = mdStrBuilder.toString();
 
 		// TODO add right predicates here
 		// store file-based/implicit metadata
 		FilePojo filePojo = new FilePojo();
-//		filePojo.setMd5(mdStr);
 		filePojo.setInternalFileLocation(f.getAbsolutePath()); // TODO not a good "solution"
 		filePojo.setId(uri.toString());
 		filePojo.setFileRetrievalURI(uri.toString());
@@ -794,7 +792,7 @@ public class FileService extends AbstractRDFService {
 		}
 
 		// why? kb Thu Nov 21 02:10:10 CET 2013
-		oldG.getObjectMapper().addObject(filePojo);
+//		oldG.getObjectMapper().addObject(filePojo);
 		
 		return filePojo;
 	}
