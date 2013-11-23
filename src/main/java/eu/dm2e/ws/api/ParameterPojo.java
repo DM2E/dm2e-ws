@@ -1,13 +1,17 @@
 package eu.dm2e.ws.api;
 
-import eu.dm2e.grafeo.gom.SerializablePojo;
-import eu.dm2e.utils.UriUtils;
-import eu.dm2e.ws.NS;
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.annotations.Namespaces;
 import eu.dm2e.grafeo.annotations.RDFClass;
 import eu.dm2e.grafeo.annotations.RDFProperty;
+import eu.dm2e.grafeo.gom.SerializablePojo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.utils.UriUtils;
+import eu.dm2e.ws.ErrorMsg;
+import eu.dm2e.ws.NS;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Pojo for a Parameter
@@ -55,18 +59,23 @@ public class ParameterPojo extends SerializablePojo<ParameterPojo> {
 			);
     }
     
-    public void validateParameterInput(String input) throws NumberFormatException {
-    	if (null == getParameterType()) {
-    		return;
+    public List<ValidationMessage> validateParameterInput(String input) throws NumberFormatException {
+    	List<ValidationMessage> res = new ArrayList<>();
+        if (null == getParameterType()) {
+    		return res;
     	}
     	String type = this.getParameterType();
     	if (type.equals(NS.XSD.INT)) {
 			try {
 				Integer.parseInt(input);
 			} catch (NumberFormatException e) {
-				throw e;
+				res.add(new ValidationMessage(this,1, ErrorMsg.ILLEGAL_PARAMETER_VALUE +  ": Could not parse input as integer: " + input));
 			}
     	}
+        if (res.size()==0) {
+            log.info("Param is valid: " + this);
+        }
+        return res;
     }
     
 	/******************

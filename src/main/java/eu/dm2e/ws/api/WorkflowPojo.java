@@ -263,7 +263,9 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
 	 * @see eu.dm2e.ws.api.IValidatable#validate()
 	 */
 	@Override
-	public void validate() throws Exception {
+	public ValidationReport validate() {
+        ValidationReport res = new ValidationReport(this);
+
 //		if (this.getPositions().isEmpty()) {
 //			throw new RuntimeException("No positions in the workflow.");
 //		}
@@ -274,18 +276,19 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
 			if (conn.hasFromWorkflow() 
 					&&
 				null == this.getParamByName(conn.getFromParam().getLabel())) {
-				throw new AssertionError(conn + " references parameter " + conn.getToParam() + " which is not defined by " + this);
+                res.add(new ValidationMessage(this,1,conn + " references parameter " + conn.getToParam() + " which is not defined by " + this));
 			}
 			if (conn.hasToWorkflow() 
 					&&
 				null == this.getParamByName(conn.getToParam().getLabel())) {
-				throw new AssertionError(conn + " references parameter " + conn.getToParam() + " which is not defined by " + this);
+                res.add(new ValidationMessage(this,2,conn + " references parameter " + conn.getToParam() + " which is not defined by " + this));
 			}
 		}
 		
 		for (WorkflowPositionPojo pos : this.getPositions()) {
-			pos.validate();
+			res.addAll(pos.validate());
 		}
+        return res;
 	}
     
     

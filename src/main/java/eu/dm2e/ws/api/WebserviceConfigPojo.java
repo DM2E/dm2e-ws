@@ -1,12 +1,12 @@
 package eu.dm2e.ws.api;
 
-import eu.dm2e.utils.UriUtils;
-import eu.dm2e.ws.ErrorMsg;
-import eu.dm2e.ws.NS;
 import eu.dm2e.grafeo.annotations.Namespaces;
 import eu.dm2e.grafeo.annotations.RDFClass;
 import eu.dm2e.grafeo.annotations.RDFInstancePrefix;
 import eu.dm2e.grafeo.annotations.RDFProperty;
+import eu.dm2e.utils.UriUtils;
+import eu.dm2e.ws.ErrorMsg;
+import eu.dm2e.ws.NS;
 import org.joda.time.DateTime;
 
 import java.util.HashSet;
@@ -147,34 +147,32 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
 	 * HELPERS
 	 ********************/
     @Override
-	public void validate() throws Exception {
+	public ValidationReport validate() {
+        ValidationReport res = new ValidationReport(this);
 		/*
 		 * Validate the config against the webservice description
 		 */
 		IWebservice ws = getWebservice();
 		if (null == ws) {
-			throw new RuntimeException(this + ": Can't validate without webservice description:\n" + this.getTerseTurtle());
+            res.add(new ValidationMessage(this,1,this + ": No webservice associated with this config." ));
 		}
 		for (ParameterPojo param : ws.getInputParams()) {
 			log.info("Validating param: " + param.getId());
 			if (param.getIsRequired() && null == this.getParameterAssignmentForParam(param.getId())) {
-				throw new RuntimeException(param.getId() + ": " + ErrorMsg.REQUIRED_PARAM_MISSING.toString());
+                res.add(new ValidationMessage(this,2,param.getId() + ": " + ErrorMsg.REQUIRED_PARAM_MISSING.toString()));
 			}
 			ParameterAssignmentPojo ass = this.getParameterAssignmentForParam(param.getId());
 			if (null == ass) {
 				continue;
 			}
 			log.info("Validating assignment '" +  this.getParameterAssignmentForParam(param.getId()) + "' of parameter <" + param.getId() + "> against its restriction.");
-			try {
-				param.validateParameterInput(ass.getParameterValue());
-			} catch (NumberFormatException e) {
-				throw new RuntimeException(ass.getParameterValue() + ": "
-						+ ErrorMsg.ILLEGAL_PARAMETER_VALUE.toString());
-			}
-			log.info("Param is valid: " + param);
+			    res.addAll(param.validateParameterInput(ass.getParameterValue()));
+
+
 		}
 		
-		log.info("This config is valid: " + this );
+		if (res.size()==0) log.info("This config is valid: " + this );
+        return res;
     }
     
     

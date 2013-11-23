@@ -1,11 +1,11 @@
 package eu.dm2e.ws.api;
 
-import eu.dm2e.grafeo.gom.SerializablePojo;
-import eu.dm2e.utils.DotUtils;
-import eu.dm2e.ws.NS;
 import eu.dm2e.grafeo.annotations.Namespaces;
 import eu.dm2e.grafeo.annotations.RDFClass;
 import eu.dm2e.grafeo.annotations.RDFProperty;
+import eu.dm2e.grafeo.gom.SerializablePojo;
+import eu.dm2e.utils.DotUtils;
+import eu.dm2e.ws.NS;
 
 
 /** 
@@ -80,23 +80,42 @@ public class ParameterConnectorPojo extends SerializablePojo<ParameterConnectorP
 	
 	// TODO create ErrorMsgs
 	@Override
-	public void validate() {
-		if (! hasInWorkflow()) {
-			throw new RuntimeException("Every parameter connector must exist inside a workflow.");
-		}
+	public ValidationReport validate() {
+        ValidationReport res = new ValidationReport(this);
+
+        if (! hasInWorkflow()) {
+            res.add(new ValidationMessage(this,1,"Every parameter connector must exist inside a workflow."));
+		    return res;
+        }
 		if (! hasFromParam()) {
-			throw new RuntimeException("Missing Param: Every Workflow Connector must source from a param (either Workflow or Position).");
+            res.add(new ValidationMessage(this,2,"Missing Param: Every Workflow Connector must source from a param (either Workflow or Position)."));
 		}
 		if (! hasToParam()) {
-			throw new RuntimeException("Missing Param: Every Workflow Connector must point to a param (either Workflow or Position).");
+            res.add(new ValidationMessage(this,3,"Missing Param: Every Workflow Connector must point to a param (either Workflow or Position)."));
 		}
-		if (! hasToWorkflow() && ! hasToPosition()) {
-			throw new RuntimeException("ParameterConnector must have a toPosition or a toWorkflow pair.");
+        if (res.size()>0) return res;
+		if (! hasToWorkflow() && ! hasToPosition() || hasToWorkflow() && hasToPosition()) {
+            res.add(new ValidationMessage(this,4,"ParameterConnector must have either toPosition or toWorkflow set."));
 		}
-		if (! hasToWorkflow() && ! hasToPosition()) {
-			throw new RuntimeException("ParameterConnector must have a fromPosition or a fromWorkflow pair.");
+		if (! hasFromWorkflow() && ! hasFromPosition() || hasFromWorkflow() && hasFromPosition()) {
+            res.add(new ValidationMessage(this,5,"ParameterConnector must have either fromPosition or fromWorkflow set."));
 		}
-	}
+        if (res.size()>0) return res;
+        if (hasFromWorkflow() && getFromWorkflow().getParamByName(getFromParam().getId())==null) {
+            res.add(new ValidationMessage(this,8,"Parameter " + getFromParam() + " does not exist in " + getFromWorkflow()));
+        }
+        if (hasFromPosition() && getFromPosition().getWebservice().getParamByName(getFromParam().getId())==null) {
+            res.add(new ValidationMessage(this,9,"Parameter " + getFromParam() + " does not exist in " + getFromPosition()));
+        }
+        if (hasToWorkflow() && getToWorkflow().getParamByName(getToParam().getId())==null) {
+            res.add(new ValidationMessage(this,10,"Parameter " + getToParam() + " does not exist in " + getFromWorkflow()));
+        }
+        if (hasToPosition() && getToPosition().getWebservice().getParamByName(getToParam().getId())==null) {
+            res.add(new ValidationMessage(this,11,"Parameter " + getToParam() + " does not exist in " + getFromPosition()));
+        }
+
+        return res;
+    }
 
     public String getDot(String color) {
         return DotUtils.connect(
@@ -106,4 +125,15 @@ public class ParameterConnectorPojo extends SerializablePojo<ParameterConnectorP
                 toParam.getDotId(),
                 color);
         }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(hasFromWorkflow()?"WF":getFromPosition())
+                .append("/").append(getFromParam())
+                .append("->")
+                .append(hasToWorkflow()?"WF":getToPosition())
+                .append("/").append(getToParam());
+
+        return sb.toString();
+    }
 }

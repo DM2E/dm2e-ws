@@ -7,9 +7,9 @@ import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
 import eu.dm2e.grafeo.junit.GrafeoAssert;
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.api.*;
-import eu.dm2e.ws.tests.OmnomUnitTest;
 import eu.dm2e.ws.services.publish.PublishService;
 import eu.dm2e.ws.services.xslt.XsltService;
+import eu.dm2e.ws.tests.OmnomUnitTest;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -238,4 +239,41 @@ public class WorkflowPojoTest extends OmnomUnitTest {
 		GrafeoAssert.graphsAreEquivalent(wfjob.getGrafeo(), wfjob2.getGrafeo());
 		
 	}
+
+    @Test
+    public void testValidate() {
+        WorkflowPojo workflow = createWorkflow();
+        workflow.autowire(true);
+        List<ValidationMessage> res = workflow.validate();
+        for (ValidationMessage mes:res) {
+            log.debug(mes.toString());
+        }
+        assert(res.size()==0);
+        for (int i=0;i<100;i++) {
+            ParameterConnectorPojo cand = null;
+            long take = Math.round(Math.random() * workflow.getParameterConnectors().size());
+            if (take>=workflow.getParameterConnectors().size()) take =  workflow.getParameterConnectors().size()-1;
+            long count = 0;
+            log.debug("Randomly chosen, I take: " + take);
+            for (ParameterConnectorPojo conn:workflow.getParameterConnectors()) {
+                if (take==count) {
+                    cand = conn;
+                    break;
+                }
+                count++;
+            }
+            workflow.getParameterConnectors().remove(cand);
+            res = workflow.validate();
+            for (ValidationMessage mes:res) {
+                log.debug(mes.toString());
+            }
+
+            // There is only one connection that does not (yet) invalidate the workflow:
+            // The connection to the outputparameter of the workflow
+            assert(cand.getToParam().getLabel().equals("outputGraph") || res.size()==1 && res.get(0).getCode()==3);
+            // if (res.size()==0) log.info("Not required: " + cand);
+            workflow.getParameterConnectors().add(cand);
+        }
+
+    }
 }
