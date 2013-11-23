@@ -84,34 +84,34 @@ public class ParameterConnectorPojo extends SerializablePojo<ParameterConnectorP
         ValidationReport res = new ValidationReport(this);
 
         if (! hasInWorkflow()) {
-            res.add(new ValidationMessage(this,1,"Every parameter connector must exist inside a workflow."));
+            res.addMessage(this,1,"Every parameter connector must exist inside a workflow.");
 		    return res;
         }
 		if (! hasFromParam()) {
-            res.add(new ValidationMessage(this,2,"Missing Param: Every Workflow Connector must source from a param (either Workflow or Position)."));
+            res.addMessage(this,2,"Missing Param: Every Workflow Connector must source from a param (either Workflow or Position).");
 		}
 		if (! hasToParam()) {
-            res.add(new ValidationMessage(this,3,"Missing Param: Every Workflow Connector must point to a param (either Workflow or Position)."));
+            res.addMessage(this,3,"Missing Param: Every Workflow Connector must point to a param (either Workflow or Position).");
 		}
-        if (res.size()>0) return res;
+        if (!res.valid()) return res;
 		if (! hasToWorkflow() && ! hasToPosition() || hasToWorkflow() && hasToPosition()) {
-            res.add(new ValidationMessage(this,4,"ParameterConnector must have either toPosition or toWorkflow set."));
+            res.addMessage(this,4,"ParameterConnector must have either toPosition or toWorkflow set.");
 		}
 		if (! hasFromWorkflow() && ! hasFromPosition() || hasFromWorkflow() && hasFromPosition()) {
-            res.add(new ValidationMessage(this,5,"ParameterConnector must have either fromPosition or fromWorkflow set."));
+            res.addMessage(this,5,"ParameterConnector must have either fromPosition or fromWorkflow set.");
 		}
-        if (res.size()>0) return res;
+        if (!res.valid()) return res;
         if (hasFromWorkflow() && getFromWorkflow().getParamByName(getFromParam().getId())==null) {
-            res.add(new ValidationMessage(this,8,"Parameter " + getFromParam() + " does not exist in " + getFromWorkflow()));
+            res.addMessage(this,8,"Parameter " + getFromParam() + " does not exist in " + getFromWorkflow());
         }
         if (hasFromPosition() && getFromPosition().getWebservice().getParamByName(getFromParam().getId())==null) {
-            res.add(new ValidationMessage(this,9,"Parameter " + getFromParam() + " does not exist in " + getFromPosition()));
+            res.addMessage(this,9,"Parameter " + getFromParam() + " does not exist in " + getFromPosition());
         }
         if (hasToWorkflow() && getToWorkflow().getParamByName(getToParam().getId())==null) {
-            res.add(new ValidationMessage(this,10,"Parameter " + getToParam() + " does not exist in " + getFromWorkflow()));
+            res.addMessage(this,10,"Parameter " + getToParam() + " does not exist in " + getFromWorkflow());
         }
         if (hasToPosition() && getToPosition().getWebservice().getParamByName(getToParam().getId())==null) {
-            res.add(new ValidationMessage(this,11,"Parameter " + getToParam() + " does not exist in " + getFromPosition()));
+            res.addMessage(this,11,"Parameter " + getToParam() + " does not exist in " + getFromPosition());
         }
 
         return res;

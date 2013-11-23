@@ -10,9 +10,6 @@ import eu.dm2e.utils.UriUtils;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Pojo for a Parameter
  */
@@ -59,8 +56,8 @@ public class ParameterPojo extends SerializablePojo<ParameterPojo> {
 			);
     }
     
-    public List<ValidationMessage> validateParameterInput(String input) throws NumberFormatException {
-    	List<ValidationMessage> res = new ArrayList<>();
+    public ValidationReport validateParameterInput(String input) throws NumberFormatException {
+    	ValidationReport res = new ValidationReport(this);
         if (null == getParameterType()) {
     		return res;
     	}
@@ -69,7 +66,7 @@ public class ParameterPojo extends SerializablePojo<ParameterPojo> {
 			try {
 				Integer.parseInt(input);
 			} catch (NumberFormatException e) {
-				res.add(new ValidationMessage(this,1, ErrorMsg.ILLEGAL_PARAMETER_VALUE +  ": Could not parse input as integer: " + input));
+				res.addMessage(this,1, ErrorMsg.ILLEGAL_PARAMETER_VALUE +  ": Could not parse input as integer: " + input);
 			}
     	}
         if (res.size()==0) {

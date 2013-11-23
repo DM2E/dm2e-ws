@@ -30,6 +30,17 @@ public class ValidationReport extends ArrayList<ValidationMessage> {
         return size()==0;
     }
 
+    public void addMessage(SerializablePojo protester, int code, String message) {
+        add(new ValidationMessage(protester, code, message));
+    }
+
+    public boolean containsMessage(Class protesterClass, int code) {
+        for (ValidationMessage mes:this) {
+            if (mes.getProtester().getClass().equals(protesterClass) && mes.getCode()==code) return true;
+        }
+        return false;
+    }
+
     public String toString(){
         StringBuilder sb = new StringBuilder();
         sb.append("Validation Report for: ").append(validated.toString()).append("\n");

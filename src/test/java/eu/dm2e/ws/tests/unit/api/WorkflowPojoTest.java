@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -244,11 +243,9 @@ public class WorkflowPojoTest extends OmnomUnitTest {
     public void testValidate() {
         WorkflowPojo workflow = createWorkflow();
         workflow.autowire(true);
-        List<ValidationMessage> res = workflow.validate();
-        for (ValidationMessage mes:res) {
-            log.debug(mes.toString());
-        }
-        assert(res.size()==0);
+        ValidationReport res = workflow.validate();
+        log.debug(res.toString());
+        assert(res.valid());
         for (int i=0;i<100;i++) {
             ParameterConnectorPojo cand = null;
             long take = Math.round(Math.random() * workflow.getParameterConnectors().size());
@@ -264,13 +261,10 @@ public class WorkflowPojoTest extends OmnomUnitTest {
             }
             workflow.getParameterConnectors().remove(cand);
             res = workflow.validate();
-            for (ValidationMessage mes:res) {
-                log.debug(mes.toString());
-            }
-
+            log.debug(res.toString());
             // There is only one connection that does not (yet) invalidate the workflow:
             // The connection to the outputparameter of the workflow
-            assert(cand.getToParam().getLabel().equals("outputGraph") || res.size()==1 && res.get(0).getCode()==3);
+            assert(cand.getToParam().getLabel().equals("outputGraph") || res.containsMessage(WorkflowPositionPojo.class, 3));
             // if (res.size()==0) log.info("Not required: " + cand);
             workflow.getParameterConnectors().add(cand);
         }

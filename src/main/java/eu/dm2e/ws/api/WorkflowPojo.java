@@ -276,12 +276,12 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
 			if (conn.hasFromWorkflow() 
 					&&
 				null == this.getParamByName(conn.getFromParam().getLabel())) {
-                res.add(new ValidationMessage(this,1,conn + " references parameter " + conn.getToParam() + " which is not defined by " + this));
+                res.addMessage(this,1,conn + " references parameter " + conn.getToParam() + " which is not defined by " + this);
 			}
 			if (conn.hasToWorkflow() 
 					&&
 				null == this.getParamByName(conn.getToParam().getLabel())) {
-                res.add(new ValidationMessage(this,2,conn + " references parameter " + conn.getToParam() + " which is not defined by " + this));
+                res.addMessage(this,2,conn + " references parameter " + conn.getToParam() + " which is not defined by " + this);
 			}
 		}
 		

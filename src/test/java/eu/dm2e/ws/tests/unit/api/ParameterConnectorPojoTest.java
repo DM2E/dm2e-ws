@@ -5,8 +5,6 @@ import eu.dm2e.ws.api.*;
 import eu.dm2e.ws.tests.OmnomTestCase;
 import org.junit.Test;
 
-import java.util.List;
-
 public class ParameterConnectorPojoTest extends OmnomTestCase {
 
     @Test
@@ -27,35 +25,26 @@ public class ParameterConnectorPojoTest extends OmnomTestCase {
 
         ParameterConnectorPojo conn = new ParameterConnectorPojo();
 
-        List<ValidationMessage> res = conn.validate();
-        for (ValidationMessage mes:res) {
-            log.debug(mes.toString());
-        }
-
-        assert(res.size()==1 && res.get(0).getCode()==1);
+        ValidationReport res = conn.validate();
+        log.debug(res.toString());
+        assert(res.containsMessage(ParameterConnectorPojo.class, 1));
         conn.setInWorkflow(workflow);
         res = conn.validate();
-        for (ValidationMessage mes:res) {
-            log.debug(mes.toString());
-        }
-        assert(res.size()==2 && res.get(1).getCode()==3);
+        log.debug(res.toString());
+        assert(res.containsMessage(ParameterConnectorPojo.class, 3));
 
         conn.setFromWorkflow(workflow);
         conn.setFromPosition(pos);
         conn.setFromParam(wp);
         conn.setToParam(param);
         res = conn.validate();
-        for (ValidationMessage mes:res) {
-            log.debug(mes.toString());
-        }
-        assert(res.size()==2 && res.get(1).getCode()==5);
+        log.debug(res.toString());
+        assert(res.containsMessage(ParameterConnectorPojo.class, 5));
         conn.setFromPosition(null);
         conn.setToPosition(pos);
         res = conn.validate();
-        for (ValidationMessage mes:res) {
-            log.debug(mes.toString());
-        }
-        assert(res.size()==0);
+        log.debug(res.toString());
+        assert(res.valid());
     }
 
 }

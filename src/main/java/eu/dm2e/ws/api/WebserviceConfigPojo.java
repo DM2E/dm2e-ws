@@ -154,12 +154,12 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
 		 */
 		IWebservice ws = getWebservice();
 		if (null == ws) {
-            res.add(new ValidationMessage(this,1,this + ": No webservice associated with this config." ));
+            res.addMessage(this,1,this + ": No webservice associated with this config." );
 		}
 		for (ParameterPojo param : ws.getInputParams()) {
 			log.info("Validating param: " + param.getId());
 			if (param.getIsRequired() && null == this.getParameterAssignmentForParam(param.getId())) {
-                res.add(new ValidationMessage(this,2,param.getId() + ": " + ErrorMsg.REQUIRED_PARAM_MISSING.toString()));
+                res.addMessage(this,2,param.getId() + ": " + ErrorMsg.REQUIRED_PARAM_MISSING.toString());
 			}
 			ParameterAssignmentPojo ass = this.getParameterAssignmentForParam(param.getId());
 			if (null == ass) {
@@ -171,7 +171,7 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
 
 		}
 		
-		if (res.size()==0) log.info("This config is valid: " + this );
+		if (res.valid()) log.info("This config is valid: " + this );
         return res;
     }
     
