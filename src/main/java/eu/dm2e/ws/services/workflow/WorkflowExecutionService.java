@@ -197,7 +197,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
            */
         log.warn("Validating webservice config");
         ValidationReport res = wfConf.validate();
-        if (!res.valid()) throwServiceError(res.toString());
+        if (!res.valid()) return throwServiceError(res.toString());
 
         /*
         * Validate the workflow (connectedness...)
