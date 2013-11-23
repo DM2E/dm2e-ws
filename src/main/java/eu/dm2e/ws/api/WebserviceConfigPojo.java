@@ -215,8 +215,4 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
 	public WorkflowPositionPojo getExecutesPosition() { return executesPosition; }
 	public void setExecutesPosition(WorkflowPositionPojo executesPosition) { this.executesPosition = executesPosition; }
 
-
-
-
-
 }

@@ -11,7 +11,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -31,12 +39,15 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.joda.time.DateTime;
 
-import com.google.gson.JsonArray;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
 
 import eu.dm2e.grafeo.GResource;
 import eu.dm2e.grafeo.GStatement;
@@ -51,6 +62,7 @@ import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.api.UserPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.services.AbstractRDFService;
 
@@ -66,6 +78,32 @@ import eu.dm2e.ws.services.AbstractRDFService;
 @Path("/file")
 public class FileService extends AbstractRDFService {
 
+	private class FileJsonComparator implements Comparator<JsonObject> {
+		private String compareProp;
+		private String sortOrder;
+		public FileJsonComparator(String compareProp, String sortOrder) {
+			this.compareProp = compareProp;
+			this.sortOrder = sortOrder;
+		}
+		@Override
+		public int compare(JsonObject arg0, JsonObject arg1) {
+			JsonElement arg0Prop = arg0.get(this.compareProp); 
+			JsonElement arg1Prop = arg1.get(this.compareProp); 
+			if (sortOrder.equals("desc")) {
+				JsonElement swap = arg0Prop;
+				arg0Prop = arg1Prop;
+				arg1Prop = swap;
+			}
+			if (null == arg0Prop && null == arg1Prop)
+				return 0;
+			if (null != arg0Prop && null == arg1Prop)
+				return -1;
+			if (null == arg0Prop && null != arg1Prop)
+				return +1;
+			return arg0Prop.getAsString().compareTo(arg1Prop.getAsString());
+		}
+	}
+	
 	
 	@Override
 	public WebservicePojo getWebServicePojo() {
@@ -98,6 +136,52 @@ public class FileService extends AbstractRDFService {
 	public Response getFileListBaseAlias() {
 		return Response.seeOther(appendPath(getRequestUriWithoutQuery(), "list")).build();
 	}
+
+	/**
+	 * GET /list/facets
+	 *  Retrieve metadata of all relevant facets
+	 * 
+	 * @return
+	 */
+	@GET
+	@Produces({
+		MediaType.APPLICATION_JSON
+	})
+	@Path("list/facets")
+	public Response getFileListFacets() {
+		ParameterizedSparqlString sb = new ParameterizedSparqlString();
+        sb.setNsPrefix("omnom", NS.OMNOM.BASE);
+        sb.setNsPrefix("rdf", NS.RDF.BASE);
+        sb.append("SELECT ?owner ?type ?status {	\n");
+        sb.append("  GRAPH ?file {  \n");
+        sb.append("    ?file rdf:type omnom:File .  \n");
+        sb.append("    OPTIONAL { ?file omnom:fileOwner ?owner . }   \n");
+        sb.append("    OPTIONAL { ?file omnom:fileType ?type . }  \n");
+        sb.append("  }  \n");
+        sb.append("}");
+        log.debug(sb.toString());
+        Query sparsl = sb.asQuery();
+        QueryExecution qexec = QueryExecutionFactory.createServiceRequest(Config.get(ConfigProp.ENDPOINT_QUERY), sparsl);
+
+		long startTime = System.currentTimeMillis();
+        log.debug("About to execute facet SELECT query.");
+        ResultSet resultSet = qexec.execSelect();
+        long estimatedTime = System.currentTimeMillis() - startTime;
+        log.debug("SELECT query took " + estimatedTime + "ms.");
+        Map<String,Set<String>> facets = new HashMap<>();
+        facets.put(NS.OMNOM.PROP_FILE_OWNER, new HashSet<String>());
+        facets.put(NS.OMNOM.PROP_FILE_TYPE, new HashSet<String>());
+        while (resultSet.hasNext()) {
+        	QuerySolution sol = resultSet.next();
+        	if (null != sol.get("owner")){ 
+        		facets.get(NS.OMNOM.PROP_FILE_OWNER).add(sol.get("owner").asNode().toString());
+        	}
+        	if (null != sol.get("type")){ 
+        		facets.get(NS.OMNOM.PROP_FILE_TYPE).add(sol.get("type").asNode().toString());
+        	}
+        }
+        return Response.ok(new Gson().toJson(facets).toString()).build();
+	}
 	/**
 	 * GET /list
 	 *  Retrieve metadata of all files that are omnom:fileStatus AVAILABLE
@@ -117,6 +201,8 @@ public class FileService extends AbstractRDFService {
 	public Response getFileList(
 			@QueryParam("limit") int resultLimit,
 			@QueryParam("start") int resultStart,
+			@QueryParam("sort") String sortProp,
+			@QueryParam("order") String sortOrder,
 			@QueryParam("user") String filterUser,
 			@QueryParam("type") String filterType
 			) {
@@ -156,18 +242,10 @@ public class FileService extends AbstractRDFService {
         if (DM2E_MediaType.expectsRdfResponse(headers)) {
         	return Response.status(Response.Status.OK).entity(g).build();
         }
-        JsonArray jsonFiles = new JsonArray();
-        int currentFileIdx = 0;
+
+        List<JsonObject> jsonFilesList = new ArrayList<>();
         log.debug("Paging from " + resultStart + " to " + (resultLimit > 0 ? resultStart + resultLimit : "end") + ". ");
         for (GResource fileRes : g.findByClass(NS.OMNOM.CLASS_FILE)) {
-        	if (resultStart > currentFileIdx) {
-        		currentFileIdx += 1;
-        		continue;
-        	}
-        	if (resultLimit > 0 && resultStart + resultLimit == currentFileIdx) {
-        		break;
-        	}
-        	currentFileIdx += 1;
         	JsonObject jsonFile = new JsonObject();
         	jsonFile.addProperty("id", fileRes.getUri());
         	for (GStatement stmt : g.listStatements(fileRes, null, null)) {
@@ -176,9 +254,31 @@ public class FileService extends AbstractRDFService {
         		else if (! stmt.getObject().resource().isAnon())
         			jsonFile.addProperty(stmt.getPredicate().getUri(), stmt.getObject().resource().getUri());
         	}
-        	jsonFiles.add(jsonFile);
+        	jsonFilesList.add(jsonFile);
         }
-        return Response.status(Response.Status.OK).entity(jsonFiles.toString()).build();
+        
+        if (sortProp == null) {
+        	sortProp = NS.DCTERMS.PROP_CREATED; 
+        } else {
+        	sortProp = g.expand(sortProp);
+        }
+        if (null == sortOrder) {
+        	sortOrder = "desc";
+        }
+        log.debug("Sorting by " + sortProp);
+        Collections.sort(jsonFilesList, new FileJsonComparator(sortProp, sortOrder));
+        List<JsonObject> jsonFilesSlice = new ArrayList<>();
+        if (resultStart > jsonFilesList.size()) {
+        } else if (resultLimit < 1 ) {
+        	jsonFilesSlice = jsonFilesList;
+        } else {
+        	for (int i = resultStart; i < resultStart + resultLimit ; i++) {
+        		if (i < jsonFilesList.size())
+        			jsonFilesSlice.add(jsonFilesList.get(i));
+        	}
+        }
+        String jsonFiles = new Gson().toJson(jsonFilesSlice);
+        return Response.status(Response.Status.OK).entity(jsonFiles).build();
 	}
 	
 	/**
@@ -424,6 +524,17 @@ public class FileService extends AbstractRDFService {
 					filePojo.setFormat(filePart.getMediaType().toString());
 					if (null == filePojo.getOriginalName()) {
 						filePojo.setOriginalName(fileDisposition.getFileName());
+					}
+					if (null == filePojo.getCreated()) {
+						filePojo.setCreated(DateTime.now());
+					}
+					if (null == filePojo.getFileType()) {
+						filePojo.setFileType(NS.OMNOM_TYPES.UNKNOWN);
+					}
+					if (null == filePojo.getFileOwner()) {
+						UserPojo dummyUser = new UserPojo();
+						dummyUser.setId(uriInfo.getBaseUriBuilder().path("/api/user/DummyUser").build());
+						filePojo.setFileOwner(dummyUser);
 					}
 				}
 			} catch (IOException | IllegalAccessException | InvocationTargetException e) {
