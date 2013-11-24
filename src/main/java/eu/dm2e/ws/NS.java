@@ -1,5 +1,7 @@
 package eu.dm2e.ws;
 
+import java.net.URI;
+
 
 
 //CHECKSTYLE.OFF: JavadocVariable
@@ -104,11 +106,13 @@ public final class NS {
 	public static final class OMNOM_TYPES {
 
 		public static final String BASE    = "http://onto.dm2e.eu/omnom-types/";
-		public static final String XSLT    = BASE + "XSLT";
 		public static final String TGZ     = BASE + "TGZ";
 		public static final String TGZ_XML = BASE + "TGZ-XML";
-		public static final String ZIP_XML = BASE + "ZIP-XML";
 		public static final String XML     = BASE + "XML";
+		public static final String XSLT    = BASE + "XSLT";
+		public static final String ZIP_XML = BASE + "ZIP-XML";
+		public static final String ZIP_XSLT= BASE + "ZIP-XSLT";
+		public static final String UNKNOWN = BASE + "UNKNOWN";
 	}
 
 	/**
