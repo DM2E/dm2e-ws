@@ -29,6 +29,7 @@ import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.ParameterPojo;
+import eu.dm2e.ws.api.ValidationReport;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.api.WorkflowPojo;
 import eu.dm2e.ws.api.WorkflowPositionPojo;
@@ -79,6 +80,32 @@ public class WorkflowService extends AbstractRDFService {
 
 		return Response.ok(wfList).build();
 	}
+
+	/**
+	 * GET /{id}/validate
+	 * @return
+	 */
+	@GET
+	@Produces({
+		DM2E_MediaType.TEXT_PLAIN,
+	})
+	@Path("{id}/validate")
+	public Response validateWorkflow() {
+		URI wfUri = popPath(getRequestUriWithoutQuery());
+		GrafeoImpl g = new GrafeoImpl();
+		g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), wfUri);
+		if (g.isEmpty()) {
+			return Response.status(404).build();
+		}
+		WorkflowPojo wf = g.getObjectMapper().getObject(WorkflowPojo.class, wfUri);
+		ValidationReport report = wf.validate();
+		if (report.valid()) {
+			return Response.status(Response.Status.OK).entity(report.toString()).build();
+		} else {
+			return Response.status(Response.Status.PRECONDITION_FAILED).entity(report.toString()).build();
+		}
+	}
+
 	/**
 	 * GET /{id}
 	 * @return

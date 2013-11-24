@@ -37,6 +37,7 @@ import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.ParameterAssignmentPojo;
+import eu.dm2e.ws.api.ValidationReport;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.services.AbstractRDFService;
@@ -58,6 +59,38 @@ public class ConfigService extends AbstractRDFService {
 		ws.setLabel("Configuration service");
         return ws;
 	}
+
+    /**
+     * GET /{id}/validate		Accept: RDF, JSON
+     * @return
+     */
+    @GET
+    @Path("{id}/validate")
+	@Produces({
+		 DM2E_MediaType.TEXT_PLAIN,
+	})
+    public Response validateConfig() {
+        URI configURI = popPath(getRequestUriWithoutQuery());
+        log.info("Validate Configuration : " + configURI);
+        Grafeo g = new GrafeoImpl();
+        try {
+	        g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), configURI);
+        } catch (RuntimeException e) {
+        	return throwServiceError(getRequestUriWithoutQuery().toString(), ErrorMsg.NOT_FOUND, 404);
+        }
+        
+        if (! g.containsTriple(configURI, NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_WEBSERVICE_CONFIG)) {
+        	return throwServiceError(configURI + " has an unknown rdf:type.", ErrorMsg.NOT_FOUND, 404);
+        }
+        WebserviceConfigPojo configPojo = g.getObjectMapper().getObject(WebserviceConfigPojo.class, configURI);
+        ValidationReport report = configPojo.validate();
+		if (report.valid()) {
+			return Response.status(Response.Status.OK).entity(report.toString()).build();
+		} else {
+			return Response.status(Response.Status.PRECONDITION_FAILED).entity(report.toString()).build();
+		}
+    }
+    
 	
     /**
      * GET /{id}		Accept: RDF, JSON
@@ -320,28 +353,6 @@ public class ConfigService extends AbstractRDFService {
     	
     	return Response.created(uri).entity(pojoSkolemized).build();
 		
-	}
-
-	/**
-	 * GET /{id}/validate
-	 */
-	@GET
-	@Path("{id}/validate")
-	public Response getValidation() {
-		log.info("Validating");
-		URI confPojoUri = popPath();
-        WebserviceConfigPojo confPojo = new WebserviceConfigPojo();
-		try {
-			confPojo.loadFromURI(confPojoUri);
-		} catch (Exception e1) {
-			return throwServiceError(e1);
-		}
-        try {
-			confPojo.validate();
-		} catch (Exception e) {
-			return throwServiceError(e);
-		}
-        return Response.ok().build();
 	}
 
 	/**
