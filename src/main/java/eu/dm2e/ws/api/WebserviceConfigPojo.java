@@ -155,6 +155,7 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
 		IWebservice ws = getWebservice();
 		if (null == ws) {
             res.addMessage(this,1,this + ": No webservice associated with this config." );
+            return res;
 		}
 		for (ParameterPojo param : ws.getInputParams()) {
 			log.info("Validating param: " + param.getId());
