@@ -14,11 +14,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.Consumes;
@@ -104,6 +102,20 @@ public class FileService extends AbstractRDFService {
 		}
 	}
 	
+	private class PojoListFacet {
+		private String label;
+		public String getLabel() { return label; }
+		public void setLabel(String label) { this.label = label; }
+		private String rdfProp;
+		public String getRdfProp() { return rdfProp; }
+		public void setRdfProp(String rdfProp) { this.rdfProp = rdfProp; }
+		private String queryParam;
+		public String getQueryParam() { return queryParam; }
+		public void setQueryParam(String queryParam) { this.queryParam = queryParam; }
+		private Set<String> values = new HashSet<>();
+		public Set<String> getValues() { return values; }
+		public void setValues(Set<String> values) { this.values = values; }
+	}
 	
 	@Override
 	public WebservicePojo getWebServicePojo() {
@@ -168,19 +180,27 @@ public class FileService extends AbstractRDFService {
         ResultSet resultSet = qexec.execSelect();
         long estimatedTime = System.currentTimeMillis() - startTime;
         log.debug("SELECT query took " + estimatedTime + "ms.");
-        Map<String,Set<String>> facets = new HashMap<>();
-        facets.put(NS.OMNOM.PROP_FILE_OWNER, new HashSet<String>());
-        facets.put(NS.OMNOM.PROP_FILE_TYPE, new HashSet<String>());
+        
+        PojoListFacet ownerFacet = new PojoListFacet();
+        ownerFacet.setLabel("Owner");
+        ownerFacet.setQueryParam("user");
+        ownerFacet.setRdfProp(NS.OMNOM.PROP_FILE_OWNER);
+        PojoListFacet typeFacet = new PojoListFacet();
+        typeFacet.setLabel("Type");
+        typeFacet.setQueryParam("type");
+        typeFacet.setRdfProp(NS.OMNOM.PROP_FILE_TYPE);
+
         while (resultSet.hasNext()) {
         	QuerySolution sol = resultSet.next();
-        	if (null != sol.get("owner")){ 
-        		facets.get(NS.OMNOM.PROP_FILE_OWNER).add(sol.get("owner").asNode().toString());
-        	}
-        	if (null != sol.get("type")){ 
-        		facets.get(NS.OMNOM.PROP_FILE_TYPE).add(sol.get("type").asNode().toString());
-        	}
+        	if (null != sol.get("owner"))
+        		ownerFacet.getValues().add(sol.get("owner").asNode().toString());
+        	if (null != sol.get("type"))
+        		typeFacet.getValues().add(sol.get("type").asNode().toString());
         }
-        return Response.ok(new Gson().toJson(facets).toString()).build();
+        List<PojoListFacet> retList = new ArrayList<>();
+        retList.add(ownerFacet);
+        retList.add(typeFacet);
+        return Response.ok(new Gson().toJson(retList).toString()).build();
 	}
 	/**
 	 * GET /list
