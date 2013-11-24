@@ -5,6 +5,7 @@ import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.api.ValidationReport;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import org.joda.time.DateTime;
 
@@ -142,16 +143,18 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
 		/*		
 		 * Validate the configuration
 		 */
-		try {
-			wsConf.validate();
-		} catch (Exception e) {
-			return throwServiceError(e);
-		}
-		
+        ValidationReport res = wsConf.validate();
+        if (!res.valid()) {
+            log.error("Configuration not valid, throwing Error");
+            return throwServiceError(res.toString());
+        }
 
-        /*
-         * Build JobPojo
-         * */
+
+
+
+            /*
+           * Build JobPojo
+           * */
         JobPojo job = new JobPojo();
         String uuid = UUID.randomUUID().toString();
         job.setWebService(wsConf.getWebservice());

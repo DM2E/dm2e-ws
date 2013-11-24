@@ -19,13 +19,24 @@ import java.util.List;
 public class WorkflowPositionPojo extends SerializablePojo<WorkflowPositionPojo> implements IValidatable{
 	
 	@Override
-	public void validate() throws Exception {
+	public ValidationReport validate() {
+        ValidationReport res = new ValidationReport(this);
 		if (null == workflow)
-			throw new AssertionError(this + " has no workflow");
+			res.addMessage(this,1,this + " has no workflow");
 		if (null == webservice)
-			throw new AssertionError(this + " has no webservice");
+            res.addMessage(this,2,this + " has no webservice");
+        if (res.size()>0) return res;
+        for (ParameterPojo param:getWebservice().getInputParams()) {
+            if (param.getIsRequired()) {
+                ParameterConnectorPojo conn = getWorkflow().getConnectorToPositionAndParam(this,param);
+                if (conn==null) {
+                    res.addMessage(this,3,this + " has no connection for required parameter " + param);
+                }
+            }
+        }
 //		else
 //			webservice.validate();
+        return res;
 	}
 
     /*********************
