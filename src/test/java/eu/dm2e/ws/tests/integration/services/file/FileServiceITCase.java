@@ -109,7 +109,7 @@ public class FileServiceITCase extends OmnomTestCase {
 			assertEquals("Should have metadata from the file desc",
 					fpOrig.getOriginalName(),
 					fp.getOriginalName());
-			assertNotNull("Should have metadata created by the service", fp.getMd5());
+			assertNull("Should not have MD5 created as of 2013-11-22", fp.getMd5());
 
 		}
 		// Neither metadata nor file data
@@ -294,11 +294,11 @@ public class FileServiceITCase extends OmnomTestCase {
 					g.containsTriple(fileUriStr, NS.OMNOM.PROP_FILE_LOCATION, "?x");
 					g.containsTriple(fileUriStr, NS.OMNOM.PROP_FILE_RETRIEVAL_URI, "?x");
 					g.containsTriple(fileUriStr, NS.OMNOM.PROP_FILE_STATUS, "\"STARTED\"");
-					g.containsTriple(fileUriStr, NS.OMNOM.PROP_MD5, "?x");
+//					g.containsTriple(fileUriStr, NS.OMNOM.PROP_MD5, "?x");
 					g.containsTriple(fileUriStr, NS.DCTERMS.PROP_EXTENT, "?x");
 					g.containsTriple(fileUriStr, NS.DCTERMS.PROP_FORMAT, "?x");
 					log.info(g.getTerseTurtle());
-					assertEquals(8, g.size());
+					assertEquals(11, g.size());
 				}
 			}
 		}
@@ -345,7 +345,7 @@ public class FileServiceITCase extends OmnomTestCase {
 			log.error(fp.getTurtle());
 			assertEquals("File is available", FileStatus.AVAILABLE.toString(), fp.getFileStatus());
 			assertEquals(origFp.getOriginalName(), fp.getOriginalName());
-			assertEquals("d41d8cd98f00b204e9800998ecf8427e", fp.getMd5());
+//			assertEquals("d41d8cd98f00b204e9800998ecf8427e", fp.getMd5());
 		}
 		{
 			FilePojo patchFp = new FilePojo();
@@ -359,7 +359,7 @@ public class FileServiceITCase extends OmnomTestCase {
 			extracted(fileUri, fp);
 			assertThat(fp.getOriginalName(), not(origFp.getOriginalName()));
 			assertThat(fp.getOriginalName(), is(patchFp.getOriginalName()));
-			assertEquals("d41d8cd98f00b204e9800998ecf8427e", fp.getMd5());
+//			assertEquals("d41d8cd98f00b204e9800998ecf8427e", fp.getMd5());
 		}
 	}
 
