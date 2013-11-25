@@ -168,7 +168,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
 
 
     /**
-     * GET /{resourceID}		Accept: *		Content-Type: RDF
+     * GET /{id}/job/{jobId}		Accept: *		Content-Type: RDF
      * @return
      */
     @GET
@@ -191,6 +191,11 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         return Response.ok().entity(getResponseEntity(job.getGrafeo())).build();
     }
 
+    /**
+     * GET /{id}/job/{jobId}	CT: JSON
+     * @param resourceId
+     * @return
+     */
     @GET
     @Path("/{id}/job/{resourceId}")
     @Produces({
@@ -207,7 +212,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
     }
 
     /**
-     * GET /{id}/job/{resourceId}/status			Accept: *		Content-Type: TEXT
+     * GET /{id}/job/{jobId}/status			Accept: *		Content-Type: TEXT
      * Get the job status as a string.
      * @param resourceId
      * @return
@@ -223,7 +228,6 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         }
         return Response.ok(job.getJobStatus()).build();
     }
-
 
 	/**
 	 * GET /{id}/job/{resourceId}/log			Accept: *		Content-Type: TEXT_LOG
@@ -246,6 +250,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         }
 		return Response.ok().entity(job.toLogString(minLevelStr, maxLevelStr)).build();
 	}
+
     /**
      * PUT /{id}
      * <p/>

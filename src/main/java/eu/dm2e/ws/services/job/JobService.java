@@ -137,12 +137,12 @@ public class JobService extends AbstractRDFService {
 				.select("*")
 				.where(	"GRAPH ?g {" +
 						"  <" + jobUri + "> <" + NS.OMNOM.PROP_JOB_STATUS + "> ?status ." +
-						"  <" + jobUri + "> <" + RDFS.PROP_LABEL + "> ?label ." +
-						"  <" + jobUri + "> <" + NS.DCTERMS.PROP_MODIFIED + "> ?modified ." +
-						"  <" + jobUri + "> <" + NS.DCTERMS.PROP_CREATED + "> ?created ." +
 						"  <" + jobUri + "> <" + NS.OMNOM.PROP_WEBSERVICE + "> ?ws ." +
 						"  ?ws <" + NS.OMNOM.PROP_WEBSERVICE_ID +"> ?implId ." +
 						"     FILTER STRSTARTS(?implId, \"eu.dm2e.ws.services.workflow.WorkflowExecutionService\") ." +
+						"  <" + jobUri + "> <" + RDFS.PROP_LABEL + "> ?label ." +
+						"  <" + jobUri + "> <" + NS.DCTERMS.PROP_MODIFIED + "> ?modified ." +
+						"  <" + jobUri + "> <" + NS.DCTERMS.PROP_CREATED + "> ?created ." +
 						"}" +
 						""
 						)

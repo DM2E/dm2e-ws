@@ -13,21 +13,23 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.UriInfo;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 import eu.dm2e.grafeo.GResource;
+import eu.dm2e.grafeo.GStatement;
 import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.annotations.RDFClass;
 import eu.dm2e.grafeo.gom.SerializablePojo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
-import eu.dm2e.grafeo.jena.SparqlAsk;
 import eu.dm2e.grafeo.jena.SparqlUpdate;
 import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
 import eu.dm2e.logback.LogbackMarkers;
@@ -91,7 +93,6 @@ public class ConfigService extends AbstractRDFService {
 		}
     }
     
-	
     /**
      * GET /{id}		Accept: RDF, JSON
      * @return
@@ -134,33 +135,59 @@ public class ConfigService extends AbstractRDFService {
      */
     @GET
     @Path("list")
-    public Response getConfigList(@Context UriInfo uriInfo) {
+    public Response getConfigList(
+    		@QueryParam("user") String filterUser,
+    		@QueryParam("type") String filterType,
+			@QueryParam("sort") String sortProp,
+			@QueryParam("order") String sortOrder
+    		) {
     	
-    	List<SerializablePojo> configList = new ArrayList<>();
+    	ParameterizedSparqlString sb = new ParameterizedSparqlString();
+    	sb.setNsPrefix("rdf", NS.RDF.BASE);
+    	sb.setNsPrefix("omnom", NS.OMNOM.BASE);
+    	sb.append("CONSTRUCT {	  \n");
+    	sb.append("  ?s ?p ?o .	   \n");
+    	sb.append("} WHERE {    \n");
+    	sb.append("  GRAPH ?conf {    \n");
+    	sb.append("    ?conf rdf:type omnom:WebserviceConfig .    \n");
+    	sb.append("    ?conf omnom:webservice ?ws .  \n");
+    	sb.append("    ?ws omnom:implementationID ?implId .  \n");
+    	sb.append("    FILTER (str(?implId) = \"eu.dm2e.ws.services.workflow.WorkflowExecutionService\") .  \n");
+    	if (null != filterUser) {
+    		sb.append("    ?conf dcterms:creator ?creator .  \n");
+    		sb.append("    FILTER (str(?creator) = \"" + filterUser + "\") .  \n");
+    	}
+    	sb.append("    ?s ?p ?o .    \n");
+    	sb.append("  }    \n");
+    	sb.append("}  \n");
+
     	GrafeoImpl g = new GrafeoImpl();
-    	String pojoRdfClass = WebserviceConfigPojo.class.getAnnotation(RDFClass.class).value();
-    	g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, NS.RDF.PROP_TYPE, g.resource(pojoRdfClass));
-    	for (GResource gres : g.listSubjects()) {
-    		if (gres.isAnon()) {
-    			log.warn("Blank config in the triplestore. Should not hapen.");
-    			continue;
+    	Query query = sb.asQuery();
+    	QueryEngineHTTP qExec = QueryExecutionFactory.createServiceRequest(Config.get(ConfigProp.ENDPOINT_QUERY), query);
+    	{
+    		long startTime = System.currentTimeMillis();
+    		qExec.execConstruct(g.getModel());
+    		long endTime  = System.currentTimeMillis();
+    		long elapsed = endTime - startTime;
+    		log.debug(LogbackMarkers.TRACE_TIME, "CONSTRUCT of workflowconfigs took " + elapsed + "ms. ");
+    	}
+    	List<SerializablePojo> configList = new ArrayList<>();
+    	{
+    		long startTime = System.currentTimeMillis();
+    		for (GStatement typeStmt : g.listStatements(null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_WEBSERVICE_CONFIG))) {
+    			WebserviceConfigPojo configPojo = g.getObjectMapper().getObject(WebserviceConfigPojo.class, typeStmt.getSubject());
+    			// we don't need the parameter asssignments, they make the response too large
+    			configPojo.setParameterAssignments(new HashSet<ParameterAssignmentPojo>());
+    			// we only want the webservice id, reduce reduce!
+    			WebservicePojo wf = configPojo.getWebservice();
+    			WebservicePojo dummyWs = new WebservicePojo();
+    			dummyWs.setId(wf.getId());
+    			configPojo.setWebservice(dummyWs);
+    			configList.add(configPojo);
     		}
-    		SparqlAsk spask = new SparqlAsk.Builder()
-    			.ask(	"GRAPH <" + gres.getUri() + "> {" +
-    					"  <" + gres.getUri() + "> <" + NS.OMNOM.PROP_WEBSERVICE + "> ?ws ." +
-						"  ?ws <" + NS.OMNOM.PROP_WEBSERVICE_ID +"> ?implId ." +
-						"     FILTER STRSTARTS(?implId, \"eu.dm2e.ws.services.workflow.WorkflowExecutionService\") ." +
-						"}")
-				.endpoint(Config.get(ConfigProp.ENDPOINT_QUERY))
-				.build();
-    		if (! spask.execute()) {
-    			continue;
-    		}
-    		WebserviceConfigPojo pojo = new WebserviceConfigPojo();
-    		pojo.setId(gres.getUri());
-    		pojo.loadFromURI(pojo.getId());
-    		pojo.setParameterAssignments(new HashSet<ParameterAssignmentPojo>());
-    		configList.add(pojo);
+    		long endTime  = System.currentTimeMillis();
+    		long elapsed = endTime - startTime;
+    		log.debug(LogbackMarkers.TRACE_TIME, "POJOization of workflowconfigs took " + elapsed + "ms. ");
     	}
     	return Response.ok(configList).build();
     }
@@ -206,17 +233,13 @@ public class ConfigService extends AbstractRDFService {
         g.skolemizeSequential(uri.toString(), NS.OMNOM.PROP_ASSIGNMENT, "assignment");
         log.warn("DONE Skolemnizing ...");
         
-        SerializablePojo pojo = null;
-        if (actualRdfType.equals(NS.OMNOM.CLASS_WEBSERVICE_CONFIG)) {
-        	pojo = g.getObjectMapper().getObject(WebserviceConfigPojo.class, res);
-        }
-        else {
-        	return throwServiceError(ErrorMsg.WRONG_RDF_TYPE);
-        }
+        // No need to create POJO if we pass on the graph as-is anyway
+//        WebserviceConfigPojo pojo = g.getObjectMapper().getObject(WebserviceConfigPojo.class, res);
+//        pojo.getGrafeo().putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), uri);
 
         g.putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), uri);
         
-        return Response.created(uri).entity(pojo).build();
+        return Response.created(uri).entity(g).build();
         
 //        return Response.created(uri).entity(getResponseEntity(g)).build();
 //        return Response.seeOther(uri).build();
