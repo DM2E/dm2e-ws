@@ -266,11 +266,22 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
 	public ValidationReport validate() {
         ValidationReport res = new ValidationReport(this);
 
-//		if (this.getPositions().isEmpty()) {
-//			throw new RuntimeException("No positions in the workflow.");
-//		}
+        
+        //
+        // a) no positions at all
+        //
+		if (this.getPositions().isEmpty()) {
+			res.addMessage(this,1, this + " has no positions.");
+		}
+
+        //
+        // b) no workflow parameters at all, i.e. no more than 'pollInterval' and 'jobTimeout'
+        //
+		if (this.getInputParams().size() < 3) {
+			res.addMessage(this,1, this + " has no input parameters.");
+		}
 		//
-		// b)
+		// c) Connectors referencing invalid Workflow Parameters
 		//
 		for (ParameterConnectorPojo conn : this.getParameterConnectors()) {
 			if (conn.hasFromWorkflow() 

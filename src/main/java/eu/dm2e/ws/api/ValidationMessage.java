@@ -11,6 +11,7 @@ import eu.dm2e.grafeo.gom.SerializablePojo;
  */
 public class ValidationMessage {
 
+	// TODO define these codes
     int code;
     SerializablePojo protester;
     String message;

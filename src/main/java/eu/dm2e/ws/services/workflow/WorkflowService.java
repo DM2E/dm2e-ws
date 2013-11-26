@@ -411,6 +411,12 @@ public class WorkflowService extends AbstractRDFService {
 		log.info("DONE Writing updating workflow to endpoint: " + wfUriStr);
 
 		WorkflowPojo wf = g.getObjectMapper().getObject(WorkflowPojo.class, wfUriStr);
+		ValidationReport rep = null;
+		try {
+			rep = wf.validate();
+		} catch (Exception e) {
+			return throwServiceError(rep.toString());
+		}
 		return Response.ok(wf).location(wfUri).build();
 	}
 
@@ -544,11 +550,17 @@ public class WorkflowService extends AbstractRDFService {
 
 		WorkflowPojo wf = g.getObjectMapper().getObject(WorkflowPojo.class, wfUri);
 
-		try {
-			wf.validate();
-		} catch (Exception e) {
-			return throwServiceError(e);
-		}
+		/*
+		 *  kb Tue Nov 26 20:00:39 CET 2013
+		 *  We must not validate here because the workflow POSTed can be invalid and that's okay, the user will make it valid.
+		 *  Only PUTting an invalid workflow is a no-no.
+		 */
+
+//		try {
+//			wf.validate();
+//		} catch (Exception e) {
+//			return throwServiceError(e);
+//		}
 
 		return Response.ok().entity(wf).location(URI.create(wfUri)).build();
 	}
