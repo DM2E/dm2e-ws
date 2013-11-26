@@ -266,6 +266,14 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
 	public ValidationReport validate() {
         ValidationReport res = new ValidationReport(this);
 
+        /*
+         * TODO:
+         * - check for unconnected required input parameters of webservices in positions
+         * - check for cycles
+         * - check for multiple equivalent connectors (same origin, same target)
+         * - check for SHOULD NOT HAPPEN cases (positions w/o inWorkflow, connectors w/o toParam etc.)
+         *   => probably should be validated by the PositionPojo and ParameterConnectorPojo themselves
+         */
         
         //
         // a) no positions at all
@@ -276,6 +284,9 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
 
         //
         // b) no workflow parameters at all, i.e. no more than 'pollInterval' and 'jobTimeout'
+		// 	  NOTE: If validation mysteriously fails in the future, it might be because additional
+		//			default parameters will be defined or existing default parameters removed, hence
+		//			breaking the magic LESS THAN THREE test.
         //
 		if (this.getInputParams().size() < 3) {
 			res.addMessage(this,1, this + " has no input parameters.");
