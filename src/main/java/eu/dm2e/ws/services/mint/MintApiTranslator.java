@@ -1,26 +1,11 @@
 package eu.dm2e.ws.services.mint;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
-import eu.dm2e.logback.LogbackMarkers;
-import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.NS;
-import eu.dm2e.ws.api.FilePojo;
-import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.utils.IOUtils;
-import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Form;
-import javax.ws.rs.core.Response;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -28,6 +13,30 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
+
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.Form;
+import javax.ws.rs.core.Response;
+
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.utils.IOUtils;
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
+
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.logback.LogbackMarkers;
+import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.FilePojo;
 
 /**
  * Translates resources in MINT to dm2e-ws by using the MINT UrlApi.
@@ -383,7 +392,14 @@ public final class MintApiTranslator {
 
 		List<FilePojo> retList = new ArrayList<>();
 
-		JsonElement jsonResponseElem = new JsonParser().parse(apiResponse);
+		JsonElement jsonResponseElem;
+		final JsonParser jsonParser = new JsonParser();
+		try {
+			jsonResponseElem = jsonParser.parse(apiResponse);
+		} catch (JsonSyntaxException e) {
+			log.error("MintApiTranslator croaked on this response from MINT JSON API: {}" + apiResponse);
+			throw e;
+		}
 		if (!jsonResponseElem.isJsonObject()) {
 			throw new IllegalArgumentException();
 		}
