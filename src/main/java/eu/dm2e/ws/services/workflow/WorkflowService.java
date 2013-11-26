@@ -59,17 +59,24 @@ public class WorkflowService extends AbstractRDFService {
 	public static String PARAM_COMPLETE_LOG = "completeLog";
 
 	private class WorkflowPojoComparator implements Comparator<WorkflowPojo> {
-		private String compareProp;
-		public WorkflowPojoComparator() {
-			this.compareProp = NS.DCTERMS.PROP_CREATED;
-		}
-		public WorkflowPojoComparator(String compareProp) {
+		private String compareProp; // e.g. NS.DCTERMS.PROP_MODIFIED
+		private String order; // "asc" or "desc"
+		public WorkflowPojoComparator(String compareProp, String order) {
 			this.compareProp = compareProp;
+			this.order = order;
 		}
 		@Override
 		public int compare(WorkflowPojo o1, WorkflowPojo o2) {
-			if (compareProp.equals(NS.DCTERMS.PROP_CREATED)) {
+			if (this.order.equals("desc")) {
+				WorkflowPojo swap = o1;
+				o1 = o2;
+				o2 = swap;
+			}
+			log.debug("comparing unsing " + this.compareProp);
+			if (compareProp.equals(NS.DCTERMS.PROP_MODIFIED)) {
 				return o1.getModified().compareTo(o2.getModified());
+			} else if (compareProp.equals(NS.DCTERMS.PROP_CREATOR)) {
+				return o1.getCreator().getId().compareTo(o2.getCreator().getId());
 			} else {
 				return 0;
 			}
@@ -104,7 +111,7 @@ public class WorkflowService extends AbstractRDFService {
         sb.append("    OPTIONAL { ?wf dcterms:creator ?creator . }  \n");
     	sb.append("  }    \n");
     	sb.append("}  \n");
-    	GrafeoImpl g = new GrafeoImpl();
+//    	GrafeoImpl g = new GrafeoImpl();
     	Query query = sb.asQuery();
     	QueryEngineHTTP qExec = QueryExecutionFactory.createServiceRequest(Config.get(ConfigProp.ENDPOINT_QUERY), query);
     	long startTime = System.currentTimeMillis();
@@ -181,10 +188,11 @@ public class WorkflowService extends AbstractRDFService {
     	}
     	{
     		long startTime = System.currentTimeMillis();
-    		if (null == sortProp) {
+    		if (null == sortProp)
     			sortProp = NS.DCTERMS.PROP_MODIFIED;
-    		}
-    		Collections.sort(wfList, new WorkflowPojoComparator());
+    		if (null == sortOrder)
+    			sortOrder = "asc";
+    		Collections.sort(wfList, new WorkflowPojoComparator(sortProp, sortOrder));
     		long endTime  = System.currentTimeMillis();
     		long elapsed = endTime - startTime;
     		log.debug(LogbackMarkers.TRACE_TIME, "SORTING of workflowconfigs took " + elapsed + "ms. ");
