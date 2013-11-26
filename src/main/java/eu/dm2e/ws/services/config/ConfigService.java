@@ -3,6 +3,8 @@ package eu.dm2e.ws.services.config;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 
@@ -18,11 +20,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 import eu.dm2e.grafeo.GResource;
@@ -55,6 +60,21 @@ import eu.dm2e.ws.services.AbstractRDFService;
 @Path("/config")
 public class ConfigService extends AbstractRDFService {
 	
+	private class ConfigPojoComparator implements Comparator<WebserviceConfigPojo> {
+		private String compareProp;
+		public ConfigPojoComparator(String compareProp) {
+			this.compareProp = compareProp;
+		}
+		@Override
+		public int compare(WebserviceConfigPojo o1, WebserviceConfigPojo o2) {
+			if (compareProp.equals(NS.DCTERMS.PROP_MODIFIED)) {
+				return o1.getModified().compareTo(o2.getModified());
+			} else {
+				return 0;
+			}
+		}
+	}
+
 	@Override
 	public WebservicePojo getWebServicePojo() {
 		WebservicePojo ws = super.getWebServicePojo();
@@ -127,6 +147,52 @@ public class ConfigService extends AbstractRDFService {
         }
         return resp.build();
     }
+
+    /**
+     * GET /list/facets		CT:JSON
+     */
+    @GET
+    @Path("list/facets")
+    public Response getConfigListFacets() { 
+    	ParameterizedSparqlString sb = new ParameterizedSparqlString();
+    	sb.setNsPrefix("rdf", NS.RDF.BASE);
+    	sb.setNsPrefix("dcterms", NS.DCTERMS.BASE);
+    	sb.setNsPrefix("omnom", NS.OMNOM.BASE);
+    	sb.append("SELECT ?creator {  \n");
+    	sb.append("  GRAPH ?conf {  \n");
+    	sb.append("    ?conf rdf:type omnom:WebserviceConfig .    \n");
+    	sb.append("    ?conf omnom:webservice ?ws .  \n");
+    	sb.append("    ?ws omnom:implementationID ?implId .  \n");
+    	sb.append("    FILTER (str(?implId) = \"eu.dm2e.ws.services.workflow.WorkflowExecutionService\") .  \n");
+    	sb.append("    OPTIONAL { ?conf dcterms:creator ?creator } .  \n");
+    	sb.append("  }    \n");
+    	sb.append("}  \n");
+
+    	GrafeoImpl g = new GrafeoImpl();
+    	Query query = sb.asQuery();
+    	QueryEngineHTTP qExec = QueryExecutionFactory.createServiceRequest(Config.get(ConfigProp.ENDPOINT_QUERY), query);
+    	long startTime = System.currentTimeMillis();
+    	log.debug("About to execute facet SELECT query.");
+    	ResultSet resultSet = qExec.execSelect();
+    	long estimatedTime = System.currentTimeMillis() - startTime;
+    	log.debug(LogbackMarkers.TRACE_TIME, "SELECT config facet query took " + estimatedTime + "ms.");
+
+        PojoListFacet creatorFacet = new PojoListFacet();
+        creatorFacet.setLabel("Creator");
+        creatorFacet.setQueryParam("user");
+        creatorFacet.setRdfProp(NS.DCTERMS.PROP_CREATOR);
+
+        while (resultSet.hasNext()) {
+        	QuerySolution sol = resultSet.next();
+        	if (null != sol.get("creator"))
+        		creatorFacet.getValues().add(sol.get("creator").asNode().toString());
+        }
+
+        List<PojoListFacet> retList = new ArrayList<>();
+        retList.add(creatorFacet);
+    	return Response.ok(new Gson().toJson(retList).toString()).build();
+    }
+
     
     /**
      * GET /list		Accept: RDF, JSON
@@ -144,6 +210,7 @@ public class ConfigService extends AbstractRDFService {
     	
     	ParameterizedSparqlString sb = new ParameterizedSparqlString();
     	sb.setNsPrefix("rdf", NS.RDF.BASE);
+    	sb.setNsPrefix("dcterms", NS.DCTERMS.BASE);
     	sb.setNsPrefix("omnom", NS.OMNOM.BASE);
     	sb.append("CONSTRUCT {	  \n");
     	sb.append("  ?s ?p ?o .	   \n");
@@ -171,7 +238,7 @@ public class ConfigService extends AbstractRDFService {
     		long elapsed = endTime - startTime;
     		log.debug(LogbackMarkers.TRACE_TIME, "CONSTRUCT of workflowconfigs took " + elapsed + "ms. ");
     	}
-    	List<SerializablePojo> configList = new ArrayList<>();
+    	List<WebserviceConfigPojo> configList = new ArrayList<>();
     	{
     		long startTime = System.currentTimeMillis();
     		for (GStatement typeStmt : g.listStatements(null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_WEBSERVICE_CONFIG))) {
@@ -188,6 +255,16 @@ public class ConfigService extends AbstractRDFService {
     		long endTime  = System.currentTimeMillis();
     		long elapsed = endTime - startTime;
     		log.debug(LogbackMarkers.TRACE_TIME, "POJOization of workflowconfigs took " + elapsed + "ms. ");
+    	}
+    	{
+    		long startTime = System.currentTimeMillis();
+    		if (null == sortProp) {
+    			sortProp = NS.DCTERMS.PROP_MODIFIED;
+    		}
+    		Collections.sort(configList, new ConfigPojoComparator(sortProp));
+    		long endTime  = System.currentTimeMillis();
+    		long elapsed = endTime - startTime;
+    		log.debug(LogbackMarkers.TRACE_TIME, "SORTING of workflowconfigs took " + elapsed + "ms. ");
     	}
     	return Response.ok(configList).build();
     }
