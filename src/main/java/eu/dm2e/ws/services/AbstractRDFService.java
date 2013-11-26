@@ -8,7 +8,9 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.ws.rs.Consumes;
@@ -90,6 +92,25 @@ public abstract class AbstractRDFService {
 		UrlValidator.ALLOW_ALL_SCHEMES + UrlValidator.ALLOW_LOCAL_URLS
 	);
     protected WebservicePojo webservicePojo = new WebservicePojo();
+
+	protected class PojoListFacet {
+		private String label;
+		public PojoListFacet() {
+			// TODO Auto-generated constructor stub
+		}
+		public String getLabel() { return label; }
+		public void setLabel(String label) { this.label = label; }
+		private String rdfProp;
+		public String getRdfProp() { return rdfProp; }
+		public void setRdfProp(String rdfProp) { this.rdfProp = rdfProp; }
+		private String queryParam;
+		public String getQueryParam() { return queryParam; }
+		public void setQueryParam(String queryParam) { this.queryParam = queryParam; }
+		private Set<String> values = new HashSet<>();
+		public Set<String> getValues() { return values; }
+		public void setValues(Set<String> values) { this.values = values; }
+	}
+	
 
 	protected List<Variant> supportedVariants;
 	@Context

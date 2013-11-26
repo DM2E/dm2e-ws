@@ -14,10 +14,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -100,21 +98,6 @@ public class FileService extends AbstractRDFService {
 				return +1;
 			return arg0Prop.getAsString().compareTo(arg1Prop.getAsString());
 		}
-	}
-	
-	private class PojoListFacet {
-		private String label;
-		public String getLabel() { return label; }
-		public void setLabel(String label) { this.label = label; }
-		private String rdfProp;
-		public String getRdfProp() { return rdfProp; }
-		public void setRdfProp(String rdfProp) { this.rdfProp = rdfProp; }
-		private String queryParam;
-		public String getQueryParam() { return queryParam; }
-		public void setQueryParam(String queryParam) { this.queryParam = queryParam; }
-		private Set<String> values = new HashSet<>();
-		public Set<String> getValues() { return values; }
-		public void setValues(Set<String> values) { this.values = values; }
 	}
 	
 	@Override
