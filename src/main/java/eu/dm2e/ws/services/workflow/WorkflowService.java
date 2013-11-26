@@ -22,9 +22,12 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.google.gson.Gson;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 import eu.dm2e.grafeo.GResource;
@@ -82,6 +85,52 @@ public class WorkflowService extends AbstractRDFService {
 
 
 	/**
+	 * GET /list/facets
+	 * @return
+	 */
+	@GET
+	@Path("list/facets")
+	@Produces({
+		MediaType.APPLICATION_JSON
+	})
+	public Response getWorkflowFacets() {
+    	ParameterizedSparqlString sb = new ParameterizedSparqlString();
+    	sb.setNsPrefix("rdf", NS.RDF.BASE);
+    	sb.setNsPrefix("dcterms", NS.DCTERMS.BASE);
+    	sb.setNsPrefix("omnom", NS.OMNOM.BASE);
+    	sb.append("SELECT ?creator {  \n");
+    	sb.append("  GRAPH ?wf {  \n");
+    	sb.append("    ?wf rdf:type omnom:Workflow .  \n");
+        sb.append("    OPTIONAL { ?wf dcterms:creator ?creator . }  \n");
+    	sb.append("  }    \n");
+    	sb.append("}  \n");
+    	GrafeoImpl g = new GrafeoImpl();
+    	Query query = sb.asQuery();
+    	QueryEngineHTTP qExec = QueryExecutionFactory.createServiceRequest(Config.get(ConfigProp.ENDPOINT_QUERY), query);
+    	long startTime = System.currentTimeMillis();
+    	log.debug("About to execute facet SELECT query.");
+    	ResultSet resultSet = qExec.execSelect();
+    	long estimatedTime = System.currentTimeMillis() - startTime;
+    	log.debug(LogbackMarkers.TRACE_TIME, "SELECT workflow facet query took " + estimatedTime + "ms.");
+
+        PojoListFacet creatorFacet = new PojoListFacet();
+        creatorFacet.setLabel("Creator");
+        creatorFacet.setQueryParam("user");
+        creatorFacet.setRdfProp(NS.DCTERMS.PROP_CREATOR);
+
+        while (resultSet.hasNext()) {
+        	QuerySolution sol = resultSet.next();
+        	if (null != sol.get("creator"))
+        		creatorFacet.getValues().add(sol.get("creator").asNode().toString());
+        }
+
+        List<PojoListFacet> retList = new ArrayList<>();
+        retList.add(creatorFacet);
+    	return Response.ok(new Gson().toJson(retList).toString()).build();
+	}
+
+
+	/**
 	 * GET /list
 	 * @return
 	 */
@@ -92,24 +141,24 @@ public class WorkflowService extends AbstractRDFService {
 	})
 	public Response getWorkflowList(
 			@QueryParam("user") String filterUser,
-			@QueryParam("sort") String sortProp
+			@QueryParam("sort") String sortProp,
+			@QueryParam("order") String sortOrder
 			) {
+    	GrafeoImpl g = new GrafeoImpl();
     	ParameterizedSparqlString sb = new ParameterizedSparqlString();
     	sb.setNsPrefix("rdf", NS.RDF.BASE);
     	sb.setNsPrefix("dcterms", NS.DCTERMS.BASE);
     	sb.setNsPrefix("omnom", NS.OMNOM.BASE);
+    	sb.setParam("filterUser", g.resource(filterUser).getJenaRDFNode());
     	sb.append("CONSTRUCT {  \n");
     	sb.append("    ?s ?p ?o .  \n");
     	sb.append("} WHERE {  \n");
     	sb.append("  GRAPH ?wf {  \n");
     	sb.append("    ?wf rdf:type omnom:Workflow .  \n");
-    	if (null != filterUser) {
-        sb.append("    ?conf dcterms:creator ?creator .  \n");
-    	}
+        sb.append("    ?conf dcterms:creator ?filterUser .  \n");
     	sb.append("    ?s ?p ?o .  \n");
     	sb.append("  }    \n");
     	sb.append("}  \n");
-    	GrafeoImpl g = new GrafeoImpl();
     	Query query = sb.asQuery();
     	QueryEngineHTTP qExec = QueryExecutionFactory.createServiceRequest(Config.get(ConfigProp.ENDPOINT_QUERY), query);
     	{
@@ -142,6 +191,8 @@ public class WorkflowService extends AbstractRDFService {
     	}
 		return Response.ok(wfList).build();
 	}
+
+
 
 	/**
 	 * GET /{id}/validate
