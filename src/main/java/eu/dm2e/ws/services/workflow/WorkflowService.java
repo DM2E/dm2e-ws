@@ -7,6 +7,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -16,13 +18,21 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+
 import eu.dm2e.grafeo.GResource;
+import eu.dm2e.grafeo.GStatement;
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
 import eu.dm2e.grafeo.jena.SparqlUpdate;
+import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
@@ -45,6 +55,24 @@ public class WorkflowService extends AbstractRDFService {
 	public static String PARAM_JOB_TIMEOUT = "jobTimeout";
 	public static String PARAM_COMPLETE_LOG = "completeLog";
 
+	private class WorkflowPojoComparator implements Comparator<WorkflowPojo> {
+		private String compareProp;
+		public WorkflowPojoComparator() {
+			this.compareProp = NS.DCTERMS.PROP_CREATED;
+		}
+		public WorkflowPojoComparator(String compareProp) {
+			this.compareProp = compareProp;
+		}
+		@Override
+		public int compare(WorkflowPojo o1, WorkflowPojo o2) {
+			if (compareProp.equals(NS.DCTERMS.PROP_CREATED)) {
+				return o1.getModified().compareTo(o2.getModified());
+			} else {
+				return 0;
+			}
+		}
+	}
+
     @Override
 	public WebservicePojo getWebServicePojo() {
 		WebservicePojo ws = new WebservicePojo();
@@ -62,22 +90,56 @@ public class WorkflowService extends AbstractRDFService {
 	@Produces({
 		MediaType.APPLICATION_JSON
 	})
-	public Response getWorkflowList() {
-		List<WorkflowPojo> wfList = new ArrayList<WorkflowPojo>();
-        Grafeo g = new GrafeoImpl();
-        g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_WORKFLOW));
-        for (GResource wfUri : g.findByClass(NS.OMNOM.CLASS_WORKFLOW)) {
-        	log.info("Workflow Resource: " + wfUri.getUri());
-        	if (null == wfUri.getUri()) {
-        		log.warn("There is a blank node workflow without an ID in the triplestore.");
-        	}
-        	// FIXME possibly very inefficient
-        	g.load(wfUri.getUri());
-        	WorkflowPojo wf = new WorkflowPojo();
-        	wf.loadFromURI(wfUri.getUri());
-        	wfList.add(wf);
-        }
-
+	public Response getWorkflowList(
+			@QueryParam("user") String filterUser,
+			@QueryParam("sort") String sortProp
+			) {
+    	ParameterizedSparqlString sb = new ParameterizedSparqlString();
+    	sb.setNsPrefix("rdf", NS.RDF.BASE);
+    	sb.setNsPrefix("dcterms", NS.DCTERMS.BASE);
+    	sb.setNsPrefix("omnom", NS.OMNOM.BASE);
+    	sb.append("CONSTRUCT {  \n");
+    	sb.append("    ?s ?p ?o .  \n");
+    	sb.append("} WHERE {  \n");
+    	sb.append("  GRAPH ?wf {  \n");
+    	sb.append("    ?wf rdf:type omnom:Workflow .  \n");
+    	if (null != filterUser) {
+        sb.append("    ?conf dcterms:creator ?creator .  \n");
+    	}
+    	sb.append("    ?s ?p ?o .  \n");
+    	sb.append("  }    \n");
+    	sb.append("}  \n");
+    	GrafeoImpl g = new GrafeoImpl();
+    	Query query = sb.asQuery();
+    	QueryEngineHTTP qExec = QueryExecutionFactory.createServiceRequest(Config.get(ConfigProp.ENDPOINT_QUERY), query);
+    	{
+    		long startTime = System.currentTimeMillis();
+    		qExec.execConstruct(g.getModel());
+    		long endTime  = System.currentTimeMillis();
+    		long elapsed = endTime - startTime;
+    		log.debug(LogbackMarkers.TRACE_TIME, "CONSTRUCT of workflows took " + elapsed + "ms. ");
+    	}
+    	List<WorkflowPojo> wfList = new ArrayList<>();
+    	{
+    		long startTime = System.currentTimeMillis();
+    		for (GStatement typeStmt : g.listStatements(null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_WORKFLOW))) {
+    			WorkflowPojo pojo = g.getObjectMapper().getObject(WorkflowPojo.class, typeStmt.getSubject());
+    			wfList.add(pojo);
+    		}
+    		long endTime  = System.currentTimeMillis();
+    		long elapsed = endTime - startTime;
+    		log.debug(LogbackMarkers.TRACE_TIME, "POJOization of workflowconfigs took " + elapsed + "ms. ");
+    	}
+    	{
+    		long startTime = System.currentTimeMillis();
+    		if (null == sortProp) {
+    			sortProp = NS.DCTERMS.PROP_MODIFIED;
+    		}
+    		Collections.sort(wfList, new WorkflowPojoComparator());
+    		long endTime  = System.currentTimeMillis();
+    		long elapsed = endTime - startTime;
+    		log.debug(LogbackMarkers.TRACE_TIME, "SORTING of workflowconfigs took " + elapsed + "ms. ");
+    	}
 		return Response.ok(wfList).build();
 	}
 
