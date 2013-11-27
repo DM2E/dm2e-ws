@@ -185,6 +185,7 @@ public class FileService extends AbstractRDFService {
         retList.add(typeFacet);
         return Response.ok(new Gson().toJson(retList).toString()).build();
 	}
+
 	/**
 	 * GET /list
 	 *  Retrieve metadata of all files that are omnom:fileStatus AVAILABLE
@@ -536,7 +537,7 @@ public class FileService extends AbstractRDFService {
 					}
 					if (null == filePojo.getFileOwner()) {
 						UserPojo dummyUser = new UserPojo();
-						dummyUser.setId(uriInfo.getBaseUriBuilder().path("/api/user/DummyUser").build());
+						dummyUser.setId(uriInfo.getBaseUriBuilder().path("/api/user/UnknownUser").build());
 						filePojo.setFileOwner(dummyUser);
 					}
 				}
