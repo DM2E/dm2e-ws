@@ -1,14 +1,16 @@
 package eu.dm2e.ws.services.workflow;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -24,6 +26,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 
@@ -35,7 +38,6 @@ import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.api.JobPojo;
-import eu.dm2e.ws.api.LogEntryPojo;
 import eu.dm2e.ws.api.ParameterAssignmentPojo;
 import eu.dm2e.ws.api.ParameterConnectorPojo;
 import eu.dm2e.ws.api.ParameterPojo;
@@ -961,29 +963,48 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         } finally {
 
             // output one giant log containing everything for debugging
-               JobPojo dummyJob = new JobPojo();
-               Set<JobPojo> allLoggingJobs = new HashSet<>();
-               allLoggingJobs.addAll(finishedJobs.values());
-               allLoggingJobs.add(workflowJob);
-               for (JobPojo j : allLoggingJobs) {
-                   for (LogEntryPojo logEntry : j.getLogEntries()) {
-                       LogEntryPojo newLogEntry = new LogEntryPojo();
-                       newLogEntry.setTimestamp(logEntry.getTimestamp());
-                       newLogEntry.setLevel(logEntry.getLevel());
-                       newLogEntry.setMessage( j + ": " + logEntry.getMessage());
-                       dummyJob.getLogEntries().add(newLogEntry);
-                   }
-               }
+//               JobPojo dummyJob = new JobPojo();
+//               Set<JobPojo> allLoggingJobs = new HashSet<>();
+//               allLoggingJobs.addAll(finishedJobs.values());
+//               allLoggingJobs.add(workflowJob);
+//               for (JobPojo j : allLoggingJobs) {
+//                   for (LogEntryPojo logEntry : j.getLogEntries()) {
+//                       LogEntryPojo newLogEntry = new LogEntryPojo();
+//                       newLogEntry.setTimestamp(logEntry.getTimestamp());
+//                       newLogEntry.setLevel(logEntry.getLevel());
+//                       newLogEntry.setMessage( j + ": " + logEntry.getMessage());
+//                       dummyJob.getLogEntries().add(newLogEntry);
+//                   }
+//               }
                String outputStr = TIMEREPORT.toString();
                outputStr += "\n";
-               outputStr += dummyJob.toLogString();
-               workflowJob.addOutputParameterAssignment(PARAM_COMPLETE_LOG, outputStr);
+               String uriStr = workflowJob.getId();
+               String fileName = uriStr.replaceAll("[^A-Za-z0-9_]", "_");
+               fileName = fileName.replaceAll("__+", "_");
+               File f = new File(String.format(
+            		   "%s/%s",
+            		   Config.get(ConfigProp.FILE_STOREDIR),
+            		   fileName));
+               if (!f.getParentFile().exists()) {
+            	   f.getParentFile().mkdirs();
+               }
+               log.info("Store file as: {}", f.getAbsolutePath());
+               try {
+            	   IOUtils.write(outputStr, new FileOutputStream(f));
+               } catch (IOException e) {
+            	   // TODO Auto-generated catch block
+            	   e.printStackTrace();
+            	   log.debug("" + e);
+            	   // nothing we can do at this point anyway
+               }
+//               outputStr += dummyJob.toLogString();
+//               workflowJob.addOutputParameterAssignment(PARAM_COMPLETE_LOG, "DIS");
 //               workflowJob.publishToService();
-               client.getJobWebTarget()
-               		 .path("byURI")
-               		 .queryParam("uri", workflowJob.getId())
-               		 .request()
-               		 .put(workflowJob.getNTriplesEntity());
+//               client.getJobWebTarget()
+//               		 .path("byURI")
+//               		 .queryParam("uri", workflowJob.getId())
+//               		 .request()
+//               		 .put(workflowJob.getNTriplesEntity());
         }
     }
 }
