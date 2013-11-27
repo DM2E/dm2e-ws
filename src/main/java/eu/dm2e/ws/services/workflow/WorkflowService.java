@@ -156,13 +156,15 @@ public class WorkflowService extends AbstractRDFService {
     	sb.setNsPrefix("rdf", NS.RDF.BASE);
     	sb.setNsPrefix("dcterms", NS.DCTERMS.BASE);
     	sb.setNsPrefix("omnom", NS.OMNOM.BASE);
-    	sb.setParam("filterUser", g.resource(filterUser).getJenaRDFNode());
+//    	sb.setParam("filterUser", g.resource(filterUser).getJenaRDFNode());
     	sb.append("CONSTRUCT {  \n");
     	sb.append("    ?s ?p ?o .  \n");
     	sb.append("} WHERE {  \n");
     	sb.append("  GRAPH ?wf {  \n");
     	sb.append("    ?wf rdf:type omnom:Workflow .  \n");
-        sb.append("    ?conf dcterms:creator ?filterUser .  \n");
+    	if (null != filterUser) {
+    		sb.append("    ?conf dcterms:creator <" + filterUser + ">  .  \n");
+    	}
     	sb.append("    ?s ?p ?o .  \n");
     	sb.append("  }    \n");
     	sb.append("}  \n");
