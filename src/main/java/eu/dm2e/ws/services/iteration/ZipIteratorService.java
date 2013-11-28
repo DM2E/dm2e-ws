@@ -4,9 +4,11 @@ import eu.dm2e.utils.FileUtils;
 import eu.dm2e.utils.UriUtils;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ConfigProp;
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.*;
 import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.services.AbstractTransformationService;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.joda.time.DateTime;
 
@@ -14,6 +16,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -151,6 +154,7 @@ public class ZipIteratorService extends AbstractTransformationService {
                 FileInputStream fis = new FileInputStream(file);
                 filePojo.setMd5(DigestUtils.md5Hex(fis));
                 fis.close();
+                filePojo.setFileType(NS.OMNOM_TYPES.XML);
                 filePojo.setModified(new DateTime(file.lastModified()));
                 filePojo.setOriginalName(file.getName());
                 filePojo.setWasGeneratedBy(jobPojo);
