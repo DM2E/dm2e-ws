@@ -1,7 +1,6 @@
 package eu.dm2e.ws.services.workflow;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
@@ -510,14 +509,20 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         return true;
     }
 
-    public JobPojo runPosition(WorkflowPositionPojo pos, WebserviceConfigPojo wsconf) {
+    public JobPojo runPosition(WorkflowPositionPojo pos, WebserviceConfigPojo wsconf, TimingCollection TIMEREPORT) {
         /*
 				 * Publish the WebserviceConfig, so it becomes stable
 				 */
         wsconf.resetId();
         wsconf.setExecutesPosition(pos);
         wsconf.setWasGeneratedBy(workflowJob);
-        wsconf.publishToService(client.getConfigWebTarget());
+        
+        {
+        	String _uid = UUID.randomUUID().toString();
+        	TIMEREPORT.start(_uid + " wsconf.publishToService " + pos);
+        	wsconf.publishToService(client.getConfigWebTarget());
+        	TIMEREPORT.ok(_uid + " wsconf.publishToService " + pos);
+        }
 
 
         /*Set<WebserviceConfigPojo> startedJobs = parentJob.getWebserviceConfig().getStartedJobs();
@@ -531,14 +536,21 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         }
 
         /*
-                   * Run the webservice
-                   */
-        Response resp = client.target(wsconf.getWebservice().getId())
-                .request(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
-                .put(Entity.text(wsconf.getId()));
-        if (202 != resp.getStatus() || null == resp.getLocation()) {
-//					job.debug(wsconf.getTerseTurtle());
-            throw new RuntimeException("Request to start web service " + wsconf.getWebservice() + " with config " + wsconf + "failed: " + resp.getStatus() + " parentJob " + workflowJob.getLabelorURI());
+         * Run the webservice
+         */
+        Response resp = null;
+        {
+        	String _uid = UUID.randomUUID().toString();
+        	TIMEREPORT.start(_uid + " start werbservice " + pos);
+        	resp = client.target(wsconf.getWebservice().getId())
+        			.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
+        			.put(Entity.text(wsconf.getId()));
+        	if (202 != resp.getStatus() || null == resp.getLocation()) {
+        		//					job.debug(wsconf.getTerseTurtle());
+        		TIMEREPORT.fail(_uid + " start werbservice " + pos);
+        		throw new RuntimeException("Request to start web service " + wsconf.getWebservice() + " with config " + wsconf + "failed: " + resp.getStatus() + " parentJob " + workflowJob.getLabelorURI());
+        	}
+        	TIMEREPORT.ok(_uid + " start werbservice " + pos);
         }
 
 
@@ -767,7 +779,10 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                     config.addParameterAssignment(conn.getToParam().getId(), value);
                     // whenever a new assignment is propagated, we test if the position ha all connected inputs to run
                     if (checkPositionInputComplete(target, config)) {
-                        JobPojo newJob = runPosition(target, config);
+                    	String _uid = UUID.randomUUID().toString();
+                    	TIMEREPORT.start(_uid + " runPosition() " + target);
+                        JobPojo newJob = runPosition(target, config, TIMEREPORT);
+                    	TIMEREPORT.ok(_uid + " runPosition() " + target);
                         // Running a position means to remove it from the positionsToRun and add its workflowJob to the runningJobs
                         runningJobs.put(newJob.getId(), newJob);
                     }
@@ -887,7 +902,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
                                             config.addParameterAssignment(conn.getToParam().getId(), value);
                                             // if the position is ready, run it
                                             if (checkPositionInputComplete(target, config)) {
-                                                JobPojo newJob = runPosition(target, config);
+                                                JobPojo newJob = runPosition(target, config, TIMEREPORT);
                                                 TIMEREPORT.start("RUN: " + newJob);
                                                 tmpRunningJobs.put(newJob.getId(), newJob);
                                             }
@@ -931,7 +946,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
 
 
                                             if (checkPositionInputComplete(target, config)) {
-                                                JobPojo newJob = runPosition(target, config);
+                                                JobPojo newJob = runPosition(target, config, TIMEREPORT);
                                                 TIMEREPORT.start("RUN: " + newJob);
                                                 tmpRunningJobs.put(newJob.getId(), newJob);
                                             }
