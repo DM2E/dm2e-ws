@@ -22,7 +22,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 public class WorkflowPojoTest extends OmnomUnitTest {
 
@@ -279,4 +280,16 @@ public class WorkflowPojoTest extends OmnomUnitTest {
         }
 
     }
+
+	@Test
+	public void testAutoWireWorkflow() {
+		WorkflowPojo autoWf = new WorkflowPojo();
+		autoWf.addPosition(_ws_pos1_label, new XsltService().getWebServicePojo());
+		autoWf.addPosition(_ws_pos2_label, new PublishService().getWebServicePojo());
+		int connectorsBefore = autoWf.getParameterConnectors().size();
+		assertEquals(0, connectorsBefore);
+		autoWf.autowire();
+		int connectorsAfter = autoWf.getParameterConnectors().size();
+		assertThat(connectorsAfter, greaterThan(connectorsBefore));
+	}
 }

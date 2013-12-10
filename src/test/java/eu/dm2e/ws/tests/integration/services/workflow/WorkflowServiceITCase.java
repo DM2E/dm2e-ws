@@ -478,6 +478,37 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 		ArrayList respListArrayAfter = testGson.fromJson(respListAfterDelete.readEntity(String.class), ArrayList.class);
 		int sizeAfter = respListArrayAfter.size(); 
 		assertEquals(sizeBefore - 1, sizeAfter);
-		
 	}
+
+	@Test
+	public void testAutoWireWorkflow() {
+		WorkflowPojo autoWf = new WorkflowPojo();
+		autoWf.addPosition(_ws_pos1_label, new XsltService().getWebServicePojo());
+		autoWf.addPosition(_ws_pos2_label, new PublishService().getWebServicePojo());
+		int connectorsBefore = autoWf.getParameterConnectors().size();
+		assertEquals(0, connectorsBefore);
+
+
+		// publish workflow
+		String id = autoWf.publishToService(client.getWorkflowWebTarget());
+		// pojo should have an id now
+		assertNotNull(id);
+		assertNotNull(autoWf.getId());
+		assertEquals(id, autoWf.getId());
+		
+		// auto-wire it
+		Response respAutowire = client.getJerseyClient().target(autoWf.getId())
+				.path("autowire")
+				.request(DM2E_MediaType.TEXT_TURTLE)
+				.post(null);
+		assertEquals(200, respAutowire.getStatus());
+		
+		// reload workflow
+		autoWf.refresh(0, true);
+		
+		// connectors now
+		int connectorsAfter = autoWf.getParameterConnectors().size();
+		assertThat(connectorsAfter, greaterThan(connectorsBefore));
+	}
+	
 }

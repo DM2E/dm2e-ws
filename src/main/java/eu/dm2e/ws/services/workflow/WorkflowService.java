@@ -93,7 +93,6 @@ public class WorkflowService extends AbstractRDFService {
 		return ws;
 	}
 
-
 	/**
 	 * GET /list/facets
 	 * @return
@@ -280,7 +279,25 @@ public class WorkflowService extends AbstractRDFService {
 		wf.getGrafeo().putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), wfUri);
 		return Response.status(Response.Status.OK).entity(wf).build();
 	}
-
+	
+	/*
+	 * POST /{id}/autowire
+	 * @return
+	 */
+	@POST
+	@Path("{id}/autowire")
+	public Response autowireWorkflow() {
+		URI wfUri = popPath();
+		GrafeoImpl g = new GrafeoImpl();
+		g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), wfUri);
+		if (g.isEmpty()) {
+			return Response.status(Response.Status.NOT_FOUND).build();
+		}
+		WorkflowPojo wf = g.getObjectMapper().getObject(WorkflowPojo.class, wfUri);
+		wf.autowire();
+		wf.getGrafeo().putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), wfUri);
+		return Response.status(Response.Status.OK).entity(wf).build();
+	}
 	/**
 	 * GET /{id}/png		[AC: * / *]
 	 * 
