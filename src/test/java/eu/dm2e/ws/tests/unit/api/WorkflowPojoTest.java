@@ -7,9 +7,11 @@ import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
 import eu.dm2e.grafeo.junit.GrafeoAssert;
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.api.*;
+import eu.dm2e.ws.services.file.FileStatus;
 import eu.dm2e.ws.services.publish.PublishService;
 import eu.dm2e.ws.services.xslt.XsltService;
 import eu.dm2e.ws.tests.OmnomUnitTest;
+
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
@@ -51,6 +53,14 @@ public class WorkflowPojoTest extends OmnomUnitTest {
 //		_file_xslt_in = client.publishFile(configFile.get(OmnomTestResources.METS2EDM));
 	}
 	
+	@Test
+	public void testStatus() {
+		assertEquals(FileStatus.AVAILABLE.toString(), wf.getWorkflowStatus());
+		wf.setWorkflowStatus(FileStatus.DELETED.toString());
+		assertEquals(FileStatus.DELETED.toString(), wf.getWorkflowStatus());
+	}
+	
+	
 	@Ignore
 	@Test
 	public void testParameterJson() {
@@ -72,7 +82,7 @@ public class WorkflowPojoTest extends OmnomUnitTest {
 		log.debug(p2.toJson());
 	}
 	
-	@Ignore
+	@Ignore("This is hard to test b/c of the random ids")
 	@Test
 	public void testJson() throws IOException {
 		
@@ -213,7 +223,7 @@ public class WorkflowPojoTest extends OmnomUnitTest {
 //	 TODO Review serialization, there seems to be a bug (Discuss Kai, Domi, Konstatin, 2013-11-18)
 //    @Ignore("The list serialization is not working here, object mapper thinks finishedJob1 is blank.")
 	@Test
-	public void test() {
+	public void testWorkflowJob() {
 		
 		JobPojo finishedJob1 = new JobPojo();
 		finishedJob1.setId("http://wsJob1");

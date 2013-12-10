@@ -7,6 +7,8 @@ import eu.dm2e.grafeo.annotations.RDFClass;
 import eu.dm2e.grafeo.annotations.RDFProperty;
 import eu.dm2e.utils.DotUtils;
 import eu.dm2e.ws.NS;
+import eu.dm2e.ws.services.file.FileStatus;
+
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -338,6 +340,11 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
 	public List<WorkflowPositionPojo> getPositions() { return positions; }
 	public void setPositions(List<WorkflowPositionPojo> positions) { this.positions = positions; }
 	public void addPosition(WorkflowPositionPojo it) { this.getPositions().add(it); }
+	
+	@RDFProperty(NS.OMNOM.PROP_JOB_STATUS)
+	private String workflowStatus = FileStatus.AVAILABLE.toString();
+	public String getWorkflowStatus() { return workflowStatus; }
+	public void setWorkflowStatus(String workflowStatus) { this.workflowStatus = workflowStatus; }
 
 	@RDFProperty(NS.DCTERMS.PROP_CREATOR)
 	private UserPojo creator;
@@ -496,4 +503,5 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
 
         return sb.toString();
     }
+
 }
