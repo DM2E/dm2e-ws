@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<configuration debug="true" scan="true" scanPeriod="2 minutes">
+<configuration debug="true" scan="true" scanPeriod="10 seconds">
     
     <!--
         Translating java.util.logging log events to slf4j is very expensive especially
@@ -35,8 +35,8 @@
     </turboFilter>
     <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
         <Marker>DATA_DUMP</Marker>
-<!--         <OnMatch>ACCEPT</OnMatch> -->
-        <OnMatch>DENY</OnMatch>
+        <OnMatch>ACCEPT</OnMatch>
+        <!-- <OnMatch>DENY</OnMatch> -->
     </turboFilter>
     <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
         <Marker>SENSITIVE_INFORMATION</Marker>
