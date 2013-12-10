@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -21,6 +22,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import com.google.gson.Gson;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
@@ -47,6 +49,7 @@ import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.api.WorkflowPojo;
 import eu.dm2e.ws.api.WorkflowPositionPojo;
 import eu.dm2e.ws.services.AbstractRDFService;
+import eu.dm2e.ws.services.file.FileStatus;
 
 /**
  * Service for the creation and execution of workflows
@@ -136,7 +139,6 @@ public class WorkflowService extends AbstractRDFService {
     	return Response.ok(new Gson().toJson(retList).toString()).build();
 	}
 
-
 	/**
 	 * GET /list
 	 * @return
@@ -162,8 +164,10 @@ public class WorkflowService extends AbstractRDFService {
     	sb.append("} WHERE {  \n");
     	sb.append("  GRAPH ?wf {  \n");
     	sb.append("    ?wf rdf:type omnom:Workflow .  \n");
+    	sb.append("	   ?wf omnom:status ?status .  \n");											// Filter unavailable workflows
+    	sb.append("    FILTER(STR(?status) != \"" + FileStatus.DELETED.toString() + "\") .  \n"); // i.e. those DELETED
     	if (null != filterUser) {
-    		sb.append("    ?conf dcterms:creator <" + filterUser + ">  .  \n");
+    	sb.append("    ?conf dcterms:creator <" + filterUser + ">  .  \n");
     	}
     	sb.append("    ?s ?p ?o .  \n");
     	sb.append("  }    \n");
@@ -201,8 +205,6 @@ public class WorkflowService extends AbstractRDFService {
     	}
 		return Response.ok(wfList).build();
 	}
-
-
 
 	/**
 	 * GET /{id}/validate
@@ -250,10 +252,33 @@ public class WorkflowService extends AbstractRDFService {
 		GrafeoImpl g = new GrafeoImpl();
 		g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), wfUri);
 		if (g.isEmpty()) {
-			return Response.status(404).build();
+			return Response.status(Response.Status.NOT_FOUND).build();
 		}
 		WorkflowPojo wf = g.getObjectMapper().getObject(WorkflowPojo.class, wfUri);
-		return Response.ok(wf).build();
+		Status respStatus = Response.Status.OK;
+		if (wf.getWorkflowStatus().equals(FileStatus.DELETED.toString())) {
+			respStatus = Response.Status.GONE;
+		}
+		return Response.status(respStatus).entity(wf).build();
+	}
+
+	/*
+	 * DELETE /{id}
+	 * @return
+	 */
+	@DELETE
+	@Path("{id}")
+	public Response deleteWorkflow() {
+		URI wfUri = getRequestUriWithoutQuery();
+		GrafeoImpl g = new GrafeoImpl();
+		g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), wfUri);
+		if (g.isEmpty()) {
+			return Response.status(Response.Status.NOT_FOUND).build();
+		}
+		WorkflowPojo wf = g.getObjectMapper().getObject(WorkflowPojo.class, wfUri);
+		wf.setWorkflowStatus(FileStatus.DELETED.toString());
+		wf.getGrafeo().putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), wfUri);
+		return Response.status(Response.Status.OK).entity(wf).build();
 	}
 
 	/**
@@ -328,8 +353,6 @@ public class WorkflowService extends AbstractRDFService {
 		}
 		return Response.ok(wf.getFullDot()).build();
 	}
-
-
 
 	/**
 	 * PUT {workflowID} 	Accept: json

@@ -1,9 +1,11 @@
 package eu.dm2e.ws.tests.integration.services.workflow;
 
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
@@ -372,6 +374,7 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 		return wf;
 	}
 	public void publishSimpleWorkflow() {
+		@SuppressWarnings("unused")
 		String respStr = null;
 		try {
 			respStr = simpleWorkflow.publishToService(client.getWorkflowWebTarget());
@@ -443,4 +446,38 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 //		log.info(compLog);
 	}
 	
+	@Test
+	public void testDeleteWorkflow() {
+		WorkflowPojo delWf = new WorkflowPojo();
+		// publish workflow
+		String id = delWf.publishToService(client.getWorkflowWebTarget());
+		// pojo should have an id now
+		assertNotNull(id);
+		assertNotNull(delWf.getId());
+		assertEquals(id, delWf.getId());
+		// retrieve list of all workflows
+		Response respListBeforeDelete = client.getWorkflowWebTarget().path("list").request().get();
+		// make sure it contains at least this workflow
+		assertEquals(Response.Status.OK.getStatusCode(), respListBeforeDelete.getStatus());
+		ArrayList respListArrayBefore = testGson.fromJson(respListBeforeDelete.readEntity(String.class), ArrayList.class);
+		int sizeBefore = respListArrayBefore.size(); 
+		assertThat(sizeBefore, greaterThan(0));
+		// GET worklfow should return 200
+		Response respGetAvailable = client.getJerseyClient().target(delWf.getId()).request(DM2E_MediaType.TEXT_TURTLE).get();
+		assertEquals(200, respGetAvailable.getStatus());
+		// DELETE workflow should return 200
+		Response respDelete = client.getJerseyClient().target(delWf.getId()).request(MediaType.APPLICATION_JSON).delete();
+		assertEquals(200, respDelete.getStatus());
+		// GET worklfow should return 410
+		Response respGetDeleted = client.getJerseyClient().target(delWf.getId()).request(DM2E_MediaType.TEXT_TURTLE).get();
+		assertEquals(410, respGetDeleted.getStatus());
+		// retrieve list of all workflows
+		Response respListAfterDelete = client.getWorkflowWebTarget().path("list").request().get();
+		assertEquals(Response.Status.OK.getStatusCode(), respListAfterDelete.getStatus());
+		// make sure list is now one smaller
+		ArrayList respListArrayAfter = testGson.fromJson(respListAfterDelete.readEntity(String.class), ArrayList.class);
+		int sizeAfter = respListArrayAfter.size(); 
+		assertEquals(sizeBefore - 1, sizeAfter);
+		
+	}
 }
