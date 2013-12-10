@@ -211,15 +211,14 @@ public class WorkflowPojoTest extends OmnomUnitTest {
 	}
 
 //	 TODO Review serialization, there seems to be a bug (Discuss Kai, Domi, Konstatin, 2013-11-18)
+//    @Ignore("The list serialization is not working here, object mapper thinks finishedJob1 is blank.")
 	@Test
-    @Ignore("The list serialization is not working here, object mapper thinks finishedJob1 is blank.")
 	public void test() {
 		
 		JobPojo finishedJob1 = new JobPojo();
-		finishedJob1.setId("http://foo");
+		finishedJob1.setId("http://wsJob1");
 		
-		
-		final String wfid = "http://bar";
+		final String wfid = "http://worfklowJob1";
 		
 		JobPojo wfjob = new JobPojo();
 		wfjob.setId(wfid);
