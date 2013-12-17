@@ -1,6 +1,6 @@
 package eu.dm2e.ws;
 
-import java.net.URI;
+
 
 
 
@@ -167,6 +167,8 @@ public final class NS {
 		public static final String BASE       = "http://purl.org/dc/elements/1.1/";
 		public static final String PROP_TITLE = BASE + "title";
 		public static final String PROP_DATE  = BASE + "date";
+		public static final String PROP_TYPE = BASE + "type";
+		public static final String PROP_IDENTIFIER = BASE + "identifier";
 
 	}
 
@@ -181,6 +183,7 @@ public final class NS {
 		public static final String PROP_EXTENT   = BASE + "extent";
 		public static final String PROP_MODIFIED = BASE + "modified";
 		public static final String PROP_CREATED  = BASE + "created";
+		public static final String PROP_IS_PART_OF = BASE + "isPartOf";
 
 	}
 
@@ -223,6 +226,48 @@ public final class NS {
 		public static final String CLASS_PERSON = BASE + "Person";
 		public static final String PROP_NAME    = BASE + "name";
 	}
+
+	public static final class DM2E {
+		public static final String BASE         = "http://onto.dm2e.eu/schemas/dm2e/1.1/";
+		public static final String CLASS_MANUSCRIPT = BASE + "Manuscript";
+		public static final String PROP_HAS_ANNOTABLE_VERSION_AT = BASE + "hasAnnotatableVersionAt";
+	}
+	public static final class FABIO {
+		public static final String BASE         = "http://purl.org/spar/fabio/";
+		public static final String CLASS_ARTICLE = BASE + "Article";
+	}
+	public static final class BIBO {
+		public static final String BASE         = "http://purl.org/ontology/bibo/";
+		public static final String CLASS_ISSUE = BASE + "Issue";
+	}
+	public static final class EDM {
+		public static final String BASE = "http://www.europeana.eu/schemas/edm/";
+		public static final String PROP_AGGREGATED_CHO = BASE + "aggregatedCHO";
+		public static final String PROP_IS_SHOWN_BY = BASE + "isShownBy";
+		public static final String PROP_IS_SHOWN_AT = BASE + "isShownAT";
+		public static final String PROP_RIGHTS = BASE + "rights";
+		public static final Object CLASS_PROVIDED_CHO = BASE + "ProvidedCHO";
+	}
+	public static final class PRO {
+		public static final String BASE = "http://purl.org/spar/pro/";
+		public static final String PROP_AUTHOR = BASE + "author";
+	}
+	public static final class DM2E_UNOFFICIAL {
+		public static final String BASE = "http://onto.dm2e.eu/UNOFFICIAL/";
+		public static final String PROP_HAS_COLLECTION = BASE + "hasCollection";
+		public static final String PROP_HAS_VERSION    = BASE + "hasVersion";
+		public static final String PROP_CONTAINS_CHO = BASE + "containsCHO";
+	}
+	public static final class OAI {
+		public static final String BASE = "http://www.openarchives.org/OAI/2.0/";
+	}
+	public static final class OAI_DC {
+		public static final String BASE = "http://www.openarchives.org/OAI/2.0/oai_dc/";
+	}
+	public static final class OAI_RIGHTS {
+		public static final String BASE = "http://www.openarchives.org/OAI/2.0/rights/";
+	}
+
 
 //	public static final String
 ////            NS_OMNOM = Config.getString("dm2e.ns.dm2e")
