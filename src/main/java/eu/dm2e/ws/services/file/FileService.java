@@ -496,21 +496,21 @@ public class FileService extends AbstractRDFService {
 				uriRes.rename(uri.toString());
 			}
 			
-			FilePojo f;
 			try {
-				f = g.getObjectMapper().getObject(FilePojo.class, uri);
+				filePojo = g.getObjectMapper().getObject(FilePojo.class, uri);
 			} catch (Exception e) {
 				return throwServiceError(e);
 			}
 			// if the file part is null, make sure that a
 			// dm2e:file_retrieval_uri is provided in meta
-			if (filePartIsEmpty && null == f.getFileRetrievalURI()) {
-				log.error(ErrorMsg.NO_FILE_RETRIEVAL_URI + f.getId());
-				return throwServiceError(f.getTurtle(), ErrorMsg.NO_FILE_RETRIEVAL_URI);
+			if (filePartIsEmpty && null == filePojo.getFileRetrievalURI()) {
+				log.error(ErrorMsg.NO_FILE_RETRIEVAL_URI + filePojo.getId());
+				return throwServiceError(filePojo.getTurtle(), ErrorMsg.NO_FILE_RETRIEVAL_URI);
 			}
 		}
 
         log.info("Metadata is processed.");
+        log.debug(LogbackMarkers.DATA_DUMP, filePojo.getTerseTurtle());
 
 		// There **is** a file to be processed
 		if (! filePartIsEmpty) { 
@@ -519,9 +519,9 @@ public class FileService extends AbstractRDFService {
 				InputStream fileInStream = filePart.getEntityAs(InputStream.class);
 				// store and describe file
 				FilePojo newFilePojo = storeAndDescribeFile(fileInStream, g, uri);
+				
 				PojoUtils.copyProperties(filePojo, newFilePojo);
 				filePojo.setFileStatus(FileStatus.AVAILABLE.toString());
-				log.error(filePojo.getFileStatus());
 
 				if (!filePart.isSimple()) {
 					// TODO this is wrong most of the time
@@ -844,6 +844,7 @@ public class FileService extends AbstractRDFService {
 		if (!g.containsResource(uri)) {
 			return Response.status(404).entity("No such file in the triplestore: " + uri).build();
 		}
+		log.debug(LogbackMarkers.DATA_DUMP, g.getTerseTurtle());
 		FilePojo filePojo = g.getObjectMapper().getObject(FilePojo.class, uri);
 		Grafeo outG = new GrafeoImpl();
 		outG.getObjectMapper().addObject(filePojo);
