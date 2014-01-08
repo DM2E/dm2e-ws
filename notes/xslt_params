@@ -1,0 +1,17 @@
+marko        | kilian               | omnom        | REQ |  default                                           | description
+             |                      |              |     |                                                    |
+dataprovider | DATAPROVIDER_ABB     | dataprovider | yes |  WARNING-dataprovider-not-set                      |
+repository   | REPOSITORY_ABB       | dataset      | yes |  WARNING-dataset-not-set                           |
+level        | ?                    | ?            |     |  pages                                             | Output level: pages/items
+def_language | DEF_LANGUAGE         | ?            |     |  und                                               | Default Language
+itemtype     | DEF_DCTYPE           | ?            |     |  http://data.dm2e.eu/schemas/dm2e/1.0/Manuscript   | Default dc:type
+def_type     | ?                    | ?            |     |  TEXT                                              | Default edm:type
+def_rights   | RIGHTS_RESOURCE      | ?            |     |  http://creativecommons.org/publicdomain/zero/1.0/ | Rights
+provider     | ?                    | ?            |     |  DM2E                                              | Provider (in the sense of Europeana Aggregator)
+root         | DM2E_ID_Root         | dm2e_baseuri | no  |  http://data.dm2e.eu/data/                         | DM2E-ID-Root
+?            | TARGET_FORMAT        | ?            |     |  EDM                                               | Target-Format: EDM / DM2E
+?            | TRANSFORMATION_DEPTH | ?            |     |  PB                                                | Transformation Depth: PB / AB
+?            | THE_DETAIL           | ?            |     |  Page                                              | A short literal description of the transofrmation depth element, e.g.: page, remark, ...
+?            | DEF_URL              | ?            |     |  http://www.deutschestextarchiv.de/                | Default Web Resource URL
+?            | DEF_COVERAGE         | ?            |     |  19th-20th century                                 | Default Coverage
+prov_rep     | PROV_REP             | ?            |     |  ?                                                 | Concatenation of Dataprovider und Repostitory using slash
