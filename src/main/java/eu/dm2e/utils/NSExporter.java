@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
+import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -86,17 +87,26 @@ public class NSExporter {
 				fieldCls.addComment(owlAnno.description(), "en");
 				break;
 			case NS.OWL.OBJECT_PROPERTY:
-				ObjectProperty fieldProp = m.createObjectProperty((String) field.get(null));
-				fieldProp.addComment(owlAnno.description(), "en");
+				ObjectProperty fieldOP = m.createObjectProperty((String) field.get(null));
+				fieldOP.addComment(owlAnno.description(), "en");
 				if (! "".equals(owlAnno.domain()))
-					fieldProp.setDomain(m.createResource(owlAnno.domain()));
+					fieldOP.setDomain(m.createResource(owlAnno.domain()));
 				if (! "".equals(owlAnno.range()))
-					fieldProp.setRange(m.createResource(owlAnno.range()));
+					fieldOP.setRange(m.createResource(owlAnno.range()));
+				break;
+			case NS.OWL.DATATYPE_PROPERTY:
+				DatatypeProperty fieldDP = m.createDatatypeProperty((String) field.get(null));
+				fieldDP.addComment(owlAnno.description(), "en");
+				if (! "".equals(owlAnno.domain()))
+					fieldDP.setDomain(m.createResource(owlAnno.domain()));
+				if (! "".equals(owlAnno.range()))
+					fieldDP.setRange(m.createResource(owlAnno.range()));
 				break;
 			}
 		}
+
 		StringWriter sw = new StringWriter();
-		m.write(sw, "RDF/XML-ABBREV", base);
+		m.write(sw, "RDF/XML-ABBREV", null);
 		return sw.toString();
 	}
 	

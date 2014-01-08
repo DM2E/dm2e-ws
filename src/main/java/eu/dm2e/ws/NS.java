@@ -32,7 +32,6 @@ public final class NS {
 		String owlType() default NS.OWL.CLASS; // can be NS.OWL.DATATYPE_PROPERTY, NS.OWL.OBJECT_PROPERTY or NS.OWL.CLASS
 		String domain() default "";
 		String range() default "";
-		String datatype() default "";
 		boolean deprecated() default false;
 	}
 
@@ -57,10 +56,20 @@ public final class NS {
 
 		@OWLAnnotation(description="A class representing a web service parameter.")
         public static final String CLASS_PARAMETER            = BASE + "Parameter";
+
+		@OWLAnnotation(description="TODO")
         public static final String CLASS_PARAMETER_ASSIGNMENT = BASE + "ParameterAssignment";
+
+		@OWLAnnotation(description="TODO")
         public static final String CLASS_PARAMETER_CONNECTOR  = BASE + "ParameterConnector";
+
+		@OWLAnnotation(description="TODO")
         public static final String CLASS_WEBSERVICE           = BASE + "Webservice";
+
+		@OWLAnnotation(description="TODO")
         public static final String CLASS_WEBSERVICE_CONFIG    = BASE + "WebserviceConfig";
+
+		@OWLAnnotation(description="TODO")
         public static final String CLASS_WORKFLOW             = BASE + "Workflow";
         
 		@OWLAnnotation( description = "A job representing the execution of a Workflow with a specific configuration.",
@@ -76,65 +85,156 @@ public final class NS {
 
 		@OWLAnnotation( description = "Default Value for a parameter",
 				owlType = NS.OWL.DATATYPE_PROPERTY,
-				datatype = NS.XSD.STRING)
+				range = NS.XSD.STRING)
 		public static final String PROP_DEFAULT_VALUE       = BASE + "defaultValue";
 		
 		@OWLAnnotation(description = "URI that points to a web location where a user can edit this resource.",
 				owlType = NS.OWL.DATATYPE_PROPERTY,
-				datatype = NS.XSD.ANY_URI)
+				range = NS.XSD.ANY_URI)
 		public static final String PROP_FILE_EDIT_URI       = BASE + "fileEditURI";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_FILE_LOCATION       = BASE + "internalFileLocation";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_FILE_RETRIEVAL_URI  = BASE + "fileRetrievalURI";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_FILE_STATUS         = BASE + "fileStatus";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_FILE_TYPE           = BASE + "fileType";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_FINISHED_JOB        = BASE + "finishedJobs";
 //		public static final String PROP_FINISHED_POSITION   = BASE + "finishedPositions";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_FOR_PARAM           = BASE + "forParam";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_FOR_SLOT            = BASE + "forSlot";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_FROM_PARAM          = BASE + "fromParam";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_FROM_POSITION       = BASE + "fromPosition";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_FROM_WORKFLOW       = BASE + "fromWorkflow";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_INPUT_PARAM         = BASE + "inputParam";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_IN_WORKFLOW         = BASE + "inWorkflow";
+
+		@OWLAnnotation(description="TODO")
         public static final String PROP_HAS_ITERATIONS      = BASE + "hasIterations";
+
+		@OWLAnnotation(description="TODO")
         public static final String PROP_IS_REQUIRED         = BASE + "isRequired";
+
+		@OWLAnnotation(description="TODO")
         public static final String PROP_ITEM_LABEL_XPATH    = BASE + "itemLabelXPath";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_ITEM_ROOT_XPATH     = BASE + "itemRootXPath";
+
+		@OWLAnnotation(description="TODO")
         public static final String PROP_JOB_TEMPID          = BASE + "temporaryID";
+
+		@OWLAnnotation(description="TODO")
         public static final String PROP_JOB_STATUS          = BASE + "status";
+
+		@OWLAnnotation(description="TODO")
         public static final String PROP_JOB_STARTED         = BASE + "startedJobs";
+
+		@OWLAnnotation(description="TODO")
         public static final String PROP_JOB_PARENT          = BASE + "parentJob";
+
+		@OWLAnnotation(description="TODO")
         public static final String PROP_JOB_LATEST_RESULT   = BASE + "latestResult";
+
+		@OWLAnnotation(description="TODO")
         public static final String PROP_LOG_ENTRY           = BASE + "logEntries";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_LOG_LEVEL           = BASE + "hasLogLevel";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_LOG_MESSAGE         = BASE + "hasLogMessage";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_MD5                 = BASE + "md5";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_ORIGINAL_NAME       = BASE + "originalName";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_OUTPUT_PARAM        = BASE + "outputParam";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_PARAMETER_CONNECTOR = BASE + "parameterConnector";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_PARAMETER_TYPE      = BASE + "parameterType";
+
+		@OWLAnnotation(description="TODO")
         public static final String PROP_PARAMETER_VALUE     = BASE + "parameterValue";
+
+		@OWLAnnotation(description="TODO")
         public static final String PROP_PARAMETER_SERIAL     = BASE + "parameterSerial";
+
+		@OWLAnnotation(description="TODO")
         public static final String PROP_WORKFLOW_POSITION   = BASE + "workflowPosition";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_TO_PARAM            = BASE + "toParam";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_TO_POSITION         = BASE + "toPosition";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_TO_WORKFLOW         = BASE + "toWorkflow";
+
+		@OWLAnnotation(description="TODO")
         public static final String PROP_WEBSERVICE          = BASE + "webservice";
+
+		@OWLAnnotation(description="TODO")
         public static final String PROP_WEBSERVICE_ID          = BASE + "implementationID";
+
+		@OWLAnnotation(description="TODO")
         public static final String PROP_EXEC_WEBSERVICE          = BASE + "isExecutableAt";
+
+		@OWLAnnotation(description="TODO")
         public static final String PROP_WEBSERVICE_CONFIG   = BASE + "webserviceConfig";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_WORKFLOW            = BASE + "workflow";
 
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_FILE_SERVICE = BASE + "fileservice";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_FILE_OWNER = BASE + "fileOwner";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_RUNNING_JOB = BASE + "runningJob";
+
 //		public static final String PROP_FAILED_JOB = BASE + "failedJob";
 
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_EXECUTES_POSITION = BASE + "executesPosition";
 
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_PREFERRED_THEME     = BASE + "preferredTheme";
+
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_GLOBAL_USER_FILTER     = BASE + "globalUserFilter";
 
+		@OWLAnnotation(description="TODO")
 		public static final String PROP_POSITIONS_TO_RUN = BASE + "positionsToRun";
 	}
 
