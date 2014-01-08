@@ -1,9 +1,12 @@
 package eu.dm2e.utils;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+import org.apache.commons.io.FileUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +66,7 @@ public class NSExporter {
 		return nsObj.toString();
 	}
 	
-	public static String exportStaticClassToOWL(String outputPath, String base, Class cls) throws IllegalArgumentException, IllegalAccessException {
+	public static String exportStaticClassToOWL(String base, Class cls) throws IllegalArgumentException, IllegalAccessException {
 		Logger log = LoggerFactory.getLogger(NSExporter.class);
 		
 		OntModel m = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
@@ -105,13 +108,19 @@ public class NSExporter {
 		return sw.toString();
 	}
 	
-//	public static void main(String[] args) {
-////		String x = exportInnerClassConstantsToJSON(NS.class);
-////		String x = exportEnumToJSON(JobStatus.class);
-////		System.out.println(x);
-////		System.out.println(
-//				
-//	}
+	public static void main(String[] args) throws IllegalArgumentException, IllegalAccessException, IOException {
+		if (args.length == 1 && args[0].equals("-h")) {
+			System.out.println("Usage: NSExporter [<outputPath>] [<baseUri>]");
+			System.exit(1);
+		}
+		String base = NS.OMNOM.BASE;
+		String outputPath = "export.owl";
+		if (args.length > 0) outputPath = args[0];
+		if (args.length == 2) base = args[1];
+		String owlStr = exportStaticClassToOWL(base, NS.OMNOM.class);
+		FileUtils.writeStringToFile(new File(outputPath), owlStr);
+		System.out.println("Written ontology " + base + " to " + outputPath);
+	}
 
 	public static String exportEnumToJSON(Class clazz) {
 		if (! clazz.isEnum()) {
