@@ -1,13 +1,16 @@
 package eu.dm2e.ws.services;
 
-import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.gom.SerializablePojo;
-import eu.dm2e.logback.LogbackMarkers;
-import eu.dm2e.ws.Config;
-import eu.dm2e.ws.ConfigProp;
-import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.api.AbstractPersistentPojo;
-import eu.dm2e.ws.api.FilePojo;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
@@ -16,16 +19,14 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.grafeo.gom.SerializablePojo;
+import eu.dm2e.logback.LogbackMarkers;
+import eu.dm2e.ws.Config;
+import eu.dm2e.ws.ConfigProp;
+import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.api.AbstractPersistentPojo;
+import eu.dm2e.ws.api.FilePojo;
 
 /**
  * Wrapper for a JAX-RS client with POJO posting/loading abilities and helpers for publishing files.
@@ -134,10 +135,10 @@ public class Client {
     public String publishFile(InputStream is, String metadata) throws IOException { return this.publishFile(IOUtils.toString(is), metadata); }
     public String publishFile(InputStream is, Grafeo metadata) throws IOException { return this.publishFile(IOUtils.toString(is), metadata.getNTriples()); }
     public String publishFile(InputStream is, FilePojo metadata) throws IOException { return this.publishFile(IOUtils.toString(is), metadata.getNTriples()); }
-    public String publishFile(File file) { FormDataMultiPart fdmp = createFileFormDataMultiPart(null, file); return this.publishFile(fdmp); }
-    public String publishFile(File file, String metadata) { FormDataMultiPart fdmp = createFileFormDataMultiPart(metadata, file); return this.publishFile(fdmp); }
-    public String publishFile(File file, Grafeo metadata) { FormDataMultiPart fdmp = createFileFormDataMultiPart(metadata.getNTriples(), file); return this.publishFile(fdmp); }
-    public String publishFile(File file, FilePojo metadata) throws IOException { FileInputStream fis = new FileInputStream(file); return this.publishFile(IOUtils.toString(fis), metadata.getNTriples()); }
+    public String publishFile(File file)                    { FormDataMultiPart fdmp = createFileFormDataMultiPart(null, file); return this.publishFile(fdmp); }
+    public String publishFile(File file, String metadata)   { FormDataMultiPart fdmp = createFileFormDataMultiPart(metadata, file); return this.publishFile(fdmp); }
+    public String publishFile(File file, Grafeo metadata)   { FormDataMultiPart fdmp = createFileFormDataMultiPart(metadata.getNTriples(), file); return this.publishFile(fdmp); }
+    public String publishFile(File file, FilePojo metadata) { FormDataMultiPart fdmp = createFileFormDataMultiPart(metadata.getNTriples(), file); return this.publishFile(fdmp); }
     public String publishFile(String file, String metadata) { FormDataMultiPart fdmp = createFileFormDataMultiPart(metadata, file); return this.publishFile(fdmp); }
     public String publishFile(FormDataMultiPart fdmp) {
 //        Response resp = getFileWebTarget()
