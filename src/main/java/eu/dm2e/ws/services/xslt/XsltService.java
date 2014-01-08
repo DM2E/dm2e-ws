@@ -1,5 +1,15 @@
 package eu.dm2e.ws.services.xslt;
 
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.ws.rs.Path;
+
+import org.joda.time.DateTime;
+
+import eu.dm2e.utils.FileUtils;
 import eu.dm2e.utils.XsltUtils;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.FilePojo;
@@ -8,15 +18,6 @@ import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.services.AbstractTransformationService;
 import eu.dm2e.ws.services.Client;
-
-import org.joda.time.DateTime;
-
-import javax.ws.rs.Path;
-
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Service for transforming XML to (RDF)XML using a self-contained XSLT script
@@ -76,6 +77,9 @@ public class XsltService extends AbstractTransformationService {
 		String xmlUrl, xsltUrl;
 		try {
 			XsltUtils xsltUtils = new XsltUtils(client, jobPojo);
+            FileUtils fileUtils = new FileUtils(client, jobPojo);
+			// The type of xslt script, either a single large script or a zipped set of scripts
+			String xsltType = NS.OMNOM_TYPES.XSLT;
 			
 			// TODO this should be refactored to a validation routine in the JobPojo
 			// PARAM_XML_IN
@@ -83,12 +87,21 @@ public class XsltService extends AbstractTransformationService {
 			if (null == xmlUrl)
 				throw new NullPointerException("xmlUrl is null");
 			jobPojo.debug("XML URL: " + xmlUrl);
+
 			// PARAM_XSLT_IN
 			xsltUrl = jobPojo.getWebserviceConfig().getParameterValueByName(PARAM_XSLT_IN);
 			if (null == xsltUrl)
 				throw new NullPointerException("xsltUrl is null");
 			jobPojo.debug("XSL URL: " + xsltUrl);
+			// determine whether this is an XSLT-ZIP or an XSLT
+			FilePojo fpXslt = new FilePojo();
+			fpXslt.loadFromURI(xsltUrl);
 			
+			if (null != fpXslt.getFileType() && (fpXslt.getFileType().toString().equals(NS.OMNOM_TYPES.XSLT) || fpXslt.getFileType().toString().equals(NS.OMNOM_TYPES.ZIP_XSLT))) {
+				xsltType = fpXslt.getFileType().toString();
+			} else {
+				log.error("ITS AN Unknown filetype " + fpXslt.getFileType().toString() + ", defaulting to " + NS.OMNOM_TYPES.XSLT);
+			}
 			
 			//
 			// parse XSLT parameters
@@ -96,6 +109,7 @@ public class XsltService extends AbstractTransformationService {
 			// Priority:
 			// * Defaults in the XSLT
 			// * Linked parameters (in a file containg key-vale pairs) (PARAM_XSLT_PARAMETER_RESOURCE)
+			// * Parameters from the web service
 			// * Explicit parameters as web service parameter (PARAM_XSLT_PARAMETER_STRING)
 			Map<String, String> paramMap = new HashMap<String, String>();
 			// PARAM_XSLT_PARAMETER_RESOURCE
@@ -112,9 +126,43 @@ public class XsltService extends AbstractTransformationService {
 				log.debug(" * " + kvPair.getKey() + " : " + kvPair.getValue());
 			}
 			
+			//
+			// Actual transformation
+			//
 			jobPojo.info("Starting transformation");
 
-			StringWriter xslResultStrWriter = xsltUtils.transformXsltUrl(xmlUrl, xsltUrl, paramMap);
+			StringWriter xslResultStrWriter;
+			
+			if (xsltType.equals(NS.OMNOM_TYPES.XSLT)) {
+				
+				// Simple XSLT transformation
+				try {
+					xslResultStrWriter = xsltUtils.transformXsltUrl(xmlUrl, xsltUrl, paramMap);
+				} catch (Throwable t) {
+					throw new RuntimeException("Error during XSLT transformation: " + t);
+				}
+			} else {
+
+				// XSLT-ZIP transformation
+				jobPojo.debug("Downloading XML/ZIP");
+				String zipdir;
+				try {
+					zipdir = fileUtils.downloadAndExtractArchive(xsltUrl, "zip");
+				} catch (Exception e) {
+					jobPojo.debug(e);
+					throw e;
+				}
+				jobPojo.debug("Done unzipping XSLTZIP.");
+
+				jobPojo.debug("Determining root stylesheet.");
+				String rootStyleSheet = xsltUtils.grepRootStylesheet(zipdir);
+				jobPojo.debug("Determined root stylesheet: " + rootStyleSheet);
+				try {
+					xslResultStrWriter = xsltUtils.transformXsltFile(xmlUrl, rootStyleSheet, paramMap);
+				} catch (Throwable t) {
+					throw new RuntimeException("Error during XSLT transformation: " + t);
+				}
+			}
 			assert(null != xslResultStrWriter);
 			jobPojo.info("Getting the transformation result as a string.");
 			String xslResultStr = xslResultStrWriter.toString();

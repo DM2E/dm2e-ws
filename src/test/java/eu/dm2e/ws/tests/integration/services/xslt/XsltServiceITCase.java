@@ -1,32 +1,28 @@
 package eu.dm2e.ws.tests.integration.services.xslt;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+import static org.junit.matchers.JUnitMatchers.*;
 
 import java.io.InputStream;
 import java.net.URI;
 
 import javax.ws.rs.core.Response;
 
-import eu.dm2e.ws.services.xslt.XsltService;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import eu.dm2e.ws.tests.OmnomTestCase;
-import eu.dm2e.ws.tests.OmnomTestResources;
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
-import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.ws.services.xslt.XsltService;
+import eu.dm2e.ws.tests.OmnomTestCase;
+import eu.dm2e.ws.tests.OmnomTestResources;
 
 /**
  * @author kb
@@ -34,22 +30,61 @@ import eu.dm2e.grafeo.jena.GrafeoImpl;
  */
 public class XsltServiceITCase extends OmnomTestCase {
 	
-    private String SERVICE_URI;
+    private static final String PARAMS_NEWLINE   = "dataprovider=NOT-ub-ffm\nrepository=NOT-sammlungen\nDATAPROVIDER_ABB=NOT-ub-ffm\nREPOSITORY_ABB=NOT-sammlungen";
+	private static final String PARAMS_SEMICOLON = "dataprovider=NOT-ub-ffm; repository=NOT-sammlungen; DATAPROVIDER_ABB=NOT-ub-ffm; REPOSITORY_ABB=NOT-sammlungen";
+	private String SERVICE_URI;
     private WebservicePojo SERVICE_POJO;
-	private String xmlUri;
-	private String xsltUri;
+	private String metsXml;
+	private String metsXslt;
+	private String dtaXml;
+	private String dtaXsltZip;
+	private String paramListUriNewline;
+	private String paramListUriSemicolon;
 
 	@Before
     public void setUp() throws Exception {
         SERVICE_URI = URI_BASE + "service/xslt";
     	SERVICE_POJO = new XsltService().getWebServicePojo();
-    	OmnomTestResources xmlRes = OmnomTestResources.METS_SINGLE_EXAMPLE;
-    	OmnomTestResources xsltRes = OmnomTestResources.METS2EDM;
-    	xmlUri = client.publishFile(configFile.get(xmlRes));
-    	xsltUri = client.publishFile(configFile.get(xsltRes));
-    	assertNotNull(xmlUri);
-    	assertNotNull(xsltUri);
+
+    	OmnomTestResources metsXmlRes = OmnomTestResources.METS_SINGLE_EXAMPLE;
+    	metsXml = client.publishFile(configFile.get(metsXmlRes));
+    	assertThat(metsXml, notNullValue());
+
+    	OmnomTestResources dtaXmlRes = OmnomTestResources.XML_DTA_GRIMM;
+    	dtaXml = client.publishFile(configFile.get(dtaXmlRes));
+    	assertThat(dtaXml, notNullValue());
+
+    	OmnomTestResources metsXsltRes = OmnomTestResources.METS2EDM;
+    	FilePojo metsXsltFilePojo = new FilePojo();
+    	metsXsltFilePojo.setFileType(NS.OMNOM_TYPES.XSLT);
+    	metsXslt = client.publishFile(configFile.get(metsXsltRes), metsXsltFilePojo);
+    	assertThat(metsXslt, notNullValue());
+
+    	OmnomTestResources dtaXsltZipRes = OmnomTestResources.TEI2DM2E_20130605;
+    	FilePojo dtaXsltZipFilePojo = new FilePojo();
+    	dtaXsltZipFilePojo.setFileType(NS.OMNOM_TYPES.ZIP_XSLT);
+    	dtaXsltZip = client.publishFile(configFile.get(dtaXsltZipRes), dtaXsltZipFilePojo);
+    	assertThat(dtaXsltZip, notNullValue());
+
+    	paramListUriNewline = client.publishFile(PARAMS_NEWLINE);
+    	paramListUriSemicolon = client.publishFile(PARAMS_SEMICOLON);
     }
+	
+	@Test
+	public void testXsl() {
+		{
+			FilePojo fp = new FilePojo();
+			fp.loadFromURI(dtaXsltZip);
+			assertThat(fp.getFileType(), notNullValue());
+			assertThat(fp.getFileType().toString(), is(NS.OMNOM_TYPES.ZIP_XSLT));
+		}
+		{
+			FilePojo fp = new FilePojo();
+			fp.loadFromURI(metsXslt);
+			assertThat(fp.getFileType(), notNullValue());
+			assertThat(fp.getFileType().toString(), is(NS.OMNOM_TYPES.XSLT));
+		}
+	}
 	
 	@Ignore("Focus on the other tests")
     @Test
@@ -65,38 +100,65 @@ public class XsltServiceITCase extends OmnomTestCase {
     	assertTrue(g.containsTriple(SERVICE_URI + "/param/xmlInput", "rdf:type", "omnom:Parameter"));
     	assertTrue(g.containsTriple(SERVICE_URI + "/param/xmlInput", "omnom:parameterType", g.literal(g.expand("xsd:anyURI"))));
     }
-    
     @Test
-    public void testTransformation_Semicolon() throws Exception {
+    public void testTransformation_XSLTZIP_Semicolon() throws Exception {
     	log.info("Semicolon parameters");
     	WebserviceConfigPojo tC = new WebserviceConfigPojo();
     	tC.setWebservice(SERVICE_POJO);
-    	tC.addParameterAssignment(XsltService.PARAM_XML_IN, xmlUri);
-    	tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, xsltUri);
-    	tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAMETER_STRING, "dataprovider=NOT-ub-ffm;repository=NOT-sammlungen");
+    	tC.addParameterAssignment(XsltService.PARAM_XML_IN, dtaXml);
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, dtaXsltZip);
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAMETER_STRING, PARAMS_SEMICOLON);
     	executeXsltConfig(tC);
     }
     @Test
-    public void testTransformation_Newline() throws Exception {
+    public void testTransformation_XSLTZIP_Newline() throws Exception {
+    	log.info("Semicolon parameters");
+    	WebserviceConfigPojo tC = new WebserviceConfigPojo();
+    	tC.setWebservice(SERVICE_POJO);
+    	tC.addParameterAssignment(XsltService.PARAM_XML_IN, dtaXml);
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, dtaXsltZip);
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAMETER_STRING, PARAMS_NEWLINE);
+    	executeXsltConfig(tC);
+    }
+
+    @Test
+    public void testTransformation_XSLT_Semicolon() throws Exception {
+    	log.info("Semicolon parameters");
+    	WebserviceConfigPojo tC = new WebserviceConfigPojo();
+    	tC.setWebservice(SERVICE_POJO);
+    	tC.addParameterAssignment(XsltService.PARAM_XML_IN, metsXml);
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, metsXslt);
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAMETER_STRING, PARAMS_SEMICOLON);
+    	executeXsltConfig(tC);
+    }
+    @Test
+    public void testTransformation_XSLT_Newline() throws Exception {
     		log.info("Newline separated parameters");
     		WebserviceConfigPojo tC = new WebserviceConfigPojo();
     		tC.setWebservice(SERVICE_POJO);
-    		tC.addParameterAssignment(XsltService.PARAM_XML_IN, xmlUri);
-    		tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, xsltUri);
-    		tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAMETER_STRING, "dataprovider=NOT-ub-ffm\nrepository=NOT-sammlungen");
-    		log.debug(tC.getParameterValueByName(XsltService.PARAM_XSLT_PARAMETER_STRING));
-//    		executeXsltConfig(tC);
+    		tC.addParameterAssignment(XsltService.PARAM_XML_IN, metsXml);
+    		tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, metsXslt);
+    		tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAMETER_STRING, PARAMS_NEWLINE);
+    		executeXsltConfig(tC);
     }
     @Test
-    public void testTransformation_Linked_Newline() throws Exception {
-    	log.debug("Linked parameter list");
-    	String paramStr = "dataprovider=NOT-ub-ffm\nrepository=NOT-sammlungen";
-    	String linkedParams = client.publishFile(paramStr);
+    public void testTransformation_XSLT_Linked_Newline() throws Exception {
+    	log.debug("Linked parameter list (XSLT/Newline)");
     	WebserviceConfigPojo tC = new WebserviceConfigPojo();
     	tC.setWebservice(SERVICE_POJO);
-    	tC.addParameterAssignment(XsltService.PARAM_XML_IN, xmlUri);
-    	tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, xsltUri);
-    	tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAMETER_RESOURCE, linkedParams);
+    	tC.addParameterAssignment(XsltService.PARAM_XML_IN, metsXml);
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, metsXslt);
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAMETER_RESOURCE, paramListUriNewline);
+    	executeXsltConfig(tC);
+    }
+    @Test
+    public void testTransformation_XSLT_Linked_Semicolon() throws Exception {
+    	log.debug("Linked parameter list (XSLT/Semicolon)");
+    	WebserviceConfigPojo tC = new WebserviceConfigPojo();
+    	tC.setWebservice(SERVICE_POJO);
+    	tC.addParameterAssignment(XsltService.PARAM_XML_IN, metsXml);
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, metsXslt);
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAMETER_RESOURCE, paramListUriSemicolon);
     	executeXsltConfig(tC);
     }
 
@@ -129,6 +191,7 @@ public class XsltServiceITCase extends OmnomTestCase {
     	}
     	job.loadFromURI(jobUri);
     	String resultUri = job.getOutputParameterValueByName(XsltService.PARAM_XML_OUT);
+//    	Thread.sleep(999999999L);
     	assertNotNull(resultUri);
     	log.info("Job finished. Result is at " + resultUri );
 //    	log.info(job.getTerseTurtle());
