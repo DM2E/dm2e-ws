@@ -1,5 +1,10 @@
 package eu.dm2e.ws;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 
 
 
@@ -20,6 +25,17 @@ package eu.dm2e.ws;
  */
 public final class NS {
 
+	@Target(ElementType.FIELD)
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface OWLAnnotation {
+		String description();
+		String owlType() default NS.OWL.CLASS; // can be NS.OWL.DATATYPE_PROPERTY, NS.OWL.OBJECT_PROPERTY or NS.OWL.CLASS
+		String domain() default "";
+		String range() default "";
+		String datatype() default "";
+		boolean deprecated() default false;
+	}
+
 	/**
 	 * Single place to collect all OmNom property and class names.
 	 *
@@ -27,23 +43,45 @@ public final class NS {
 	 *
 	 */
 	public static final class OMNOM {
-
+		
 		public static final String BASE = "http://onto.dm2e.eu/omnom/";
 
+		@OWLAnnotation(description="A class representing an uploaded file.")
         public static final String CLASS_FILE                 = BASE + "File";
+
+		@OWLAnnotation(description="A class representing a job.")
         public static final String CLASS_JOB                  = BASE + "Job";
+
+		@OWLAnnotation(description="A class representing single entry in the log.")
         public static final String CLASS_LOG_ENTRY            = BASE + "LogEntry";
+
+		@OWLAnnotation(description="A class representing a web service parameter.")
         public static final String CLASS_PARAMETER            = BASE + "Parameter";
         public static final String CLASS_PARAMETER_ASSIGNMENT = BASE + "ParameterAssignment";
         public static final String CLASS_PARAMETER_CONNECTOR  = BASE + "ParameterConnector";
         public static final String CLASS_WEBSERVICE           = BASE + "Webservice";
         public static final String CLASS_WEBSERVICE_CONFIG    = BASE + "WebserviceConfig";
         public static final String CLASS_WORKFLOW             = BASE + "Workflow";
-        public static final String CLASS_WORKFLOW_JOB         = BASE + "WorkflowJob";
+        
+		@OWLAnnotation( description = "A job representing the execution of a Workflow with a specific configuration.",
+				deprecated = true)
+		public static final String CLASS_WORKFLOW_JOB = BASE + "WorkflowJob";
         public static final String CLASS_WORKFLOW_POSITION    = BASE + "WorkflowPosition";
 
+		@OWLAnnotation( description = "Links a ParameterAssignment to a WebserviceConfig",
+				owlType = NS.OWL.OBJECT_PROPERTY,
+				range = NS.OMNOM.CLASS_PARAMETER_ASSIGNMENT,
+				domain = NS.OMNOM.CLASS_WEBSERVICE_CONFIG)
 		public static final String PROP_ASSIGNMENT          = BASE + "assignment";
+
+		@OWLAnnotation( description = "Default Value for a parameter",
+				owlType = NS.OWL.DATATYPE_PROPERTY,
+				datatype = NS.XSD.STRING)
 		public static final String PROP_DEFAULT_VALUE       = BASE + "defaultValue";
+		
+		@OWLAnnotation(description = "URI that points to a web location where a user can edit this resource.",
+				owlType = NS.OWL.DATATYPE_PROPERTY,
+				datatype = NS.XSD.ANY_URI)
 		public static final String PROP_FILE_EDIT_URI       = BASE + "fileEditURI";
 		public static final String PROP_FILE_LOCATION       = BASE + "internalFileLocation";
 		public static final String PROP_FILE_RETRIEVAL_URI  = BASE + "fileRetrievalURI";
@@ -206,6 +244,8 @@ public final class NS {
 
 		public static final String BASE = "http://www.w3.org/2001/XMLSchema#";
 		public static final String INT  = BASE + "int";
+		public static final String STRING = BASE + "string";
+		public static final String ANY_URI = BASE + "anyURI";
 	}
 
 	/**
@@ -272,6 +312,9 @@ public final class NS {
 	}
 	public static final class OWL {
 		public static final String BASE = "http://www.w3.org/2002/07/owl#";
+		public static final String CLASS = BASE + "Class";
+		public static final String DATATYPE_PROPERTY = BASE + "DatatypeProperty";
+		public static final String OBJECT_PROPERTY = BASE + "ObjectProperty";
 	}
 
 
