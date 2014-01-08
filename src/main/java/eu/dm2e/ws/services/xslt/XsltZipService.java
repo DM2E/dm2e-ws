@@ -52,19 +52,19 @@ public class XsltZipService extends AbstractTransformationService {
 		xsltParameterString.setParameterType("xsd:string");
 		
 		ParameterPojo providerIdKeyParam = ws.addInputParameter(PARAM_PROVIDER_ID_KEY);
-		providerIdKeyParam.setDefaultValue(XsltUtils.DEFAULT_PARAMETER_NAMES.PROVIDER_ID_KEY);
+		providerIdKeyParam.setDefaultValue(XsltUtils.PARAMETER_DEFAULTS.DATAPROVIDER_KEY);
 		providerIdKeyParam.setComment("Provider ID Parameter used in XSLT");
 
 		ParameterPojo providerIdValueParam = ws.addInputParameter(PARAM_PROVIDER_ID_VALUE);
-		providerIdValueParam.setDefaultValue(XsltUtils.DEFAULT_PARAMETER_NAMES.PROVIDER_ID_VALUE);
+		providerIdValueParam.setDefaultValue(XsltUtils.PARAMETER_DEFAULTS.DATAPROVIDER_VALUE);
 		providerIdValueParam.setComment("Provider ID");
 
 		ParameterPojo datasetIdKeyParam = ws.addInputParameter(PARAM_DATASET_ID_KEY);
-		datasetIdKeyParam.setDefaultValue(XsltUtils.DEFAULT_PARAMETER_NAMES.DATASET_ID_KEY);
+		datasetIdKeyParam.setDefaultValue(XsltUtils.PARAMETER_DEFAULTS.DATASET_KEY);
 		datasetIdKeyParam.setComment("Dataset ID Parameter used in XSLT");
 		
 		ParameterPojo datasetIdValueParam = ws.addInputParameter(PARAM_DATASET_ID_VALUE);
-		datasetIdValueParam.setDefaultValue(XsltUtils.DEFAULT_PARAMETER_NAMES.DATASET_ID_VALUE);
+		datasetIdValueParam.setDefaultValue(XsltUtils.PARAMETER_DEFAULTS.DATASET_VALUE);
 		datasetIdValueParam.setComment("Dataset ID");
 
 		ParameterPojo xmlOutParam = ws.addOutputParameter(PARAM_XML_OUT);
