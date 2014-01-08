@@ -32,6 +32,7 @@ public final class NS {
 		String owlType() default NS.OWL.CLASS; // can be NS.OWL.DATATYPE_PROPERTY, NS.OWL.OBJECT_PROPERTY or NS.OWL.CLASS
 		String domain() default "";
 		String range() default "";
+		String label() default "";
 		boolean deprecated() default false;
 	}
 
@@ -85,6 +86,7 @@ public final class NS {
 
 		@OWLAnnotation( description = "Default Value for a parameter",
 				owlType = NS.OWL.DATATYPE_PROPERTY,
+				label = "Default Value",
 				range = NS.XSD.STRING)
 		public static final String PROP_DEFAULT_VALUE       = BASE + "defaultValue";
 		

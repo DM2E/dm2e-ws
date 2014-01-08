@@ -81,27 +81,22 @@ public class NSExporter {
 			}
 			log.debug("Current field: " + field);
 			OWLAnnotation owlAnno = field.getAnnotation(NS.OWLAnnotation.class);
-			switch (owlAnno.owlType()) {
-			case NS.OWL.CLASS:
-				OntClass fieldCls = m.createClass((String) field.get(null));
-				fieldCls.addComment(owlAnno.description(), "en");
-				break;
-			case NS.OWL.OBJECT_PROPERTY:
-				ObjectProperty fieldOP = m.createObjectProperty((String) field.get(null));
-				fieldOP.addComment(owlAnno.description(), "en");
-				if (! "".equals(owlAnno.domain()))
-					fieldOP.setDomain(m.createResource(owlAnno.domain()));
-				if (! "".equals(owlAnno.range()))
-					fieldOP.setRange(m.createResource(owlAnno.range()));
-				break;
-			case NS.OWL.DATATYPE_PROPERTY:
-				DatatypeProperty fieldDP = m.createDatatypeProperty((String) field.get(null));
-				fieldDP.addComment(owlAnno.description(), "en");
-				if (! "".equals(owlAnno.domain()))
-					fieldDP.setDomain(m.createResource(owlAnno.domain()));
-				if (! "".equals(owlAnno.range()))
-					fieldDP.setRange(m.createResource(owlAnno.range()));
-				break;
+			if (owlAnno.owlType().equals(NS.OWL.CLASS)) {
+				OntClass res = m.createClass((String) field.get(null));
+				res.addComment(owlAnno.description(), "en");
+				if (! "".equals(owlAnno.label())) res.setLabel(owlAnno.label(), "en");
+			} else if (owlAnno.owlType().equals(NS.OWL.OBJECT_PROPERTY)) {
+				ObjectProperty res = m.createObjectProperty((String) field.get(null));
+				res.addComment(owlAnno.description(), "en");
+				if (! "".equals(owlAnno.label())) res.setLabel(owlAnno.label(), "en");
+				if (! "".equals(owlAnno.domain())) res.setDomain(m.createResource(owlAnno.domain()));
+				if (! "".equals(owlAnno.range())) res.setRange(m.createResource(owlAnno.range()));
+			} else if (owlAnno.owlType().equals(NS.OWL.DATATYPE_PROPERTY)) {
+				DatatypeProperty res = m.createDatatypeProperty((String) field.get(null));
+				res.addComment(owlAnno.description(), "en");
+				if (! "".equals(owlAnno.label())) res.setLabel(owlAnno.label(), "en");
+				if (! "".equals(owlAnno.domain())) res.setDomain(m.createResource(owlAnno.domain()));
+				if (! "".equals(owlAnno.range())) res.setRange(m.createResource(owlAnno.range()));
 			}
 		}
 
