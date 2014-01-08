@@ -1,13 +1,13 @@
 package eu.dm2e.ws;
 
+import java.io.File;
+import java.util.Iterator;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.DefaultConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.util.Iterator;
 
 
 /**
@@ -34,7 +34,7 @@ public enum Config {
 			Iterator<String> iter = c.getKeys();
 			while (iter.hasNext()){
 				String k = iter.next();
-				log.debug("  * " + k);
+				log.debug("  * " + k + " : " + c.getString(k));
 			}
 		} catch (ConfigurationException e) {
 			c = null;

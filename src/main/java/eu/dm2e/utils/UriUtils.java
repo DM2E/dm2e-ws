@@ -21,11 +21,13 @@ public class UriUtils {
 	 * 
 	 * TODO: Investigate whether and how risky this is.
 	 * 
+	 * TODO (Wed Jan  8 01:05:00 CET 2014) this breaks parameter parsing since newline is translated to '_' if we replace all '\\s'
+	 * 
 	 * @param uri
 	 * @return
 	 */
 	public static String sanitizeInput(String uri) {
-		uri = uri.replaceAll("\\s", "_");
+//		uri = uri.replaceAll("\\s", "_");
 		return uri;
 	}
 	

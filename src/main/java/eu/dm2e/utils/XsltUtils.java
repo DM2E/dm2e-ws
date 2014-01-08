@@ -1,16 +1,9 @@
 package eu.dm2e.utils;
 
-import eu.dm2e.ws.api.JobPojo;
-import eu.dm2e.ws.services.Client;
-import eu.dm2e.ws.services.xslt.OmnomErrorListener;
-import org.grep4j.core.model.Profile;
-import org.grep4j.core.model.ProfileBuilder;
-import org.grep4j.core.result.GrepResult;
-import org.grep4j.core.result.GrepResults;
+import static org.grep4j.core.Grep4j.*;
+import static org.grep4j.core.fluent.Dictionary.*;
+import static org.grep4j.core.options.Option.*;
 
-import javax.xml.transform.*;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -21,10 +14,24 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import static org.grep4j.core.Grep4j.constantExpression;
-import static org.grep4j.core.Grep4j.grep;
-import static org.grep4j.core.fluent.Dictionary.*;
-import static org.grep4j.core.options.Option.filesMatching;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
+import org.grep4j.core.model.Profile;
+import org.grep4j.core.model.ProfileBuilder;
+import org.grep4j.core.result.GrepResult;
+import org.grep4j.core.result.GrepResults;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.services.Client;
+import eu.dm2e.ws.services.xslt.OmnomErrorListener;
 
 /**
  * Collection of tools for XSLT transformation
@@ -35,8 +42,10 @@ public class XsltUtils {
 	
 	private JobPojo jobPojo;
 	private Client client;
+	private Logger log;
 	
 	public XsltUtils(Client client, JobPojo job) {
+		log = LoggerFactory.getLogger(getClass().getName());
 		this.jobPojo = job;
 		this.client = client;
 	}
@@ -59,15 +68,22 @@ public class XsltUtils {
 	public Map<String,String> parseXsltParameters(String str) throws ParseException {
 		HashMap<String, String> map = new HashMap<>();
 		if (null == str) return map;
-		int offset = 0,
-			newOffset = 0;
-		for (String line : str.split("\\n")) {
+		int offset = 0, newOffset = 0;
+		
+		log.debug("Parsing " + str);
+
+		String lineSeparator = "\\n";
+		// if the string contains semicolons, assume lines are separated by semicolon instead of newline
+		if (str.contains(";")) {
+			lineSeparator = ";";
+		}
+		log.debug("Line Separator determined to be '" + lineSeparator + "'.");
+		for (String line : str.split(lineSeparator)) {
 			newOffset = 1 + offset + line.length();
 			// remove comments
 			line = line.replaceAll("#.*$", "");
 			// strip trailing/leading whitespace
-			line = line.replaceAll("^\\s*", "");
-			line = line.replaceAll("\\s*$", "");
+			line = line.trim();
 			if (line.equals("")) continue;
 			String[] kvList = line.split("\\s*=\\s*");
 			try {

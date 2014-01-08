@@ -8,11 +8,15 @@ import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.services.AbstractTransformationService;
 import eu.dm2e.ws.services.Client;
+
 import org.joda.time.DateTime;
 
 import javax.ws.rs.Path;
+
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Service for transforming XML to (RDF)XML using a self-contained XSLT script
@@ -24,7 +28,8 @@ public class XsltService extends AbstractTransformationService {
 	
 	public static final String PARAM_XML_IN = "xmlInput";
 	public static final String PARAM_XSLT_IN = "xslInput";
-	public static final String PARAM_XSLT_PARAMETERS = "xslParams";
+	public static final String PARAM_XSLT_PARAMETER_STRING = "xslParams";
+	public static final String PARAM_XSLT_PARAMETER_RESOURCE = "xslParamsResource";
 	public static final String PARAM_XML_OUT = "xmlOutput";
 
 	@Override
@@ -42,10 +47,15 @@ public class XsltService extends AbstractTransformationService {
 		xmlInParam.setIsRequired(true);
 		xmlInParam.setParameterType("xsd:anyURI");
 		
-		ParameterPojo xsltParameterString = ws.addInputParameter(PARAM_XSLT_PARAMETERS);
-		xsltParameterString.setComment("XSLT Parameters (one key-value pair per line, separated by '=', comments start with '#'");
+		ParameterPojo xsltParameterString = ws.addInputParameter(PARAM_XSLT_PARAMETER_STRING);
+		xsltParameterString.setComment("XSLT Parameters (key-value pairs separated by either newline or semicolon, key and value separated by '=', comments start with '#'");
 		xsltParameterString.setIsRequired(false);
 		xsltParameterString.setParameterType("xsd:string");
+
+		ParameterPojo xsltParameterResource = ws.addInputParameter(PARAM_XSLT_PARAMETER_RESOURCE);
+		xsltParameterResource.setComment("Resource containing XSLT Parameters (key-value pairs separated by either newline or semicolon, key and value separated by '=', comments start with '#'");
+		xsltParameterResource.setIsRequired(false);
+		xsltParameterResource.setParameterType("xsd:anyURI");
 
 		ParameterPojo xmlOutParam = ws.addOutputParameter(PARAM_XML_OUT);
 		xmlOutParam.setComment("XML output");
@@ -78,26 +88,41 @@ public class XsltService extends AbstractTransformationService {
 			if (null == xsltUrl)
 				throw new NullPointerException("xsltUrl is null");
 			jobPojo.debug("XSL URL: " + xsltUrl);
-			// PARAM_XSLT_PARAMETERS
-			String paramMapStr = jobPojo.getWebserviceConfig().getParameterValueByName(PARAM_XSLT_PARAMETERS);
-			Map<String, String> paramMap;
-			paramMap = xsltUtils.parseXsltParameters(paramMapStr);
 			
+			
+			//
+			// parse XSLT parameters
+			//
+			// Priority:
+			// * Defaults in the XSLT
+			// * Linked parameters (in a file containg key-vale pairs) (PARAM_XSLT_PARAMETER_RESOURCE)
+			// * Explicit parameters as web service parameter (PARAM_XSLT_PARAMETER_STRING)
+			Map<String, String> paramMap = new HashMap<String, String>();
+			// PARAM_XSLT_PARAMETER_RESOURCE
+			String paramMapResourceUri = jobPojo.getWebserviceConfig().getParameterValueByName(PARAM_XSLT_PARAMETER_RESOURCE);
+			if (null != paramMapResourceUri) {
+				String paramMapStr = client.getJerseyClient().target(paramMapResourceUri).request().get(String.class);
+				paramMap.putAll(xsltUtils.parseXsltParameters(paramMapStr));
+			}
+			// PARAM_XSLT_PARAMETER_STRING
+			String paramMapStr = jobPojo.getWebserviceConfig().getParameterValueByName(PARAM_XSLT_PARAMETER_STRING);
+			paramMap.putAll(xsltUtils.parseXsltParameters(paramMapStr));
+			log.debug("Parameters: ");
+			for (Entry<String, String> kvPair : paramMap.entrySet()) {
+				log.debug(" * " + kvPair.getKey() + " : " + kvPair.getValue());
+			}
 			
 			jobPojo.info("Starting transformation");
 
-			StringWriter xslResultStrWriter = null;
-			xslResultStrWriter = xsltUtils.transformXsltUrl(xmlUrl, xsltUrl, paramMap);
+			StringWriter xslResultStrWriter = xsltUtils.transformXsltUrl(xmlUrl, xsltUrl, paramMap);
 			assert(null != xslResultStrWriter);
 			jobPojo.info("Getting the transformation result as a string.");
-			String xslResultStr = "";
-			
-			xslResultStr = xslResultStrWriter.toString();
+			String xslResultStr = xslResultStrWriter.toString();
 			if (xslResultStr.length() == 0) {
 				throw new RuntimeException("No result from the transformation.");
 			}
 			else if (xslResultStr.equals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")) {
-				jobPojo.warn("XSLT transformation yielded in empty XML file.");
+				jobPojo.warn("XSLT transformation yielded an empty XML file.");
 			}
 
 			FilePojo fp = new FilePojo();
