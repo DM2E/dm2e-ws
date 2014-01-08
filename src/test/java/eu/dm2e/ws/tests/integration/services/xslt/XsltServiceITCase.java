@@ -101,68 +101,131 @@ public class XsltServiceITCase extends OmnomTestCase {
     	assertTrue(g.containsTriple(SERVICE_URI + "/param/xmlInput", "omnom:parameterType", g.literal(g.expand("xsd:anyURI"))));
     }
     @Test
-    public void testTransformation_XSLTZIP_Semicolon() throws Exception {
-    	log.info("Semicolon parameters");
+    public void testTransformation_XSLTZIP_Semicolon_String() throws Exception {
+    	log.info("XSLTZIP/Semicolon parameter string");
     	WebserviceConfigPojo tC = new WebserviceConfigPojo();
     	tC.setWebservice(SERVICE_POJO);
     	tC.addParameterAssignment(XsltService.PARAM_XML_IN, dtaXml);
     	tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, dtaXsltZip);
     	tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAMETER_STRING, PARAMS_SEMICOLON);
-    	executeXsltConfig(tC);
+    	String xmlContent = executeXsltConfig(tC);
+    	assertThat(xmlContent, containsString("NOT-ub-ffm"));
+    	assertThat(xmlContent, containsString("NOT-sammlungen"));
     }
     @Test
-    public void testTransformation_XSLTZIP_Newline() throws Exception {
-    	log.info("Semicolon parameters");
+    public void testTransformation_XSLTZIP_Newline_String() throws Exception {
+    	log.info("XSLTZIP Newline parameter string");
     	WebserviceConfigPojo tC = new WebserviceConfigPojo();
     	tC.setWebservice(SERVICE_POJO);
     	tC.addParameterAssignment(XsltService.PARAM_XML_IN, dtaXml);
     	tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, dtaXsltZip);
     	tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAMETER_STRING, PARAMS_NEWLINE);
-    	executeXsltConfig(tC);
+    	String xmlContent = executeXsltConfig(tC);
+    	assertThat(xmlContent, containsString("NOT-ub-ffm"));
+    	assertThat(xmlContent, containsString("NOT-sammlungen"));
     }
-
     @Test
-    public void testTransformation_XSLT_Semicolon() throws Exception {
-    	log.info("Semicolon parameters");
+    public void testTransformation_XSLTZIP_Semicolon_URI() throws Exception {
+    	log.debug("XSLTZIP / Semicolon parameter URI");
     	WebserviceConfigPojo tC = new WebserviceConfigPojo();
     	tC.setWebservice(SERVICE_POJO);
-    	tC.addParameterAssignment(XsltService.PARAM_XML_IN, metsXml);
-    	tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, metsXslt);
-    	tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAMETER_STRING, PARAMS_SEMICOLON);
-    	executeXsltConfig(tC);
+    	tC.addParameterAssignment(XsltService.PARAM_XML_IN, dtaXml);
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, dtaXsltZip);
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAMETER_RESOURCE, paramListUriSemicolon);
+    	String xmlContent = executeXsltConfig(tC);
+    	assertThat(xmlContent, containsString("NOT-ub-ffm"));
+    	assertThat(xmlContent, containsString("NOT-sammlungen"));
     }
-    @Test
-    public void testTransformation_XSLT_Newline() throws Exception {
-    		log.info("Newline separated parameters");
-    		WebserviceConfigPojo tC = new WebserviceConfigPojo();
-    		tC.setWebservice(SERVICE_POJO);
-    		tC.addParameterAssignment(XsltService.PARAM_XML_IN, metsXml);
-    		tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, metsXslt);
-    		tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAMETER_STRING, PARAMS_NEWLINE);
-    		executeXsltConfig(tC);
-    }
-    @Test
-    public void testTransformation_XSLT_Linked_Newline() throws Exception {
-    	log.debug("Linked parameter list (XSLT/Newline)");
+    public void testTransformation_XSLTZIP_Newline_URI() throws Exception {
+    	log.debug("XSLTZIP / Newline parameter URI");
     	WebserviceConfigPojo tC = new WebserviceConfigPojo();
     	tC.setWebservice(SERVICE_POJO);
     	tC.addParameterAssignment(XsltService.PARAM_XML_IN, metsXml);
     	tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, metsXslt);
     	tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAMETER_RESOURCE, paramListUriNewline);
-    	executeXsltConfig(tC);
+    	String xmlContent = executeXsltConfig(tC);
+    	assertThat(xmlContent, containsString("NOT-ub-ffm"));
+    	assertThat(xmlContent, containsString("NOT-sammlungen"));
+    }
+
+    @Test
+    public void testTransformation_XSLT_Semicolon_String() throws Exception {
+    	log.info("XSLT Semicolon parameter String");
+    	WebserviceConfigPojo tC = new WebserviceConfigPojo();
+    	tC.setWebservice(SERVICE_POJO);
+    	tC.addParameterAssignment(XsltService.PARAM_XML_IN, metsXml);
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, metsXslt);
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAMETER_STRING, PARAMS_SEMICOLON);
+    	String xmlContent = executeXsltConfig(tC);
+    	assertThat(xmlContent, containsString("NOT-ub-ffm"));
+    	assertThat(xmlContent, containsString("NOT-sammlungen"));
     }
     @Test
-    public void testTransformation_XSLT_Linked_Semicolon() throws Exception {
-    	log.debug("Linked parameter list (XSLT/Semicolon)");
+    public void testTransformation_XSLT_Newline_String() throws Exception {
+    	log.info("Newline separated parameters");
+    	WebserviceConfigPojo tC = new WebserviceConfigPojo();
+    	tC.setWebservice(SERVICE_POJO);
+    	tC.addParameterAssignment(XsltService.PARAM_XML_IN, metsXml);
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, metsXslt);
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAMETER_STRING, PARAMS_NEWLINE);
+    	String xmlContent = executeXsltConfig(tC);
+    	assertThat(xmlContent, containsString("NOT-ub-ffm"));
+    	assertThat(xmlContent, containsString("NOT-sammlungen"));
+    }
+    @Test
+    public void testTransformation_XSLT_Semicolon_URI() throws Exception {
+    	log.debug("XSLT Semicolon Parameter URI");
     	WebserviceConfigPojo tC = new WebserviceConfigPojo();
     	tC.setWebservice(SERVICE_POJO);
     	tC.addParameterAssignment(XsltService.PARAM_XML_IN, metsXml);
     	tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, metsXslt);
     	tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAMETER_RESOURCE, paramListUriSemicolon);
-    	executeXsltConfig(tC);
+    	String xmlContent = executeXsltConfig(tC);
+    	assertThat(xmlContent, containsString("NOT-ub-ffm"));
+    	assertThat(xmlContent, containsString("NOT-sammlungen"));
+    }
+    @Test
+    public void testTransformation_XSLT_Newline_URI() throws Exception {
+    	log.debug("XSLT Newline Parameter URI");
+    	WebserviceConfigPojo tC = new WebserviceConfigPojo();
+    	tC.setWebservice(SERVICE_POJO);
+    	tC.addParameterAssignment(XsltService.PARAM_XML_IN, metsXml);
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, metsXslt);
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAMETER_RESOURCE, paramListUriNewline);
+    	String xmlContent = executeXsltConfig(tC);
+    	assertThat(xmlContent, containsString("NOT-ub-ffm"));
+    	assertThat(xmlContent, containsString("NOT-sammlungen"));
     }
 
-	private void executeXsltConfig(WebserviceConfigPojo tC) throws InterruptedException {
+    @Test
+    public void testTransformation_XSLT_Semicolon_String_Param() throws Exception {
+    	log.info("XSLT Semicolon parameter String and parameter");
+    	WebserviceConfigPojo tC = new WebserviceConfigPojo();
+    	tC.setWebservice(SERVICE_POJO);
+    	tC.addParameterAssignment(XsltService.PARAM_XML_IN, metsXml);
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, metsXslt);
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAM_DATAPROVIDER, "DATAPROVIDER_NEEDLE");
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAMETER_STRING, "repository=NOT-sammlungen");
+    	String xmlContent = executeXsltConfig(tC);
+    	assertThat(xmlContent, containsString("DATAPROVIDER_NEEDLE"));
+    	assertThat(xmlContent, containsString("NOT-sammlungen"));
+    }
+    @Test
+    public void testTransformation_XSLT_Semicolon_String_Param_URI() throws Exception {
+    	log.info("XSLT Semicolon parameter String and parameter and URI");
+    	WebserviceConfigPojo tC = new WebserviceConfigPojo();
+    	tC.setWebservice(SERVICE_POJO);
+    	tC.addParameterAssignment(XsltService.PARAM_XML_IN, metsXml);
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, metsXslt);
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAMETER_RESOURCE, paramListUriSemicolon);
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAMETER_STRING, "repository=NOT-sammlungen");
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAM_DATAPROVIDER, "DATAPROVIDER_NEEDLE");
+    	String xmlContent = executeXsltConfig(tC);
+    	assertThat(xmlContent, containsString("DATAPROVIDER_NEEDLE"));
+    	assertThat(xmlContent, containsString("NOT-sammlungen"));
+    }
+
+	private String executeXsltConfig(WebserviceConfigPojo tC) throws InterruptedException {
     	assertThat(tC.getId(), is(nullValue()));
     	log.debug("config uri: " + tC.getId());
     	tC.publishToService(client.getConfigWebTarget());
@@ -196,8 +259,7 @@ public class XsltServiceITCase extends OmnomTestCase {
     	log.info("Job finished. Result is at " + resultUri );
 //    	log.info(job.getTerseTurtle());
     	String xmlContent = client.target(resultUri).request().get(String.class);
-    	assertThat(xmlContent, containsString("NOT-ub-ffm"));
-    	assertThat(xmlContent, containsString("NOT-sammlungen"));
+    	return xmlContent;
 	}
 		
 }
