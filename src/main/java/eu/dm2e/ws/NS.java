@@ -267,6 +267,9 @@ public final class NS {
 	public static final class OAI_RIGHTS {
 		public static final String BASE = "http://www.openarchives.org/OAI/2.0/rights/";
 	}
+	public static final class CRM {
+		public static final String BASE = "http://www.cidoc-crm.org/cidoc-crm/";
+	}
 	public static final class OWL {
 		public static final String BASE = "http://www.w3.org/2002/07/owl#";
 	}
