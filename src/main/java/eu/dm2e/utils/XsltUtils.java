@@ -41,6 +41,7 @@ import eu.dm2e.ws.services.xslt.OmnomErrorListener;
 public class XsltUtils {
 	
 	private JobPojo jobPojo;
+	@SuppressWarnings("unused")
 	private Client client;
 	private Logger log;
 	
@@ -51,11 +52,13 @@ public class XsltUtils {
 	}
 	
 	/** Default XSLT parameter names and values for provider/dataset parameter */
-	public static class DEFAULT_PARAMETER_NAMES {
-		public static final String PROVIDER_ID_KEY = "DATAPROVIDER_ABB";
-		public static final String PROVIDER_ID_VALUE = "DATAPROVIDER_ABB_NOT_SET";
-		public static final String DATASET_ID_KEY = "REPOSITORY_ABB";
-		public static final String DATASET_ID_VALUE = "REPOSITORY_ABB_NOT_SET";
+	public static class PARAMETER_DEFAULTS {
+		public static final String DATAPROVIDER_KEY = "dataprovider";
+		public static final String DATAPROVIDER_VALUE = "WARNING-dataprovider-not-set";
+		public static final String DATASET_KEY = "dataset";
+		public static final String DATASET_VALUE = "WARNING-dataset-not-set";
+		public static final String DM2E_BASEURI_KEY = "dm2e_baseuri";
+		public static final String DM2E_BASEURI_VALUE = "http://data.dm2e.eu/data/";
 	}
 
 	/**
