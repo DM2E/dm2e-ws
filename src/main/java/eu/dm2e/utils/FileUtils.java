@@ -34,8 +34,9 @@ public class FileUtils {
      * @param archiveUrl
      * @param format
      * @return
+     * @throws ZipException 
      */
-    public String downloadAndExtractArchive(String archiveUrl, String format) {
+    public String downloadAndExtractArchive(String archiveUrl, String format) throws ZipException {
         if (!"zip".equals(format)) throw new RuntimeException("Unsupported format: " + format);
         Response resp = client.target(archiveUrl).request().get();
         if (resp.getStatus() >= 400) {
@@ -92,9 +93,7 @@ public class FileUtils {
             ZipFile zipFile = new ZipFile(zipfile.toFile());
             zipFile.extractAll(zipdir.toString());
         } catch (ZipException e) {
-            jobPojo.fatal(e);
-            jobPojo.setFailed();
-            return null;
+        	throw e;
         }
         return zipdir.toString();
     }
