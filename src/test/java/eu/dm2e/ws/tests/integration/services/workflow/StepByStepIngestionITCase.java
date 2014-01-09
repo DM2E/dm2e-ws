@@ -14,14 +14,15 @@ import org.junit.Test;
 
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.tests.OmnomTestCase;
-import eu.dm2e.ws.tests.OmnomTestResources;
+import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.services.xslt.XsltService;
-import eu.dm2e.ws.services.xslt.XsltZipService;
+import eu.dm2e.ws.tests.OmnomTestCase;
+import eu.dm2e.ws.tests.OmnomTestResources;
 
 /**
  * This file was created within the DM2E project.
@@ -40,7 +41,7 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
     public void setUp() throws Exception {
         PUBLISH_SERVICE_URI = URI_BASE + "publish";
         XSLT_SERVICE_URI = URI_BASE + "service/xslt";
-        XSLTZIP_SERVICE_URI = URI_BASE + "service/xslt-zip";
+        XSLTZIP_SERVICE_URI = URI_BASE + "service/xslt";
 //    	SERVICE_POJO = new XsltZipService().getWebServicePojo();
     }
 
@@ -54,7 +55,9 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
         String XML_URI_1;
 
 
-        XSLTZIP_URI_1 = client.publishFile(configFile.get(OmnomTestResources.TEI2DM2E_20130605));
+        FilePojo xsltzip_fp = new FilePojo();
+        xsltzip_fp.setFileType(NS.OMNOM_TYPES.ZIP_XSLT);
+        XSLTZIP_URI_1 = client.publishFile(configFile.get(OmnomTestResources.TEI2DM2E_20130605), xsltzip_fp);
         if (null == XSLTZIP_URI_1) { fail("Couldn't store test file."); }
         log.info("XSLTZIP_URI_1: " + XSLTZIP_URI_1);
         XML_URI_1 = client.publishFile(configFile.get(OmnomTestResources.XML_DTA_GRIMM));
@@ -68,10 +71,10 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
         ws.loadFromURI(XSLTZIP_SERVICE_URI);
         WebserviceConfigPojo conf = new WebserviceConfigPojo();
         conf.setWebservice(ws);
-        conf.addParameterAssignment(XsltZipService.PARAM_XML_IN, XML_URI_1);
-        conf.addParameterAssignment(XsltZipService.PARAM_XSLTZIP_IN, XSLTZIP_URI_1);
-        conf.addParameterAssignment(XsltZipService.PARAM_DATASET_ID_VALUE, "IngestionTest");
-        conf.addParameterAssignment(XsltZipService.PARAM_PROVIDER_ID_VALUE, "dm2edev");
+        conf.addParameterAssignment(XsltService.PARAM_XML_IN, XML_URI_1);
+        conf.addParameterAssignment(XsltService.PARAM_XSLT_IN, XSLTZIP_URI_1);
+        conf.addParameterAssignment(XsltService.PARAM_XSLT_PARAM_DATASET, "IngestionTest");
+        conf.addParameterAssignment(XsltService.PARAM_XSLT_PARAM_DATAPROVIDER, "dm2edev");
         conf.publishToService(client.getConfigWebTarget());
 
 
@@ -106,7 +109,7 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
                 }
 
             }
-        return jobPojo.getOutputParameterValueByName(XsltZipService.PARAM_XML_OUT);
+        return jobPojo.getOutputParameterValueByName(XsltService.PARAM_XML_OUT);
     }
 
 
@@ -231,6 +234,7 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
     @Test
     public void testIngestion() throws Exception {
         String result = doXSLTZIP();
+        assertNotNull(result);
         doPublish(result);
     }
 
