@@ -324,6 +324,7 @@ public final class NS {
 		public static final String PROP_MODIFIED = BASE + "modified";
 		public static final String PROP_CREATED  = BASE + "created";
 		public static final String PROP_IS_PART_OF = BASE + "isPartOf";
+		public static final String PROP_TITLE = BASE + "title";
 
 	}
 
