@@ -297,6 +297,7 @@ public final class NS {
 
 		public static final String BASE       = "http://www.w3.org/2004/02/skos/core#";
 		public static final String PROP_LABEL = BASE + "label";
+		public static final String PROP_PREF_LABEL = BASE + "prefLabel";
 	}
 
 	/**
@@ -309,6 +310,8 @@ public final class NS {
 		public static final String PROP_DATE  = BASE + "date";
 		public static final String PROP_TYPE = BASE + "type";
 		public static final String PROP_IDENTIFIER = BASE + "identifier";
+		public static final String PROP_SUBJECT = BASE + "subject";
+		public static final String PROP_PUBLISHER = BASE + "publisher";
 
 	}
 
@@ -325,6 +328,7 @@ public final class NS {
 		public static final String PROP_CREATED  = BASE + "created";
 		public static final String PROP_IS_PART_OF = BASE + "isPartOf";
 		public static final String PROP_TITLE = BASE + "title";
+		public static final String PROP_ISSUED = BASE + "issued";
 
 	}
 
@@ -374,6 +378,7 @@ public final class NS {
 		public static final String BASE         = "http://onto.dm2e.eu/schemas/dm2e/1.1/";
 		public static final String CLASS_MANUSCRIPT = BASE + "Manuscript";
 		public static final String PROP_HAS_ANNOTABLE_VERSION_AT = BASE + "hasAnnotatableVersionAt";
+		public static final String PROP_PRINTED_AT = BASE + "printedAt";
 	}
 	public static final class FABIO {
 		public static final String BASE         = "http://purl.org/spar/fabio/";
