@@ -287,7 +287,7 @@ public class WorkflowService extends AbstractRDFService {
 	@POST
 	@Path("{id}/autowire")
 	public Response autowireWorkflow() {
-		log.debug("Autowiring!");
+		log.debug("Begin Autowiring!");
 		URI wfUri = popPath();
 		WorkflowPojo wf = new WorkflowPojo();
 		log.debug("Loading workflow " + wfUri);
@@ -296,8 +296,11 @@ public class WorkflowService extends AbstractRDFService {
 			log.warn("Couldn't load workflow " + wfUri);
 			return Response.status(404).entity("Couldn't find workflow " + wfUri).build();
 		}
+		log.debug("Actual Autowiring!");
 		wf.autowire();
+		log.debug("Autowiring complete, now persist!");
 		wf.getGrafeo().putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), wfUri);
+		log.debug("Workflow saved.");
 		return Response.status(Response.Status.OK).entity(wf).build();
 	}
 	/**
