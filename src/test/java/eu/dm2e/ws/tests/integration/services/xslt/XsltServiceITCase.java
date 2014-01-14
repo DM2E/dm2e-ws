@@ -32,6 +32,7 @@ public class XsltServiceITCase extends OmnomTestCase {
 	
     private static final String PARAMS_NEWLINE   = "dataprovider=NOT-ub-ffm\nrepository=NOT-sammlungen\nDATAPROVIDER_ABB=NOT-ub-ffm\nREPOSITORY_ABB=NOT-sammlungen";
 	private static final String PARAMS_SEMICOLON = "dataprovider=NOT-ub-ffm; repository=NOT-sammlungen; DATAPROVIDER_ABB=NOT-ub-ffm; REPOSITORY_ABB=NOT-sammlungen";
+	private static final String PARAMS_SEMICOLON_ONLY_REPOSITORY = "repository=NOT-sammlungen;REPOSITORY_ABB=NOT-sammlungen";
 	private String SERVICE_URI;
     private WebservicePojo SERVICE_POJO;
 	private String metsXml;
@@ -40,6 +41,7 @@ public class XsltServiceITCase extends OmnomTestCase {
 	private String dtaXsltZip;
 	private String paramListUriNewline;
 	private String paramListUriSemicolon;
+	private String paramListUriSemicolonOnlyRepository;
 
 	@Before
     public void setUp() throws Exception {
@@ -68,6 +70,7 @@ public class XsltServiceITCase extends OmnomTestCase {
 
     	paramListUriNewline = client.publishFile(PARAMS_NEWLINE);
     	paramListUriSemicolon = client.publishFile(PARAMS_SEMICOLON);
+    	paramListUriSemicolonOnlyRepository = client.publishFile(PARAMS_SEMICOLON_ONLY_REPOSITORY);
     }
 	
 	@Test
@@ -217,7 +220,7 @@ public class XsltServiceITCase extends OmnomTestCase {
     	tC.setWebservice(SERVICE_POJO);
     	tC.addParameterAssignment(XsltService.PARAM_XML_IN, metsXml);
     	tC.addParameterAssignment(XsltService.PARAM_XSLT_IN, metsXslt);
-    	tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAMETER_RESOURCE, paramListUriSemicolon);
+    	tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAMETER_RESOURCE, paramListUriSemicolonOnlyRepository);
     	tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAMETER_STRING, "repository=NOT-sammlungen");
     	tC.addParameterAssignment(XsltService.PARAM_XSLT_PARAM_DATAPROVIDER, "DATAPROVIDER_NEEDLE");
     	String xmlContent = executeXsltConfig(tC);

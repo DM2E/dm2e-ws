@@ -36,7 +36,7 @@ public class XsltService extends AbstractTransformationService {
 	// XSLT Parameters
 	public static final String PARAM_XSLT_PARAM_DATAPROVIDER = "xslParam_" + XsltUtils.PARAMETER_DEFAULTS.DATAPROVIDER_KEY;
 	public static final String PARAM_XSLT_PARAM_DATASET = "xslParam_" + XsltUtils.PARAMETER_DEFAULTS.DATASET_KEY;
-	public static final String PARAM_XSLT_PARAM_DM2E_BASEURI = "xslParam_" + XsltUtils.PARAMETER_DEFAULTS.DM2E_BASEURI_KEY;
+//	public static final String PARAM_XSLT_PARAM_DM2E_BASEURI = "xslParam_" + XsltUtils.PARAMETER_DEFAULTS.DM2E_BASEURI_KEY;
 
 	@Override
 	public WebservicePojo getWebServicePojo() {
@@ -67,21 +67,21 @@ public class XsltService extends AbstractTransformationService {
 		xsltParameter_dataprovider.setComment("Shortcut for the data provider. No spaces!");
 		xsltParameter_dataprovider.setIsRequired(false);
 //		xsltParameter_dataprovider.setIsRequired(true);
-		xsltParameter_dataprovider.setDefaultValue(XsltUtils.PARAMETER_DEFAULTS.DATAPROVIDER_VALUE);
+//		xsltParameter_dataprovider.setDefaultValue(XsltUtils.PARAMETER_DEFAULTS.DATAPROVIDER_VALUE);
 		xsltParameter_dataprovider.setParameterType("xsd:string");
 
 		ParameterPojo xsltParameter_dataset = ws.addInputParameter(PARAM_XSLT_PARAM_DATASET);
 		xsltParameter_dataset.setComment("Shortcut for the dataset. No spaces!");
 		xsltParameter_dataset.setIsRequired(false);
 //		xsltParameter_dataset.setIsRequired(true);
-		xsltParameter_dataprovider.setDefaultValue(XsltUtils.PARAMETER_DEFAULTS.DATASET_VALUE);
+//		xsltParameter_dataset.setDefaultValue(XsltUtils.PARAMETER_DEFAULTS.DATASET_VALUE);
 		xsltParameter_dataset.setParameterType("xsd:string");
 
-		ParameterPojo xsltParameter_dm2e_baseuri = ws.addInputParameter(PARAM_XSLT_PARAM_DM2E_BASEURI);
-		xsltParameter_dm2e_baseuri.setComment("Base URI of the DM2E data namespace (Default: http://data.dm2e.eu/data/).");
-		xsltParameter_dm2e_baseuri.setIsRequired(false);
-		xsltParameter_dm2e_baseuri.setDefaultValue(XsltUtils.PARAMETER_DEFAULTS.DM2E_BASEURI_VALUE);
-		xsltParameter_dm2e_baseuri.setParameterType("xsd:anyURI");
+//		ParameterPojo xsltParameter_dm2e_baseuri = ws.addInputParameter(PARAM_XSLT_PARAM_DM2E_BASEURI);
+//		xsltParameter_dm2e_baseuri.setComment("Base URI of the DM2E data namespace (Default: http://data.dm2e.eu/data/).");
+//		xsltParameter_dm2e_baseuri.setIsRequired(false);
+//		xsltParameter_dm2e_baseuri.setDefaultValue(XsltUtils.PARAMETER_DEFAULTS.DM2E_BASEURI_VALUE);
+//		xsltParameter_dm2e_baseuri.setParameterType("xsd:anyURI");
 
 		ParameterPojo xmlOutParam = ws.addOutputParameter(PARAM_XML_OUT);
 		xmlOutParam.setComment("XML output");
@@ -133,27 +133,31 @@ public class XsltService extends AbstractTransformationService {
 			//
 			// Priority:
 			// * Defaults in the XSLT (case0)
-			// * Linked parameters (in a file containg key-vale pairs) (PARAM_XSLT_PARAMETER_RESOURCE, case1)
-			// * Parameters from the web service (case2)
+			// * Parameters from the web service (case1)
+			// * Linked parameters (in a file containg key-vale pairs) (PARAM_XSLT_PARAMETER_RESOURCE, case2)
 			// * Explicit parameters as web service parameter (PARAM_XSLT_PARAMETER_STRING, case3)
 			Map<String, String> paramMap = new HashMap<String, String>();
 
-			// PARAM_XSLT_PARAMETER_RESOURCE case1
+			// #case1
+			String dp = jobPojo.getWebserviceConfig().getParameterValueByName(PARAM_XSLT_PARAM_DATAPROVIDER);
+			if (null != dp && ! dp.matches("^\\s*$")) {
+				paramMap.put("DATAPROVIDER_ABB", dp); // SBB
+				paramMap.put("dataprovider", dp); // UBFFM
+			}
+			String ds = jobPojo.getWebserviceConfig().getParameterValueByName(PARAM_XSLT_PARAM_DATASET);
+			if (null != ds && ! ds.matches("^\\s*$")) {
+				paramMap.put("REPOSITORY_ABB", ds); // SBB
+				paramMap.put("repository", ds); // UBFFM
+			}
+
+			// PARAM_XSLT_PARAMETER_RESOURCE #case2
 			String paramMapResourceUri = jobPojo.getWebserviceConfig().getParameterValueByName(PARAM_XSLT_PARAMETER_RESOURCE);
 			if (null != paramMapResourceUri) {
 				String paramMapStr = client.getJerseyClient().target(paramMapResourceUri).request().get(String.class);
 				paramMap.putAll(xsltUtils.parseXsltParameters(paramMapStr));
 			}
 
-			// case2
-			String dp = jobPojo.getWebserviceConfig().getParameterValueByName(PARAM_XSLT_PARAM_DATAPROVIDER);
-			if (null != dp) paramMap.put(XsltUtils.PARAMETER_DEFAULTS.DATAPROVIDER_KEY, dp);
-			String ds = jobPojo.getWebserviceConfig().getParameterValueByName(PARAM_XSLT_PARAM_DATASET);
-			if (null != ds) paramMap.put(XsltUtils.PARAMETER_DEFAULTS.DATASET_KEY, ds);
-			String dm2e_baseuri = jobPojo.getWebserviceConfig().getParameterValueByName(PARAM_XSLT_PARAM_DM2E_BASEURI);
-			if (null != dm2e_baseuri) paramMap.put(XsltUtils.PARAMETER_DEFAULTS.DM2E_BASEURI_KEY, dm2e_baseuri);
-
-			// PARAM_XSLT_PARAMETER_STRING case3
+			// PARAM_XSLT_PARAMETER_STRING #case3
 			String paramMapStr = jobPojo.getWebserviceConfig().getParameterValueByName(PARAM_XSLT_PARAMETER_STRING);
 			paramMap.putAll(xsltUtils.parseXsltParameters(paramMapStr));
 			log.debug("Parameters: ");
