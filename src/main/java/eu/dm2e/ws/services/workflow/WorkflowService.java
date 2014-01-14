@@ -291,7 +291,12 @@ public class WorkflowService extends AbstractRDFService {
 		URI wfUri = popPath();
 		WorkflowPojo wf = new WorkflowPojo();
 		log.debug("Loading workflow " + wfUri);
-		wf.loadFromURI(wfUri, 1); // 1, so the web services get expanded, sigh
+		try {
+			wf.loadFromURI(wfUri, 1); // 1, so the web services get expanded, sigh
+		} catch (Exception e) {
+			log.error("Login failed with exception ", e);
+			e.printStackTrace();
+		}
 		if (null == wf.getId()) {
 			log.warn("Couldn't load workflow " + wfUri);
 			return Response.status(404).entity("Couldn't find workflow " + wfUri).build();
