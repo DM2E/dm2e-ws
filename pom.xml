@@ -28,14 +28,14 @@
                 <updatePolicy>always</updatePolicy>
             </snapshots>
         </pluginRepository>
-        <pluginRepository>
-            <id>jacoco-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </pluginRepository>
+        <!-- <pluginRepository> -->
+        <!--     <id>jacoco-snapshots</id> -->
+        <!--     <url>https://oss.sonatype.org/content/repositories/snapshots</url> -->
+        <!--     <snapshots> -->
+        <!--         <enabled>true</enabled> -->
+        <!--         <updatePolicy>always</updatePolicy> -->
+        <!--     </snapshots> -->
+        <!-- </pluginRepository> -->
     </pluginRepositories>
 	<dependencies>
 		<!-- uncomment this to get JSON support: <dependency> <groupId>com.sun.jersey</groupId> 
@@ -227,71 +227,71 @@
 
 		<plugins>
             <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.6.4-SNAPSHOT</version>
-                <executions>
-                    <execution>
-                        <id>prepare-agent</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <configuration>
-                            <dataFile>${project.build.directory}/jacoco.exec</dataFile>
-                            <outputDirectory>${project.build.directory}/jacoco-report</outputDirectory>
-                        </configuration>
-                    </execution>
-                    <!--<execution>
-                        <id>check</id>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <rule>
-                                    <element>BUNDLE</element>
-                                    <limits>
-                                        <limit>
-                                            <counter>COMPLEXITY</counter>
-                                            <value>COVEREDRATIO</value>
-                                            <minimum>0.10</minimum>
-                                        </limit>
-                                    </limits>
-                                </rule>
-                            </rules>
-                        </configuration>
-                    </execution> -->
-                    <execution>
-                        <id>pre-integration-test</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                        <configuration>
-                            <destFile>${project.build.directory}/jacoco.exec</destFile>
-                            <propertyName>failsafe.argLine</propertyName>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>post-integration-test</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <configuration>
-                            <dataFile>${project.build.directory}/jacoco.exec</dataFile>
-                            <outputDirectory>${project.build.directory}/jacoco-report</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+            <!--     <groupId>org.jacoco</groupId> -->
+            <!--     <artifactId>jacoco-maven-plugin</artifactId> -->
+            <!--     <version>0.6.4-SNAPSHOT</version> -->
+            <!--     <executions> -->
+            <!--         <execution> -->
+            <!--             <id>prepare-agent</id> -->
+            <!--             <goals> -->
+            <!--                 <goal>prepare-agent</goal> -->
+            <!--             </goals> -->
+            <!--         </execution> -->
+            <!--         <execution> -->
+            <!--             <id>report</id> -->
+            <!--             <phase>prepare-package</phase> -->
+            <!--             <goals> -->
+            <!--                 <goal>report</goal> -->
+            <!--             </goals> -->
+            <!--             <configuration> -->
+            <!--                 <dataFile>${project.build.directory}/jacoco.exec</dataFile> -->
+            <!--                 <outputDirectory>${project.build.directory}/jacoco-report</outputDirectory> -->
+            <!--             </configuration> -->
+            <!--         </execution> -->
+            <!--         <!--<execution> -->
+            <!--             <id>check</id> -->
+            <!--             <goals> -->
+            <!--                 <goal>check</goal> -->
+            <!--             </goals> -->
+            <!--             <configuration> -->
+            <!--                 <rules> -->
+            <!--                     <rule> -->
+            <!--                         <element>BUNDLE</element> -->
+            <!--                         <limits> -->
+            <!--                             <limit> -->
+            <!--                                 <counter>COMPLEXITY</counter> -->
+            <!--                                 <value>COVEREDRATIO</value> -->
+            <!--                                 <minimum>0.10</minimum> -->
+            <!--                             </limit> -->
+            <!--                         </limits> -->
+            <!--                     </rule> -->
+            <!--                 </rules> -->
+            <!--             </configuration> -->
+            <!--         </execution> --> -->
+            <!--         <execution> -->
+            <!--             <id>pre-integration-test</id> -->
+            <!--             <phase>pre-integration-test</phase> -->
+            <!--             <goals> -->
+            <!--                 <goal>prepare-agent</goal> -->
+            <!--             </goals> -->
+            <!--             <configuration> -->
+            <!--                 <destFile>${project.build.directory}/jacoco.exec</destFile> -->
+            <!--                 <propertyName>failsafe.argLine</propertyName> -->
+            <!--             </configuration> -->
+            <!--         </execution> -->
+            <!--         <execution> -->
+            <!--             <id>post-integration-test</id> -->
+            <!--             <phase>post-integration-test</phase> -->
+            <!--             <goals> -->
+            <!--                 <goal>report</goal> -->
+            <!--             </goals> -->
+            <!--             <configuration> -->
+            <!--                 <dataFile>${project.build.directory}/jacoco.exec</dataFile> -->
+            <!--                 <outputDirectory>${project.build.directory}/jacoco-report</outputDirectory> -->
+            <!--             </configuration> -->
+            <!--         </execution> -->
+            <!--     </executions> -->
+            <!-- </plugin> -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -403,34 +403,34 @@
 		<pluginManagement>
 			<plugins>
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.jacoco</groupId>
-										<artifactId>
-											jacoco-maven-plugin
-										</artifactId>
-										<versionRange>
-											[0.6.4-SNAPSHOT,)
-										</versionRange>
-										<goals>
-											<goal>prepare-agent</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
+				<!-- <plugin> -->
+				<!--     <groupId>org.eclipse.m2e</groupId> -->
+				<!--     <artifactId>lifecycle-mapping</artifactId> -->
+				<!--     <version>1.0.0</version> -->
+				<!--     <configuration> -->
+				<!--         <lifecycleMappingMetadata> -->
+				<!--             <pluginExecutions> -->
+				<!--                 <pluginExecution> -->
+				<!--                     <pluginExecutionFilter> -->
+				<!--                         <groupId>org.jacoco</groupId> -->
+				<!--                         <artifactId> -->
+				<!--                             jacoco-maven-plugin -->
+				<!--                         </artifactId> -->
+				<!--                         <versionRange> -->
+				<!--                             [0.6.4-SNAPSHOT,) -->
+				<!--                         </versionRange> -->
+				<!--                         <goals> -->
+				<!--                             <goal>prepare-agent</goal> -->
+				<!--                         </goals> -->
+				<!--                     </pluginExecutionFilter> -->
+				<!--                     <action> -->
+				<!--                         <ignore></ignore> -->
+				<!--                     </action> -->
+				<!--                 </pluginExecution> -->
+				<!--             </pluginExecutions> -->
+				<!--         </lifecycleMappingMetadata> -->
+				<!--     </configuration> -->
+				<!-- </plugin> -->
 			</plugins>
 		</pluginManagement>
 	</build>
