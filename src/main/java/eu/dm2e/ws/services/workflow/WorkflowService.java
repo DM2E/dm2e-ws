@@ -291,7 +291,7 @@ public class WorkflowService extends AbstractRDFService {
 		WorkflowPojo wf = new WorkflowPojo();
 		wf.loadFromURI(wfUri, 1); // so the web services get expanded, sigh
 		if (null == wf.getId()) {
-			return Response.status(404).build();
+			return Response.status(404).entity("Couldn't find workflow " + wfUri).build();
 		}
 		wf.autowire();
 		wf.getGrafeo().putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), wfUri);
