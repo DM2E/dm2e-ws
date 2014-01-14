@@ -287,10 +287,13 @@ public class WorkflowService extends AbstractRDFService {
 	@POST
 	@Path("{id}/autowire")
 	public Response autowireWorkflow() {
+		log.debug("Autowiring!");
 		URI wfUri = popPath();
 		WorkflowPojo wf = new WorkflowPojo();
-		wf.loadFromURI(wfUri, 1); // so the web services get expanded, sigh
+		log.debug("Loading workflow " + wfUri);
+		wf.loadFromURI(wfUri, 1); // 1, so the web services get expanded, sigh
 		if (null == wf.getId()) {
+			log.warn("Couldn't load workflow " + wfUri);
 			return Response.status(404).entity("Couldn't find workflow " + wfUri).build();
 		}
 		wf.autowire();
