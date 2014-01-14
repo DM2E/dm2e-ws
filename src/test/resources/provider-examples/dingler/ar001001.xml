@@ -1,0 +1,1291 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title type="main">Dingler-Online | Das digitalisierte Polytechnische Journal</title>
+        <title type="sub">Band 1, Jahrgang 1820</title>
+        <title type="sub">Marechaux über die hydraulische Presse.</title>
+      </titleStmt>
+      <publicationStmt>
+        <publisher>Humboldt-Universität</publisher>
+        <pubPlace>Berlin</pubPlace>
+        <date when="2012"/>
+        <idno type="URL">http://dingler.culture.hu-berlin.de/article/pj001/ar001001</idno>
+        <availability status="free">
+          <p>Distributed under the <ref target="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</ref>.</p>
+        </availability>
+      </publicationStmt>
+      <seriesStmt>
+        <title level="j">Dingler-Online | Das digitalisierte Polytechnische Journal</title>
+        <respStmt>
+          <resp>Projektträger:</resp>
+          <name xml:id="HU">Humboldt-Universität zu Berlin</name>
+        </respStmt>
+        <respStmt>
+          <resp>in Kooperation mit:</resp>
+          <name>Sächsische Landesbibliothek &#x2013; Staats- und Universitätsbibliothek Dresden</name>
+        </respStmt>
+        <respStmt>
+          <resp>gefördert durch:</resp>
+          <name>Deutsche Forschungsgemeinschaft</name>
+        </respStmt>
+        <respStmt>
+          <resp>Volltextdigitalisierung durch:</resp>
+          <name xml:id="Editura">Editura GmbH &amp; Co.KG, Berlin</name>
+        </respStmt>
+      </seriesStmt>
+      <sourceDesc>
+        <biblFull>
+          <titleStmt>
+            <title>Marechaux über die hydraulische Presse.</title>
+            <author><name>Marechaux, Peter Ludwig</name></author>
+          </titleStmt>
+          <publicationStmt>            
+            <date type="first">1820</date>
+          </publicationStmt>
+          <seriesStmt>
+            <title level="j" type="main">Polytechnisches Journal</title>
+            <idno type="volume">1</idno>
+            <idno type="page">1-34</idno>
+          </seriesStmt>
+        </biblFull>
+        <biblStruct>
+                    <monogr>
+                        <title>Polytechnisches Journal</title>
+                        <editor role="editor">Dr. Johann Gottfried Dingler</editor>
+                        <idno type="local">32258227Z</idno>
+                        <imprint>
+                            <biblScope type="volume">1</biblScope>
+                            <pubPlace>Stuttgart</pubPlace>
+                            <publisher>J. G. Cotta'sche Buchhandlung</publisher>
+                            <date>1820</date>
+                            <note>Exemplar SLUB Dresden, Bibliotheksbarcode 32258227Z</note>
+                        </imprint>
+                    </monogr>
+                </biblStruct>
+      </sourceDesc>
+    </fileDesc>
+    <encodingDesc>
+      <projectDesc>
+        <p>Optical character recognition and basic TEI encoding by Editura GmbH &amp; Co.KG, Berlin
+          2009-2012.</p>
+      </projectDesc>
+      <editorialDecl>
+        <hyphenation eol="hard">
+          <p>All soft end-of-line hyphenation has been removed.</p>
+        </hyphenation>
+        <normalization method="silent">
+          <p>No text-decoration elements were captured, such as decorated capital letters at the beginning of
+            chapters or text-separators.</p>
+          <p>All references to printed sheets were captured.</p>
+        </normalization>
+        <correction method="markup">
+          <p>As far as possible all errata-lists printed in the journal have been realised, using the element
+            <gi scheme="TEI">orig</gi> to mark the original text and <gi scheme="TEI">corr</gi> to mark
+            the correction given in the errata-list.</p>
+        </correction>
+        <quotation marks="all">
+          <p>All passages set off by quotation marks were marked by the element <gi scheme="TEI">q</gi>
+            including the quotation mark inside the tag. In case of repeating quotation marks in front of
+            each line, only the first and the last quotation mark was obtained. And the element <gi
+              scheme="TEI">q</gi>'s @type-attribute was set to the value &#x201C;preline&#x201D;.</p>
+        </quotation>
+      </editorialDecl>
+    </encodingDesc>
+  </teiHeader>
+  <text type="art_undef" subtype="publ_primary" n="1" xml:id="ar001001">
+                        <front>
+                            <pb n="1" facs="32258227Z/00000017" xml:id="pj001_pb001"/>
+                            <titlePart type="number" rendition="#center">I.</titlePart>
+                            <titlePart type="main" rendition="#center #wide">Ueber die hydraulische Presse.</titlePart>
+                            <titlePart type="sub" rendition="#center">(Mit Abbildungen. <ref>Tab.
+                                    I.</ref>)</titlePart>
+                            <titlePart type="sub" rendition="#center">Vom Prof. <persName role="author"> Marechaux</persName> in
+                                    <placeName>Muͤnchen</placeName>.</titlePart>
+                            <titlePart type="column">Marechaux über die hydraulische Presse.</titlePart>
+                        </front>
+                        <body>
+                            <div type="section" n="1">
+                                <head rendition="#center #wide">1. Vorzuͤge der hydraulischen Presse.</head>
+                                <p rendition="#no_indent">Die hydraulische Presse hat besondere Vorzuͤge, die man
+                                    an andern Arten von Pressen vermißt. Man kann ihren Effekt bedeutend vermehren, ohne
+                                    ihren Umfang in demselben Verhaͤltniß zu vergroͤßern. Ein einziger
+                                    Mann reicht hin, vermittelst derselben sehr große Wirkungen hervorzubringen. Man hat
+                                    hier mit wenigen Reibungen zu kaͤmpfen.</p>
+                            </div>
+                            <div type="section" n="2">
+                                <head rendition="#center #wide">2. Hauptzweck dieses Aufsazes.</head>
+                                <p>Meine Absicht ist mit beizutragen, diese Art von Pressen zur allgemeineren Kenntniß
+                                    zu bringen, und Arbeiter, die mit den hydrostatischen Grundsaͤzen nicht
+                                    vertraut sind, in den Stand zu sezen, mit Sachkenntniß diese nuͤzlichen
+                                    Maschinen nach den Forderungen der Fabrikanten, nach den Lokalitaͤten, und
+                                    uͤberhaupt nach den Beduͤrfnissen einzurichten.</p>
+                                <p>Der unterrichtete Leser, der etwa diesen Aufsaz durchblaͤttern wollte, wird
+                                    verzeihen, daß ich mit denen ihm laͤngst bekannten Prinzipien den Anfang
+                                    mache, diese mit Umstaͤndlichkeit vortrage, und bei der Art, den Effekt
+                                    dieser Pressen zu berechnen, mit einiger Weitlaͤufigkeit zu Werke gehe.</p>
+                            </div>
+                            <div type="section" n="3">
+                                <head rendition="#center #wide">3. Hydrostatischer Grundsaz, auf welchem die Presse
+                                    beruht.</head>
+                                <p>Die hydraulische Presse beruht auf folgendem einfachen Lehr- und
+                                    Erfahrungssaze:</p>
+                                <pb n="2" facs="32258227Z/00000018" xml:id="pj001_pb002"/>
+                                <p><hi rendition="#wide">Daß jeder Druck auf eine tropfbare Fluͤssigkeit, nicht
+                                        blos in seiner eigenthuͤmlichen Richtung wirkt, sondern sich nach allen
+                                        Seiten gleichfoͤrmig durch die ganze Fluͤssigkeit
+                                    fortpflanzt</hi>.</p>
+                                <p>So wird <ref rend="new">
+                                        <hi rendition="#roman">Fig.</hi> 1.</ref> ein Wassertheilchen <hi rendition="#roman">a</hi> durch das Gewicht der daruͤber stehenden
+                                    Wassersaͤule <hi rendition="#roman #wide">ab</hi> gedruͤckt, und eben
+                                    so stark druͤckt dasselbe gegen die Wassertheilchen, die es unmittelbar
+                                    beruͤhren. Diese druͤcken wieder mit einer eben so großen Kraft, und
+                                    zwar nach allen Richtungen, gegen diejenigen, die ihnen am naͤchsten liegen,
+                                    und so pflanzt sich von Wassertheilchen zu Wassertheilchen durch das ganze
+                                    Gefaͤß der Druck fort, den das Wassertheilchen <hi rendition="#roman">a</hi>
+                                    von der daruͤber stehenden Wassersaͤule <hi rendition="#roman #wide">ab</hi> erlitt.</p>
+                                <p>Zieht man durch <hi rendition="#roman">a</hi>
+                                    <ref rend="new">
+                                        <hi rendition="#roman">Fig.</hi> 1.</ref> die wagerechte Ebene <hi rendition="#roman #wide">cad</hi>, und betrachtet man unter den vielen
+                                    Richtungen, in welchen jedes Wassertheilchen in dieser Ebene den Druck fortpflanzt,
+                                    diejenige nach obenhin, die fuͤr unsere Pressen allein von Nuzen seyn kann,
+                                    so wird man ohne Schwierigkeit wahrnehmen, daß dieser Druck in jener Richtung so
+                                    vielmal vervielfaͤltigt wird, als es Wassertheilchen in gedachter Ebene
+                                    giebt.</p>
+                                <p>Da aber im Gefaͤße <ref rend="new">
+                                        <hi rendition="#roman">Fig.</hi> 1.</ref> die Oberflaͤche des Wassers
+                                    horizontal ist, so wird jedes in der wagerechten Ebene <hi rendition="#roman #wide">cad</hi> liegende Wassertheilchen durch die uͤber demselben, und mit <hi rendition="#roman #wide">ab</hi> gleich hohen und gleich schweren
+                                    Wassersaͤulen eben so stark gedruͤckt, wie dasselbe von unten nach
+                                    oben druͤckt. Der gleichgroße Druck, den jedes in der Ebene <hi rendition="#roman #wide">cad</hi> liegende Wassertheilchen von der Saͤule
+                                        <hi rendition="#roman #wide">ab</hi> erfaͤhrt, findet also
+                                    uͤberall einen gleich großen Gegendruck, so daß alle Wassertheilchen in
+                                    dieser Ebene sowohl gegen einander, als gegen alle darüber und darunter liegenden im
+                                    vollkommensten Gleichgewichte stehen.</p>
+                                <pb n="3" facs="32258227Z/00000019" xml:id="pj001_pb003"/>
+                                <p>Man mag sich die Ebene <hi rendition="#roman #wide">cad</hi> durch jede andere Stelle
+                                    des Gefaͤßes gezogen denken, so finden uͤberall dieselben
+                                    Umstaͤnde statt, mit dem Unterschiede nur, daß der Druck, den das
+                                    Wassertheilchen <hi rendition="#roman">a</hi> erfaͤhrt, bald staͤrker,
+                                    bald schwaͤcher seyn wird, je nachdem die Saͤule <hi rendition="#roman #wide">ab</hi> laͤnger oder kuͤrzer
+                                    ausfaͤllt.</p>
+                            </div>
+                            <div type="section" n="4">
+                                <head rendition="#center #wide">4. Naͤhere Beziehung dieser Praͤmissen auf
+                                    die hydraulische Presse.</head>
+                                <p>Denken wir uns jezt unmittelbar uͤber die Ebene <hi rendition="#roman #wide">cad</hi> eine feste Querwand, so daß uͤber und unter dieser Querwand
+                                    Wasser sey, und die kleine Wassersaͤule <hi rendition="#roman #wide">ab</hi>
+                                    mit dem unter der Querwand befindlichen Wasser in Verbindung stehe.</p>
+                                <p>Diese Querwand traͤgt nicht nur das Gewicht des daruͤber stehenden
+                                    Wassers, sie widersteht auch zugleich dem Drucke saͤmmtlicher
+                                    Wassertheilchen, in der unmittelbar darunter liegenden Wasserebene <hi rendition="#roman #wide">cad</hi>, die Wassertheilchen ausgenommen, die ihr
+                                    Gegengewicht in der kleinen Saͤule <hi rendition="#roman #wide">ab</hi>
+                                    finden.</p>
+                                <p>Der Druck, den diese feste Querwand von oben und von unten her erfaͤhrt, ist
+                                    gleich groß, und das Maas desselben ist ganz genau das Gewicht des darüber stehenden
+                                    Wassers.</p>
+                            </div>
+                            <div type="section" n="5">
+                                <head rendition="#center #wide">5. Uebergang zur hydraulischen Presse.</head>
+                                <p>Jezt denke man sich <ref rend="new">
+                                        <hi rendition="#roman">Fig.</hi> 2.</ref> die Querwand <hi rendition="#roman #wide">ww</hi> laͤngs den Seitenwaͤnden des
+                                    Gefaͤßes, und den aͤußern Waͤnden der kleinen Roͤhre <hi rendition="#roman #wide">ab</hi> beweglich, und diese Roͤhre immer gleich
+                                    hoch mit Wasser angefuͤllt, welches lezte keine Schwierigkeit macht, indem
+                                    diese Roͤhre in dem Maaße, wie sie ihr Wasser abgiebt, durch neuen Zufluß
+                                    voll erhalten werden kann. Auch denken wir uns die beweglichste Querwand ohne alle
+                                    Schwere.</p>
+                                <pb n="4" facs="32258227Z/00000020" xml:id="pj001_pb004"/>
+                                <p>So lange das Wasser uͤber derselben stehen bleibt, wird sie nicht von der
+                                    Stelle weichen; denn das Gewicht dieses Wassers ist dem Drucke, den sie von untenher
+                                    erfaͤhrt, gleich groß. Schaffen wir aber ploͤzlich alles
+                                    daruͤberstehende Wasser weg, so wird der Druck saͤmmtlicher
+                                    unmittelbar darunter liegenden Wassertheilchen, da er keinen Gegendruck mehr
+                                    erfaͤhrt, sogleich anfangen die bewegliche Querwand, nach oben zu, zu
+                                    bewegen. Da der Raum unter derselben in dem Maaße groͤßer wird, wie sie
+                                    hoͤher steigt, und sich dieser durch den fortdauernden Abfluß des Wassers aus
+                                    der kleinen Roͤhre <hi rendition="#roman #wide">ab</hi> immer fuͤllt,
+                                    so wird sie so lange zu steigen fortfahren, bis sie die Hoͤhe der kleinen
+                                    Wassersaͤule <hi rendition="#roman #wide">ab</hi> erreicht hat.</p>
+                                <p>Bei dem Hinaufsteigen dieser Querwand wird zwar die uͤber dem Wasserspiegel
+                                    hervorragende Wassersaͤule <hi rendition="#roman #wide">ab</hi> immer
+                                    kuͤrzer, und ihr Gewicht wird dadurch immer geringer; allein dieses Gewicht
+                                    hoͤrt nur zu wirken auf, wenn es gleich Null geworden ist, das heißt, wenn
+                                    die kleine Saͤule <hi rendition="#roman #wide">ab</hi> uͤber den
+                                    Wasserspiegel nicht mehr hervorragt.</p>
+                                <p>Die Groͤße der Abnahme dieses Drucks findet ihr jedesmaliges Maaß in dem
+                                    Gewichte einer Masse Wasser, die dazu reicht, den jedesmaligen Raum uͤber der
+                                    beweglichen Querwand, bis zur Hoͤhe der Saͤule <hi rendition="#roman #wide">ab</hi>, zu fuͤllen, und so wie jeder mit dieser
+                                    Wassermasse gleich schwerer fester Koͤrper das Emporsteigen der Querwand
+                                    hindern wuͤrde, so wuͤrde sie auch jeden unbeweglichen festen
+                                    Koͤrper mit einer Gewalt druͤcken, die dem Gewichte desselben
+                                    vollkommen gleich kaͤme.</p>
+                                <p>In diesen wenigen einfachen Saͤzen liegt das ganze Wesen, die
+                                    eigenthuͤmliche Wirkungsart, und jede Bedingung zum Bau und zur Berechnung
+                                    des Effekts einer hydraulischen Presse.</p>
+                            </div>
+                            <div type="section" n="6">
+                                <pb n="5" facs="32258227Z/00000021" xml:id="pj001_pb005"/>
+                                <head rendition="#center #wide">6. Wesentliche Bestandtheile einer hydraulischen
+                                    Presse.</head>
+                                <p>Es sind daher zu derselben drei Hauptbestandtheile erforderlich.</p>
+                                <p>Eine Roͤhre mit engem Durchmesser, ein Cylinder mit breiterem Durchmesser, und
+                                    in demselben ein leicht beweglicher Kolben.</p>
+                                <p>Die engere Roͤhre nenne ich die <hi rendition="#wide">Druckroͤhre</hi>,
+                                    die weitere den <hi rendition="#wide">Preßcylinder</hi>, und den Kolben in dieser
+                                    den <hi rendition="#wide">Preßkolben</hi>.</p>
+                            </div>
+                            <div type="section" n="7">
+                                <head rendition="#center #wide">7. Einfluß der Hoͤhe und der Breite beider
+                                    Cylinder auf den Effekt dieser Presse.</head>
+                                <p>Eine jeder dieser beiden Roͤhren kann mit Beibehaltung ihrer
+                                    Grundflaͤche der Hoͤhe nach wachsen, oder mit Beibehaltung ihrer
+                                    Hoͤhe an Grundflaͤche zunehmen.</p>
+                                <p>Es ist leicht, aus den eben entwickelten Grundsaͤzen den Einfluß herzuleiten,
+                                    den die eine oder die andere Veraͤnderung auf die Wirksamkeit der Presse
+                                    haben kann.</p>
+                                <p>Es faͤllt sogleich <ref rend="new">
+                                        <hi rendition="#roman">Fig.</hi> 2.</ref> auf, daß, wenn die Hoͤhe des
+                                    Preßcylinders waͤchst, dieses Wachsen keinen andern Einfluß hat, als daß es
+                                    dem Preßkolben, der in <ref><hi rendition="#roman">Fig.</hi> 2.</ref> durch die Querwand <hi rendition="#roman #wide">ww</hi> vorgestellt ist, einen groͤßern
+                                    Spielraum auf- und abwaͤrts verschaft.</p>
+                                <p>Eben so klar ist es, daß, wenn waͤhrend dieses Steigens der Effekt derselbe
+                                    bleiben soll, die kleine Saͤule <hi rendition="#roman #wide">ab</hi> in
+                                    demselben Verhaͤltnisse wachsen muͤßte, damit ihr Gewicht und folglich
+                                    ihr Druck sich gleich bliebe; denn mit dem Preßkolben erhebt sich zugleich die
+                                    allein wirksame Wasserflaͤche, die unter der Querwand <hi rendition="#roman #wide">waw</hi> liegt, in welcher sich der Druck aller
+                                    Wassertheilchen von unten nach oben hin vereinigt, und alles unter derselben
+                                    befindliche Wasser ist fuͤr den Effekt verloren.</p>
+                                <pb n="6" facs="32258227Z/00000022" xml:id="pj001_pb006"/>
+                                <p>Der Durchmesser der Saͤule <hi rendition="#roman #wide">ab</hi>
+                                    <ref rend="new">
+                                        <hi rendition="#roman">Fig.</hi> 1.</ref> sey der kleinste moͤgliche. Wir
+                                    wollen deshalb eine solche Saͤule <hi rendition="#roman #wide">ab</hi> die
+                                        <hi rendition="#wide">kleinere Saͤule</hi> nennen, bei welcher
+                                    Bezeichnung wir nicht auf die Hoͤhe, sondern blos auf den Durchmesser
+                                    derselben Ruͤcksicht nehmen.</p>
+                                <p>Man sieht, daß ein Produckt aus dem Gewichte dieser <hi rendition="#wide">kleinsten
+                                        Saͤule</hi> in die Menge saͤmmtlicher Wassertheilchen in der Ebene
+                                        <hi rendition="#roman #wide">cad</hi> die Groͤße des Druckes bezeichnet,
+                                    den alle diese Wassertheilchen zusammen genommen, gegen die bewegliche Querwand <hi rendition="#roman #wide">ww</hi>
+                                    <ref rend="new"><hi rendition="#roman">Fig.</hi> 2.</ref>, die den Preßkolben vorstellt,
+                                    ausuͤben. Von dem Drucke dieser kleinsten Saͤule <hi rendition="#roman #wide">ab</hi> so vielmal vervielfaͤltigt, als es
+                                    Wassertheilchen in dieser Ebene gibt, haͤngt also allein der ganze Effekt ab;
+                                    es nuͤzt folglich offenbar zu nichts, mehrere solcher <hi rendition="#wide">kleinsten</hi> Saͤulen in einen Cylinder einzuschließen, um dadurch den
+                                    Umfang oder den Durchmesser der Wassersaͤule zu vergroͤßern; weil
+                                    diese groͤßere Menge <hi rendition="#wide">kleinster</hi> Saͤulen
+                                    nicht zusammen genommen auf das Wassertheilchen <hi rendition="#roman">a</hi>
+                                    wiegen, und folglich den Druck, den dieses erfaͤhrt, nicht
+                                    vergroͤßern, sondern jede derselben druͤckt einzeln auf ein anderes
+                                    Wassertheilchen. Das Wachsen der Grundflaͤche des kleinen Cylinders, weit
+                                    entfernt zu nuͤzen, entzieht vielmehr der Wirksamkeit alle Wassertheilchen in
+                                        <hi rendition="#roman #wide">cad</hi>, worauf dessen Grundflaͤche
+                                    unmittelbar ruht. Diese reagiren in senkrechter Richtung, und gehen fuͤr den
+                                    Preßkolben verloren.</p>
+                                <p>Ganz anders verhaͤlt es sich, wenn die kleinste Saͤule <hi rendition="#roman #wide">ab</hi>, der Hoͤhe nach, waͤchst. Ihre
+                                    Schwere nimmt zu im geraden Verhaͤltnisse ihrer Hoͤhe, und da sie
+                                    folglich in demselben Verhaͤltnisse das Wassertheilchen <hi rendition="#roman">a</hi> staͤrker druͤckt, waͤchst der
+                                    Effekt.</p>
+                                <p>Eben so vortheilhaft ist die Vergroͤßerung der Grundflaͤche des
+                                    Preßcylinders. Die Ebene <hi rendition="#roman #wide">cad</hi>
+                                    <ref rend="new">
+                                        <hi rendition="#roman">Fig.</hi> 1.</ref> waͤchst alsdann in demselben
+                                    Maaße, und mit ihr die Menge der Wassertheilchen, <pb n="7" facs="32258227Z/00000023" xml:id="pj001_pb007"/>die sie enthaͤlt. Sie
+                                    druͤcken folglich gegen den Preßkolben mit einer Kraft, die im geraden
+                                    Verhaͤltnisse ihrer Menge zunimmt; und da sich die Kreisflaͤchen wie
+                                    die Quadrate ihrer Durchmesser verhalten, so sieht man, daß, wenn der Durchmesser
+                                    eines Preßcylinders anstatt 6 Zoll 12 Zoll bekommt, der Druck saͤmmtlicher in
+                                    der Wasserebene <hi rendition="#roman #wide">cad</hi> befindlichen Wassertheilchen
+                                    in dem Verhältniß von 6² : 12², oder von 36 : 144 zunimmt, das heißt,
+                                    er wird dadurch viermal staͤrker.</p>
+                            </div>
+                            <div type="section" n="8">
+                                <head rendition="#center #wide">8. Einige Folgerungen aus diesen Saͤzen.</head>
+                                <p>Der nachdenkende Kuͤnstler wird aus obigen Betrachtungen schon selbst den
+                                    Schluß gemacht haben, daß, da der ganze Effekt von der Schwere der kleinsten
+                                    Saͤule <hi rendition="#roman #wide">ab</hi> ganz allein abhaͤngt, alle
+                                    Kuͤnsteleien in Bezug auf die Form des Druckrohrs vergeblich seyn
+                                    wuͤrden; da uͤber dieses die Schwere nur nach senkrechten Richtungen
+                                    wirkt, so kommt nicht die Laͤnge des Druckrohrs, sondern nur seine senkrechte
+                                    Hoͤhe in Betrachtung.</p>
+                                <p>Ein Druckrohr mit breiterem Durchmesser kann dem Preßcylinder, ehe der volle Effekt
+                                    erreicht wird, mehr Wasser mit einemmal zufuͤhren, und dadurch die Erreichung
+                                    des Effekts etwas beschleunigen, aber er traͤgt zur Groͤße desselben
+                                    nichts bei.</p>
+                            </div>
+                            <div type="section" n="9">
+                                <head rendition="#center #wide">9. Ein Ersaz fuͤr die Hoͤhe des
+                                    Druckrohrs.</head>
+                                <p>Beide im §. 7. angegebenen Verstaͤrkungsmittel des Effekts bieten oft,
+                                    besonders bei Pressen von starker Wirksamkeit, bedeutende Hindernisse dar. Der
+                                    senkrechte Bau eines langen Druckrohrs erfordert Geruͤste und Haltungspunkte.
+                                    Ueber dieses kann es oft sehr unbequem werden, das noͤthige Wasser zu einer
+                                    ansehnlichen Hoͤhe hinaufzutragen, was fuͤr Wein- und
+                                    Aderpressen, die schnell arbeiten muͤssen, hoͤchst unangenehm ist, und
+                                    die Zahl der Arbeiter vermehrt.</p>
+                                <pb n="8" facs="32258227Z/00000024" xml:id="pj001_pb008"/>
+                                <p>Wollte man die Grundflaͤche des Preßcylinders vergroͤßern, so
+                                    wuͤrde man mit andern Hindernissen kaͤmpfen. Der Preßkolben muß an den
+                                    innern Waͤnden des Cylinders so gut als moͤglich aufschließen. Sie
+                                    muͤssen daher mit einem Fleiße bearbeitet werden, der die Kosten, wenn der
+                                    Durchmesser waͤchst, bedeutend erhoͤht, und Maschinen und Werkzeuge
+                                    voraussezt, mit welchen wenige Werkstellen versehen sind.</p>
+                                <p>Glücklicherweise hat man einen Ersaz fuͤr die Hoͤhe des Druckrohrs, und
+                                    dieser besteht in der schicklichen Anwendung eines mechanischen Druckes auf die
+                                    Oberflaͤche des in der Druckroͤhre enthaltenen Wassers.</p>
+                                <p>Dazu dient ein kleiner Kolben, der sich in der Druckroͤhre auf- und
+                                    abwaͤrts bewegt; ich nenne ihn den <hi rendition="#wide">Druckkolben</hi>, um
+                                    ihn vom <hi rendition="#wide">Preßkolben</hi> zu unterscheiden, und die mit einem
+                                    solchen Druckkolben versehenen Pressen koͤnnen <hi rendition="#wide">hydraulische Druckpressen</hi> genannt werden, um sie von der <hi rendition="#wide">einfachen hydraulischen Presse</hi> zu unterscheiden.</p>
+                                <p>Man kann nun diesen Kolben bei ganz kleinen Maschinen mit der Hand in Bewegung sezen.
+                                    Wo der Effekt staͤrker verlangt wird, kann eine Kurbel mit einem Stirnrade
+                                    angebracht werden; auch laͤßt sich der Kolben vermittelst eines
+                                    Pumpenschwengels bequem regieren, und diesem kann man nach Belieben verschiedene
+                                    Lagen geben.</p>
+                                <p>Das zum Drucke noͤthige Wasser kann man entweder mit der Hand in die
+                                    Roͤhre gießen, oder, was besser und bequemer ist, besonders wenn ein Effekt
+                                    schnell hervorgebracht werden soll, wie auch zu Pressen, die fortdauernd arbeiten,
+                                    vermittelst eines Saug- und Druckwerkes, aus einem Behaͤlter
+                                    schoͤpfen, in welchen das angewendete Wasser, sobald die erforderliche
+                                    Wirkung vollendet ist, wieder zuruͤckfließt.</p>
+                            </div>
+                            <div type="section" n="10">
+                                <pb n="9" facs="32258227Z/00000025" xml:id="pj001_pb009"/>
+                                <head rendition="#center #wide">10. Der Druck eines Druckkolbens läßt sich auf die
+                                    korrespondirende senkrechte Hoͤhe eines Druckrohrs
+                                    zuruͤckfuͤhren.</head>
+                                <p>Man kann leicht den Druck eines solchen Kolben auf die korrespondirende Hoͤhe
+                                    eines Druckrohrs zuruͤckfuͤhren.</p>
+                                <p>Zu dieser Operation muß man das Gewicht eines Kubikzolles Wasser kennen.</p>
+                                <p>Nach den neuesten von <hi rendition="#wide">Egtelwein</hi> in Berlin angestellten
+                                    sehr genauen Versuchen, die mit denen fast zur selben Zeit in Paris angestellten auf
+                                    das vollkommenste uͤbereinstimmen, wiegt der Brandenburgische (oder
+                                    Rheinlaͤndische) Duodecimal Kubikzoll Wasser 288 Grane deutsches
+                                    Medizinal-Gewicht.</p>
+                                <p>Da das deutsche Medizinal-Gewicht in ganz Deutschland bekannt ist, so kann
+                                    jeder Kuͤnstler das in seinem Wohnorte uͤbliche Gewicht leicht auf
+                                    dasselbe zuruͤckfuͤhren; und deßhalb entfernte ich mich hier von dem
+                                    gewoͤhnlichen Gebrauche, die Maaße und Gewichte nach Theilen des Pariser
+                                    Maaßes und Gewichtes anzugeben.</p>
+                                <p>Ein Loth Medizinal Gewicht haͤlt 240 Gran; folglich 2 Pfund, zu 32 Loth
+                                    gerechnet, 7680 Grane.</p>
+                                <p>Die zu beantwortende Frage ist: <hi rendition="#wide">Wie hoch muͤßte ein
+                                        Druckrohr von der Grundflaͤche des Druckkolbenrohrs seyn, wenn es ohne
+                                        Huͤlfe des Druckkolbens denselben Effekt hervorbringen sollte</hi>.</p>
+                                <p>Um die erste Uebersicht dieser Berechnung zu erleichtern, will ich einfache und
+                                    leicht zu uͤbersehende Verhaͤltnisse voraussezen.</p>
+                                <p>Die Kraft, die auf den Preßkolben wirkt, sey gleich 50 Pfund.</p>
+                                <p>Die Grundflaͤche der Druckroͤhre halte genau einen Quadratzoll. Alsdann
+                                    geht genau auf einen Zoll senkrechter Hoͤhe ein Kubikzoll Wasser.</p>
+                                <pb n="10" facs="32258227Z/00000026" xml:id="pj001_pb010"/>
+                                <p>Die gesuchte Hoͤhe des Druckrohrs in Zollen sey gleich <hi rendition="#roman">x</hi>.</p>
+                                <p>Da nun das Gewicht von 50 Pfund gleich dem Gewichte von <hi rendition="#roman">x</hi>
+                                    mal 288 Gran seyn soll, so findet man den Werth von <hi rendition="#roman">x</hi>,
+                                    wenn man 50 in Grane verwandelt, und diese Summe durch 288 dividirt.</p>
+                                <p>Die Rechnung ist folgende:</p>
+                                <p>
+                                    <figure rend="text" xml:id="tx001026a">
+                                        <graphic url="32258227Z/tx001026a"/>
+                                        <figDesc>Textabbildung Bd. 1, S. 10</figDesc>
+                                    </figure>
+                                </p>
+                                <p>Diese 1333 sind der Werth für <hi rendition="#roman">x</hi>, oder die gesuchte
+                                    Hoͤhe des Druckrohrs in Zollen: verwandelt man diese Zahl durch 12 in Schuh,
+                                    so findet man 111 Schuh für die gesuchte Hoͤhe.</p>
+                                <p>Ein Druckrohr von 111 Schuh Hoͤhe, wenn seine Grundflaͤche einen Zoll
+                                    haͤlt, leistet also gerade so viel als ein Druckkolben, der in einem kleinen
+                                    Rohr von der Hoͤhe des Preßcylinders mit 50 Pfund Kraft hinunter getrieben
+                                    wuͤrde.</p>
+                                <p>Wenn man den Inhalt der Grundflaͤche des Druckrohrs, sie mag groß oder klein
+                                    seyn, <hi rendition="#roman">g</hi> nennt, und die Groͤße des Druckes des
+                                    Druckkolbens, in Pfunden zu Granen reduzirt, <hi rendition="#roman">p</hi> nennet,
+                                    so bekommt man eine allgemeine Formel, die selbst fuͤr den Ungeuͤbten
+                                    leicht zu gebrauchen ist.</p>
+                                <p>Sie lautet so:</p>
+                                <p>
+                                    <figure rend="text" xml:id="tx001026b">
+                                        <graphic url="32258227Z/tx001026b"/>
+                                        <figDesc>Textabbildung Bd. 1, S. 10</figDesc>
+                                    </figure>
+                                </p>
+                                <p>Aus dieser Formel ergibt sich, daß, wenn der mechanische Druk oder <hi rendition="#roman">p</hi> unveraͤnderlich bleibt, und nur die
+                                    Grundflaͤche des Druckrohrs oder <hi rendition="#roman">g</hi> abnimmt, so
+                                    wird im Preßcylinder der Effekt des Preßkolbens groͤßer: dagegen wird dieser
+                                    Effekt kleiner, wenn diese Grundflaͤche waͤchst.</p>
+                                <p>Je kleiner naͤmlich <hi rendition="#roman">g</hi> ist, desto groͤßer
+                                    wird der Quotient oder die Zahl, welche die Groͤße des Drucks angibt. Je
+                                    groͤßer <hi rendition="#roman">g</hi> wird, desto kleiner wird dieser
+                                    Quotient.</p>
+                                <pb n="11" facs="32258227Z/00000027" xml:id="pj001_pb011"/>
+                                <p>Folgendes Beispiel zeigt, wie diese Formel zu benuzen ist.</p>
+                                <p>Die Grundflaͤche des Druckrohrs halte 3/4 Quadratzoll: <hi rendition="#roman">g</hi> ist folglich gleich 3/4.</p>
+                                <p>Die Druckkraft sey gleich 50 Pfund, folglich ist <hi rendition="#roman">p</hi> gleich
+                                    50.</p>
+                                <p>Die Rechnung sieht nun so aus:</p>
+                                <p>
+                                    <figure rend="text" xml:id="tx001027a">
+                                        <graphic url="32258227Z/tx001027a"/>
+                                        <figDesc>Textabbildung Bd. 1, S. 11</figDesc>
+                                    </figure>
+                                </p>
+                                <p rendition="#no_indent">oder wenn man die erforderlichen Rechnungen macht:</p>
+                                <p>
+                                    <figure rend="text" xml:id="tx001027b">
+                                        <graphic url="32258227Z/tx001027b"/>
+                                        <figDesc>Textabbildung Bd. 1, S. 11</figDesc>
+                                    </figure>
+                                </p>
+                                <p>Diese 1777 (wo hier die Bruͤche weggelassen werden), sind wiederum Zolle, die,
+                                    in Fuße verwandelt, 148 Fuß geben.</p>
+                                <p>Man sieht also, daß, wenn die Druckkraft dieselbe bleibt, die Grundflaͤche des
+                                    Rohrs aber, anstatt einen Quadratzoll zu halten, nur 3/4 Quadratzoll haͤlt,
+                                    der Effekt weit groͤßer wird; denn um einen gleich großen Effekt ohne
+                                    Huͤlfe des Druckkolbens zu erhalten, muͤßte das Rohr, anstatt 111 Fuß,
+                                    148 Fuß haben, also um 37 Fuß laͤnger werden.</p>
+                                <p>Ich habe in diese Formel den Werth der Grundflaͤche gebracht. Dieser muß also
+                                    gesucht werden, wenn man blos den Durchmesser des Rohrs kennt.</p>
+                                <p>Man findet den Inhalt der Grundflaͤche eines Kreises, von welchem man den
+                                    Durchmesser kennt, wenn man zuerst vermittelst des bekannten Verhaͤltnisses
+                                    100 : 314, und dem gegebenen Durchmesser durch die Regel de Tri, die Laͤnge
+                                    der Peripherie des Kreises sucht, und diese gefundene Laͤnge mit dem vierten
+                                    Theile des Durchmessers multiplicirt.</p>
+                                <p>Die Rechnung lautet so:</p>
+                                <p>
+                                    <hi rendition="#roman">d</hi> sey der gegebene Durchmesser, man suche die
+                                    Peripherie:</p>
+                                <p>
+                                    <figure rend="text" xml:id="tx001027c">
+                                        <graphic url="32258227Z/tx001027c"/>
+                                        <figDesc>Textabbildung Bd. 1, S. 11</figDesc>
+                                    </figure>
+                                </p>
+                                <pb n="12" facs="32258227Z/00000028" xml:id="pj001_pb012"/>
+                                <p>Multiplicirt man nun diese gefundene Zahl mit dem 4ten Theil des Durchmessers oder
+                                    1/4 <hi rendition="#roman">d</hi>, so bekommt man 314/100 x <hi rendition="#roman">d</hi>²/4 oder wenn man anstatt des Durchmessers den Radius sezet:</p>
+                                <p rendition="#no_indent">314/100 x <hi rendition="#roman">r</hi>² = (3,14) <hi rendition="#roman">r</hi>².</p>
+                                <p>Aus dieser Zahl (3,14) <hi rendition="#roman">r</hi>² laͤßt sich
+                                    sogleich jede Kreisflaͤche berechnen.</p>
+                                <p>Der Durchmesser der Kreisflaͤche sey = 1/2 Zoll, so ist der Radius = 1/4 Zoll,
+                                    und <hi rendition="#roman">r</hi>² = 1/10 Zoll.</p>
+                                <p>Die Grundflaͤche ist also gleich</p>
+                                <p rendition="#no_indent">314 x 1/10 gleich 314/16 = 0,195 oder 195/1000
+                                    Quadratzoll.</p>
+                                <p>Untersucht man, wie hoch ein Druckrohr seyn muͤßte, wenn seine
+                                    Grundflaͤche 195/1000 Quadratzoll enthaͤlt, und die Druckkraft des
+                                    Kolbens gleich 50 Pfund bleibt, so hat man fuͤr diesen Fall</p>
+                                <p>288 x 195/1000 = 7680 x 50</p>
+                                <p rendition="#no_indent">oder im Decimalbruche</p>
+                                <p>288 x 0,195 = 7680 x 50</p>
+                                <p>und man findet nach verrichteter Rechnung, x = 6837 Zoll oder 561 Schuh.</p>
+                                <p>Allein man sieht zugleich auch, daß die Steigerung der Druckkraft durch Verminderung
+                                    des Durchmessers des Druckrohrs ihre Graͤnzen hat. Wird der Durchmesser des
+                                    Druckrohrs sehr klein, so lauft man Gefahr, daß die Kolbenstange sich
+                                    kruͤmme, und die Bewegung des Druckkolbens erschwere oder gaͤnzlich
+                                    hemme. Es ist daher rathsam, daß diese Stange, bei engen Muͤndungen, von
+                                    gutem gehaͤrtetem Stahle verfertigt werde.</p>
+                            </div>
+                            <div type="section" n="11">
+                                <pb n="13" facs="32258227Z/00000029" xml:id="pj001_pb013"/>
+                                <head rendition="#center #wide">11. Scheinbare Anomalie zwischen der Wirkung des
+                                    Druckkolbens und des Druckrohrs.</head>
+                                <p>Es duͤrfte einigen Lesern auffallen, daß ich §. 7. so
+                                    umstaͤndlich bewies, daß der groͤßere Durchmesser einer
+                                    Druckroͤhre zu ihrem Effekte gar nichts beitrage, und daß ich doch so eben
+                                    diesen Durchmesser mit in Rechnung brachte, als ich die Wirkung des Druckkolbens auf
+                                    die Hoͤhe einer korrespondirenden Druckroͤhre
+                                    zuruͤkfuͤhrte. Eine Loͤsung dieser scheinbaren Anomalie
+                                    duͤrfte einigen Lesern nicht unwillkommen seyn.</p>
+                                <p>Wenn der Druckkolben auf die Oberflaͤche des Wassers mit einer Kraft gleich 50
+                                    Pfund druͤkt, so geht nicht die Wirkung dieser vollen Kraft zu dem
+                                    Preßcylinder uͤber. Solches wuͤrde nur dann der Fall seyn, wenn jede
+                                    der <hi rendition="#wide">kleinsten Wassersaͤulen</hi> im Druckrohr, oder was
+                                    zum Effekt dasselbe ist, wenn nur eine einzige derselben, mit einer Kraft = 50
+                                    Pfund, in den Preßcylinder getrieben werden koͤnnte. Allein der Gesammtdruk
+                                    des Druckkolbens vertheilt sich zwischen allen kleinsten Wassersaͤulen in der
+                                    Druckroͤhre, so daß eine jede nur ihren Antheil daran bekommt. Je
+                                    groͤßer nun die Oberflaͤche ist, desto mehr vertheilt sich diese
+                                    Kraft, und desto geringer wird folglich die Wirkung des Drukes. Daher ist, wenn man
+                                    einen Druckkolben anbringt, die Grundflaͤche des Druckrohrs ein wesentliches
+                                    Element in der anzustellenden Rechnung; denn in eben dem Verhaͤltniß, wie
+                                    diese waͤchst, schwaͤcht sich der Druck.</p>
+                                <p>Da sich die Kreisflaͤchen gegen einander wie die Quadrate ihrer Durchmesser
+                                    verhalten, so wird dieser Druck, wenn der Durchmesser des Druckrohrs um einmal so
+                                    viel waͤchst, viermal schwaͤcher; er wird neunmal schwaͤcher,
+                                    wenn er aus einem Zoll zu 3 Zoll heranwaͤchst etc. Sucht man zu diesen
+                                    Grundflaͤchen die korrespondirenden Druckhoͤhen, <pb n="14" facs="32258227Z/00000030" xml:id="pj001_pb014"/>so wird man finden, daß diese
+                                    Hoͤhen in eben diesen Verhaͤltnissen abnehmen.</p>
+                            </div>
+                            <div type="section" n="12">
+                                <head rendition="#center #wide">12. Methoden, die Wirksamkeit hydraulischer Pressen zu
+                                    berechnen.</head>
+                                <p>Man kann den Effekt der hydraulischen Pressen nach zwei Methoden berechnen.</p>
+                                <p>Zu der einen muß man <hi rendition="#wide">die Hoͤhe des Druckrohrs</hi> und
+                                    den <hi rendition="#wide">Durchmesser des Preßcylinders</hi> kennen.</p>
+                                <p>Zu der andern sind gegeben <hi rendition="#wide">der Durchmesser des Druckrohrs, der
+                                        Durchmesser des Preßcylinders</hi>, und das <hi rendition="#wide">Gewicht des in
+                                        dem Druckrohr enthaltenen Wassers</hi>.</p>
+                            </div>
+                            <div type="section" n="13">
+                                <head rendition="#center #wide">13. Erste Methode.</head>
+                                <p>Man weiß aus §. 4. <ref rend="new">
+                                        <hi rendition="#roman">Fig.</hi> 2</ref>., daß das Maaß des Druckes, den die
+                                    bewegliche Querwand <hi rendition="#roman #wide">ww</hi>, die den Preßkolben
+                                    vorstellt, erfaͤhrt, genau das Gewicht des Wassercylinders betraͤgt,
+                                    der den Raum uͤber derselben, bis zur Hoͤhe der kleinen Roͤhre
+                                        <hi rendition="#roman #wide">ab</hi> fuͤllt.</p>
+                                <p>Man findet den kubischen Inhalt dieses Wassercylinders in Kubikzollen, wenn man
+                                    seine, zu Quadratzollen reduzirte, Grundflaͤche mit der in Zolle verwandelten
+                                    Hoͤhe des Wassers in der Druckroͤhre multiplicirt.</p>
+                                <p>Man findet das Gewicht dieses Wassercylinders, wenn man diese Zahl, die seinen Inhalt
+                                    in kubischen Zollen ausdruͤckt, mit dem Gewichte eines Kubikzolles Wasser,
+                                    oder mit 288 Granen multiplicirt. Dieses Produkt, dividirt mit 7680 Granen, giebt
+                                    dann das Gewicht dieses Cylinders in Pfunden an.</p>
+                                <p>Man will z.B. nach dieser Methode die Wirksamkeit einer Presse berechnen, deren
+                                    Druckroͤhre 10 Schuh hoch ist, und deren Preßcylinder 16 Zoll im Durchmesser
+                                    haͤlt.</p>
+                                <p>Man suche zuerst den Inhalt der Grundflaͤche des Preßcylinders, wozu am besten
+                                    die Formel <hi rendition="#roman">r</hi>² <hi rendition="#roman">π</hi> dient: <hi rendition="#roman">π</hi> stellt die
+                                    Verhaͤltnißzahl 3,14 . . vor.</p>
+                                <pb n="15" facs="32258227Z/00000031" xml:id="pj001_pb015"/>
+                                <p>
+                                    <hi rendition="#roman">v</hi> = 8 Zoll </p>
+                                <p>
+                                    <hi rendition="#roman">v</hi>² oder <hi rendition="#roman">v</hi> Quad. = 64
+                                    Zoll</p>
+                                <p>und <hi rendition="#roman">v</hi>² <hi rendition="#roman">π</hi> 64 x
+                                    3,14. = 200,96 Zoll.</p>
+                                <p>Diese 200,96 Zoll sind der Quadratinhalt der Grundflaͤche des Wassercylinders,
+                                    dessen Gewicht man sucht.</p>
+                                <p>Um dieses Gewicht zu finden, muß zuerst der Kubikinhalt desselben bekannt seyn: da in
+                                    unserer Voraussezung das Druckrohr 120 Zoll hoch ist, so nehmen wir an, daß der
+                                    Wassercylinder, dessen Druck wir suchen, dieselbe Hoͤhe habe.</p>
+                                <p>Man findet den Kubikinhalt desselben, wenn man seine Grundflaͤche oder 200,96
+                                    mit seiner Hoͤhe oder mit 120 multiplicirt.</p>
+                                <p rendition="#no_indent">200,96 x 120 = 24115,20 Kubikzolle.</p>
+                                <p>Jezt muß man noch die Schwere dieses Wassercylinders kennen; denn die Schwere
+                                    desselben ist der Druckkraft gleich.</p>
+                                <p>Man findet die Schwere dieses Wassercylinders, wenn man die Zahl, die seinen
+                                    kubischen Inhalt in Kubikzollen ausdruͤkt, mit dem Gewicht eines Kubikzolles
+                                    Wasser, oder mit 288 multiplicirt.</p>
+                                <p rendition="#no_indent">24115,20 x 288 = 6945177,60.</p>
+                                <p>Diese lezte Zahl durch 7680 dividirt, giebt das Gewicht dieses Cylinders in Pfunden
+                                    an.</p>
+                                <p>6945177,60/7680. = 904,3 oder etwas uͤber 9 Centner.</p>
+                                <p>Wollte man nach dieser Methode die Wirksamkeit einer <hi rendition="#wide">hydraulischen Druckpresse</hi> berechnen, so muͤßte man nach §.
+                                    12. die gegebene Groͤße der anzuwendenden mechanischen Kraft auf die
+                                    Hoͤhe der korrespondirenden Druckroͤhre reduziren. Allein dieser Weg
+                                    waͤre umstaͤndlicher, und die folgende Methode fuͤhrt schneller
+                                    zum Ziel.</p>
+                            </div>
+                            <div type="section" n="14">
+                                <head rendition="#center #wide">14. Zweite Methode.</head>
+                                <p>Kennt man die Hoͤhe des Druckrohrs nicht, wie das der Fall mit den <hi rendition="#wide">hydraulischen Druckpressen</hi> ist, und <pb n="16" facs="32258227Z/00000032" xml:id="pj001_pb016"/>will man die gegebene Druckkraft
+                                    nicht auf die Hoͤhe eines korrespondirenden Druckrohrs
+                                    zuruͤkfuͤhren, so muß man aus den gegebenen Durchmessern des
+                                    Druckrohrs und des Preßcylinders, und aus der gegebenen Druckkraft, die Wirksamkeit
+                                    der Presse berechnen.</p>
+                                <p>Die gegebene Druckkraft repraͤsentirt das Gewicht eines Wassercylinders,
+                                    dessen Grundflaͤche gegeben, dessen Hoͤhe aber unbekannt ist.</p>
+                                <p>Um die Rechnung zu stellen, geht man von dem bekannten Grundsaze aus:</p>
+                                <p>
+                                    <hi rendition="#wide">daß die Inhalte gleichhoher Cylinder sich wie die Quadrate
+                                        ihrer Durchmesser verhalten</hi>.</p>
+                                <p>Sey der Durchmesser der Druckröhre 3/4 Zoll; der Durchmesser des Preßcylinders 16
+                                    Zoll lang, und die Druckkraft gleich 50 Pfund, so wird die Rechnung so gestellt:</p>
+                                <p rendition="#no_indent">(3/4)² : 16² = 50 Pfund : <hi rendition="#roman">x</hi>
+                                </p>
+                                <p rendition="#no_indent">oder wenn man die beiden ersten Glieder quadrirt:</p>
+                                <p>9/10 : 256 : = 50 : <hi rendition="#roman">x</hi>
+                                </p>
+                                <p>
+                                    <hi rendition="#roman">x</hi> = 256 x 50 x 16 = 22822 Pfund oder 228 Cent. und 22
+                                    Pfund.</p>
+                                <p>Diese 228 Cent. 22 Pfund sind die Preßkraft oder das Gewicht eines Wassercylinders,
+                                    dessen Grundflaͤche 16 Zoll im Durchmesser haͤlt, und der die
+                                    Hoͤhe eines andern Wassercylinders hat, dessen Durchmesser 3/4 Zoll
+                                    haͤlt, und der eine Wassermasse enthalten kann, die 50 Pfund schwer ist.</p>
+                            </div>
+                            <div type="section" n="15">
+                                <head rendition="#center #wide">15. Berechnung der Momente, aus welchen sich die Kraft
+                                    zusammensezt, die den Druckkolben treibt.</head>
+                                <p>Ich betrachtete bis jezt die Druckkraft als ein einziges Gewicht, von der gegebenen
+                                    Schwere, allein dieses Gewicht ist eine Potenz, die aus mehreren Kraftmomenten
+                                    zusammengesezt ist, deren Werthe einzeln berechnet werden muͤssen, wenn man
+                                    die Gesammtkraft derselben kennen lernen will.</p>
+                                <pb n="17" facs="32258227Z/00000033" xml:id="pj001_pb017"/>
+                                <p>Da unter den Pressen, die ich spaͤter beschreiben werde, die eine mit einer
+                                    Kurbel und einem Stirnrade, die andere mit einem Pumpenarm versehen ist, so werde
+                                    ich die Art, diese Momente leicht zu berechnen, auf beide anwenden.</p>
+                                <p>Die Presse <ref rend="new">
+                                        <hi rendition="#roman">Fig.</hi> 3.</ref> ist mit einer Kurbel und einem
+                                    Stirnrade versehen. Herr v. Turner, ihr Erfinder, hat fuͤr dieselbe folgende
+                                    Verhaͤltnisse an ihrem Druckwerk angenommen.</p>
+                                <p>Laͤnge der Kurbel als Hebelarms der Kraft, = 18'' </p>
+                                <p>Halbmesser des Stirnrades, als Hebelarms der Last, = 2 1/2 Zoll, Kraft des Arbeiters
+                                    50 Pfund.</p>
+                                <p>Aus folgender Proportion ergibt sich die Gesammtkraft, die auf den Kolben wiegt:</p>
+                                <p>
+                                    <figure rend="text" xml:id="tx001033a">
+                                        <graphic url="32258227Z/tx001033a"/>
+                                        <figDesc>Textabbildung Bd. 1, S. 17</figDesc>
+                                    </figure>
+                                </p>
+                                <p>Die Presse <ref rend="new">
+                                        <hi rendition="#roman">Fig.</hi> 4.</ref>, die als Modell zu einer Cider-
+                                    oder Kelterpresse dienen kann, wird nach Art einer gewoͤhnlichen Pumpe
+                                    regiert.</p>
+                                <p>Laͤnge des Pumpenarms 60'', Entfernung der Last vom Ruhepunkt, oder Hebelarm
+                                    der Last 4'', Kraft des Arbeiters 50 ℔.</p>
+                                <p>Aus folgender Proportion ergiebt sich die Gesammtkraft, die den Druckkolben
+                                    treibt:</p>
+                                <p>
+                                    <figure rend="text" xml:id="tx001033b">
+                                        <graphic url="32258227Z/tx001033b"/>
+                                        <figDesc>Textabbildung Bd. 1, S. 17</figDesc>
+                                    </figure>
+                                </p>
+                            </div>
+                            <div type="section" n="16">
+                                <head rendition="#center #wide">16. Schuzmittel gegen die Wirkungen einer zu großen
+                                    Druckkraft.</head>
+                                <p>Wenn Pressen blos durch Druckroͤhren ohne Mitwirkung mechanischer Momente
+                                    regiert werden, so laͤßt sich ihre hoͤchste Wirkung genau berechnen,
+                                    und die Staͤrke des Preßcylinders mit großer Zuversicht darnach
+                                    einrichten.</p>
+                                <p>Mit Anwendung mechanischer Momente, zu deren Faktoren die lebendige Kraft des
+                                    Arbeiters ein Element hergibt, verhaͤlt es sich anders. Diese lebendige Kraft
+                                    ist eine veraͤnderliche <pb n="18" facs="32258227Z/00000034" xml:id="pj001_pb018"/>Groͤße, die sehr mannigfaltige Werthe bekommen
+                                    kann, und deren Maximum, wenn man es wirklich genau bestimmen koͤnnte, so
+                                    weit hinaus liegt, daß man nicht leicht die Dicke der Waͤnde des
+                                    Preßcylinders darnach einrichten koͤnnte.</p>
+                                <p>Eine hydraulische <hi rendition="#wide">Druckpresse</hi> muß daher mit einem <hi rendition="#wide">Sicherheitsventil</hi> versehen seyn. Man sieht ein solches
+                                    Ventil in der Presse <ref rend="new">
+                                        <hi rendition="#roman">Fig.</hi> 4.</ref> in <hi rendition="#roman">t</hi>
+                                    angebracht. Man beschwert es mit einem Gewichte, das der Kraft, die man anwenden
+                                    will, proportional ist. Sobald der Druck diese Kraft uͤberschreitet,
+                                    oͤffnet sich das Ventil.</p>
+                            </div>
+                            <div type="section" n="17">
+                                <head rendition="#center #wide">17. Schaͤzungsmittel fuͤr die jedesmalige
+                                    Groͤße des Druckes.</head>
+                                <p>An <hi rendition="#wide">Druckpressen</hi> koͤnnte dieses Ventil, als
+                                    Schaͤzungsmittel fuͤr die Intensitaͤt des jedesmaligen Druckes
+                                    benuzt werden.</p>
+                                <p>Man duͤrfte nur zu dem Ende einen Hebelsarm quer uͤber dieses Ventil
+                                    ziehen, und ihn an dem einen Ende um einen Stift sich bewegen lassen; ein
+                                    bewegliches Gewicht wuͤrde dann, wie an einer roͤmischen Waage, die
+                                    jedesmalige Staͤrke des Druckes bezeichnen, die das Ventil oͤffnen
+                                    wuͤrde.</p>
+                                <p>Allein an solchem Druckmesser wuͤrde man die Anzeige der fortschreitenden
+                                    Wirksamkeit der Presse vermissen.</p>
+                            </div>
+                            <div type="section" n="18">
+                                <head rendition="#center #wide">18. Druckmesser, welcher die fortschreitende Wirksamkeit
+                                    der Presse anzeigt.</head>
+                                <p>Herr <hi rendition="#wide">Murray</hi> ist der erste, der einen Druckmesser, der
+                                    diesen lezten Zwek erreicht, vorgeschlagen hat.</p>
+                                <p>
+                                    <ref rend="new">
+                                        <hi rendition="#roman">Fig.</hi> 5.</ref> zeigt diesen Druckmesser in Verbindung
+                                    mit dem Preßcylinder.</p>
+                                <p>Seine Bestandteile sind folgende:</p>
+                                <p>
+                                    <hi rendition="#roman">A</hi> kupferne, in dem kleinen Cylinder <hi rendition="#roman">B</hi> befestigte Roͤhre, auf welche das Wasser nach
+                                    Verhaͤltniß der Oberflaͤche des Wassers wirkt, das im innern Cylinder
+                                    enthalten ist.</p>
+                                <pb n="19" facs="32258227Z/00000035" xml:id="pj001_pb019"/>
+                                <p>
+                                    <hi rendition="#roman">D</hi> anderer, am Cylinder <hi rendition="#roman">B</hi>
+                                    befestigter Cylinder, der mit ihm steigt und faͤllt, so wie sich dieser in
+                                    den ledernen Buͤchsen <hi rendition="#roman #wide">EE</hi> bewegt.</p>
+                                <p>
+                                    <hi rendition="#roman">F</hi> kleiner Cylinder, dessen innerer Durchmesser 1/10 des
+                                    Durchmessers des Cylinders <hi rendition="#roman">D</hi> betraͤgt. Er ist mit
+                                    dem großen Cylinder <hi rendition="#roman">G</hi> fest vereinigt, und bewegt sich
+                                    frei in den ledernen Buͤchsen <hi rendition="#roman #wide">HH</hi>.</p>
+                                <p>
+                                    <hi rendition="#roman">I</hi> kleiner, mit Quecksilber angefuͤllter, eiserner
+                                    Behaͤlter, der im Innern des Recipienten <hi rendition="#roman">K</hi>
+                                    befestigt und an seinem obern Theile durchloͤchert ist, damit das in <hi rendition="#roman">K</hi> enthaltene Wasser auf das Quecksilber druͤken
+                                    koͤnne.</p>
+                                <p>
+                                    <hi rendition="#roman #wide">LM</hi> glaͤserne Roͤhre mit einer Scale.
+                                    Die Zahlen gehen von 20 an bis 260, und bezeichnen den Druck nach Tonnen.</p>
+                                <p>An dieser Scale ist das Verhaͤltniß von <hi rendition="#roman">C</hi> zu <hi rendition="#roman">B</hi> wie 400 : 1.</p>
+                                <p>Das Verhaͤltniß von <hi rendition="#roman">D</hi> zu <hi rendition="#roman">F</hi> wie 10 : 1.</p>
+                                <p>Der Cylinder <hi rendition="#roman">G</hi> haͤlt 4 Zoll im Durchmesser, und
+                                    sobald er das Wasser zwingt in den Recipienten <hi rendition="#roman">K</hi> zu
+                                    treten, so muß ein Widerstand uͤberwunden werden, der dem Gewicht einer
+                                    Quecksilbersaͤule, die mit ihm gleichen Durchmesser hat, gleich
+                                    koͤmmt. Alsdann zeigt die Hoͤhe des Quecksilbers an der Scale die
+                                    Staͤrke des Drucks, und zwar nach Tonnen, an.</p>
+                                <p>Herr Murray bemerkt, daß bei einem schwachen Drucke, oder wenn man Lasten wiegen
+                                    will, die kleinen Cylinder <hi rendition="#roman">D</hi> und <hi rendition="#roman">B</hi> weggelassen, und blos die beweglichen Cylinder <hi rendition="#roman">G</hi> und <hi rendition="#roman">F</hi> beibehalten werden.</p>
+                                <p>Alle diese Cylinder muͤssen gut abgedreht, aus gutem Glockenmetall gegossen,
+                                    und in ihren ledernen Buͤchsen leicht beweglich seyn.</p>
+                                <p>Die Cylinder <hi rendition="#roman">G</hi> und <hi rendition="#roman">K</hi> sind so
+                                    ausgehoͤhlt, daß der erste einen kleinen Kolben <hi rendition="#roman">F</hi>, und der andere einen kleinen Recipienten <hi rendition="#roman">I</hi>
+                                    aufnehmen kann.</p>
+                                <p>Die Recipienten <hi rendition="#roman #wide">KK</hi> muͤssen immer voll Wasser
+                                    seyn; <pb n="20" facs="32258227Z/00000036" xml:id="pj001_pb020"/>wenn auch etwas
+                                    weniges durch die ledernen Buͤchsen dringen sollte, so hindert dieses die
+                                    Genauigkeit des Instruments nicht, und das Maaß des Druckes, welchen die Materien
+                                    erleiden, wird immer ziemlich genau angegeben werden.</p>
+                            </div>
+                            <div type="section" n="19">
+                                <head rendition="#center #wide">19. Neuer Druckmesser vom Verfasser dieser
+                                    Schrift.</head>
+                                <p>Der Murray'sche Druckmesser duͤrfte, unerachtet aller
+                                    Verkuͤrzungsmittel, doch noch immer die unbequeme Hoͤhe von
+                                    fuͤnf bis sechs Schuh beibehalten. Ueber dieses ist er sehr kuͤnstlich
+                                    zusammengesezt.</p>
+                                <p>Folgender scheint einfacher; es kommen keine glaͤserne Roͤhren in seine
+                                    Konstruction. Er zeigt nach Centnern, und sogar nach Theilen des Centners die
+                                    fortschreitende Bewegung der Wirksamkeit der Presse, und jeder nur etwas geschikte
+                                    Metallarbeiter wird ihn ohne große Muͤhe verfertigen.</p>
+                            </div>
+                            <div type="section" n="20">
+                                <head rendition="#center #wide">20. Verzeichniß seiner verschiedenen Theile.</head>
+                                <p>Man sieht diesen Druckmesser <ref rend="new">
+                                        <hi rendition="#roman">Fig.</hi> 6.</ref> abgebildet.</p>
+                                <p>
+                                    <hi rendition="#roman #wide">AB</hi> ist ein kleines, von Glokenmetall gegossenes
+                                    Rohr.</p>
+                                <p>
+                                    <hi rendition="#roman">C</hi> Roͤhre, die den Cylinder <hi rendition="#roman #wide">AB</hi> mit dem innern Raum des Preßcylinders in
+                                    Verbindung sezet. Er ist an diesem Rohre fest und wasserdicht geschroben, oder auf
+                                    eine andere beliebige Art daran befestiget.</p>
+                                <p>
+                                    <hi rendition="#roman">D</hi>
+                                    <ref rend="new">
+                                        <hi rendition="#roman">Fig.</hi> 7.</ref> kleiner Kolben, der in <ref>
+                                        <hi rendition="#roman">Fig.</hi> 6.</ref>
+                                    <hi rendition="#roman #wide">AB</hi> nicht sichtbar ist, und im Cylinder <hi rendition="#roman #wide">AB</hi> auf- und abwaͤrts geht.</p>
+                                <p>
+                                    <hi rendition="#roman">E</hi> Kolbenstange; sie ist von Stahl. Der Theil außerhalb
+                                    des Rohres ist flach, und auf der einen Seite mit Zaͤhnen versehen.</p>
+                                <p>
+                                    <hi rendition="#roman">G</hi> kleine Rolle, die verhindert, daß die Kolbenstange
+                                    nicht zuruͤckgedruͤckt werde, auch kann unter oder uͤber
+                                    derselben eine flache Huͤlse angebracht werden, um zu verhindern, daß die
+                                    Kolbenstange sich drehe.</p>
+                                <p>
+                                    <hi rendition="#roman #wide">IKL</hi>. kleiner Quadrant, der sich in seinem
+                                    Mittelpunkt <hi rendition="#roman">K</hi> drehet, und dessen Peripherie mit
+                                    Zaͤhnen versehen ist.</p>
+                                <pb n="21" facs="32258227Z/00000037" xml:id="pj001_pb021"/>
+                                <p>
+                                    <hi rendition="#roman #wide">KM</hi> Hebelarm. Der Quadrant <hi rendition="#roman #wide">IKL</hi> ist an demselben befestigt. Ungefaͤhr
+                                    in <hi rendition="#roman">N</hi> wird er von diesem Quadranten abwaͤrts
+                                    gebogen, damit er die Bewegung der Kolbenstange <hi rendition="#roman">E</hi> nicht
+                                    hindere, und an dem Quadranten <hi rendition="#roman #wide">MM</hi> anliegen
+                                    koͤnne.</p>
+                                <p>
+                                    <hi rendition="#roman">P</hi> Gewicht, welches am Ende des Hebelarms <hi rendition="#roman #wide">KM</hi> angehaͤngt ist.</p>
+                                <p>
+                                    <hi rendition="#roman #wide">MM</hi> Rand eines Quadranten, neben welchem das Ende
+                                    des Hebelarms <hi rendition="#roman #wide">KM</hi> sich bewegt, und der in Grade
+                                    eingetheilt ist. Er liegt nicht in der Ebene der Quadranten, weil das Kolbenrohr es
+                                    nicht zulaͤßt; weshalb auch der Hebelarm abwaͤrts gebogen ist.</p>
+                                <p>Man hat dem Kuͤnstler die Anordnung des Geruͤstes uͤberlassen,
+                                    das diesen Quadranten mit seinen verschiedenen Theilen tragen muß.</p>
+                            </div>
+                            <div type="section" n="21">
+                                <head rendition="#center #wide">21. Nothwendige Bestimmung des Maximums der Wirkung der
+                                    Presse, zu welcher dieser Druckmesser verfertiget werden soll.</head>
+                                <p>Da die Kraft, mit welcher dieser Druckmesser wirkt, von Null an, durch alle
+                                    Abstuffungen, bis zum vollen Effekt der Presse, wandelt, so muß man, vor allen
+                                    Dingen, ein Maximum der Wirksamkeit festsezen, welches, bei den gegebenen
+                                    mechanischen Momenten, den Kraftaufwand des Arbeiters nicht leicht
+                                    uͤberschreiten kann.</p>
+                                <p>Da die mechanischen Momente ihre festgesezten Graͤnzen haben, so
+                                    wuͤrde, wenn die wirkende Kraft ein Gewicht, oder eine andere sich in ihrem
+                                    Effekt gleich bleibende Potenz waͤre, dieses Maximum leicht festgesetzt, und
+                                    nicht uͤberschritten werden koͤnnen.</p>
+                                <p>Weil aber an der hydraulischen Druckpresse die lebendige sehr veraͤnderliche
+                                    Kraft eines Arbeiters die mechanischen Momente regiert, so muß man bei Bestimmung
+                                    des Maximums darauf besondere Ruͤcksicht nehmen.</p>
+                                <pb n="22" facs="32258227Z/00000038" xml:id="pj001_pb022"/>
+                                <p>Haͤtte man den Kraftaufwand des Arbeiters bei Berechnung der mechanischen
+                                    Momente auf 50 ℔. angesetzt, um die Druckkraft, und den vollen Effekt der
+                                    Presse darnach zu bestimmen, so koͤnnte man schon nicht zur Anlegung unsers
+                                    Druckmessers bei dieser Bestimmung stehen bleiben: denn so bedeutend dieser
+                                    Kraftaufwand auch an sich ist, so ist er doch noch von der Graͤnze entfernt,
+                                    die ein Arbeiter, der etwa augenblicklich mit wildem Ungestuͤm arbeitete,
+                                    erreichen koͤnnte.</p>
+                                <p>Im §. 17. wurde, als man die Druckkraft fuͤr zwei Pressen berechnete,
+                                    die Kraft des Mannes auf 50 Pfund angesezt; wollte man mit dieser Presse einen
+                                    Druckmesser verbinden, so muͤßte sie schon hoͤher angenommen werden,
+                                    weil der Zusatz eines einzigen Pfundes Kraft den Hebelsarm des Druckmessers
+                                    uͤber seine letzten Graͤnzen hinaus treiben wuͤrde. Es scheint
+                                    indessen hinreichend, wenn fuͤr einen Kraftaufwand uͤber 50 Pfund
+                                    hinaus, ein Spielraum von 10 Pfund gestattet wird.</p>
+                                <p>Fuͤr die im §. 17. berechnete Druckkraft an der Pumpenpresse <ref>
+                                        <hi rendition="#roman">Fig.</hi> 4.</ref> wuͤrde sich, nach dieser
+                                    Zugabe, die Druckkraft von 750 Pfund zu 900 Pfund erheben.</p>
+                            </div>
+                            <div type="section" n="22">
+                                <head rendition="#center #wide">22. Bestimmung des Maximums der Preßkraft.</head>
+                                <p>Hat man die hoͤchste Stufe, welche die Druckkraft erreichen kann, mit
+                                    Wahrscheinlichkeit bestimmt, so suchet man aus dem bekannten Durchmesser des
+                                    Druckrohrs, und aus dem Durchmesser des Preßcylinders, das Maximum des Effekts.</p>
+                                <p>Man findet aus der Proportion</p>
+                                <p>1² : 10² = 750 ℔. : <hi rendition="#roman">x</hi>
+                                </p>
+                                <p>
+                                    <hi rendition="#roman">x</hi> = 750 Ctnr.</p>
+                                <p rendition="#no_indent">und aus der Proportion</p>
+                                <p>1² : 10² = 900 ℔. : <hi rendition="#roman">x</hi>
+                                </p>
+                                <p>
+                                    <hi rendition="#roman">x</hi> = 900 Ctnr.</p>
+                                <pb n="23" facs="32258227Z/00000039" xml:id="pj001_pb023"/>
+                                <p>Ehe die Kraft den Druckmesser uͤber seine lezten Graͤnzen hinaus
+                                    treibt, kann die Preßkraft einen Spielraum von 150 Centnern durchwandern, denn 900
+                                    – 750 = 150.</p>
+                            </div>
+                            <div type="section" n="23">
+                                <head rendition="#center #wide">23. Bestimmung des Durchmessers des Kolbenrohrs.</head>
+                                <p>Kennt man die volle Wirkung des Preßkolbens, so muß man zu derselben das
+                                    noͤthige Gegengewicht suchen.</p>
+                                <p>Die Groͤße dieses Gegengewichtes haͤngt von dem Durchmesser des
+                                    Kolbenrohrs des Druckmessers ab.</p>
+                                <p>Man weiß aus §. 13., daß die Druckkraft sich in ihrer Wirkung vermindert, wie
+                                    die Grundflaͤche des Wassercylinders, auf welchen sie wiegt, zunimmt. Was
+                                    dort fuͤr die Druckkraft bewiesen wurde, gilt auch hier fuͤr den
+                                    Gegendruck.</p>
+                                <p>Ein zu kleiner Durchmesser fuͤr den innern Raum dieses Kolbenrohrs
+                                    wuͤrde zweckwidrig seyn. Die Kolbenstange haͤtte nicht die
+                                    noͤthige Unbiegsamkeit.</p>
+                                <p>Aus folgendem sieht man aber, wie das Gegengewicht zunimmt, wenn der Durchmesser des
+                                    Rohrs waͤchst.</p>
+                                <table cols="3" rows="5">
+                                    <row role="label">
+                                        <cell>Durchmesser des Rohrs.</cell>
+                                        <cell>Preßkraft.</cell>
+                                        <cell>Gegendruck.</cell>
+                                    </row>
+                                    <row>
+                                        <cell>3/12 Zoll</cell>
+                                        <cell>2 Centner</cell>
+                                        <cell>4 Loth.</cell>
+                                    </row>
+                                    <row>
+                                        <cell>4/12 Zoll</cell>
+                                        <cell>2 Centner</cell>
+                                        <cell>7 1/9 Loth.</cell>
+                                    </row>
+                                    <row>
+                                        <cell>5/12 Zoll</cell>
+                                        <cell>2 Centner</cell>
+                                        <cell>12 41/72 Loth.</cell>
+                                    </row>
+                                    <row>
+                                        <cell>6/12 Zoll</cell>
+                                        <cell>2 Centner</cell>
+                                        <cell>16 Loth.</cell>
+                                    </row>
+                                </table>
+                                <p>Der kleinste Durchmesser fuͤr das Kolbenrohr duͤrfte indessen in der
+                                    Lichte nicht weniger als 1/4 Zoll halten. Groͤßer wuͤrde das
+                                    Gegengewicht durch seine Schwere unbequemen werden.</p>
+                                <p>Eine staͤhlerne, kurze, gehaͤrtete Kolbenstange, von 3 Linien im
+                                    Durchmesser, traͤgt, ohne sich zu biegen, den senkrechten Druck eines halben
+                                    Centners, auch noch mehr.</p>
+                                <p>Die Liederung wird vermittelst eines starken Aufsatzes auf dem obersten Ende des
+                                    Durchmesser-Rohrs gegen das Leder, das in einer besonders dazu eingedrehten
+                                    Vertiefung <pb n="24" facs="32258227Z/00000040" xml:id="pj001_pb024"/>gelegt wird,
+                                    so fest angeschroben, daß dieses Leder sich fest an die Kolbenstange anlegt, und
+                                    kein Wasser durchlaͤßt.<note place="bottom" anchored="true" n="1)">
+                                        <pb n="24" facs="32258227Z/00000040" xml:id="pj001_pb024_n1"/>
+                                        <p>Der mechanische Theil wird in einem folgenden Aufsatze besonders auseinander
+                                            gesetzt werden. Dieser erste Aufsatz sollte blos dazu dienen, jedem Arbeiter
+                                            einen deutlichen Begriff von dieser neuen Art von Pressen zu geben.</p>
+                                    </note>
+                                </p>
+                                <p>Man kann aus Folgendem ersehen, wie fuͤr einen Effect von 900 Zentnern das
+                                    Gewicht an Schwere zunimmt, wenn der Durchmesser des Kolbenrohrs waͤchst.</p>
+                                <p>Durchmesser 3/12 Zoll, Gegengewicht 56 1/4 Pfund.</p>
+                                <p>Durchmesser 4/12 Zoll, Gegengewicht 100 Pfund.</p>
+                                <p>Durchmesser 5/12 Zoll, Gegengewicht 156 1/4 Pfund.</p>
+                                <p>Durchmesser 6/12 Zoll, Gegengewicht 225 Pfund.</p>
+                                <p>Ist an dem Durchmesser der Hebelarm der Kraft achtmal laͤnger als der Hebelarm
+                                    der Last, so waͤchst die Schwere des ans Ende des Hebelarms der Kraft
+                                    anzuhaͤngenden Gewichtes wie folgt:</p>
+                                <p>56 1/4 Pfund halten das Gleichgewicht mit 7 1/32 Pfund.</p>
+                                <p>100 Pfund halten das Gleichgewicht mit 12 1/12 Pfund.</p>
+                                <p>156 1/4 Pfund halten das Gleichgewicht mit 19 17/32 Pfund.</p>
+                                <p>225 Pfund halten das Gleichgewicht mit 28 1/8 Pfund.</p>
+                            </div>
+                            <div type="section" n="24">
+                                <head rendition="#center #wide">24. Bestimmung der Laͤnge des Kolbenrohrs.</head>
+                                <p>Ist man mit sich selbst uͤber den innern Durchmesser des Kolbenrohrs einig, so
+                                    muß man die Laͤnge desselben bestimmen.</p>
+                                <p>Diese haͤngt unmittelbar von der Laͤnge ab, die man fuͤr die
+                                    Peripherie des gezaͤhnten Quadranten <hi rendition="#roman #wide">IKL</hi>
+                                    waͤhlen wird, und diese lezte haͤngt von der Willkuͤhr des
+                                    Kuͤnstlers ab; nur muß darauf gesehen werden, daß sie so gewaͤhlt
+                                    werde, daß der Hebelsarm der Kraft nicht zu lang ausfalle.</p>
+                                <p>Drei Zoll scheinen fuͤr diesen Halbmesser eine schickliche Laͤnge
+                                    abzugeben.</p>
+                                <pb n="25" facs="32258227Z/00000041" xml:id="pj001_pb025"/>
+                                <p>Aus der Proportion</p>
+                                <p>10000 : 31415 ... = 6<hi rendition="#roman">'</hi> : <hi rendition="#roman">x</hi>
+                                </p>
+                                <p rendition="#no_indent">findet man fuͤr <hi rendition="#roman">x</hi>, oder die
+                                    Laͤnge des ganzen Umkreises,</p>
+                                <p>
+                                    <hi rendition="#roman">x</hi> = 18,84 Zoll,</p>
+                                <p rendition="#no_indent">und folglich fuͤr den vierten Theil der Peripherie
+                                    oder</p>
+                                <p>
+                                    <hi rendition="#roman">x</hi>/4 = 4,71225 Zoll.</p>
+                                <p>Da der Kolben sich blos um diese Laͤnge heben kann, so bestimmt diese Zahl
+                                    zugleich die Laͤnge des Kolbenrohrs, die des Kolbens, und endlich die des
+                                    gezaͤhnten Theils der Kolbenstange.</p>
+                            </div>
+                            <div type="section" n="25">
+                                <head rendition="#center #wide">25. Bestimmung der Laͤnge des Hebelarms der
+                                    Kraft.</head>
+                                <p>Die Laͤnge des Hebelarms haͤngt von der Willkuͤhr des
+                                    Kuͤnstlers ab; nur muß das am Ende desselben haͤngende Gewicht sich
+                                    darnach richten.</p>
+                                <p>Je laͤnger dieser ist, desto groͤßer wird der Kreis, den seine
+                                    aͤußerste Spize beschreibt, desto deutlicher wird die Eintheilung des Randes
+                                    des Quadranten, vor welchem er sich bewegt, und desto kleiner werden die Theile des
+                                    Centners, die man noch daran ablesen kann; allein eine zu große Laͤnge
+                                    waͤre mit andern Unbequemlichkeiten verbunden.</p>
+                                <p>Man muß indessen hier nicht vergessen, die Schwere des Hebels mit in die Rechnung zu
+                                    ziehen. Da die Hebelstange als ein regelmaͤßiger prismatischer Koͤrper
+                                    betrachtet werden kann, so muß die Haͤlfte der Schwere des Hebelarms der
+                                    Kraft mit in die Rechnung gezogen werden, und in eben diesem Verhaͤltnisse
+                                    wird daß anzuhaͤngende Gewicht minder schwer.</p>
+                            </div>
+                            <div type="section" n="26">
+                                <head rendition="#center #wide">26. Einige Bedingungen zur Eintheilung des
+                                    Quadranten.</head>
+                                <p>Da die Preßkraft nach groͤßeren Abtheilungen des Gewichtes bestimmt wird, und
+                                    zwar nach Centnern, so muͤssen <pb n="26" facs="32258227Z/00000042" xml:id="pj001_pb026"/>ebenfalls die Eintheilungen des Quadranten nach Centnern
+                                    berechnet werden. Je kleiner die Massen sind, fuͤr welche die
+                                    Eintheilungspunkte gesucht werden, desto richtiger sind die Angaben dieses
+                                    Instruments, desto muͤhsamer aber wird die Arbeit. Die Zwischenraͤume
+                                    koͤnnen alsdann nur arithmetisch, und in gleichen Theilen getheilt werden;
+                                    und diese naͤhern Eintheilungen geben nur approximative die Wahrheit an.</p>
+                                <p>Wollte man nun einen Druckmesser an eine Presse anbringen, deren hoͤchste
+                                    Druckkraft auf 900 Centner berechnet waͤre, so muͤßte man sich zur
+                                    Theilung des Quadranten den Rechnungen unterziehen, zu welchen die folgende Formel
+                                    dienen wird. Und was hier von einer Preßkraft von 900 Centnern gesagt wird, gilt
+                                    nach den noͤthigen Veraͤnderungen auch fuͤr jede hoͤhere
+                                    oder niedrigere.</p>
+                                <p>Man kann den Winkel, den der Hebelsarm mit der Vertikal-Linie macht, von
+                                    Centner zu Centner berechnen, alsdann waͤren im gegenwaͤrtigen Falle
+                                    900 Rechnungen erforderlich. Fuͤr 2 Centner, als Einheit betrachtet,
+                                    waͤren 900/2 = 450; fuͤr 3 Centner 900/3 = 300; fuͤr 4 Centner
+                                    900/4 = 225; fuͤr 5 Centner 900/5 = 180 solche Rechnungen noͤthig.</p>
+                                <p>Nennen wir, wie es im folgenden §. geschieht, den Gegendruck, der von Seiten
+                                    des Druckmesserskolben im Druckrohr statt findet <hi rendition="#roman">g</hi>, so
+                                    ist dieser Gegendruck, der von Seiten des Druckmesserskolben im Druckrohr, insofern
+                                    er das Gleichgewicht mit der Preßkraft haͤlt, fuͤr eine Preßkraft</p>
+                                <p>gleich 1 Centner = 2 Loth.</p>
+                                <p>gleich 2 Centner = 4 Loth.</p>
+                                <p>gleich 3 Centner = 6 Loth.</p>
+                                <p rendition="#no_indent">und so weiter.</p>
+                            </div>
+                            <div type="section" n="27">
+                                <pb n="27" facs="32258227Z/00000043" xml:id="pj001_pb027"/>
+                                <head rendition="#center #wide">27. Methode, die Grade fuͤr die Eintheilung des
+                                    Quadranten zu berechnen.</head>
+                                <p>Um die Eintheilung des Quadranten vornehmen zu koͤnnen, muß man folgende
+                                    Betrachtungen anstellen. Aus denselben ergibt sich alsdann die Formel, nach welcher
+                                    die Rechnungen gemacht werden.</p>
+                                <p>Es sey <ref rend="new">
+                                        <hi rendition="#roman">Fig.</hi> 8.</ref>
+                                    <hi rendition="#roman #wide">MM'</hi> der einzutheilende Quadrant, <hi rendition="#roman #wide">KM</hi> der horizontale, <hi rendition="#roman #wide">KM'</hi> der vertikale Halbmesser desselben = <hi rendition="#roman">a</hi>.</p>
+                                <p>
+                                    <hi rendition="#roman #wide">KI</hi> der Radius des gezahnten Rades = <hi rendition="#roman">b</hi>.</p>
+                                <p>
+                                    <hi rendition="#roman #wide">KM''</hi> die Lage des Hebelarms, an dessen Ende das
+                                    Gewicht <hi rendition="#roman">p</hi> wirkt, und welcher in dieser Lage mit der
+                                    Druckkraft <hi rendition="#roman">g</hi>, die nach der vertikalen Richtung <hi rendition="#roman #wide">EI</hi> geschieht, in Gleichgewicht ist.</p>
+                                <p>Zieht man <hi rendition="#roman">M''T</hi> auf <hi rendition="#roman #wide">KM'</hi>
+                                    senkrecht, so ist <hi rendition="#roman #wide">TM''p</hi> das Moment der Kraft, und
+                                        <hi rendition="#roman #wide">KIg</hi> = <hi rendition="#roman #wide">bg</hi> das
+                                    Moment der Last; also <hi rendition="#roman #wide">TM''p</hi> = <hi rendition="#roman #wide">bg</hi> und <hi rendition="#roman #wide">TM''</hi> =
+                                        <hi rendition="#roman">bg</hi>/<hi rendition="#roman">p.</hi>
+                                </p>
+                                <p>Es ist aber <hi rendition="#roman #wide">TM''</hi>
+                                    <hi rendition="#roman #wide">KM''</hi>
+                                    <hi rendition="#roman">sin φ</hi> = <hi rendition="#roman">a sin
+                                        φ</hi>, also <hi rendition="#roman">a</hi>
+                                    <hi rendition="#roman">sin φ</hi> = <hi rendition="#roman">bg</hi>/<hi rendition="#roman">p</hi> und <hi rendition="#roman">sin φ</hi> = <hi rendition="#roman">bg</hi>/<hi rendition="#roman">ap</hi>; woraus sich
+                                    fuͤr jeden gegebenen Werth von <hi rendition="#roman">g</hi> die
+                                    Groͤße des Winkels <hi rendition="#roman">φ</hi> oder die
+                                    Groͤße des Bogens <hi rendition="#roman">M'M''</hi> in Graden und Minuten
+                                    berechnen laͤßt.</p>
+                                <p>Da es inzwischen einige Schwierigkeiten machen koͤnnte, den Bogen nach der
+                                    gegebenen Groͤße des Winkels einzutheilen, so duͤrfte es rathsamer
+                                    seyn, diese Eintheilungen nach den Sehnen vorzunehmen. Aus der Gleichung fuͤr
+                                    den Winkel <hi rendition="#roman">φ</hi> laͤßt sich die Sehne des
+                                    Bogens dieses Winkels leicht berechnen; sie ist naͤmlich <hi rendition="#roman">N</hi> 2 <hi rendition="#roman">a</hi> sin 1/2 <hi rendition="#roman">φ</hi>.</p>
+                            </div>
+                            <div type="section" n="28">
+                                <head rendition="#center #wide">28. Lage des Cylinders.</head>
+                                <p>Die Richtung der Bewegung des Preßcylinders haͤngt lediglich von der Idee ab,
+                                    die der Kuͤnstler bei der Anordnung des ganzen Baues der Presse befolgen
+                                    will. Der Preßstempel kann sich nach unten zu, nach oben hin, auch koͤnnte
+                                        <pb n="28" facs="32258227Z/00000044" xml:id="pj001_pb028"/>er sich, unter
+                                    Umstaͤnden, von der Seite her bewegen. Im ersten Falle ist die
+                                    Muͤndung des Cylinders nach unten zu gerichtet, im zweiten Falle steht er auf
+                                    seiner Grundflaͤche, im dritten Falle liegt er auf der Seite. Fuͤr
+                                    beide erste Einrichtungen folgen Zeichnungen. Die lezte scheint noch nicht versucht
+                                    worden zu seyn, und koͤnnte auch nur zu wenigen Zwecken dienen.</p>
+                            </div>
+                            <div type="section" n="29">
+                                <head rendition="#center #wide">29. Lage des Druckrohrs.</head>
+                                <p>Es ist vollkommen gleichguͤltig, auf welche Art das Druckrohr mit dem
+                                    Preßcylinder in Verbindung gebracht wird. Es kann sich von der Seite, oder von unten
+                                    in denselben oͤffnen; gewoͤhnlicher jezt wird er an der Seite
+                                    angebracht.</p>
+                            </div>
+                            <div type="section" n="30">
+                                <head rendition="#center #wide">30. Druck- und Preßkolben.</head>
+                                <p>Die Liederung der Preß- und Druckkolben erfordert, wenn nicht alle Augenblicke
+                                    Reparaturen folgen sollen, einen geuͤbteren Arbeiter.</p>
+                                <p>Preßkolben ohne Liederung haben bis jezt, so weit mir bekannt ist, nur in den
+                                    Reichenbach'schen Werkstellen verfertigt werden koͤnnen. So z.B. gehn ohne
+                                    alle Liederung auf- und abwaͤrts die breiten Kolben jener
+                                    riesenmaͤßigen Wassersaͤulen-Maschinen in der Gegend um
+                                    Reichenhall, die durch ihr kraftvolles inneres Leben, durch ihren ununterbrochenen
+                                    ruhigen Gang, ihre außerordentliche Wirksamkeit und den Widerstand, den sie gegen
+                                    die zerstoͤrenden Kraͤfte leisten, die sie so standhaft
+                                    uͤberwaͤltigen, die Kuͤhnheit des Erfinders rechtfertigen, und
+                                    diese neue Eroberung auf dem graͤnzenlosen Gebiete der Kunst fuͤr die
+                                    Nachkommenschaft sichern.</p>
+                            </div>
+                            <div type="section" n="31">
+                                <head rendition="#center #wide">31. Material zu den Hauptbestandtheilen der
+                                    Presse.</head>
+                                <p>Der Preßcylinder fuͤr Maschinen von großer Wirksamkeit muß von gutem Gußeisen,
+                                    mit hinlaͤnglich starken Waͤnden <pb n="29" facs="32258227Z/00000045" xml:id="pj001_pb029"/>seyn; einige Schriftsteller haben vorgeschlagen, ihn von
+                                    Holz mit starken eisernen Baͤndern zu machen, allein zu großen Pressen
+                                    wuͤrden diese bald zerspringen, und zu Pressen von geringer Kraft sind andere
+                                    Druckmittel genug vorhanden. Die Druckroͤhren, die eine weit geringere Gewalt
+                                    auszuhalten haben, koͤnnen aus Kupfer oder Messing gegossen, so wie
+                                    saͤmmtlicher Roͤhrenapparat zu den zusammengesezteren Pumpenpressen.
+                                    Alle diese Roͤhren muͤssen aber dicke Waͤnde haben, welche die
+                                    Verbindung der uͤbrigen Stuͤcke mit denselben nothwendig macht, wie
+                                    dieses aus einer zweiten Abhandlung, worin das reine Mechanische
+                                    hauptsaͤchlich behandelt werden soll, deutlich erfolgen wird.</p>
+                            </div>
+                            <div type="section" n="32">
+                                <head rendition="#center #wide">32. Theil der Presse, der die zu pressenden Materien
+                                    fassen soll.</head>
+                                <p>Derjenige Theil der Presse, der die zu pressenden Stoffe fassen soll, ist auf eine
+                                    sinnreiche Art in England eingerichtet worden.</p>
+                                <p>Man begnuͤgt sich gewoͤhnlich, die zu pressenden Materien, vermittelst
+                                    einer einzigen beweglichen Preßbohle, oder eines beweglichen Preßkastens,
+                                    fuͤr Stoffe weicher oder saftiger Natur, durch den Preßkolben an die oberen
+                                    unbeweglichen starken Preßbalken andruͤcken zu lassen. Der neue Vorschlag
+                                    geht dahin, beide Preßbohlen, die obere und die untere, gleichzeitig gegen einander
+                                    zu bewegen.</p>
+                                <p>Diese Einrichtung hat den Vortheil, daß sie den Gang des Kolbens um die
+                                    Haͤlfte verkuͤrzet; und ist dann besonders nuͤzlich, wenn
+                                    elastische Stoffe, die ein großes Volumen einnehmen, wie z.B. Wolle oder Baumwolle,
+                                    zur Erleichterung des Transports, in einen engeren Raum zusammengepreßt werden
+                                    sollen.</p>
+                                <p>Der Leser wird diese Einrichtung aus <ref rend="new">
+                                        <hi rendition="#roman">Fig.</hi> 9.</ref> und aus folgender Beschreibung
+                                    naͤher kennen lernen.</p>
+                                <p>
+                                    <hi rendition="#roman #wide">AA</hi> obere Druckplatte von geschmiedetem Eisen.</p>
+                                <pb n="30" facs="32258227Z/00000046" xml:id="pj001_pb030"/>
+                                <p>
+                                    <hi rendition="#roman #wide">BB</hi> untere am Preßstempel befestigte
+                                    Druckplatte.</p>
+                                <p>
+                                    <hi rendition="#roman">C</hi> eiserne, von beiden Seiten gezahnte Kolbenstange. Von
+                                    beiden Seiten greifen die Zaͤhne in die Raͤder <hi rendition="#roman #wide">EE</hi>.</p>
+                                <p>
+                                    <hi rendition="#roman">D</hi> Cylinder, in welchem der Preßkolben sich bewegt.</p>
+                                <p>
+                                    <hi rendition="#roman #wide">FF</hi> eiserne nach unten zu mit Zaͤhnen
+                                    versehene Baͤume, in welche die Raͤder <hi rendition="#roman #wide">EE</hi> greifen.</p>
+                                <p>
+                                    <hi rendition="#roman #wide">GG</hi> hohle Cylinder, in welchen die Baͤume
+                                        <hi rendition="#roman #wide">FF</hi> mit Leichtigkeit auf- und
+                                    abwaͤrts sich bewegen, und die durch ihre Bewegung abwechselnd die obere
+                                    Druckplatte <hi rendition="#roman">A</hi>, an welche sie befestigt sind, auf-
+                                    und abwaͤrts fuͤhren.</p>
+                                <p>
+                                    <hi rendition="#roman #wide">HH</hi> starke, gut in einander gefuͤgte
+                                    Baͤume, die das Geruͤste der Presse bilden.</p>
+                                <p>
+                                    <hi rendition="#roman #wide">II</hi> kleine Rollen, die das Spiel der beweglichen
+                                    Baͤume erleichtern, und ihre Entfernung von den Raͤdern <hi rendition="#roman #wide">EE</hi> verhindern.</p>
+                            </div>
+                            <div type="section" n="33">
+                                <head rendition="#center #wide">33. Presse, die nach unten zu wirkt.</head>
+                                <p>Diese Presse ist vom Herrn v. <hi rendition="#wide">Turner</hi> entworfen worden. Man
+                                    findet sie im Hesperus abgebildet 1813, 3tes Heft <hi rendition="#roman">pag</hi>.
+                                    98., aus welcher Zeitschrift sie hier nachgezeichnet und die Beschreibung derselben,
+                                    zum Theil woͤrtlich, entlehnt worden ist.</p>
+                                <p>
+                                    <hi rendition="#roman">Fig. F. a.</hi> Kolbenrohr von 1'' Durchmesser innerer
+                                    Lichte, und 36'' Hoͤhe.</p>
+                                <p>
+                                    <hi rendition="#roman">b</hi> anderes Kolbenrohr, von 6'' Weite und 30''
+                                    Laͤnge; bei <hi rendition="#roman">c</hi> mit dem Rohre <hi rendition="#roman">a</hi> durch die lederne Liederung und die Schrauben <hi rendition="#roman">D</hi> verbunden.</p>
+                                <p>
+                                    <hi rendition="#roman">e</hi> Kolbenstange, die sich in dem Druckrohre <hi rendition="#roman">a</hi> mit dem Kolben <hi rendition="#roman">f</hi>
+                                    bewegt.</p>
+                                <p>
+                                    <hi rendition="#roman">g</hi> anderer Kolben, der sich in dem Preßcylinder <hi rendition="#roman">b</hi> auf- und nieder bewegt.</p>
+                                <p>
+                                    <hi rendition="#roman">h</hi> Ventil, welches sich nach unten oͤffnet. Es ist
+                                    von Leder, und ein rundes dickes Eisenblech, etwas groͤßer als die obere
+                                    Roͤhrenmuͤndung, ist an demselben fest angenietet. <pb n="31" facs="32258227Z/00000047" xml:id="pj001_pb031"/>Das Leder wird durch zwei
+                                    Naͤgel <hi rendition="#roman">i</hi> festgemacht. Der Hacken <hi rendition="#roman">k</hi> hindert, daß das Ventil sich nicht mehr als um die
+                                    Haͤlfte oͤffnet.</p>
+                                <p>
+                                    <hi rendition="#roman">l</hi> ein Stirnrad, das in die Zaͤhne eingreift, die
+                                    an dem obern Ende der Kolbenstange <hi rendition="#roman">e</hi> angebracht sind. Wo
+                                    die Zaͤhne aufhoͤren, ist ein Absaz <hi rendition="#roman">n</hi>,
+                                    damit die Kolbenstange nur bis dahin ins Rohr eindringe.</p>
+                                <p>
+                                    <hi rendition="#roman">o</hi> eine Rolle, die das Zuruͤckweichen der
+                                    Kolbenstange <hi rendition="#roman">e</hi> verhindert.</p>
+                                <p>
+                                    <hi rendition="#roman">p</hi> Absaz an dem Preßkolben <hi rendition="#roman">g</hi>,
+                                    der das weitere Eindringen in den Preßcylinder verhindert.</p>
+                                <p>Die Liederung des Kolbens <hi rendition="#roman">f</hi> ist von Leder, und so auch
+                                    die Liederung des Kolbens <hi rendition="#roman">g</hi>.</p>
+                                <p>
+                                    <hi rendition="#roman">q</hi> Seitenoͤffnung am Druckrohr zur
+                                    Einschuͤttung des Wassers.</p>
+                                <p>
+                                    <hi rendition="#roman">r</hi> Krahnen an dem Preßcylinder, zum Abfluß des
+                                    Wassers.</p>
+                                <p>
+                                    <hi rendition="#roman #wide">ss</hi> Roͤhrenarme, vermittelst welcher die
+                                    Maschine durch die Tragbaͤume <hi rendition="#roman">t</hi> getragen
+                                    wird.</p>
+                                <p>
+                                    <hi rendition="#roman #wide">uu</hi> Druckbaͤume, um die Maschine
+                                    waͤhrend des Pressens vor dem Aufheben zu schuͤzen.</p>
+                                <p>
+                                    <hi rendition="#roman">v</hi> Ein beweglicher Block, der nach geendigter Pressung
+                                    weggehoben wird, damit der Preßschragen leicht herausgenommen werden
+                                    koͤnne.</p>
+                                <p>
+                                    <hi rendition="#roman">x</hi> Preßkasten.</p>
+                                <p>
+                                    <hi rendition="#roman">y</hi> das zu pressende Material.</p>
+                                <p>Der Verfasser, um die Wirkung dieser Presse zu berechnen, nimmt an, daß der Arm der
+                                    Kurbel 13<hi rendition="#roman">''</hi>, der Halbmesser des Stirnrades 2 1/2 lang
+                                    sey, und die Kraft des Arbeiters 50 Pfund betrage. Aus diesen Momenten ergibt sich
+                                    eine Kraft von 260 Pfund fuͤr den Druckkolben.</p>
+                                <p>Da nun der Durchmesser des Druckrohrs 1 Zoll, und der Durchmesser des Preßcylinders 6
+                                    Zoll haͤlt, und sich die Gewichter gleich hoher Wassercylinder wie die
+                                    Quadrate ihrer Durchmesser verhalten, so verhaͤlt sich</p>
+                                <pb n="32" facs="32258227Z/00000048" xml:id="pj001_pb032"/>
+                                <p>
+                                    <figure rend="text" xml:id="tx001048a">
+                                        <graphic url="32258227Z/tx001048a"/>
+                                        <figDesc>Textabbildung Bd. 1, S. 32</figDesc>
+                                    </figure>
+                                </p>
+                                <p rendition="#no_indent">gleich 36 . 360 = 12960 Pfund = 129 1/2 Ctur.</p>
+                                <p>Diese Maschine nimmt einen Raum von 2 bis 3 Fuß im Durchmesser ein, und ist an 12
+                                    Schuh hoch.</p>
+                                <p>Sie hat das Unbequemliche, daß man vermittelst einer kleinen Kanne das Wasser in die
+                                    Druckroͤhre durch die Oeffnung <hi rendition="#roman">q</hi> eingießen, und
+                                    diese Operation ohngefaͤhr 30mal wiederholen muß, ehe der Preßkolben seine
+                                    volle Bewegung verrichtet hat. Denn da beide Cylinder 30 Zoll lang sind, so kommt
+                                    nur, wenn der Kolben das Wasser aus der Druckroͤhre in den Preßcylinder
+                                    getrieben, ungefaͤhr 1 Zoll hoch Wasser in den Preßcylinder zu stehen, der
+                                        6<hi rendition="#roman">''</hi> im Durchmesser hat.</p>
+                            </div>
+                            <div type="section" n="34">
+                                <head rendition="#center #wide">34. Beschreibung einer Presse, die nach oben zu
+                                    wirkt.</head>
+                                <p>
+                                    <ref rend="new">
+                                        <hi rendition="#roman">Fig.</hi> 4.</ref>
+                                    <hi rendition="#roman">a</hi> die Druckroͤhre.</p>
+                                <p>
+                                    <hi rendition="#roman">b</hi> Eine Hanfkammer, durch welche die Druckroͤhre
+                                        <hi rendition="#roman">a</hi> luftdicht verschlossen ist.</p>
+                                <p>
+                                    <hi rendition="#roman">c</hi> Die Kolbenstange.</p>
+                                <p>
+                                    <hi rendition="#roman">d</hi> Das Scherengestaͤnge, welches vermittelst des
+                                    Hebels <hi rendition="#roman">e</hi> die Stange <hi rendition="#roman">c</hi>
+                                    lothrecht auf- und nieder zieht.</p>
+                                <p>
+                                    <hi rendition="#roman">f</hi> und <hi rendition="#roman">i</hi> zwei
+                                    Sauge-Ventile.</p>
+                                <p>
+                                    <hi rendition="#roman">g</hi> und <hi rendition="#roman">h</hi> zwei
+                                    Druck-Ventile.</p>
+                                <p>Diese vier Ventile stehen mit der kleinen Druckroͤhre in Verbindung. Geht,
+                                    z.B., der in <hi rendition="#roman">A</hi> befindliche Kolben aufwaͤrts, so
+                                    folgt ihm das Wasser im Recervoir <hi rendition="#roman #wide">klmn</hi> nach. Beim
+                                    Niedergange preßt er dasselbe durch das Ventil <hi rendition="#roman">g</hi>, und
+                                    die Roͤhre <hi rendition="#roman">o</hi>, in den großen Preßcylinder <hi rendition="#roman">A</hi>, wo dasselbe den an dessen inneren Waͤnden
+                                    genau anschließenden Kolben in die Hoͤhe zu treiben noͤthiget. Bei dem
+                                    Niedergange des Druckkolbens steigt das Wasser durch die Roͤhre <hi rendition="#roman">p</hi> und das Ventil <hi rendition="#roman">i</hi>, und
+                                    fuͤllt den leeren Raum oberhalb des Kolbens <pb n="33" facs="32258227Z/00000049" xml:id="pj001_pb033"/>aus. Der in die Hoͤhe
+                                    gehende Kolben druͤckt nun das Wasser, durch das Ventil <hi rendition="#roman">h</hi> und die Roͤhre <hi rendition="#roman">r</hi>,
+                                    aus der Stelle, wo es abermals seinen Weg durch die Roͤhre <hi rendition="#roman">o</hi> in den Preßcylinder nimmt.</p>
+                                <p>
+                                    <hi rendition="#roman">t</hi> ein Sicherheits-Ventil, oben an der
+                                    Roͤhre <hi rendition="#roman">r</hi>. Dieses Ventil oͤffnet sich nach
+                                    außen. Es kann willkuͤhrlich beschwert werden, und oͤffnet sich
+                                    alsdann von selbst, sobald der erforderliche Druck hervorgebracht ist. Es verhindert
+                                    das Zerspringen des Cylinders <hi rendition="#roman">A</hi>.</p>
+                                <p>
+                                    <hi rendition="#roman">A</hi> Preßcylinder.</p>
+                                <p>
+                                    <hi rendition="#roman #wide">uuu</hi> fuͤnf starke, aber sehr kurze, eiserne
+                                    Stangen, die auf dem Kolben in <hi rendition="#roman">A</hi> angebracht sind, von
+                                    denen eine durch den uͤber den Cylinder angeschraubten Riegel geht, um die
+                                    senkrechte Bewegung des Kolbens zu erleichtern. <hi rendition="#roman">v</hi>
+                                    hoͤlzerner Rost, den die Stangen <hi rendition="#roman">u</hi>
+                                    saͤmmtlich tragen. Zur Seite desselben sind zwei Riegel angebracht, die auf
+                                    Stahlfedern liegen, und 1 1/2 Zoll dicke Walzen tragen, welche quer uͤber den
+                                    Rost gehen. Jene Stahlfedern sind so stark, daß sie die auf dem Roste liegenden
+                                    Kasten und Preßkasten <hi rendition="#roman">w</hi> und <hi rendition="#roman">x</hi>, auch wenn der innere <hi rendition="#roman">x</hi> mir der
+                                    auszupressenden Materie angefuͤllt ist, so tragen koͤnnen, daß die
+                                    Walzen sich drehen, ohne den Rost zu beruͤhren.</p>
+                                <p>Diese ganze Presse wird bis an die Linie, welche den Fußboden andeutet, in die Erde
+                                    gelegt, und dicht uͤber dem Fußboden befindet sich</p>
+                                <p>
+                                    <hi rendition="#roman #wide">zz</hi> ein Rahmen, auf welchem eine Fortsezung von
+                                    Walzen sich befindet.</p>
+                                <p>Die ganze Walzenvorkehrung dienet dazu, die Preßkasten <hi rendition="#roman">w</hi>
+                                    und <hi rendition="#roman">x</hi> mit Leichtigkeit aus und in die Presse zu
+                                    bewegen.</p>
+                                <p>Der Kasten <hi rendition="#roman">w</hi> hat auf dem Boden einen Rost; der andere
+                                    oder innere Kasten ist ganz durchloͤchert, um dem Safte den Abzug in den
+                                    innern zu gestatten; deshalb auch zur Aufnahme desselben der Rost.</p>
+                                <pb n="34" facs="32258227Z/00000050" xml:id="pj001_pb034"/>
+                                <p>Ist nun der innere Kasten <hi rendition="#roman">x</hi> gefuͤllt, und wird die
+                                    Presse in Bewegung gesezt, so druͤckt sich, bei dem Bewegen der Theile <hi rendition="#roman #wide">uvwx</hi> in die Hoͤhe, der innere Kasten an die
+                                    Preßbohle <hi rendition="#roman">B</hi> so an, daß diese die ganze
+                                    Oberflaͤche des Kastens <hi rendition="#roman">x</hi>, der 16 Quadratschuh
+                                    Oberflaͤche hat, einnimmt.</p>
+                                <p>Ist das Abpressen erfolgt, so wird der am Cylinder <hi rendition="#roman">A</hi>
+                                    angebrachte Kranen <hi rendition="#roman">D</hi> geoͤffnet, durch welchen das
+                                    Wasser wieder in das Reservoir <hi rendition="#roman #wide">klmn</hi> abfließt.</p>
+                                <p>Den Bau des in der Zeichnung vorgestellten Holzwerkes muß man sich doppelt
+                                    denken.</p>
+                                <p>Ist der Kasten auf die Rollen <hi rendition="#roman #wide">zz</hi> gebracht, so wird
+                                    der innere <hi rendition="#roman">x</hi> vermittelst eines auf dem untern <hi rendition="#roman">w</hi> bei <hi rendition="#roman">F</hi> befindlichen
+                                    Charniers uͤbergeschlagen, um den Kuchen herausfallen zu lassen.</p>
+                                <p>Man sieht, daß diese Presse, die in einigen großen franzoͤsischen
+                                    Zuckerfabriken thaͤtig gewesen ist, sich besonders zu Cider- und
+                                    Weinpressen, mit einigen zweckmaͤßigen Abaͤnderungen, anwenden lassen
+                                    wird.</p>
+                            </div>
+                        </body>
+                    </text>
+</TEI>

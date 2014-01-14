@@ -1,0 +1,829 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title type="main">Dingler-Online | Das digitalisierte Polytechnische Journal</title>
+        <title type="sub">Band 1, Jahrgang 1820</title>
+        <title type="sub">Fortschritte der Oekonomie, Künste etc. in Italien im J. 1819.</title>
+      </titleStmt>
+      <publicationStmt>
+        <publisher>Humboldt-Universität</publisher>
+        <pubPlace>Berlin</pubPlace>
+        <date when="2012"/>
+        <idno type="URL">http://dingler.culture.hu-berlin.de/article/pj001/ar001048</idno>
+        <availability status="free">
+          <p>Distributed under the <ref target="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</ref>.</p>
+        </availability>
+      </publicationStmt>
+      <seriesStmt>
+        <title level="j">Dingler-Online | Das digitalisierte Polytechnische Journal</title>
+        <respStmt>
+          <resp>Projektträger:</resp>
+          <name xml:id="HU">Humboldt-Universität zu Berlin</name>
+        </respStmt>
+        <respStmt>
+          <resp>in Kooperation mit:</resp>
+          <name>Sächsische Landesbibliothek &#x2013; Staats- und Universitätsbibliothek Dresden</name>
+        </respStmt>
+        <respStmt>
+          <resp>gefördert durch:</resp>
+          <name>Deutsche Forschungsgemeinschaft</name>
+        </respStmt>
+        <respStmt>
+          <resp>Volltextdigitalisierung durch:</resp>
+          <name xml:id="Editura">Editura GmbH &amp; Co.KG, Berlin</name>
+        </respStmt>
+      </seriesStmt>
+      <sourceDesc>
+        <biblFull>
+          <titleStmt>
+            <title>Fortschritte der Oekonomie, Künste etc. in Italien im J. 1819.</title>
+            <author><name>Schultes, Julius Hermann</name></author>
+          </titleStmt>
+          <publicationStmt>            
+            <date type="first">1820</date>
+          </publicationStmt>
+          <seriesStmt>
+            <title level="j" type="main">Polytechnisches Journal</title>
+            <idno type="volume">1</idno>
+            <idno type="page">477-497</idno>
+          </seriesStmt>
+        </biblFull>
+        <biblStruct>
+                    <monogr>
+                        <title>Polytechnisches Journal</title>
+                        <editor role="editor">Dr. Johann Gottfried Dingler</editor>
+                        <idno type="local">32258227Z</idno>
+                        <imprint>
+                            <biblScope type="volume">1</biblScope>
+                            <pubPlace>Stuttgart</pubPlace>
+                            <publisher>J. G. Cotta'sche Buchhandlung</publisher>
+                            <date>1820</date>
+                            <note>Exemplar SLUB Dresden, Bibliotheksbarcode 32258227Z</note>
+                        </imprint>
+                    </monogr>
+                </biblStruct>
+      </sourceDesc>
+    </fileDesc>
+    <encodingDesc>
+      <projectDesc>
+        <p>Optical character recognition and basic TEI encoding by Editura GmbH &amp; Co.KG, Berlin
+          2009-2012.</p>
+      </projectDesc>
+      <editorialDecl>
+        <hyphenation eol="hard">
+          <p>All soft end-of-line hyphenation has been removed.</p>
+        </hyphenation>
+        <normalization method="silent">
+          <p>No text-decoration elements were captured, such as decorated capital letters at the beginning of
+            chapters or text-separators.</p>
+          <p>All references to printed sheets were captured.</p>
+        </normalization>
+        <correction method="markup">
+          <p>As far as possible all errata-lists printed in the journal have been realised, using the element
+            <gi scheme="TEI">orig</gi> to mark the original text and <gi scheme="TEI">corr</gi> to mark
+            the correction given in the errata-list.</p>
+        </correction>
+        <quotation marks="all">
+          <p>All passages set off by quotation marks were marked by the element <gi scheme="TEI">q</gi>
+            including the quotation mark inside the tag. In case of repeating quotation marks in front of
+            each line, only the first and the last quotation mark was obtained. And the element <gi
+              scheme="TEI">q</gi>'s @type-attribute was set to the value &#x201C;preline&#x201D;.</p>
+        </quotation>
+      </editorialDecl>
+    </encodingDesc>
+  </teiHeader>
+  <text type="art_undef" subtype="publ_secondary" n="48" xml:id="ar001048">
+                        <front>
+                            <titlePart type="number" rendition="#center">XLVIII.</titlePart>
+                            <titlePart type="main" rendition="#center #wide">Uebersicht der Fortschritte der Oekonomie,
+                                der Künste und Gewerbe in Italien im Jahre 1819.</titlePart>
+                            <titlePart type="sub" rendition="#center">Aus der <bibl><title level="j">Biblioteca italiana</title> des Herrn <persName role="editor">Joseph Acerbi</persName>, Jaͤnner
+                                    1820 (Seite 142 – Seite 160.)</bibl></titlePart>
+                            <titlePart type="sub" rendition="#center">
+                                <hi rendition="#small">Uebersezt von</hi>
+                                <persName role="translator">Julius Hermann
+                                Schultes</persName>, Botaniker.</titlePart>
+                            <titlePart type="sub" rendition="#center #wide">Ackerbau.</titlePart>
+                            <titlePart type="column">Fortschritte der Oekonomie, Künste etc. in Italien im J.
+                                1819.</titlePart>
+                        </front>
+                        <body>
+                            <div type="section">
+                                <p rendition="#no_indent">Das Werkchen des beruͤhmten Professors <hi rendition="#wide">Giobert</hi> uͤber die <hi rendition="#wide">Noggensaat
+                                        als Duͤnger</hi>
+                                    <note place="bottom" anchored="true" n="186)">
+                                        <pb n="477" facs="32258227Z/00000493" xml:id="pj001_pb477_n194"/>
+                                        <p>
+                                            <hi rendition="#roman">Del sovescio e nuovo sistema di cultura fertilizzante
+                                                senza dispendio di concio di G. A. <hi rendition="#wide">Giobert</hi>.
+                                                Torino.</hi> 1819. <hi rendition="#roman">presso Gaetano Balbino,
+                                                in</hi> 8. <hi rendition="#roman">di pag.</hi> 84.</p>
+                                    </note> in dem Ackerbaue Italiens Epoche machen, und zwar hauptsaͤchlich
+                                    dort, wo die zweijaͤhrige Wechselwirthschaft zwischen Getreide- und
+                                    Maisbau eingefuͤhrt ist. Wir haben dasselbe in zwei ziemlich
+                                    umstaͤndlichen Auszuͤgen bekannt gemacht. Hr. Graf <persName type="misc">Carl Verri</persName> widersezte sich mit
+                                    vielleicht uͤberfluͤßigem Pyrrhonismus dem Hrn. <persName type="misc">Giobert</persName>; er bestritt einige Resultate und
+                                    zweifelte an gewissen Theorien, indem er sich zu derselben <pb n="478" facs="32258227Z/00000494" xml:id="pj001_pb478"/>Zeit als <hi rendition="#wide">rein praktischer Landwirth</hi> erklaͤrte<note place="bottom" anchored="true" n="187)">
+                                        <pb n="478" facs="32258227Z/00000494" xml:id="pj001_pb478_n195"/>
+                                        <p>
+                                            <hi rendition="#roman">Lettera del conte <hi rendition="#wide">Carlo
+                                                    Verri</hi> ad un amico sull' opera del sovescio e nuovo di cultura
+                                                fertilizzante senza dispendio di concio di G.A. <hi rendition="#wide">Giobert</hi>. Milano,</hi> 1819, <hi rendition="#roman">presso Gio.
+                                                Silvestri, in</hi> 8. <hi rendition="#roman">di pag.</hi> 22.</p>
+                                    </note>. Ob die Praxis allein genug ist, um die Natur gehoͤrig fragen zu
+                                    koͤnnen, ob sie hinreicht, um ihre Antwort richtig auslegen zu
+                                    koͤnnen; dieß werden <hi rendition="#wide">die sechs erlaͤuternden
+                                        Briefe</hi>
+                                    <note place="bottom" anchored="true" n="188)">
+                                        <pb n="478" facs="32258227Z/00000494" xml:id="pj001_pb478_n196"/>
+                                        <p>
+                                            <hi rendition="#roman">Del sovescio di segale di G.A. <hi rendition="#wide">Giobert</hi>. Lettere dilucidative e commenti. Torino,</hi> 1819
+                                                <hi rendition="#roman">in</hi> 8. <hi rendition="#roman">presso Gaetano
+                                                Balbino.</hi> (In allem sechs.)</p>
+                                    </note>, welche als Antwort auf die Schrift des Grafen <hi rendition="#wide">Verri</hi> nach und nach von einem Anonymen, und wie wir glauben von Herrn
+                                    Professor <persName type="misc">Giobert</persName> selbst,
+                                    geschrieben wurden, beweisen. Der dritte Brief enthaͤlt vor allen
+                                    uͤbrigen alles, was bisher uͤber die Theorie des Duͤnger's
+                                    Gutes geschrieben wurde, und traͤgt das Gepraͤge des Meisters. Aber
+                                    kaum war dieser dritte Brief erschienen, als Hr. Graf <persName type="misc">Verri</persName> darauf antwortete<note place="bottom" anchored="true" n="189)">
+                                        <pb n="478" facs="32258227Z/00000494" xml:id="pj001_pb478_n197"/>
+                                        <p>
+                                            <hi rendition="#roman">Riposta del conte Carlo <hi rendition="#wide">Verri</hi> alle lettere dilucidative sul sovescio di segale di
+                                                    <persName type="misc">G.A. Giobert</persName>.
+                                                Milano, 1819, presso Gio. Silvestri in 8. di pag. 50</hi>.</p>
+                                    </note> und auf diese Antwort blieb auch Prof. <persName type="misc">Giobert</persName> die seinige nicht schuldig, indem er <hi rendition="#wide">Verri</hi>'s Brief in Turin, mit vielen Noten versehen, neu
+                                    auflegen ließ<note place="bottom" anchored="true" n="190)">
+                                        <pb n="478" facs="32258227Z/00000494" xml:id="pj001_pb478_n198"/>
+                                        <p>
+                                            <hi rendition="#roman">Riposta del conte Carlo <hi rendition="#wide">Verri</hi> alle lettere dilucidative sul sovescio di segale di G.A.
+                                                    <persName type="misc">Giobert</persName>.
+                                                Seconda edizione corredata di note da G.A. Giobert. Torino,</hi> 1819,
+                                                <hi rendition="#roman">presso Gaetano Balbino, in</hi> 8. <hi rendition="#roman">di pag.</hi> 94.</p>
+                                    </note>. Auch Doctor <hi rendition="#wide">Bassi</hi> von <hi rendition="#wide">Lodi</hi> gefiel es, sich in diesen Streit einzulassen<note place="bottom" anchored="true" n="191)">
+                                        <pb n="478" facs="32258227Z/00000494" xml:id="pj001_pb478_n199"/>
+                                        <p>
+                                            <hi rendition="#roman">Osservazioni del dott. Agostino Bassi di Lodi
+                                                sull'opera del sovescio etc. Lodi,</hi> 1819, <hi rendition="#roman">presso Pallavicino, in</hi> 8. <hi rendition="#roman">di pag.</hi>
+                                            50.</p>
+                                    </note>.</p>
+                                <pb n="479" facs="32258227Z/00000495" xml:id="pj001_pb479"/>
+                                <p>Allein er hatte sehr Unrecht sein Werkchen herauszugeben, ohne vorher alle <hi rendition="#wide">erlaͤuternde Briefe</hi> gelesen zu haben, in welchen
+                                    lezteren einige seiner eigenen Zweifel aufgeloͤst sind. Seine Beobachtungen
+                                    bestreiten weniger das System an sich selbst, als die Anwendbarkeit desselben in der
+                                    Landwirthschaft der Landschaft von Lodi, und daher ist auch das Interesse seines
+                                    Buches rein oͤrtlich.</p>
+                                <p>Ungeachtet dieser Widerspruͤche wurde die Idee des Professors <hi rendition="#wide">Giobert</hi> beinahe von allen Landwirthen mit Beifall
+                                    an- und aufgenommen; Tausende derselben werden dieses Jahr anfangen dieselben
+                                    Versuche anzustellen, welche er bereits vorgenommen hat. Der Verfasser dieses
+                                    Aufsazes hat unter andern auch beilaͤufig 200 mailaͤndische Ruthen mit
+                                    Roggen bebaut, welcher umgeackert werden und als Duͤnger fuͤr die
+                                    Maissaat im naͤchsten Fruͤhlinge dienen soll. Er wird den Erfolg
+                                    seiner Beobachtungen in diesem Journale bekannt machen.</p>
+                            </div>
+                            <div type="section">
+                                <head rendition="#center #wide">Sinken der Preise der Lebensmittel.</head>
+                                <p>Indem wir uͤber das Werk des Hrn. <persName type="misc">Giobert</persName> Bericht erstatteten, wollten wir nicht unterlassen, eine
+                                    seiner Anmerkungen anzufuͤhren, in welcher er uns Zeichen von schlechter
+                                    Vorbedeutung uͤber den kuͤnftigen Werth der Lebensmittel in Italien
+                                    verkuͤndet. Wir leben des Vertrauens, daß die Weisheit der italienischen
+                                    Regierungen einen der wichtigsten Zweige unserer Wohlfahrt zu wuͤrdigen
+                                    wissen wird, und dieß um so mehr, als unter die Veranlassungen dieses Sinkens nicht
+                                    blos die Witterung, Zeitverhaͤltnisse (<hi rendition="#roman">stagions</hi>),
+                                    sondern auch andere Gruͤnde gerechnet werden muͤßen, welche von
+                                    unseren Handlungsverbindungen und von der Politik abhaͤngen; dergleichen
+                                    sind: die Einfuhr des Getreides von Odessa, die Fortschritte der russischen und
+                                    tuͤrkischen Schiffahrt und die <pb n="480" facs="32258227Z/00000496" xml:id="pj001_pb480"/>Abgaben, welche auf die Einfuͤhrung der Getreide
+                                    nach Spanien und Portugal gelegt sind.</p>
+                            </div>
+                            <div type="section">
+                                <head rendition="#center #wide">Werke uͤber den Ackerbau.</head>
+                                <p>Es sind in diesem Jahre noch viele andere Werke uͤber die verschiedenen Zweige
+                                    des Landbaues in Italien erschienen. Die zwei merkwuͤrdigsten derselben waren
+                                    jenes des Hrn. <persName type="misc">Tavanti</persName> von
+                                    Toskana <q>»uͤber die Oliven<note place="bottom" anchored="true" n="192)">
+                                            <pb n="480" facs="32258227Z/00000496" xml:id="pj001_pb480_n200"/>
+                                            <p>
+                                                <hi rendition="#roman">Trattato teorico pratico completo sull'olivo, che
+                                                    comprende la sua istoria naturale e quèlla della sua cultura;
+                                                    un sistema botanico per distruggerne e per enumerarne le
+                                                    varietá, il modo di propagarlo, di potarlo, d'innestarlo, di
+                                                    coltivarlo, di provenirne e di risanarne le malattie etc. di
+                                                    Giuseppe <hi rendition="#wide">Tavanti</hi>. Firence,</hi> 1819, <hi rendition="#roman">tipografia Piatti, vol.</hi> 2 <hi rendition="#roman">in</hi> 8. <hi rendition="#roman">con tav. in
+                                                    rame.</hi>
+                                            </p>
+                                        </note>,«</q> von welchem wir unlaͤngst einen Auszug geliefert
+                                    haben und der <hi rendition="#wide">Ackerbau-Katechismus</hi> von Dr.
+                                        <persName type="misc">Pollini</persName>, welcher in Verona
+                                    gedruckt, und von der dortigen Ackerbaugesellschaft gekroͤnt wurde; ein Werk,
+                                    wuͤrdig des in der litterarischen Welt ruͤhmlichst bekannten
+                                    Verfassers, welches auch die zuerkannte Ehre ganz verdient<note place="bottom" anchored="true" n="193)">
+                                        <pb n="480" facs="32258227Z/00000496" xml:id="pj001_pb480_n201"/>
+                                        <p>
+                                            <hi rendition="#roman">Catechismo agrario coronato dall academia di
+                                                agricoltura, commercio ed arti di Verona, di <hi rendition="#wide">Ciro
+                                                    pollini</hi>. Verona,</hi> 1819, <hi rendition="#roman">dalla
+                                                società tipografica in</hi> 8. <hi rendition="#roman">di
+                                                pag.</hi> 464.</p>
+                                    </note>. Der Pfarrer von Mosciano (<hi rendition="#roman">Abbé
+                                    Rastelli</hi>), schrieb den <q>»Doktor auf dem Lande<note place="bottom" anchored="true" n="194)">
+                                            <pb n="480" facs="32258227Z/00000496" xml:id="pj001_pb480_n202"/>
+                                            <p>
+                                                <hi rendition="#roman">Il Dottor della villa, opera agraria divisa in
+                                                    4to veglie dal reverendo sig. dott. Angelantiano <hi rendition="#wide">Rastelli</hi>, paroce di Mosciano.
+                                                    Ancona.</hi> 1818 <hi rendition="#roman">in</hi> 8.</p>
+                                        </note>;«</q> Hr. <persName type="misc">Filiasi</persName>: <q>»uͤber die Holzausrottung auf den
+                                            Bergen<note place="bottom" anchored="true" n="195)">
+                                            <pb n="480" facs="32258227Z/00000496" xml:id="pj001_pb480_n203"/>
+                                            <p>
+                                                <hi rendition="#roman">Sopra il dissoscamento</hi>
+                                                <hi rendition="#roman">dei monti, del sig. Jacopo <hi rendition="#wide">Filasi</hi>. (Memorie scientifiche e letterarie dell' Atenko di
+                                                    Treviso, tomo</hi> II.<hi rendition="#roman">)</hi>
+                                            </p>
+                                        </note>;«</q> Hr. <persName type="misc">Tappani</persName>: <q>»uͤber den Ackerbau von <pb n="481" facs="32258227Z/00000497" xml:id="pj001_pb481"/>Treviso<note place="bottom" anchored="true" n="196)">
+                                            <pb n="481" facs="32258227Z/00000497" xml:id="pj001_pb481_n204"/>
+                                            <p>
+                                                <hi rendition="#roman">Dell' agricoltura trevigiana del dottor Agostino
+                                                        <hi rendition="#wide">Fappani</hi>. (ibid.)</hi>
+                                            </p>
+                                        </note>;«</q> Pater <hi rendition="#wide">Columella</hi>:
+                                        <q>»uͤber die Weinbeeren und uͤber die Art, Oel daraus zu
+                                            preffen<note place="bottom" anchored="true" n="197)">
+                                            <pb n="481" facs="32258227Z/00000497" xml:id="pj001_pb481_n205"/>
+                                            <p>
+                                                <hi rendition="#roman">De vinacciuoli, e del modo di estrarne l'oglio, e
+                                                    di altri vantaggi che si possono ottenere dai medesimi. Memoria del
+                                                    P. Niccola <hi rendition="#wide">Columella</hi> Onorati. Napoli</hi>
+                                                1818, <hi rendition="#roman">tipografia Flautina, in</hi> 8. <hi rendition="#roman">Vantaggi che sono stati smentiti dalle esperienze
+                                                    fatte dal R. Istituto d'incoraggimento di Napoli</hi> 1. <hi rendition="#roman">Aprile</hi> 1819.</p>
+                                        </note>;«</q> Hr. <persName type="misc">Franz
+                                        Verita</persName>: <q>»uͤber die Erle<note place="bottom" anchored="true" n="198)">
+                                            <pb n="481" facs="32258227Z/00000497" xml:id="pj001_pb481_n206"/>
+                                            <p>
+                                                <hi rendition="#roman">Memoria sull ontano del sign. Francesco <hi rendition="#wide">Verità</hi> di Modigliana. (Atti dell'
+                                                    Academia dei Georgofili di Firenze, no.</hi> 5. <hi rendition="#roman">pag.</hi> 130.)</p>
+                                        </note>« </q> und Hr. <persName type="misc">Vechietti Poltri</persName>: <q>»uͤber eine neue Methode des
+                                            Kalkbrennens<note place="bottom" anchored="true" n="199)">
+                                            <pb n="481" facs="32258227Z/00000497" xml:id="pj001_pb481_n207"/>
+                                            <p>
+                                                <hi rendition="#roman">Sopra una nuova pratica per cuocere in breve
+                                                    tempo il sasso e convertirlo in calcina. Memoria del sig. <hi rendition="#wide">Vecchietti Poltri</hi>, letta nell' adunanza
+                                                    del</hi> 13. <hi rendition="#roman">dicembre</hi> 1818. <hi rendition="#roman">(ibi. pag.</hi> 74.)</p>
+                                        </note> «</q>. Die haͤufig wiederholten Auflagen
+                                    landwirthschaftlicher Werke aller Art beweisen deutlich, daß das Studium des
+                                    Ackerbaues in Italien nicht vernachlaͤßigt ist<note place="bottom" anchored="true" n="200)">
+                                        <pb n="481" facs="32258227Z/00000497" xml:id="pj001_pb481_n208"/>
+                                        <p>
+                                            <hi rendition="#roman">Istituzioni elementari di agricoltura del <hi rendition="#wide">Fabrioni</hi>, con note di G.A.<hi rendition="#wide">Giobert</hi>. Milano</hi> 1819. <hi rendition="#roman">in</hi> 16. <hi rendition="#roman">presso Silvestri.
+                                                – Dell arte del fare il vino, del <hi rendition="#wide">medesimo</hi>, Silvestri. – <hi rendition="#wide">Onorati</hi> dell' educazione dei Bigatti, Silvestri. – <hi rendition="#wide">De Capitani</hi>, Bigatti.</hi> Siehe <hi rendition="#roman">pag.</hi> 484, 205te Note. – <hi rendition="#roman">Saggi di agricoltura pratica sulla coltivazione dei
+                                                gelsi e delle viti del conte <hi rendition="#wide">Carlo Verri</hi>,
+                                                presso Silvestri. – <hi rendition="#wide">Pozzi</hi>: del vino,
+                                                presso il medesimo. <hi rendition="#wide">Dandolo:</hi> Dell' arte di
+                                                governare i bachi da seta ecc., terza edizione, presso Sonzogno.</hi>
+                                            – Es waͤre zu ermuͤdend, alle neuen Auflagen hier
+                                            wieder aufzuzaͤhlen, und wir glauben, daß die angefuͤhrten
+                                            hinreichen.</p>
+                                    </note>.</p>
+                            </div>
+                            <div type="section">
+                                <pb n="482" facs="32258227Z/00000498" xml:id="pj001_pb482"/>
+                                <head rendition="#center #wide">Arbeiten uͤber den Ackerbau im
+                                    Koͤnigreiche Neapel.</head>
+                                <p>Im Koͤnigreiche Neapel erscheint in diesem Jahre zum erstenmal ein Journal,
+                                    welches ausschließlich dem Landbaue gewidmet ist; allein die Hefte desselben kommen
+                                    immer sehr spaͤt zu uns, wiewohl es der Herausgeber nicht an
+                                    Puͤnktlichkeit fehlen laͤßt. Es enthaͤlt indessen nur wenige
+                                    wichtige Gegenstaͤnde, wenigstens fuͤr unsere Belehrung in
+                                    Ober-Italien; wir ehren es einstweilen als einen schoͤnen Beweis, wie
+                                    sehr der Eifer sich in der Oekonomie zu unterrichten, auch in diesen Provinzen sich
+                                    verbreitet. Man kann aus diesem Journale sich einigen Begriff von dem Zustande
+                                    abstrahiren, in welchem der Ackerbau sich gegenwaͤrtig in beiden Sicilien
+                                    befindet. Ueberall sind in diesem Reiche <hi rendition="#wide">oͤkonomische
+                                        Gesellschaften</hi> errichtet, welche von ihren eigenen Arbeiten Rechenschaft
+                                    geben. Der Wunsch thaͤtig zu seyn, und die Wissenschaft zu foͤrdern,
+                                    faͤngt an, sich daselbst uͤberall zu verbreiten. Die in den zwei vor
+                                    uns liegenden Baͤnden enthaltenen Originalaufsaͤze sind folgende:</p>
+                                <p rendition="#l2em">Ueber den Zustand des Ackerbaues in der Provinz Molise.</p>
+                                <p rendition="#l2em">Von der Kultur der Wiesen.</p>
+                                <p rendition="#l2em">Mittel, um leicht kochbare Huͤlsenfruͤchte zu
+                                    erhalten.</p>
+                                <p rendition="#l2em">Von der Weise zu dreschen in Apulien.</p>
+                                <p rendition="#l2em">Weise aus Erdaͤpfeln Brod zu machen.</p>
+                                <p rendition="#l2em">Weise die vegetabilischen Oele etc. zu reinigen.</p>
+                                <p rendition="#l2em">Weise die Erdaͤpfel aufzubewahren.</p>
+                                <p rendition="#l2em">Ueber das Beweiden der Waͤlder.</p>
+                                <p rendition="#l2em">Ueber den Schaden des Ankaufes auslaͤndischer Pferde zum
+                                    Kriegsdienste und uͤber die Nothwendigkeit der Verbesserung der Race
+                                    derselben.</p>
+                                <p rendition="#l2em">Ueber den außerordentlichen Hagel, welcher am 9ten Oktober 1818 in
+                                    Avellino fiel.</p>
+                                <pb n="483" facs="32258227Z/00000499" xml:id="pj001_pb483"/>
+                                <p rendition="#l2em">Ueber den Nuzen des Unterrichtes der Geistlichen in der
+                                        Landwirtschaft<note place="bottom" anchored="true" n="201)">
+                                        <pb n="483" facs="32258227Z/00000499" xml:id="pj001_pb483_n209"/>
+                                        <p>Laͤngst empfohlen und befohlen in Deutschland von Kaiser Joseph II.
+                                            unsterblichen Andenkens. <hi rendition="#wide">Anm. d. Uebers</hi>.</p>
+                                    </note>.</p>
+                                <p rendition="#l2em">Ueber den Nuzen eines oͤkonomischen Journals fuͤr das
+                                    diesseitige Calabrien.</p>
+                                <p rendition="#l2em">Oekonomische Statistik des Gebietes von <hi rendition="#roman">St.</hi>
+                                    <hi rendition="#roman">Giorgio la Montagna</hi> im jenseitigen
+                                    Fuͤrstenthume.</p>
+                                <p rendition="#l2em">Ueber die Weise die Weine gaͤhren zu machen.</p>
+                                <p rendition="#l2em">Ueber Christian's Maschine.</p>
+                                <p rendition="#l2em">Ueber die gute Verwaltung und die Vermehrung der Waͤlder in
+                                    Sicilien.</p>
+                                <p rendition="#l2em">Ueber die vegetabilische Seide.</p>
+                                <p rendition="#l2em">Ueber die Nothwendigkeit in Otranto kuͤnstliche Wiesen im
+                                    Trocknen anzulegen.</p>
+                                <p rendition="#l2em">Ueber die Kultur der Wiesen in der Lombardie.</p>
+                                <p rendition="#l2em">Von der Soda, ihrer Kultur und von den Soda bringenden
+                                    Pflanzen.</p>
+                                <p rendition="#l2em">Ueber die Seidenzucht von Modegliana.</p>
+                                <p rendition="#l2em">Art der Vermehrung des Rindvieh's im zweiten jenseitigen
+                                    Abruzzo.</p>
+                                <p rendition="#l2em">Verschiedene Berichte uͤber die Arbeiten, welche von
+                                    verschiedenen oͤkonomischen Gesellschaften des Reiches im Laufe des
+                                    agronomischen Jahres gemacht wurden.</p>
+                            </div>
+                            <div type="section">
+                                <head rendition="#center #wide">Seidenraupen.</head>
+                                <p>Zu keiner Zeit wurde die Seidenraupen-Zucht von den Umstaͤnden mehr als
+                                    jezt beguͤnstigt; indessen ist die Kunst diese nuͤzlichen Thiere zu
+                                    ziehen, noch bei weitem nicht erschoͤpft. Vieles geschah in einigen
+                                    Laͤndern, vieles bleibt noch in anderen zu thun uͤbrig, und es werden
+                                    wahrscheinlich noch viele Jahre vergehen, ehe das Problem der
+                                    Flecken-Krankheit <pb n="484" facs="32258227Z/00000500" xml:id="pj001_pb484"/>oder der Verhaͤrtung (<hi rendition="#roman">malattie del segno o
+                                        calcinaccio</hi>) deutlich geloͤset seyn wird, uͤber welche Graf
+                                        <persName type="misc">Dandolo</persName>
+                                    <note place="bottom" anchored="true" n="202)">
+                                        <pb n="484" facs="32258227Z/00000500" xml:id="pj001_pb484_n210"/>
+                                        <p>
+                                            <hi rendition="#roman">Storia dei bachi da seta governati coi nuovi metodi
+                                                nel</hi> 1818 <hi rendition="#roman">nel regno Lombardo-Veneto ed
+                                                altrove, con una quarta parte relativa alla malattia del segno o
+                                                calcinaccio, del conte <hi rendition="#wide">Dandolo</hi> etc.
+                                                Milano,</hi> 1819, <hi rendition="#roman">presso Sonzogno</hi>.</p>
+                                    </note>, <hi rendition="#wide">Marquis Fagnani</hi>
+                                    <note place="bottom" anchored="true" n="203)">
+                                        <pb n="484" facs="32258227Z/00000500" xml:id="pj001_pb484_n211"/>
+                                        <p>
+                                            <hi rendition="#roman">Errori e pregiudijz sopra la sanità dei
+                                                bigatti, con alcune osservazioni relative alla materia, del marchese
+                                                Federico <hi rendition="#wide">Fagnani</hi>. Milano,</hi> 1818, <hi rendition="#roman">tipografia Bernardoni in</hi> 8. <hi rendition="#roman">di pag.</hi> 104.</p>
+                                    </note>, Dr. <persName type="misc">Petazzi</persName>
+                                    <note place="bottom" anchored="true" n="204)">
+                                        <pb n="484" facs="32258227Z/00000500" xml:id="pj001_pb484_n212"/>
+                                        <p>
+                                            <hi rendition="#roman">Nuovo metodo per distogliere il segno nei bachi da
+                                                seta, coll' apendice di alcune osservazioni pratiche dell' anno</hi>
+                                            1818, <hi rendition="#roman">del dott. <hi rendition="#wide">Petazzi</hi>.
+                                                coll' indicazione dei mezzi atti si a farlo sviluppare, come ad
+                                                impedirlo a proprio arbitrio in qualunque sia partita che si vuole.
+                                                Milano</hi> 1819, <hi rendition="#roman">tipografia Motta</hi>.</p>
+                                    </note> und Hr. <persName type="misc">Decapitani</persName>
+                                    <note place="bottom" anchored="true" n="205)">
+                                        <pb n="484" facs="32258227Z/00000500" xml:id="pj001_pb484_n213"/>
+                                        <p>
+                                            <hi rendition="#roman">Sulla malattia dei bachi da seta chiamata il segno e
+                                                calcinaccio. Osservazioni di Carl' Antonio <hi rendition="#wide">De
+                                                    Capitani</hi>, parroco di Viganò. Edizione seconda migliorata
+                                                ed arricchita d'importantissime notizie. Milano</hi> 1819. <hi rendition="#roman">B.E. Giusti, in</hi> 8. <hi rendition="#roman">pag.</hi> 216.</p>
+                                    </note>, Pfarrer von Vigano (ein um den Ackerbau sehr verdienter Mann, welcher in
+                                    unserer Bibliothek wahrscheinlich zu streng behandelt wurde<note place="bottom" anchored="true" n="206)">
+                                        <pb n="484" facs="32258227Z/00000500" xml:id="pj001_pb484_n214"/>
+                                        <p>
+                                            <hi rendition="#roman">Tomo</hi> XIII. <hi rendition="#roman">pag.</hi> 183.
+                                            Siehe unsern Anhang zu anderen Arbeiten der Landwirthschaft.</p>
+                                    </note>), uns ihre Bemerkungen mitgetheilt haben.</p>
+                                <p>Man machte in diesem Jahre neue Anstrengungen, um die Puppen zu vervollkommnen, und
+                                    die Kunst, die Seide abzuhaspeln, zu verbessern. Einige Verbesserungen schlugen die
+                                    Herren <hi rendition="#wide">Leonardi</hi> und <hi rendition="#wide">Botta</hi>
+                                    <note place="bottom" anchored="true" n="207)">
+                                        <pb n="484" facs="32258227Z/00000500" xml:id="pj001_pb484_n215"/>
+                                        <p>
+                                            <hi rendition="#roman">Miglioramenti portati dagli artisti <hi rendition="#wide">Giuseppe Leonardi e Felice Botta</hi> all'
+                                                apparecchio per trarne la seta dai bozzoli mediante il vapore.
+                                                Milano,</hi> 1819, <hi rendition="#roman">presso Bernardoni in</hi> 8.
+                                                <hi rendition="#roman">di pag.</hi> 93.</p>
+                                    </note> mittelst des Dampapparates <pb n="485" facs="32258227Z/00000501" xml:id="pj001_pb485"/>vor, und Hr. <persName type="misc">Locatelli</persName>, bekannt durch andere sinnreiche Erfindungen, hat einige
+                                    wesentliche Veraͤnderungen an der alten Methode vorgenommen mit besonderer
+                                    und offenbarer Ersparung von Handarbeit, Brennmaterialien und Holz. Wir erwarten mit
+                                    Ungeduld seine Forschungen durch entscheidende Erfahrungen und Versuche im Großen
+                                    bestaͤtigt zu sehen, um ihnen jene Gerechtigkeit widerfahren zu lassen,
+                                    welche seine unermuͤdeten Spekulationen verdienen<note place="bottom" anchored="true" n="208)">
+                                        <pb n="485" facs="32258227Z/00000501" xml:id="pj001_pb485_n216"/>
+                                        <p>
+                                            <hi rendition="#roman">Brevissimi cenni del sig. conte <hi rendition="#wide">Dandolo</hi> sulla nuova filanda del sig. <hi rendition="#wide">Locatelli</hi>. Milano,</hi> 1819, <hi rendition="#roman">in</hi>
+                                            8. <hi rendition="#roman">di pag. 37.</hi>
+                                        </p>
+                                    </note>.</p>
+                            </div>
+                            <div type="section">
+                                <head rendition="#center #wide">Ackerbau – Maschinen.</head>
+                                <p>Die <hi rendition="#wide">Dreschmaschine</hi> (<hi rendition="#roman">Trebbiatojo</hi>) des Hrn. <persName type="misc">Morosi</persName> kommt jezt in einigen Gegenden des Reiches in allgemeinern
+                                    Gebrauch. Hr. <persName type="misc">Locatelli</persName> hat
+                                    gleichfalls eine solche Maschine erfunden und ein Patent darauf erhalten. Eine
+                                    andere erfand Hr. <persName type="misc">Cantoni</persName> von
+                                    Lodi. Ein einfacher Bauer von Toscolano (in der Provinz von Brescia), hat eine
+                                    Saͤemaschine vervollkommnet, welche er einige Jahre fruͤher erfunden
+                                    hat. Hr. <persName type="misc">Catlinetti</persName> hat an
+                                    Christian's Maschine verschiedene Veraͤnderungen angebracht, um den Flachs
+                                    ohne Roͤstung zu bearbeiten; indessen gehoͤrt auch diese Maschine zu
+                                    jenen vielen anderen, welche mehr ein Gegenstand der Curiositaͤt als von
+                                    entschiedenem Nuzen sind (?).</p>
+                                <p>Hr. Graf <persName type="misc">Anoni</persName> hat mit gutem
+                                    Erfolge die englische Maschine zur Luͤftung des Heues auf den Wiesen und zur
+                                    Beschleunigung des Trocknens desselben eingefuͤhrt.</p>
+                            </div>
+                            <div type="section">
+                                <head rendition="#center #wide">Christian's Maschine.</head>
+                                <p>Die in dem Berichte der Herren <hi rendition="#wide">Antinori</hi>, <hi rendition="#wide">Cioni</hi> und <hi rendition="#wide">Gazzeri</hi> an die
+                                    Gesellschaft der Freunde des Ackerbaues in Florenz<note place="bottom" anchored="true" n="209)">
+                                        <pb n="485" facs="32258227Z/00000501" xml:id="pj001_pb485_n217"/>
+                                        <p>
+                                            <hi rendition="#roman">No.</hi> 6. II. <hi rendition="#roman">Trimestre</hi>
+                                            1819, Seite 172 u. folg.</p>
+                                    </note> enthaltenen Resultate der Versuche, <pb n="486" facs="32258227Z/00000502" xml:id="pj001_pb486"/>welche sie mit der Christian'schen Maschine anstellten,
+                                    scheinen uns weder entscheidend, noch mit jener Praͤcision
+                                    durchgefuͤhrt zu seyn, die man von einer so gelehrten Gesellschaft erwarten
+                                    sollte. Wir haben ganz andere und sehr davon abweichende Resultate vor Augen, und
+                                    werden dieselben vielleicht einmal mittheilen. Keine Provinz hatte so viel Interesse
+                                    an der Einfuͤhrung dieser Maschine, als jene von Cremona, deren
+                                    jaͤhrlicher Ertrag zweimal hundert tausend Rubbien<note place="bottom" anchored="true" n="210)">
+                                        <pb n="486" facs="32258227Z/00000502" xml:id="pj001_pb486_n218"/>
+                                        <p>Eine Rubbie zu 25 italiaͤnischen Pfunden, das Pfund zu 12 Unzen. <hi rendition="#wide">Anm. d. Uebers</hi>.</p>
+                                    </note> Flachs uͤbersteigt. Die Kommission der Freunde des Ackerbaues
+                                    beachtete das Verhaͤltniß nicht, in welchem die harzigen, holzigen und
+                                    bastartigen Theile im Leine vorhanden sind. Die Maschine zermalmt zwar die holzigen,
+                                    aber sie wirkt nicht auf die harzigen, und schwaͤcht die bastartigen, indem
+                                    sie dieselben durch die Kerben der Cylinder zerreißt, so daß ein Faden von Flachs,
+                                    der geroͤstet und nach der alten Methode behandelt worden, von derselben Hand
+                                    und gleich dick gesponnen, ohne zu reißen ein groͤßeres Gewicht zu tragen
+                                    vermag als ein anderer, welcher mit der Christian'schen Maschine zubereitet
+                                        wurde<note place="bottom" anchored="true" n="211)">
+                                        <pb n="486" facs="32258227Z/00000502" xml:id="pj001_pb486_n219"/>
+                                        <p>Es scheint mehr als gewiß zu seyn, daß die zu diesen Versuchen verwendete
+                                            Brechmaschine nicht von der erforderlichen Vollkommenheit war; denn die
+                                            ersten Maschinen, welche von Paris aus ins Ausland versendet worden, waren
+                                            sowohl zum Hanf- als auch zum Flachsbrechen bestimmt, was fuͤr
+                                            die gute Sache manches Unangenehme zur Folge hatte. Ich habe erst vor
+                                            einigen Monaten von Paris eine Maschine erhalten, welche ausschließlich zum
+                                            Flachsbrechen bestimmt ist, und als solche leistet, was man mit Billigkeit
+                                            fordern kann. Der geschickte Stuͤckgießer, Hr. Reiser in Augsburg,
+                                            verfertigt nun solche Maschinen, die eben so gut sind, wie die, welche ich
+                                            erst kuͤrzlich von Paris erhielt. Eine solche Maschine kostet hier in
+                                            Augsburg gelegt 200 fl. im 24 fl. Fuß. <hi rendition="#wide">Dingler</hi>.</p>
+                                    </note>.</p>
+                            </div>
+                            <div type="section">
+                                <pb n="487" facs="32258227Z/00000503" xml:id="pj001_pb487"/>
+                                <head rendition="#center #wide">Zweifel gegen diese Maschine.</head>
+                                <p>Es bleibt daher bei dieser Operation noch das Beuchen uͤbrig; und worin
+                                    besteht also ihr Nuzen? In diese Eroͤrterung hat sich die Kommission nicht
+                                    eingelassen. Die Versuche waren nur im Kleinen gemacht; haͤtte man dieselben
+                                    mehr im Großen angestellt, so wuͤrde die Gesellschaft der Freunde des
+                                    Ackerbaues vielleicht sich uͤberzeugt haben, daß die Maschine selbst nicht
+                                    lange dauern koͤnne, und daß die abwechselnde Feuchtigkeit und Trockenheit an
+                                    derselben haͤufige Veraͤnderungen verursache, daß der Paralellismus
+                                    der Achsen durch starken Gebrauch leicht in Unordnung gerathe; und wenn alles dieses
+                                    in den Haͤnden solcher Personen geschieht, welche gewohnt sind, mit sehr
+                                    feinen Maschinen umzugehen, was wird erst geschehen, wenn die Maschine unerfahrnen
+                                    Bauern in die Haͤnde kommt<note place="bottom" anchored="true" n="212)">
+                                        <pb n="487" facs="32258227Z/00000503" xml:id="pj001_pb487_n220"/>
+                                        <p>Fuͤr den rohen Bauer ist auch vorderhand diese Maschine nicht
+                                            bestimmt. Gutsbesizer, die sich uͤber Vorurtheile und
+                                            unvernuͤnftige Einreden wegsezen und das Gute mit Beharrlichkeit
+                                            durchzufuͤhren wissen, werden sich bei zweckmaͤßiger Anwendung
+                                            dieser Maschine recht wohl befinden. <hi rendition="#wide">Dingler</hi>.</p>
+                                    </note>? Wir reden nun einmal von dieser Maschine, und da wir einen Aufsaz vor uns
+                                    liegen haben, den uns ein Gelehrter mitgetheilt hat, der gleichfalls eingeladen war,
+                                    einer beruͤhmten Akademie seine Beobachtungen uͤber diese Maschine
+                                    mitzutheilen, so wollen wir unsern Lesern einige Resultate dieses Aufsazes hier
+                                    vorlegen. Unsere Uebersicht ist ohnedieß trocken wie eine gewoͤhnliche
+                                    Buͤcher-Anzeige, so daß wir es fuͤr ein großes Gluͤck
+                                    halten werden, wenn wir hier und da eine nuͤzliche Notiz einschalten
+                                    koͤnnen.</p>
+                            </div>
+                            <div type="section">
+                                <head rendition="#center #wide">Resultate einiger Versuche.</head>
+                                <p>1) Der holzige Theil des Flachses, welcher zermalmt wird, und unter den Cylindern der
+                                    Maschine sich in Agen <pb n="488" facs="32258227Z/00000504" xml:id="pj001_pb488"/>verwandelt, betrug im Verhaͤltniß zum Ganzen der Pflanze 60 v. H.<note place="bottom" anchored="true" n="213)">
+                                        <pb n="488" facs="32258227Z/00000504" xml:id="pj001_pb488_n221"/>
+                                        <p>Nach der gewoͤhnlichen Methode 60 – 64 v. Hundert.</p>
+                                    </note>
+                                </p>
+                                <p>2) Der harzige Theil, welcher sich waͤhrend des Roͤstens im Wasser
+                                    trennt, machte in Bezug auf den schon von den Agen gereinigten Flachs 30 v. H.
+                                        aus<note place="bottom" anchored="true" n="214)">
+                                        <pb n="488" facs="32258227Z/00000504" xml:id="pj001_pb488_n222"/>
+                                        <p>Nach der gewoͤhnlichen Methode 20 – 30 v. H.</p>
+                                    </note>.</p>
+                                <p>3) Das Produkt des Leines, welcher geroͤstet und zum Verkaufe in
+                                    Buͤschel gerichtet wurde, betrug vor dem Haͤcheln 18 1/2 v. H.<note place="bottom" anchored="true" n="215)">
+                                        <pb n="488" facs="32258227Z/00000504" xml:id="pj001_pb488_n223"/>
+                                        <p>Nach der gewoͤhnlichen Methode 16 v. H.</p>
+                                    </note>
+                                </p>
+                                <p>4) Das Produkt desselben Flachses, welcher durch das Haͤcheln den
+                                    hoͤchsten Grad von Schoͤnheit und Feinheit erhielt, war 3 1/2 v.
+                                        H.<note place="bottom" anchored="true" n="216)">
+                                        <pb n="488" facs="32258227Z/00000504" xml:id="pj001_pb488_n224"/>
+                                        <p>Nach der gewoͤhnlichen Methode betrug das Produkt des feinsten (bei
+                                            uns sogenannten <hi rendition="#roman">moneghino</hi>) 5 – 6 v. H.;
+                                            vom feinen (sogenannten <hi rendition="#roman">casalingo</hi>) 8 v. H.; vom
+                                                <hi rendition="#wide">gemeinen</hi> (<hi rendition="#roman">mercantile</hi>) 10 v. H. ausser dem abfallenden Werke.</p>
+                                    </note>
+                                </p>
+                                <p>5) Das Produkt des Leines, welcher bloß mit der Maschine ohne Roͤstung
+                                    zubereitet, und zum Verkaufe in Flachs verwandelt wurde, 24 1/2 v. H.</p>
+                                <p>6) Das Produkt dieses Flachses, nach dem gewoͤhnlichen guten Hausgebrauche
+                                    gehaͤchelt, und mit dem davon abfallenden Werke verglichen, betrug nahe an 1
+                                    – 2. Die Summe des Flachses und Werkes zusammen giebt ein Produkt von 19 v.
+                                    H., jenes des Flachses allein 6 1/2 v. H.</p>
+                                <p>7) Der ohne Roͤstung zubereitete Lein behaͤlt den harzigen Kleber,
+                                    bleibt rauh, ist schwer zu spinnen, und verbreitet einen ekelhaften Geruch, wenn er
+                                    mit dem, nach gewoͤhnlichem Gebrauche mit Speichel benezten Finger befeuchtet
+                                    wird 2i7)<note place="bottom" anchored="true" n="217)">
+                                        <pb n="488" facs="32258227Z/00000504" xml:id="pj001_pb488_n225"/>
+                                        <p>Der gelehrte Berichterstatter scheint nicht mit der Anleitung bekannt gewesen
+                                            zu seyn, welche das Verfahren lehrt, die auf dieser Maschine bearbeitete
+                                            Flachsfaser von ungerottetem Flachs zu behandeln. Ich verweise daher
+                                            diejenigen Leser, welche dieser Gegenstand besonders interessirt, auf den
+                                            zweiten Band meines Magazins der Faͤrbekunst, wo man alles diesen
+                                            Gegenstand betreffende vollstaͤndig zusammengestellt findet, und bei
+                                            Versuchen, ungerotteten Flachs auf der Christian'schen Brechmaschine zu
+                                            behandeln, in keine solche Irrthuͤmer verfaͤllt. <hi rendition="#wide">Dingler</hi>.</p>
+                                    </note>.</p>
+                                <pb n="489" facs="32258227Z/00000505" xml:id="pj001_pb489"/>
+                                <p>Diese Thatsachen wuͤrden, wenn sie durch mehr im Großen und zahlreicher
+                                    angestellte Versuche bestaͤtigt waͤren, beweisen, daß man die
+                                    Vorzuͤge dieser Maschine uͤbertrieben hat. Sie reichen indessen hin,
+                                    die Warnung zu geben, daß man sich bei einem Urtheile uͤber eine Sache,
+                                    uͤber welche sich vieles fuͤr und wider sagen laͤßt, nicht
+                                    uͤbereilen soll.</p>
+                            </div>
+                            <div type="section">
+                                <head rendition="#center #wide">Einwuͤrfe gegen die Maschine.</head>
+                                <p>Die Cylinder der Maschine wirken als ebensoviele ausgekehlte Zieheisen. Um diese
+                                    Wirkung zu erzeugen, muß der Hauptcylinder (oder die Trommel) seine Gestalt
+                                    beibehalten; die Achsen der kleinern Cylinder muͤßen in zwei gleiche und mit
+                                    der Trommel concentrische Kreise sich enden, und die Achsen selbst, sowohl unter
+                                    sich als mit der Hauptachse der Maschine, parallel seyn. Fehlt es in Ansehung einer
+                                    dieser Bedingungen, so fehlt die Wirkung entweder ganz oder doch zum Theil. Wie kann
+                                    man nun diese beinahe geometrischen Forderungen an eine hoͤlzerne Maschine
+                                    machen, welche Aenderung erleidet, sobald sie feucht oder trocken wird, sobald sie
+                                    dem Winde und der Sonne ausgesezt ist, sich wirft? Wie kann man voraussezen, daß sie
+                                    sich bei den fortgesezten Stoͤßen, die sie waͤhrend des Gebrauches
+                                    ausstehen muß, stets in einer und derselben Lage erhalte? Wie koͤnnen Weiber,
+                                    Kinder oder gewoͤhnliche Landleute solchen Maͤngeln auf der Stelle
+                                    abhelfen?</p>
+                                <pb n="490" facs="32258227Z/00000506" xml:id="pj001_pb490"/>
+                                <p>Die Maschine, welche zu den Versuchen diente, von denen wir so eben sprachen, war
+                                    ganz neu, schoͤn, gut, und in Paris gebaut, mit einer eisernen Treibwalze;
+                                    und dennoch mußte man sie sechs- oder siebenmal ausbessern, neue
+                                    Zaͤhne an der Trommel einsezen, und noch oͤfters die Huͤlfe
+                                    eines geschickten Maschinisten beiziehen, um die Stuͤtzen der Treibwalze
+                                    wieder zu befestigen und den Paralellismus der Achsen herzustellen; und alles dieses
+                                    bloß darum, weil 8 – 10 Rubbien Flachs durch die Maschine gelaufen waren.
+                                    Eine andere aͤhnliche, in Mailand verfertigte, Maschine wurde, nachdem sie in
+                                    Thaͤtigkeit gebracht worden, nach wenigen Gaͤngen unbrauchbar<note place="bottom" anchored="true" n="218)">
+                                        <pb n="490" facs="32258227Z/00000506" xml:id="pj001_pb490_n226"/>
+                                        <p>Ich muß hier das, was ich in der 211. Anmerkung sagte, bestaͤttigen.
+                                            – Daß aber diese Maschine mit der Zeit vielleicht noch verbessert
+                                            werden kann, wird niemand in Abrede stellen. <hi rendition="#wide">Dingler</hi>.</p>
+                                    </note>.</p>
+                                <p>Wir koͤnnten viele andere Thatsachen anfuͤhren, welche sowohl den
+                                    Resultaten des oben angefuͤhrten Berichtes der Freunde des Ackerbaues, als
+                                    jenen des Berichtes widersprechen, den Hr. <persName type="misc">Ritter Thomas Colajanni</persName> im Neapolitanischen an
+                                    Se. Majestaͤt den Koͤnig erstattete, und der im 2ten Bande der
+                                    Ackerbau-Annalen <hi rendition="#roman">pag</hi>. 64 in <hi rendition="#roman">Extenso</hi> eingeruͤckt ist.</p>
+                            </div>
+                            <div type="section">
+                                <head rendition="#center #wide">Hill's Maschine.</head>
+                                <p>Wenn es wahr ist, daß, wie man uns versichert, Hill's Maschine in Irland allgemein
+                                    angewendet wird, so waͤre dieß ein Hauptgrund, um sie der Maschine <persName type="misc">Christian</persName>'s vorzuziehen. Irland ist,
+                                    wie Jedermann weiß, fuͤr England eben das, was das Gebieth von Cremona
+                                    fuͤr die Lombardei ist: denn der Flachs bildet ein Hauptprodukt dieser Insel.
+                                    Wir kennen in Mailand einen thaͤtigen Buͤrger, welcher eine</p>
+                                <pb n="491" facs="32258227Z/00000507" xml:id="pj001_pb491"/>
+                                <p>solche Maschine von London mitbrachte, und sich vornahm, zu Anfange des
+                                    Fruͤhlings genaue Versuche mit derselben anzustellen. Wir hoffen unsere Leser
+                                    mit denselben bekannt machen zu koͤnnen. Ihr Bau hat den Vorzug einer
+                                    unendlich groͤßeren Festigkeit, und bei der Umdrehung der Cylinder ist eine
+                                    horizontale Bewegung mit einer verticalen verbunden, welche die Wirkung des
+                                    Zermalmens und die Trennung des holzigen Theiles von dem bastigen beschleunigt. Wir
+                                    befuͤrchten bloß, daß eben durch die obengenannte doppelte Bewegung der
+                                    bastige Theil verlezt wird, um so mehr, als alle Walzen an derselben von Metall und
+                                    die Kerben tiefer und mehr spizwinkelig sind, als an der Maschine Christian's.
+                                    Indessen sind dieß bloß unsere Muthmaßungen, und die Erfahrung wird jeden Zweifel
+                                        heben<note place="bottom" anchored="true" n="219)">
+                                        <pb n="491" facs="32258227Z/00000507" xml:id="pj001_pb491_n227"/>
+                                        <p>Man muß <persName type="misc">Hill</persName>'s Maschine
+                                            nicht mit jener von <hi rendition="#wide">Lee</hi> verwechseln, welche in
+                                            Irland aufgegeben wurde. Die Verwandtheit dieser zwei Namen in der
+                                            englischen Aussprache hat schon Manchen in Irrthum gefuͤhrt. Jene von
+                                                <hi rendition="#wide">Hill</hi> befindet sich hier in den Haͤnden
+                                            eines gebildeten Cavalier's (Grafen Friedrich <hi rendition="#wide">Confalioneri</hi>), welcher sie aus London mitgebracht hat.</p>
+                                    </note>.</p>
+                            </div>
+                            <div type="section">
+                                <head rendition="#center #wide">Gasbeleuchtung.</head>
+                                <p>Ein Journalist<note place="bottom" anchored="true" n="220)">
+                                        <pb n="491" facs="32258227Z/00000507" xml:id="pj001_pb491_n228"/>
+                                        <p>Morgenblatt. 1819.</p>
+                                    </note> hat sehr richtig bemerkt, daß beinahe alle alten Erfindungen und
+                                    Entdeckungen das Werk des Zufalles sind, waͤhrend unsere heutigen vielmehr
+                                    die Fruͤchte der Ueberlegung und vielfachen Anstrengung wissenschaftlich
+                                    gebildeter Maͤnner sind, welche ihre Kenntnisse auf nuͤzliche
+                                    Gegenstaͤnde anwenden. Wir muͤßen indessen bemerken, daß viele dieser
+                                    Entdeckungen gleichfalls den Umstaͤnden und Ortsbeduͤrfnissen
+                                    zugeschrieben werden koͤnnen, welche sie nur in <pb n="492" facs="32258227Z/00000508" xml:id="pj001_pb492"/>einigen Laͤndern gedeihen
+                                    lassen. Dieß ist z.B. der Fall mit der Gasbeleuchtung, welche in England, in einigen
+                                    Oertern Frankreichs und Deutschlands, so große Fortschritte gemacht hat, die aber
+                                    bei uns noch lange Zeit ein Gegenstand unfruchtbarer und kostspieliger
+                                    Curiositaͤt seyn wird; bei uns ist Mangel an Steinkohlen, die zu diesem
+                                    Zwecke taugten<note place="bottom" anchored="true" n="221)">
+                                        <pb n="492" facs="32258227Z/00000508" xml:id="pj001_pb492_n229"/>
+                                        <p>Wir haben Steinkohlen zu Savona, zu Campione an der Schweizer Graͤnze,
+                                            zu Gandino in Bergamasco, nahe bei Gardone im Brescianischen und in einigen
+                                            Gegenden des Vicentinischen und Veronesischen; allein sie sind nicht fett
+                                            und bituminoͤs genug, um zur Gasbeleuchtung zu dienen. Die englische
+                                            Steinkohle, die beste zu diesem Zwecke, kommt zu hoch zu stehen. Dieß ist
+                                            auch der Fall mit allem thierischen Fette. Wir muͤßen also andere
+                                            Materialien suchen, bei welchen wir unsere Rechnung besser finden, und jeder
+                                            Versuch des Nachdenkens hieruͤber wird unsern Dank verdienen.</p>
+                                    </note>, Mangel an thierischem Oele, und Unbrauchbarkeit des mineralischen;
+                                    vegetabilisches steht bei uns in zu hohem Preise. Alles, was in Italien bis jezt in
+                                    Gasbeleuchtung versucht wurde, bestaͤtigte unsere Ansicht, obschon wir
+                                    uͤbrigens sehr geneigt sind, denjenigen unseren vollen Beifall zu zollen,
+                                    welche ununterbrochen versuchen, auch bei uns diese Entdeckung brauchbar zu machen.
+                                    Man darf den Italiaͤnern nicht den Vorwurf machen, als waͤren sie
+                                    gleichguͤltig gegen diese Entdeckung geblieben: die Gasbeleuchtung wurde, wie
+                                    Jedermann weiß, alsogleich nach ihrer Entdeckung in England an dem Leuchtthurme zu
+                                    Triest eingefuͤhrt, und Mailand ist die erste Stadt Italiens, in welcher
+                                    diese neue Methode zur Beleuchtung der ganzen Wohnung eines Privaten
+                                    eingefuͤhrt wurde, der den vollstaͤndigen Apparat von Hrn. <persName type="misc">Lofton</persName> aus London, zugleich mit
+                                    englischen Kuͤnstlern, kommen ließ, welche denselben zu allem
+                                    haͤuslichen Bedarfe einrichteten.</p>
+                            </div>
+                            <div type="section">
+                                <pb n="493" facs="32258227Z/00000509" xml:id="pj001_pb493"/>
+                                <head rendition="#center #wide">Dampfboote.</head>
+                                <p>Die wahrhaft nuͤzlichen Erfindungen werden auch bei uns eingefuͤhrt;
+                                    ein Beweis davon sind die. Dampfboote, welche zwischen Neapel und Sicilien<note place="bottom" anchored="true" n="222)">
+                                        <pb n="493" facs="32258227Z/00000509" xml:id="pj001_pb493_n230"/>
+                                        <p>Das Dampfboot zwischen Neapel und Palermo kam, nachdem es nach Genua und
+                                            Marseille geschifft war, wegen eines Baufehlers ausser Thaͤtigkeit
+                                            und kann nicht mehr ausgebessert werden.</p>
+                                    </note>, zwischen Triest und Venedig und zur Schiffahrt auf dem Po von derselben
+                                    Gesellschaft von Privaten bestimmt sind, welche die Gasbeleuchtung
+                                    einfuͤhrte.</p>
+                            </div>
+                            <div type="section">
+                                <head rendition="#center #wide">Andere Erfindungen.</head>
+                                <p>Alles zeugt in Italien von dem Wunsche, anderen Nationen in Erfindungen und Industrie
+                                    nachzueifern. Wir sahen in unserem Journale, wie Prof. <persName type="misc">Crivelli</persName> an der <hi rendition="#wide">Spuhle</hi> von <hi rendition="#wide">Neumann</hi> eine nuͤzliche
+                                    Veraͤnderung machte, und ein neues Vorhaͤngschloß oder Schloß erfand,
+                                    welches durch seine Construktion, und nicht durch Geheimniß, sicher schließt<note place="bottom" anchored="true" n="223)">
+                                        <pb n="493" facs="32258227Z/00000509" xml:id="pj001_pb493_n231"/>
+                                        <p>
+                                            <hi rendition="#roman">Descrizione di una nuova toppa ecc. premiata dall'
+                                                I.R. Istituto. Milano,</hi> 1818, <hi rendition="#roman">Pirotta in</hi>
+                                            8. <hi rendition="#roman">di pag.</hi> 32. <hi rendition="#roman">con una
+                                                tavola in rame</hi>.</p>
+                                    </note>. Die Franzosen und Englaͤnder sind nicht mehr die einzigen, welche
+                                    das Gußeisen an die Stelle des Stuͤckgutes und des Stabeisens in vielen
+                                    Manufakturen zu sezen wissen; auch wir machen z.B. Franklin's Oefen, sogenannte
+                                    russische Oefen mit Cylindern von jeder Groͤße<note place="bottom" anchored="true" n="224)">
+                                        <pb n="493" facs="32258227Z/00000509" xml:id="pj001_pb493_n232"/>
+                                        <p>Mein Vater hat Hrn. <persName type="misc">Acerbi</persName> zuerst Dr. <persName type="misc">Dingler</persName>'s Dampfapparate gesendet, und die Italiaͤner
+                                            mit dieser wohlthaͤtigen Erfindung bekannt gemacht. <hi rendition="#wide">Anm. d. Uebers</hi>.</p>
+                                    </note>, und heizen mittelst der Luft Theater, Archive, und jede Art <pb n="494" facs="32258227Z/00000510" xml:id="pj001_pb494"/>von großen oder kleinen
+                                    Luftkreisen, ohne daß man die Oefen von außen sieht, und ohne Feuersgefahr<note place="bottom" anchored="true" n="225)">
+                                        <pb n="494" facs="32258227Z/00000510" xml:id="pj001_pb494_n233"/>
+                                        <p>Das Gußeisen wird auch von der Munizipalitaͤt in Mailand zum Baue von
+                                            Stadtstraßen, auch zu den Einlassen des Regenwassers in die unterirdischen
+                                            Kanaͤle verwendet.</p>
+                                    </note>.</p>
+                                <p>Was auch immer der Erfolg der Ausgrabungen in der Tiber gewesen seyn mag, so
+                                    verdienen doch die Boote, die Maschinen, und die bis jezt erfundenen Vorrichtungen,
+                                    um auf dem Grunde zu fischen und dort das Kostbarste, das man finden kann, zu
+                                    sammeln hier noch eine Erwaͤhnung.</p>
+                            </div>
+                            <div type="section">
+                                <head rendition="#center #wide">Preisvertheilungen in Venedig.</head>
+                                <p>In Mailand werden von Hrn. <persName type="misc">Locatelli</persName> (Eugen) <hi rendition="#wide">Schuhe</hi>
+                                    <hi rendition="#roman">
+                                        <hi rendition="#wide">alla Brunel</hi>
+                                    </hi>
+                                    <note place="bottom" anchored="true" n="226)">
+                                        <pb n="494" facs="32258227Z/00000510" xml:id="pj001_pb494_n234"/>
+                                        <p>Sind dieß vielleicht die Schuhe des k.k. Stabsarztes <hi rendition="#wide">Braun</hi> in Komorn, wovon mein Vater im Jahre 1810 Muster an den
+                                            damals zu Mailand angestellten <hi rendition="#roman">Inspecteur</hi>
+                                            <hi rendition="#roman">aux revues</hi>
+                                            <hi rendition="#roman">Jullien</hi> sandte? <hi rendition="#wide">Anm. d.
+                                                Uebers</hi>.</p>
+                                    </note>
+                                    <hi rendition="#wide">fabricirt</hi>, und obschon sie eben keine Kunstwerke sind,
+                                    scheinen sie in Hinsicht auf Preis und Dauer mit den anderen auf gewoͤhnliche
+                                    Weise verfertigten Schuhen noch immer Concurrenz zu halten.</p>
+                                <p>Die <hi rendition="#wide">Schnellhand</hi> (<hi rendition="#roman">Velocimano</hi>)
+                                    des Hrn. <persName type="misc">Brianza</persName> kann, wenn
+                                    auch zu nichts anderem, doch zur unterhaltenden Uebung der Kinder in ebenen
+                                    Gaͤrten und auf guten Straßen dienen, und ist in dieser Hinsicht dem <hi rendition="#wide">Schnellfuße</hi> (<hi rendition="#roman">Velocipede</hi>)<note place="bottom" anchored="true" n="227)">
+                                        <pb n="494" facs="32258227Z/00000510" xml:id="pj001_pb494_n235"/>
+                                        <p>Sind dieß vielleicht unsere deutschen Draisinen? <hi rendition="#wide">Anm</hi>. d. U.</p>
+                                    </note> der Franzosen vorzuziehen. Hr. <persName type="misc">Barezzi</persName> hat die <q>»Kunst, die Fresco-Gemaͤhlde
+                                        auf Holz oder Leinwand uͤberzutragen«</q> vervollkommnet. Bis jezt
+                                    ist die <hi rendition="#wide">Saͤule</hi> unsers <hi rendition="#wide">Zamboni</hi> jene Maschine, welche sich noch am meisten dem <hi rendition="#roman">Perpetuum Mobile</hi> naͤhert. Alle mechanische
+                                    Kuͤnste schreiten fort im regen Wetteifer sich zu vervollkommnen, und <pb n="495" facs="32258227Z/00000511" xml:id="pj001_pb495"/>in dem Auszuge der von
+                                    der Central-Commission bei der im vorigen Jahre 1819 (4. Oct.), zu Venedig
+                                    gehaltenen Preisverteilung an Kuͤnstler gefaͤllten Urtheile, zeigte es
+                                    sich deutlich, wie sehr, Dank sey es der vaͤterlichen Fuͤrsorge der
+                                    Regierung, die National-Industrie sich immer mehr hebt und verfeinert, und
+                                    wie sehr das Genie unserer Kuͤnstler und Manufakturisten es vermag, sich
+                                    selbst Ruhm und Gewinn und dem Vaterlande Wohlstand und neue Quellen des Reichthumes
+                                    zu verschaffen.</p>
+                            </div>
+                            <div type="section">
+                                <head rendition="#center #wide">Goldene Medaillen.</head>
+                                <p>Bei dieser Preisvertheilung erhielten wir einen <q>»neuen
+                                        Copal-Firniß«</q> von Hrn. <persName type="misc">Joseph Innocente</persName> in Venedig; eine
+                                        <q>»Maschine zur gleichfoͤrmigen Eintheilung gerader und
+                                        kreisfoͤrmiger Platten</q> von Hrn. <persName type="misc">Angelo Albanese</persName> in Venedig; eine
+                                        <q>»Erfindung zum Waschen des Filzes der Papiermuͤhlen und anderer
+                                        Wollenzeuge in kaltem und fließendem Wasser«</q> von den
+                                    Gebruͤdern <hi rendition="#wide">Carl</hi> u. <hi rendition="#wide">Ant</hi>.
+                                        <hi rendition="#wide">Galvani</hi> von Pordenone; eine <q>»Erfindung
+                                        eines transportablen Fortepiano's, <hi rendition="#wide">Metagofon</hi>
+                                        genannt,«</q> von <hi rendition="#wide">Gregor Trentin</hi> in Venedig;
+                                    die <q>»Einrichtung einer neuen Fabrik von
+                                        Flintenschroͤten«</q> von Hrn. <persName type="misc">Joseph Boegan</persName> in Chioggia. Diese Herren alle
+                                    erhielten fuͤr ihre Erfindungen und Etablissements die von der Commission
+                                    ausgesezten Preise der goldenen Medaille.</p>
+                            </div>
+                            <div type="section">
+                                <head rendition="#center #wide">Silberne Medaillen.</head>
+                                <p>Die silberne Medaille bekam Hr. <persName type="misc">Angelo
+                                        Olivo</persName> von Venedig fuͤr <q>»seine Erfindung eines
+                                        dittoratischen Fernglases, oder eines Fernglases mit doppeltem
+                                        Sehepunkt;«</q> Hr. <persName type="misc">Barthol.
+                                        Belleri</persName> in Venedig fuͤr <q>»eine Fabrik von
+                                        Pelzhandschuhen, welche die auslaͤndischen Fabriken dieser Art in jeder
+                                        Hinsicht uͤbertrifft;«</q> Hr. <persName type="misc">Joseph Vallani</persName> in Maniago <pb n="496" facs="32258227Z/00000512" xml:id="pj001_pb496"/>fuͤr <q>»die
+                                        Fabrikation seiner Uhrmacher-Feilen;«</q> Hr. <persName type="misc">Joh. Bapt. Ferrighi</persName> in Padua
+                                    fuͤr <q>»die Entdeckung einer inlaͤndischen Substanz, statt der
+                                        sogenannten englischen Politur;</q> Hr. <persName type="misc">Margherita Rubbi</persName> in Venedig fuͤr
+                                        <q>»die Fabrikation von Strohhuͤten«</q>; Hr. <persName type="misc">Lorenz Gaspari</persName> in Venedig
+                                    fuͤr <q>»die Fabrikation der Glaͤser zu verschiedenen
+                                        Geschirren;</q> die Herren <hi rendition="#wide">Andr</hi>. <hi rendition="#wide">Martini</hi> et <hi rendition="#roman">Comp.</hi> in Venedig
+                                    fuͤr <q>»die Fabrikation von Baumwollgespinsten;«</q> die
+                                    Herren <hi rendition="#wide">Carl Elli</hi> und <hi rendition="#wide">Joh</hi>. <hi rendition="#wide">Mandelli</hi> in Mailand fuͤr <q>»eine neue Naht
+                                        an Stiefeln und Schuhen mit Metalldraht«</q>; Hr. <persName type="misc">Nicol. Giani</persName> von Treviso fuͤr
+                                        <q>»eine Liqueur-Fabrik«</q>; Hr. <persName type="misc">Barthol. Avesani</persName> in Verona fuͤr
+                                        <q>»eine neue Vorrichtung an den Feuersprizen«</q> und
+                                    ebenderselbe auch fuͤr <q>»eine Vorrichtung zur Fertigung
+                                        hoͤlzerner Zahnraͤder von beliebiger Zahl, Groͤße und
+                                        Gestalt der Zaͤhne;«</q> Hr. <hi rendition="#wide">Joh. Franz
+                                        Andreas Minesso</hi> in Venedig fuͤr <q>»eine
+                                        Siegellack-Fabrik</q> von allen im Handel am meisten gesuchten Sorten,
+                                    fuͤr welche wir, selbst in unserer Nachbarschaft, wie z.B. zu Pesaro, nur zu
+                                    lange Tribut bezahlten; die Herren <hi rendition="#wide">Barthol</hi>. <hi rendition="#wide">Fabris</hi>, <hi rendition="#wide">Ludwig Sette</hi> aus
+                                    Padova und <hi rendition="#wide">Carl Bononi</hi> aus Mailand fuͤr die
+                                        <q>»Einbalsamierung und Aufbewahrung thierischer
+                                        Koͤrper;«</q> Hr. <persName type="misc">Joseph Simeone</persName> von Treviso fuͤr <q>»eine Fabrik von
+                                        Baumwollenzeugen;«</q> Hr. <persName type="misc">Nicolaus Parochi</persName> in Venedig fuͤr <q>»die Entdeckung
+                                        eines Peches in Dalmatien (zu Vergoraz) welches er auf tuͤrkische Art
+                                            (<hi rendition="#roman">à Vallona</hi>) bereitet;«</q> Hr.
+                                        <persName type="misc">Franz Rossi</persName> in Schio
+                                    fuͤr eine <q>»verbesserte Tuchfabrik, in welcher die Tuͤcher
+                                        durch Maschinen geschoren werden,«</q> welche bis jezt von ihm allein in
+                                    den venezianischen Staat eingefuͤhrt wurden. Hr. <persName type="misc">Anton Regagioli</persName>, Mahler in Venedig, fuͤr
+                                        <q>»die Fabrikation von Zeichenstiften von verschiedener
+                                        Farbe;«</q> Hr. Abbè <hi rendition="#wide">Georg Martinelli</hi>
+                                    in Venedig fuͤr eine <q>»neue Art auf Holz zu mahlen;«</q> die
+                                    Herren Gebruͤder <hi rendition="#wide">Galvani</hi> von Pordenone <pb n="497" facs="32258227Z/00000513" xml:id="pj001_pb497"/>fuͤr <q>»die
+                                        Fabrikation von Zeichen, Imperial- und
+                                        Groß-Papalpapier.«</q>
+                                </p>
+                                <p>Ehrenvolle Erwaͤhnung verdient Hr. <persName type="misc">Vincenz Ant. Rasa</persName> in Venedig wegen <q>»einer
+                                        Papierblumenfabrik«</q>; Hr. <persName type="misc">Leonard Indri</persName> in Venedig wegen <q>„einer Fabrik von Saiten zu
+                                        musikalischen Instrumenten;“</q> Hr. <persName type="misc">Augustin Manochi</persName> in Mestre fuͤr
+                                        <q>„ein Modell eines Eisenhammers;“</q> Hr. <persName type="misc">Joseph Olivo</persName> in Venedig fuͤr
+                                        <q>»eine schildkroͤtene Tabatiere«</q> mit dem Portraite
+                                    Sr. Maj. des Kaisers von Oesterreich auf dem Deckel; Hr. <persName type="misc">Bart. Bizio</persName> in Venedig fuͤr
+                                        <q>»Zubereitung des Nußoͤles zum Gebrauche der Mahler;«</q>
+                                    Hr. <persName type="misc">Angelo Facchina</persName> in
+                                    Serravalle fuͤr <q>»Muster von Baumwollenzeugen;«</q> Hr.
+                                        <persName type="misc">Joseph Citerio</persName> in Mailand
+                                    fuͤr <q>»Nachahmung eines in England erfundenen Schlosses;»</q>
+                                    Hr. <persName type="misc">Nicolaus Parochi</persName> in
+                                    Venedig fuͤr <q>«eine Fabrik von Huͤten aus Hobelspaͤnen
+                                            (<hi rendition="#roman">alla Modenese</hi>).»</q>
+                                </p>
+                            </div>
+                        </body>
+                    </text>
+</TEI>

@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title type="main">Dingler-Online | Das digitalisierte Polytechnische Journal</title>
+        <title type="sub">Band 1, Jahrgang 1820</title>
+        <title type="sub">Miszellen.</title>
+      </titleStmt>
+      <publicationStmt>
+        <publisher>Humboldt-Universität</publisher>
+        <pubPlace>Berlin</pubPlace>
+        <date when="2012"/>
+        <idno type="URL">http://dingler.culture.hu-berlin.de/article/pj001/ar001052</idno>
+        <availability status="free">
+          <p>Distributed under the <ref target="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</ref>.</p>
+        </availability>
+      </publicationStmt>
+      <seriesStmt>
+        <title level="j">Dingler-Online | Das digitalisierte Polytechnische Journal</title>
+        <respStmt>
+          <resp>Projektträger:</resp>
+          <name xml:id="HU">Humboldt-Universität zu Berlin</name>
+        </respStmt>
+        <respStmt>
+          <resp>in Kooperation mit:</resp>
+          <name>Sächsische Landesbibliothek &#x2013; Staats- und Universitätsbibliothek Dresden</name>
+        </respStmt>
+        <respStmt>
+          <resp>gefördert durch:</resp>
+          <name>Deutsche Forschungsgemeinschaft</name>
+        </respStmt>
+        <respStmt>
+          <resp>Volltextdigitalisierung durch:</resp>
+          <name xml:id="Editura">Editura GmbH &amp; Co.KG, Berlin</name>
+        </respStmt>
+      </seriesStmt>
+      <sourceDesc>
+        <biblFull>
+          <titleStmt>
+            <title>Miszellen.</title>
+            <author><name>Anonymus</name></author>
+          </titleStmt>
+          <publicationStmt>            
+            <date type="first">1820</date>
+          </publicationStmt>
+          <seriesStmt>
+            <title level="j" type="main">Polytechnisches Journal</title>
+            <idno type="volume">1</idno>
+            <idno type="page">513-4</idno>
+          </seriesStmt>
+        </biblFull>
+        <biblStruct>
+                    <monogr>
+                        <title>Polytechnisches Journal</title>
+                        <editor role="editor">Dr. Johann Gottfried Dingler</editor>
+                        <idno type="local">32258227Z</idno>
+                        <imprint>
+                            <biblScope type="volume">1</biblScope>
+                            <pubPlace>Stuttgart</pubPlace>
+                            <publisher>J. G. Cotta'sche Buchhandlung</publisher>
+                            <date>1820</date>
+                            <note>Exemplar SLUB Dresden, Bibliotheksbarcode 32258227Z</note>
+                        </imprint>
+                    </monogr>
+                </biblStruct>
+      </sourceDesc>
+    </fileDesc>
+    <encodingDesc>
+      <projectDesc>
+        <p>Optical character recognition and basic TEI encoding by Editura GmbH &amp; Co.KG, Berlin
+          2009-2012.</p>
+      </projectDesc>
+      <editorialDecl>
+        <hyphenation eol="hard">
+          <p>All soft end-of-line hyphenation has been removed.</p>
+        </hyphenation>
+        <normalization method="silent">
+          <p>No text-decoration elements were captured, such as decorated capital letters at the beginning of
+            chapters or text-separators.</p>
+          <p>All references to printed sheets were captured.</p>
+        </normalization>
+        <correction method="markup">
+          <p>As far as possible all errata-lists printed in the journal have been realised, using the element
+            <gi scheme="TEI">orig</gi> to mark the original text and <gi scheme="TEI">corr</gi> to mark
+            the correction given in the errata-list.</p>
+        </correction>
+        <quotation marks="all">
+          <p>All passages set off by quotation marks were marked by the element <gi scheme="TEI">q</gi>
+            including the quotation mark inside the tag. In case of repeating quotation marks in front of
+            each line, only the first and the last quotation mark was obtained. And the element <gi
+              scheme="TEI">q</gi>'s @type-attribute was set to the value &#x201C;preline&#x201D;.</p>
+        </quotation>
+      </editorialDecl>
+    </encodingDesc>
+  </teiHeader>
+  <text type="art_miscellanea" n="52" xml:id="ar001052">
+                        <front>
+                            <titlePart type="number" rendition="#center">LII.</titlePart>
+                            <titlePart type="main" rendition="#center #wide">Miszellen.</titlePart>
+                            <titlePart type="column">Miszellen.</titlePart>
+                        </front>
+                        <body>
+                            <div type="misc_undef" xml:id="mi001052_01">
+                                <head rendition="#center #wide">Vergleichende Uebersicht der Ausdehnung,
+                                    Bevoͤlkerung, Industrie, Ackerbau, Reichthum, Schulden und Taxen von
+                                    Großbrittannien und Frankreich vom J. 1819.<note place="bottom" anchored="true" n="229)">
+                                        <pb n="513" facs="32258227Z/00000529" xml:id="pj001_pb513_n237"/>
+                                        <p>
+                                            <hi rendition="#roman">Ackermann's Repository March</hi> 1820.</p>
+                                    </note>
+                                </head>
+                                <table cols="4" rows="15">
+                                    <row role="label">
+                                        <cell rendition="#left"/>
+                                        <cell rendition="#right"/>
+                                        <cell rendition="#right">Großbrittannien und Irland.</cell>
+                                        <cell rendition="#right">Frankreich.</cell>
+                                    </row>
+                                    <row>
+                                        <cell role="label" rendition="#left">Flaͤche</cell>
+                                        <cell rendition="#right">Hect.</cell>
+                                        <cell rendition="#right">21,114,000</cell>
+                                        <cell rendition="#right">52,000,000</cell>
+                                    </row>
+                                    <row>
+                                        <cell role="label" rendition="#left">Bevoͤlkerung<note place="bottom" anchored="true" n="230)">
+                                                <pb n="513" facs="32258227Z/00000529" xml:id="pj001_pb513_n238"/>
+                                                <p>Die Population von Großbrittanien und Irland steigt nach den besten
+                                                    Schriftstellern auf 17,000,000 Seelen.</p>
+                                            </note>
+                                        </cell>
+                                        <cell rendition="#right">Indiv.</cell>
+                                        <cell rendition="#right">12,600,000</cell>
+                                        <cell rendition="#right">29,827,000</cell>
+                                    </row>
+                                    <row>
+                                        <cell role="label" rendition="#left">Grundkapital</cell>
+                                        <cell rendition="#right">Fr.</cell>
+                                        <cell rendition="#right">61,000,000,000</cell>
+                                        <cell rendition="#right">52,522,000,000</cell>
+                                    </row>
+                                    <row>
+                                        <cell role="label" rendition="#left">Roher Ertrag des Ackerbaues</cell>
+                                        <cell rendition="#right">–</cell>
+                                        <cell rendition="#right">3,875,000,000</cell>
+                                        <cell rendition="#right">4,679,000,000</cell>
+                                    </row>
+                                    <row>
+                                        <cell role="label" rendition="#left">Steuer-Ertrag desselben</cell>
+                                        <cell rendition="#right">–</cell>
+                                        <cell rendition="#right">1,461,300,000</cell>
+                                        <cell rendition="#right">1,345,000,000</cell>
+                                    </row>
+                                    <row>
+                                        <cell role="label" rendition="#left">Roher Ertrag der Industrie</cell>
+                                        <cell rendition="#right">–</cell>
+                                        <cell rendition="#right">2,250,000,000</cell>
+                                        <cell rendition="#right">1,404,000,000</cell>
+                                    </row>
+                                    <row>
+                                        <cell role="label" rendition="#left">Pferde, Maulthiere etc.</cell>
+                                        <cell rendition="#right">–</cell>
+                                        <cell rendition="#right">1,818,000</cell>
+                                        <cell rendition="#right">1,657,000</cell>
+                                    </row>
+                                    <row>
+                                        <cell role="label" rendition="#left">Ochsen etc.</cell>
+                                        <cell rendition="#right">–</cell>
+                                        <cell rendition="#right">7,200,000</cell>
+                                        <cell rendition="#right">4,682,000</cell>
+                                    </row>
+                                    <row>
+                                        <cell role="label" rendition="#left">Schaafe etc.</cell>
+                                        <cell rendition="#right">–</cell>
+                                        <cell rendition="#right">40,860,000</cell>
+                                        <cell rendition="#right">35,189,000</cell>
+                                    </row>
+                                    <row>
+                                        <cell role="label" rendition="#left">Betrag der Ausfuhr</cell>
+                                        <cell rendition="#right">–</cell>
+                                        <cell rendition="#right">1,000,000,000</cell>
+                                        <cell rendition="#right">370,000000</cell>
+                                    </row>
+                                    <row>
+                                        <cell role="label" rendition="#left">Eingefuͤhrte und verarbeitete
+                                            Wolle</cell>
+                                        <cell rendition="#right">–</cell>
+                                        <cell rendition="#right">25,000,000</cell>
+                                        <cell rendition="#right">10,500,000</cell>
+                                    </row>
+                                    <row>
+                                        <cell role="label" rendition="#left">Oeffentliche Schuld</cell>
+                                        <cell rendition="#right">–</cell>
+                                        <cell rendition="#right">20,000,000,000</cell>
+                                        <cell rendition="#right">3,050,000,000</cell>
+                                    </row>
+                                    <row>
+                                        <cell role="label" rendition="#left">Interessen hiefuͤr</cell>
+                                        <cell rendition="#right">–</cell>
+                                        <cell rendition="#right">1,000,000,000</cell>
+                                        <cell rendition="#right">232,000,000</cell>
+                                    </row>
+                                    <row>
+                                        <cell role="label" rendition="#left">Staats-Einnahmen</cell>
+                                        <cell rendition="#right">–</cell>
+                                        <cell rendition="#right">1,500,000,000</cell>
+                                        <cell rendition="#right">889,210,000</cell>
+                                    </row>
+                                </table>
+                            </div>
+                            <div type="misc_undef" xml:id="mi001052_02">
+                                <pb n="514" facs="32258227Z/00000530" xml:id="pj001_pb514"/>
+                                <head rendition="#center #wide">Auszug des meteorologischen Tagebuchs vom Canonic. Stark
+                                    in Augsburg.</head>
+                                <figure rend="text" xml:id="tx001530a">
+                                    <graphic url="32258227Z/tx001530a"/>
+                                    <head>Auszug des meteorologischen Tagebuchs vom Canonic. Stark in Augsburg</head>
+                                    <ab part="Y" rendition="#hidden" type="keywords">1820 März; Barometer ohne
+                                        Correction; Barometer mit Correc.; Reaumur, Thermometer</ab>
+                                    <figDesc/>
+                                </figure>
+                                <pb n="515" facs="32258227Z/00000531" xml:id="pj001_pb515"/>
+                                <figure rend="text" xml:id="tx001531a">
+                                    <graphic url="32258227Z/tx001531a"/>
+                                    <head>Auszug des meteorologischen Tagebuchs vom Canonic. Stark in Augsburg</head>
+                                    <ab part="Y" rendition="#hidden" type="keywords">1820 März; Thermometer; Winde</ab>
+                                    <figDesc/>
+                                </figure>
+                                <pb n="516" facs="32258227Z/00000532" xml:id="pj001_pb516"/>
+                                <figure rend="text" xml:id="tx001532a">
+                                    <graphic url="32258227Z/tx001532a"/>
+                                    <head>C. Stark's Auszug seines meteorol. Tagebuchs.</head>
+                                    <ab part="Y" rendition="#hidden" type="keywords">1820 März; Witterung; Summarische
+                                        Uebersicht</ab>
+                                    <figDesc/>
+                                </figure>
+                            </div>
+                        </body>
+                        <back>
+                            <div type="ad">
+                                <pb n="1" facs="32258227Z/00000533" xml:id="pj001_pb001_a1"/>
+                                <head rendition="#center #wide">Polytechnischer Anzeiger.</head>
+                                <div type="section">
+                                    <p rendition="#no_indent">In der J. G. <hi rendition="#wide">Cotta'schen</hi>
+                                        Buchhandlung in Stuttgart sind erschienen:</p>
+                                    <p rendition="#indent-1">
+                                        <hi rendition="#wide">Poppe</hi>, H. J. M., technologisches Lexikon, oder:
+                                        genaue Beschreibung aller mechanischen Kuͤnste, Handwerke, Manufakturen
+                                        und Fabriken, der dazu erforderlichen Handgriffe, Mittel, Werkzeuge und
+                                        Maschinen, mit steter Ruͤcksicht auf die Beduͤrfnisse der neuesten
+                                        Zeit, auf die wichtigsten Erfindungen und Entdeckungen, der dazu anzuwendenden
+                                        gepruͤftesten chemischen und mechanischen Grundsaͤze und einer
+                                        vollstaͤndigen Literatur aller Zweige der Technologie, sammt
+                                        Erklaͤrung aller dort einschlagender Kunstwoͤrter, in
+                                        alphabetischer Ordnung. gr. 8. 5 Bde. Mit 47 Kupfertafeln. 27 fl.</p>
+                                    <p>Unstreitig ist dieses <hi rendition="#wide">technologische Lexikon</hi> das
+                                        vollstaͤndigste und reichhaltigste Werk uͤber Technologie, welches
+                                        wir besizen; es eignet sich zum Handbuche fuͤr gar viele Staͤnde;
+                                        beim Nachschlagen uͤber irgend einen technologischen Gegenstand wird es
+                                        schwerlich irgend Jemand unbefriedigt lassen. – Der 5te und lezte Band
+                                        ist unter der Presse und erscheint bis Ostern.</p>
+                                    <p rendition="#indent-1">
+                                        <hi rendition="#wide">Hoyer</hi>, J. G., allgemeines Woͤrterbuch der
+                                        Artillerie, welches die Erklaͤrung aller verschiedenen
+                                        Kunstwoͤrter, Begriffe und Lehrsaͤze der Geschuͤzkunde in
+                                        theoretischer und praktischer Hinsicht, nebst der Geschichte der wichtigsten
+                                        Erfindungen in derselben enthaͤlt. gr. 8. 2 Bde. in 4 Theilen mit 25
+                                        Kupfertafeln. 14 fl. 24 kr.</p>
+                                    <p>Dieses Werk ist zwar schon in den Jahren 1804 bis 1812 erschienen, allein der
+                                        Beifall, womit es von Kennern aufgenommen worden, berechtigt uns, es aufs Neue
+                                        zu empfehlen.</p>
+
+                                    <pb n="2" facs="32258227Z/00000534" xml:id="pj001_pb002_a2"/>
+                                    <p rendition="#indent-1">Lehrbuch der speziellen Technologie, vornehmlich zum
+                                        Gebrauch beim akademischen Unterricht. Nach dem jezigen Zustande der
+                                        Naturwissenschaften und den neuesten Erfindungen und Entdeckungen bearbeitet von
+                                        Dr. <persName type="misc">J. H. M. Poppe</persName>
+                                        (Hofrath und Professor zu Tuͤbingen etc.) 1819. 8. 5 fl. 24 kr.</p>
+                                    <p>Dieses Lehrbuch ist wohl das einzige, welches die Gegenstaͤnde der
+                                        Technologie nach dem jezigen Zustande der Naturwissenschaften, und nach einem
+                                        neuen von dem Verfasser zuerst aufgestellten Systeme, in einer
+                                        genuͤgenden wissenschaftlichen Ordnung vortraͤgt. Bei einer
+                                        buͤndigen Kuͤrze wild man nirgends die erforderliche
+                                        Reichhaltigkeit, Gruͤndlickkeit und Deutlichkeit, nirgends die neuesten
+                                        Erfindungen und Entdeckungen vermissen. Abgehandelt sind in dem Buche (außer der
+                                        allgemeinen Einleitung in die Technologie): die Mehlbereitungen,
+                                        Gruͤze- und Graupenbereitung, die Staͤrkefabriken, die
+                                        Brodbaͤckerei, die Bierbrauerei, Fruchtessigbrauerei,
+                                        Fruchtbranntweinbrennerei, die Weinbereitung, Wein- und
+                                        Obstessigbereitung, Wein- und Obstbranntweinbrennerei, die Oehlbereitung,
+                                        Rauch- und Schnupftabaks-Fabriken, das Harzscharren und
+                                        Pechsieden, das Theerschwelen, die Zuckersiederei und Zuckerraffinerie, die
+                                        Saͤgemuͤhlen, die Kohlenbrennerei, die Wollen-,
+                                        Baumwollen-, Leinen- und Seidenmanufakturen, die
+                                        Strumpfmanufakturen, die Faͤrbekunst, die Papierfabriken, die
+                                        Lohgerberei, die Weißgerberei und Saͤmischgerberei, die
+                                        Pergamentgerberei, die Wachsbleicherei und Wachslichterfabrik, die
+                                        Talglichterfabriken und Wallrathlichterfabriken, die Seifensiederei, die
+                                        Salzwerke, die Potaschensiederei, die Salpeterfabriken, die
+                                        Schießpulverfabriken, die Kalkbrennerei, die Moͤrtelbereitung, die
+                                        Ziegelbrennerei, hie Toͤpferei, die Fayencefabriken, die
+                                        Steingutfabriken, die Porzellanfabriken, die Glasfabriken, die Spiegelfabriken,
+                                        die Drathziehereien, die Nadelfabriken, die Muͤnzkunst, die
+                                        Gruͤnspanfabriken, die Bleiweißfabriken.</p>
+                                    <p>Nicht blos fuͤr Oekonomen, fuͤr Kameralisten und fuͤr jeden
+                                        Staatsbeamten, sondern auch fuͤr den Kaufmann, fuͤr den
+                                        Fabrikanten, fuͤr den Liebhaber der Technologie uͤberhaupt, und
+                                        nicht blos zum <hi rendition="#wide">Lehrbuch</hi> beim muͤndlichen
+                                        Unterricht in der Technologie, sondern auch zum <hi rendition="#wide">Selbsunterricht</hi> moͤchte das Buch sehr wohl zu empfehlen
+                                        seyn.</p>
+                                </div>
+                                <div type="section">
+                                    <pb n="3" facs="32258227Z/00000535" xml:id="pj001_pb003_a3"/>
+                                    <p rendition="#indent-1">In der v. <hi rendition="#wide">Jenisch</hi>- et <hi rendition="#wide">Stageschen</hi> Buchhandlung in Augsburg haben die Presse
+                                        verlassen, und sind in allen soliden Buchhandlungen zu haben:</p>
+                                    <p rendition="#indent-1">Atlas fuͤr die Jugend, und alle Liebhaber der
+                                        Geographie, mit 24 illum. Kaͤrtchen, 4te ganz umgearbeitete Ausgabe von
+                                        Dr. Holzmann. 8. 4 fl. 12 kr.</p>
+                                    <p rendition="#indent-1">Dingler's Magazin fuͤr die Druck-,
+                                        Faͤrbe- und Bleichkunst, und den damit verwandten
+                                        Huͤlfs-Wissenschaften 2 Bde. mit Kupf. gr. 8. 7 fl. 30 kr. (Der
+                                        dritte Band wird naͤchstens die Presse verlassen.)</p>
+                                    <p rendition="#indent-1">Eiths Seelengroͤße, in Gemaͤlden aus der
+                                        Geschichte dargestellt, 1. und 2ter Band, mit Kupf. 8. 5 fl.</p>
+                                    <p rendition="#indent-1">
+                                        <hi rendition="#roman">Guide du Voyageurs dans l'Europe avec un nouvelle Carte
+                                            de poste de toute l'Europe par. Dr. Holzmann. gr.</hi> 8. 3. <hi rendition="#roman">fl.</hi> 42. <hi rendition="#roman">kr.</hi>
+                                    </p>
+                                    <p rendition="#indent-1">Huberts Handbuch fuͤr Kuͤnstler und Freunde
+                                        der Kunst. 2 Bde. Mit 50 Bildnissen. 8. 10 fl.</p>
+                                    <p rendition="#indent-1">Kaysers Scenen aus der Geschichte der Deutschen etc. Mit 1
+                                        Kupf. 8, 2 fl. 30 kr.</p>
+                                    <p rendition="#indent-1">– die Schoͤnheiten der Stadt Augsburg, und
+                                        deren Umgebungen. Mit 50 Kupf. auf Velinpapier. 4. 5 fl. 30 kr.</p>
+                                    <p rendition="#indent-1">– Zeittafeln der denkwuͤrdigsten Ereignisse,
+                                        mit gedraͤngten eingeschalteten Erlaͤuterungen fuͤr Freunde
+                                        der Geschichte. gr. 8. 2 fl. 12 kr.</p>
+                                    <p rendition="#indent-1">Niesenboͤcks erste Grundlage der allgemeinen
+                                        Geographie, nach der Fassungskraft her Anfaͤnger etc. 6te verb. Aufl. 8.
+                                        40 kr.</p>
+                                    <p rendition="#indent-1">Penthers <hi rendition="#roman">praxis Geometriae</hi>,
+                                        oder gruͤndliche Anleitung zur Feldmeßkunst etc. M. 39 Kupf. Neue Aufl.
+                                        Fol. 5 fl.</p>
+                                    <p rendition="#indent-1">Reisingers (Dr.) kuͤnstliche Fruͤhgeburt, als
+                                        ein wichtiges Mittel in der Entbindungskunst etc. Mit 1 Kupf, gr. 8. 2 fl. 30
+                                        kr.</p>
+                                    <p rendition="#indent-1">Rumpfs neue Tabellen der Muͤnz-, Maaß-
+                                        und Gewichtskunde von 40 Wechselplaͤzen, auf Postpapier. gr. 8. 1 fl. 12
+                                        kr.</p>
+                                    <p rendition="#indent-1">v. Stransky Geist der neuesten med. und chirurg. Schriften
+                                        Deutschlands, eine Quartalschrift. 4 Bde. Mit Kupfer. gr. 8, 15 fl.</p>
+                                    <p rendition="#indent-1">Theater (deutsches) fuͤr das Jahr 1819.
+                                        Herausgegeben von Adam. 6 Bde. Mit Kupfer, auf Schreibpapier. 8. 11 fl.</p>
+                                    <p rendition="#indent-1">Dietrich (F. A.) vier, fuͤnf und sechsprozentige
+                                        Zinsen, und Zinszinsen-Tabellen fuͤr Kapitalisten, Zensiten und
+                                        Kaufleute, nach der Schaͤrfe auf mehrere Jahre, bis zur Verdoppelung von
+                                        1 bis 100,000, wie auch auf Monate und Tage berechnet, von C. F. v. Jenisch, <hi rendition="#roman">jun</hi>. 8. 2 fl.@@</p>
+                                    <pb n="4" facs="32258227Z/00000536" xml:id="pj001_pb004_a4"/>
+                                    <p rendition="#indent-1">Denkmaͤler des alten Roms, oder Sammlung der
+                                        vornehmsten und noch in Rom vorhandenen Alterthuͤmer, nach Barbaults
+                                        Zeichnung, aus dem Franzoͤsischen uͤbersezt. Mit 60 Kupf. und 42
+                                        antiken Vignetten, ganz neu bearbeitete Ausgabe. Reg. Fol. 15 fl.</p>
+                                    <p rendition="#indent-1">Walters (C.) theoretisch-praktische Anweisung, wie
+                                        allerlei Arten von Bruͤcken, sowohl von Holz, als auch von Steinen nach
+                                        den besten Regeln der Zimmerkunst dauerhaft anzulegen sind. 2 Thle. Ganz neu
+                                        umgearbeitet, verbessert und vermehrt von A. Ch. Mayer. Mit 34 Kupf. Fol. 4 fl.
+                                        46 kr. Auf Velinpapier 5 fl. 30 kr.</p>
+                                </div>
+                                <div type="section">
+                                    <head rendition="#center #wide">Dampfkoch-Maschinen.</head>
+                                    <p>Ich benachrichtige die Herren Fabrikanten, daß ich mich fortwaͤhrend mit
+                                        Verfertigung von Dampfkoch-Maschinen befasse. Bei den Auftraͤgen
+                                        beliebe man mir blos den dadurch zu erzielenden Zweck anzuzeigen, um die
+                                        Groͤße des Apparates darnach bestimmen zu koͤnnen. Auf gute Arbeit
+                                        und billige Preise kann man sich verlassen.</p>
+                                    <p rendition="#right">
+                                        <hi rendition="#wide">Sebastian Muͤller</hi>,</p>
+                                    <p rendition="#right">Maschinenbauer in Augsburg.</p>
+                                </div>
+                                <div type="section">
+                                    <head rendition="#center #wide">Stahlarbeiten.</head>
+                                    <p>Da der von mir selbst erzeugte Stahl und die von mir daraus gefertigte Fabrikate
+                                        dem Publikum noch nicht hinlaͤnglich bekannt sind, so zeige ich an, daß
+                                        Trieb- und Rundstahldrath, sowohl flach als viereckigt, in allen
+                                        gebraͤuchlichen Nummern, Zugeisen fuͤr Fabrikanten und andere
+                                        Kuͤnstler, ferner Schlagfedern, auf Verlangen geschmiedete Feilen und
+                                        mehrere Erzeugnisse aus Stahl bei mir zu haben sind. Preiscourante, welche das
+                                        Naͤhere enthalten, koͤnnen bei mir abverlangt werden. Auf die
+                                        vorzuͤgliche Guͤte meiner Stahlerzeugnisse kann ich mich auf die
+                                        giltigen Zeugnisse der Muͤnchner Akademie und zahlreicher
+                                        Sachverstaͤndigen, so wie auf das mir bei der vorjaͤhrigen
+                                        Industrieausstellung zu Augsburg ertheilte Preisdiplom beziehen. Unter
+                                        Versprechung billiger Preise und promtester Bedienung, empfehle ich mich meinen
+                                        Freunden.</p>
+                                    <p rendition="#right">
+                                        <hi rendition="#wide">Andreas Bek</hi>,</p>
+                                    <p rendition="#right">
+                                        <hi rendition="#roman">Litt. G. Nro.</hi> 156. in Augsburg.</p>
+                                </div>
+                            </div>
+                        </back>
+                    </text>
+</TEI>
