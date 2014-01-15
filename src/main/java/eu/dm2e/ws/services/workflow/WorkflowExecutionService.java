@@ -464,7 +464,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
         GrafeoImpl g = new GrafeoImpl();
         g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), workflowUri);
         if (g.isEmpty()) {
-            return Response.status(404).build();
+            return Response.status(404).entity("Workflow not found : " + workflowUri.toString()).build();
         }
         WebservicePojo ws = new WebservicePojo();
         ws.loadFromURI(workflowExecutionUri);
