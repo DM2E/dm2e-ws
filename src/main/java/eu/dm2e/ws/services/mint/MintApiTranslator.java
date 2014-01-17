@@ -77,6 +77,7 @@ public final class MintApiTranslator {
 	private String mint_uri_list_dataupload;
 	private String mint_uri_single_mapping;
 	private String mint_uri_single_dataupload;
+	private static String josso_login_logout = "http://dm2e-security.rz-berlin.mpg.de/josso/signon/";
 
 	/**
 	 * @param localBase
@@ -127,15 +128,11 @@ public final class MintApiTranslator {
 
 		final String respStr = resp.readEntity(String.class);
 		log.trace(LogbackMarkers.HTTP_RESPONSE_DUMP, "Body: " + respStr);
-
-		if (resp.getStatus() != 200) {
-			return false;
+		// Either we go Home (200) or redirect to login (302) 
+		if (resp.getStatus() == 200) {
+			return true;
 		}
-		if (respStr.contains("URL=./Login_input.action")) {
-			return false;
-		}
-		return true;
-
+		return false;
 	}
 
 	/**
@@ -152,32 +149,38 @@ public final class MintApiTranslator {
 		}
 
 		Form form = new Form();
-		form.param("username", mint_username);
-		form.param("password", mint_password);
+
+
+		form.param("josso_username", mint_username);
+		form.param("josso_password", mint_password);
+		form.param("josso_back_to", mint_api_base+"josso_security_check");
+		form.param("josso_cmd", "login" );
 		log.info(LogbackMarkers.SENSITIVE_INFORMATION, "Logging in as " + mint_username + ":"
 				+ mint_password);
 		Response resp = mintClient
-				.target(mint_uri_login)
+				.target( josso_login_logout + "login.do" )
 				.header("Origin", "http://mint-projects.image.ntua.gr")
 				.header("Referer", "http://mint-projects.image.ntua.gr/dm2e/Login.action")
 				.post(Entity.form(form));
 
 		final URI location = resp.getLocation();
 		log.debug("Login Response: " + resp);
-		if (resp.getStatus() != 302 || null == location
-				|| !location.toString().matches(".*Home.action.*")) {
-			log.debug("Location: " + resp.getLocation());
+		if (resp.getStatus() != 302 ) {
 			String msg = "Login into MINT failed :(";
 			RuntimeException e = new RuntimeException(msg);
 			log.error(LogbackMarkers.SERVER_COMMUNICATION, msg, e);
 			throw e;
 		}
-
+		
 		log.debug("Login redirect location: " + location);
 		// log.info("Login response: " +
 		// mintClient.resource(resp.getLocation()).get(String.class));
 		mintClient.addCookies(resp.getCookies().values());
-
+		resp = mintClient
+			.target( location )
+			.get();
+		// this will probably set the session on further requests
+		mintClient.addCookies(resp.getCookies().values());
 	}
 
 	/**
