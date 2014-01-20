@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.*;
 
-@Ignore("MINT Tests always fail :-(")
+//@Ignore("MINT Tests always fail :-(")
 public class MintApiTranslatorITCase extends OmnomTestCase {
 	
 	public MintApiTranslatorITCase() {
@@ -76,7 +76,7 @@ public class MintApiTranslatorITCase extends OmnomTestCase {
 	}
 	
 	@Test
-    @Ignore("MINT Tests always fail :-(")
+//    @Ignore("MINT Tests always fail :-(")
 	public void testLogin() throws InterruptedException {
 		log.info("Testing login");
 		mintApiTranslator.getMintClient().clearCookies();
@@ -91,7 +91,7 @@ public class MintApiTranslatorITCase extends OmnomTestCase {
 	
 	
 	@Test
-    @Ignore("MINT Tests always fail :-(")
+//    @Ignore("MINT Tests always fail :-(")
 	public void testParseSingleMapping() {
 		log.info("Test parsing a single mapping");
 		String jsonStr = configString.get(OmnomTestResources.MINT_MAPPING_SINGLE_JSON);
@@ -118,7 +118,7 @@ public class MintApiTranslatorITCase extends OmnomTestCase {
 		}
 	}
 	@Test
-    @Ignore("MINT Tests always fail :-(")
+//    @Ignore("MINT Tests always fail :-(")
 	public void testParseSingleMappingNoUploadId() {
 		log.info("Test parsing a single mapping");
 		String jsonStr = configString.get(OmnomTestResources.MINT_MAPPING_SINGLE_NO_UPLOAD_JSON);
@@ -131,16 +131,19 @@ public class MintApiTranslatorITCase extends OmnomTestCase {
 	}
 	
 	@Test
-    @Ignore("MINT Tests always fail :-(")
+//    @Ignore("MINT Tests always fail :-(")
 	public void testParseSingleDataUpload() {
 		{
 			FilePojo fp = mintApiTranslator.parseFilePojoFromDataUploadJson(
 					configString.get(OmnomTestResources.MINT_DATASET_SINGLE_DATAUPLOAD_JSON_ZIPXML));
 			assertEquals(NS.OMNOM_TYPES.ZIP_XML, fp.getFileType().toString());
 			assertEquals("vischer_aesthetik0301_1851.TEI-P5.xml", fp.getLabel());
+			log.debug("File Retrieval URI: " + fp.getFileRetrievalURI());
 			Response resp = mintApiTranslator.getMintClient()
 					.target(fp.getFileRetrievalURI())
 					.get();
+			log.debug("Response Status: " + resp.getStatus());
+			log.debug("Response Type: " + resp.getMediaType());
 			assertEquals(200, resp.getStatus());
 			assertEquals(DM2E_MediaType.APPLICATION_X_TAR_UTF8_TYPE, resp.getMediaType());
 		}
@@ -170,7 +173,7 @@ public class MintApiTranslatorITCase extends OmnomTestCase {
 	}
 	
 	@Test
-    @Ignore("MINT Tests always fail :-(")
+//    @Ignore("MINT Tests always fail :-(")
 	public void testParseMappings() {
 		String jsonStr = configString.get(OmnomTestResources.MINT_MAPPING_LIST_JSON);
 		List<FilePojo> list = mintApiTranslator.parseFileListFromMappingList(jsonStr);
@@ -178,7 +181,7 @@ public class MintApiTranslatorITCase extends OmnomTestCase {
 	}
 	
 	@Test
-    @Ignore("MINT Tests always fail :-(")
+//    @Ignore("MINT Tests always fail :-(")
 	public void testParseDatasetDatauploads() {
 		String jsonStr = configString.get(OmnomTestResources.MINT_UPLOAD_LIST_JSON);
 		List<FilePojo> list = mintApiTranslator.parseFileListFromDataUploadList(jsonStr);
@@ -186,21 +189,21 @@ public class MintApiTranslatorITCase extends OmnomTestCase {
 	}
 	
 	@Test
-    @Ignore("MINT Tests always fail :-(")
+//    @Ignore("MINT Tests always fail :-(")
 	public void testRetrieveMappings() {
 		List<FilePojo> list = mintApiTranslator.retrieveListOfMappings();
 		assertTrue(list.size() > 0);
 	}
 	
 	@Test
-    @Ignore("MINT Tests always fail :-(")
+//    @Ignore("MINT Tests always fail :-(")
 	public void testRetrieveDataUploads() {
 		List<FilePojo> list = mintApiTranslator.retrieveListOfDataUploads();
 		assertTrue(list.size() > 0);
 	}
 
 	@Test
-    @Ignore("MINT Tests always fail :-(")
+//    @Ignore("MINT Tests always fail :-(")
 	public void testRetrieveMapping() {
 		log.info("Retrieve a single mapping by ID.");
 		FilePojo retFP = mintApiTranslator.retrieveMapping(randomMappingMintId);
@@ -212,7 +215,7 @@ public class MintApiTranslatorITCase extends OmnomTestCase {
 	}
 
 	@Test
-    @Ignore("MINT Tests always fail :-(")
+//    @Ignore("MINT Tests always fail :-(")
 	public void testRetrieveDataUpload() throws Exception {
 		log.info("Retrieve a single DataUpload by ID.");
 		FilePojo retFP = mintApiTranslator.retrieveDataUpload(randomDataUploadMintId);
@@ -224,7 +227,7 @@ public class MintApiTranslatorITCase extends OmnomTestCase {
 	}
 
 	@Test
-    @Ignore("MINT Tests always fail :-(")
+//    @Ignore("MINT Tests always fail :-(")
 	public void testRetrieveFilePojoForUriUpload() throws Exception {
 		URI uri = URI.create(Config.get(ConfigProp.MINT_BASE_URI) + "/upload" + randomDataUploadMintId);
 		FilePojo retFP = mintApiTranslator.retrieveFilePojoForUri(uri);
@@ -236,7 +239,7 @@ public class MintApiTranslatorITCase extends OmnomTestCase {
 	}
 	
 	@Test
-    @Ignore("MINT Tests always fail :-(")
+//    @Ignore("MINT Tests always fail :-(")
 	public void testRetrieveFilePojoForUriMapping() throws Exception {
 		URI uri = URI.create(Config.get(ConfigProp.MINT_BASE_URI) + "/mapping" + randomMappingMintId);
 		FilePojo retFP = mintApiTranslator.retrieveFilePojoForUri(uri);
@@ -251,7 +254,7 @@ public class MintApiTranslatorITCase extends OmnomTestCase {
 	 * FIXME this could break on the future since the URI is hard-coded
 	 */
 	@Test
-    @Ignore("MINT Tests always fail :-(")
+    @Ignore("Have to find a proper example URL sometime")
 	public void testConvertTGZtoXML() throws Exception {
 		FilePojo fp = new FilePojo();
 		fp.setFileType(NS.OMNOM_TYPES.XML);
