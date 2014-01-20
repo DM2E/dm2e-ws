@@ -42,7 +42,7 @@ public abstract class AbstractPersistentPojo<T extends AbstractPersistentPojo> e
             log.debug("No of Triples loaded from URI " + uri + ": " + g.size());
             // log.debug("Triples: " + g.getTerseTurtle());
 		} catch (Exception e1) {
-			log.warn("Failed to initialize Pojo from URI: " + e1);
+			log.warn("Failed to initialize Pojo from URI: ", e1);
 			return;
 		}
         log.debug("Instantiating " + this.getClass() + " Pojo from " + uri);
