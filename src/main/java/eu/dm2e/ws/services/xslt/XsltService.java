@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.ProcessingException;
 
 import org.joda.time.DateTime;
 
@@ -127,6 +128,7 @@ public class XsltService extends AbstractTransformationService {
 			} else {
 				log.error("ITS AN Unknown filetype " + fpXslt.getFileType().toString() + ", defaulting to " + NS.OMNOM_TYPES.XSLT);
 			}
+			log.debug("Treating XSL input as " + xsltType);
 			
 			//
 			// parse XSLT parameters
@@ -152,8 +154,13 @@ public class XsltService extends AbstractTransformationService {
 
 			// PARAM_XSLT_PARAMETER_RESOURCE #case2
 			String paramMapResourceUri = jobPojo.getWebserviceConfig().getParameterValueByName(PARAM_XSLT_PARAMETER_RESOURCE);
-			if (null != paramMapResourceUri) {
-				String paramMapStr = client.getJerseyClient().target(paramMapResourceUri).request().get(String.class);
+			if (null != paramMapResourceUri && ! paramMapResourceUri.matches("^\\s*$")) {
+				String paramMapStr;
+				try {
+					paramMapStr = client.getJerseyClient().target(paramMapResourceUri).request().get(String.class);
+				} catch (ProcessingException e) {
+					throw new RuntimeException("Parameter Resource is invalid URI: " + paramMapResourceUri, e);
+				}
 				paramMap.putAll(xsltUtils.parseXsltParameters(paramMapStr));
 			}
 
@@ -227,7 +234,8 @@ public class XsltService extends AbstractTransformationService {
 			jobPojo.info("XSLT Transformation complete.");
 			jobPojo.setFinished();
 		} catch (Throwable t) {
-			log.error("An error occured during XsltService.run: " + t);
+			log.error("An error occured during XsltService.run: ", t);
+			t.printStackTrace();
 			jobPojo.fatal("An error occured during XsltService.run: " + t);
 			jobPojo.setFailed();
 		} finally {
