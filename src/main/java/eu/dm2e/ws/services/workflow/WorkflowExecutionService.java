@@ -459,19 +459,25 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
     @GET
     @Path("{id}/blankConfig")
     public Response getEmptyConfigForWorkflow() {
+	log.warn("About to create blankConfig()");
         URI workflowExecutionUri = popPath();
         URI workflowUri = popPathFromBeginning(workflowExecutionUri, "exec");
         GrafeoImpl g = new GrafeoImpl();
         g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), workflowUri);
+	log.warn("blankConfig(): Read Wf from endpoint: " + workflowUri);
+	log.warn("Done " + workflowUri);
         if (g.isEmpty()) {
+		log.warn("Workflow not found: " + workflowUri);
             return Response.status(404).entity("Workflow not found : " + workflowUri.toString()).build();
         }
         WebservicePojo ws = new WebservicePojo();
+	log.warn("blankConfig(): Read WfExec from endpoint: " +workflowExecutionUri);
         ws.loadFromURI(workflowExecutionUri);
         WebserviceConfigPojo wfconf = new WebserviceConfigPojo();
         wfconf.setWebservice(ws);
         for (ParameterPojo inputParam : ws.getInputParams()) {
-            ParameterAssignmentPojo ass = wfconf.addParameterAssignment(inputParam.getId(), inputParam.getDefaultValue());
+            ParameterAssignmentPojo ass = wfconf.addParameterAssignment(inputParam.getId(), inputParam.getDefaultValue() == null ? "" : inputParam.getDefaultValue());
+		log.debug("Assignment: " + ass);
             ass.setLabel(inputParam.getLabel());
         }
 //		for (ParameterPojo inputParam : wf.getOutputParams()) {
