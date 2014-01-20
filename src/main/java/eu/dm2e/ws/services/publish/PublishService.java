@@ -10,6 +10,7 @@ import eu.dm2e.ws.api.VersionedDatasetPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.services.AbstractTransformationService;
 import org.joda.time.DateTime;
+import eu.dm2e.ws.api.ParameterPojo;
 
 import javax.ws.rs.Path;
 import java.net.URI;
@@ -39,8 +40,10 @@ public class PublishService extends AbstractTransformationService {
         ws.addInputParameter(PARAM_LABEL).setIsRequired(true);
         ws.addInputParameter(PARAM_PROVIDER_ID).setIsRequired(true);
         ws.addInputParameter(PARAM_COMMENT);
-        ws.addInputParameter(PARAM_ENDPOINT_UPDATE);
-        ws.addInputParameter(PARAM_ENDPOINT_SELECT);
+        ParameterPojo paramEndpointUpdate = ws.addInputParameter(PARAM_ENDPOINT_UPDATE);
+        paramEndpointUpdate.setDefaultValue("http://141.20.126.232/openrdf-sesame/repositories/omnom-ingestion/statements");
+        ParameterPojo paramEndpointSelect = ws.addInputParameter(PARAM_ENDPOINT_SELECT);
+        paramEndpointSelect.setDefaultValue("http://141.20.126.232/openrdf-sesame/repositories/omnom-ingestion");
         ws.addOutputParameter(PARAM_RESULT_DATASET_ID);
     }
 
@@ -58,8 +61,10 @@ public class PublishService extends AbstractTransformationService {
             String comment = wsConf.getParameterValueByName(PARAM_COMMENT);
             String endpoint = wsConf.getParameterValueByName(PARAM_ENDPOINT_UPDATE);
             String endpointSelect = wsConf.getParameterValueByName(PARAM_ENDPOINT_SELECT);
-            if (null == endpoint) endpoint = Config.get(ConfigProp.ENDPOINT_UPDATE);
-            if (null == endpointSelect) endpointSelect = Config.get(ConfigProp.ENDPOINT_QUERY);
+            if (null == endpoint || endpoint.matches("^\\s*$"))
+                endpoint =  getWebServicePojo().getParamByName(PARAM_ENDPOINT_UPDATE).getDefaultValue();
+            if (null == endpointSelect || endpoint.matches("^\\s*$"))
+                endpointSelect =  getWebServicePojo().getParamByName(PARAM_ENDPOINT_SELECT).getDefaultValue();
 
             jobPojo.debug("Dataset: " + dataset);
             jobPojo.debug("Input file: " + input);
