@@ -4,6 +4,7 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.ws.rs.ProcessingException;
 
 import javax.ws.rs.Path;
 
@@ -118,6 +119,7 @@ public class XsltService extends AbstractTransformationService {
 			jobPojo.debug("XSL URL: " + xsltUrl);
 			// determine whether this is an XSLT-ZIP or an XSLT
 			FilePojo fpXslt = new FilePojo();
+			log.debug("Load XSLT file pojo from "+ fpXslt);
 			fpXslt.loadFromURI(xsltUrl);
 			
 			// The type of xslt script, either a single large script or a zipped set of scripts
@@ -127,6 +129,7 @@ public class XsltService extends AbstractTransformationService {
 			} else {
 				log.error("ITS AN Unknown filetype " + fpXslt.getFileType().toString() + ", defaulting to " + NS.OMNOM_TYPES.XSLT);
 			}
+			log.debug("Treating XSL input as " + xsltType);
 			
 			//
 			// parse XSLT parameters
@@ -152,10 +155,16 @@ public class XsltService extends AbstractTransformationService {
 
 			// PARAM_XSLT_PARAMETER_RESOURCE #case2
 			String paramMapResourceUri = jobPojo.getWebserviceConfig().getParameterValueByName(PARAM_XSLT_PARAMETER_RESOURCE);
-			if (null != paramMapResourceUri) {
-				String paramMapStr = client.getJerseyClient().target(paramMapResourceUri).request().get(String.class);
+			if (null != paramMapResourceUri && ! paramMapResourceUri.matches("^\\s*$")) {
+				String paramMapStr;
+				try {
+					paramMapStr = client.getJerseyClient().target(paramMapResourceUri).request().get(String.class);
+				} catch (ProcessingException e) {
+					throw new RuntimeException("Parameter Resource is invalid URI: " + paramMapResourceUri, e);
+				}
 				paramMap.putAll(xsltUtils.parseXsltParameters(paramMapStr));
 			}
+
 
 			// PARAM_XSLT_PARAMETER_STRING #case3
 			String paramMapStr = jobPojo.getWebserviceConfig().getParameterValueByName(PARAM_XSLT_PARAMETER_STRING);
@@ -227,7 +236,8 @@ public class XsltService extends AbstractTransformationService {
 			jobPojo.info("XSLT Transformation complete.");
 			jobPojo.setFinished();
 		} catch (Throwable t) {
-			log.error("An error occured during XsltService.run: " + t);
+			log.error("An error occured during XsltService.run: ", t);
+			t.printStackTrace();
 			jobPojo.fatal("An error occured during XsltService.run: " + t);
 			jobPojo.setFailed();
 		} finally {
