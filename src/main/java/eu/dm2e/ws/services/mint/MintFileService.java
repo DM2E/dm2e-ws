@@ -56,6 +56,15 @@ public class MintFileService extends AbstractRDFService {
 		
 		return Response.ok().entity(getResponseEntity(g)).build();
 	}
+
+	@Produces({
+		MediaType.APPLICATION_JSON
+	})
+	@GET
+	@Path("list")
+	public String getFileListJsonList() {
+		return getFileListJson();
+	}
 	
 	@Produces({
 		MediaType.APPLICATION_JSON
