@@ -256,7 +256,7 @@ public class MintApiTranslatorITCase extends OmnomTestCase {
 	 * FIXME this could break on the future since the URI is hard-coded
 	 */
 	@Test
-    @Ignore("Have to find a proper example URL sometime")
+//    @Ignore("Have to find a proper example URL sometime")
 	public void testConvertTGZtoXML() throws Exception {
 		FilePojo fp = new FilePojo();
 		fp.setFileType(NS.OMNOM_TYPES.XML);
