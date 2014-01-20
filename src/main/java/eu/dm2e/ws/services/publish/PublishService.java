@@ -6,13 +6,16 @@ import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.api.IWebservice;
 import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.VersionedDatasetPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.services.AbstractTransformationService;
+
 import org.joda.time.DateTime;
 import eu.dm2e.ws.api.ParameterPojo;
 
 import javax.ws.rs.Path;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 //import java.util.Date;
@@ -62,9 +65,9 @@ public class PublishService extends AbstractTransformationService {
             String endpoint = wsConf.getParameterValueByName(PARAM_ENDPOINT_UPDATE);
             String endpointSelect = wsConf.getParameterValueByName(PARAM_ENDPOINT_SELECT);
             if (null == endpoint || endpoint.matches("^\\s*$"))
-                endpoint =  getWebServicePojo().getParamByName(PARAM_ENDPOINT_UPDATE).getDefaultValue();
+            	endpoint =  getWebServicePojo().getParamByName(PARAM_ENDPOINT_UPDATE).getDefaultValue();
             if (null == endpointSelect || endpoint.matches("^\\s*$"))
-                endpointSelect =  getWebServicePojo().getParamByName(PARAM_ENDPOINT_SELECT).getDefaultValue();
+            	endpointSelect =  getWebServicePojo().getParamByName(PARAM_ENDPOINT_SELECT).getDefaultValue();
 
             jobPojo.debug("Dataset: " + dataset);
             jobPojo.debug("Input file: " + input);

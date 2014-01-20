@@ -72,7 +72,8 @@ public class WebserviceConfigPojo extends AbstractPersistentPojo<WebserviceConfi
             throw new RuntimeException("Webservice/Workflow " + this.toString() + " contains no such parameter: " + paramName);
         }
         if (null == paramValue) {
-            throw new RuntimeException("Parameter value for param " + param.getId() + " is null!");
+            log.warn("Parameter value for param " + param.getId() + " is null!");
+            paramValue = "";
         }
 
         ParameterAssignmentPojo ass = new ParameterAssignmentPojo();

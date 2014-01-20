@@ -1,6 +1,5 @@
 package eu.dm2e.ws.tests;
 
-import java.io.File;
 import java.net.URL;
 
 public enum OmnomTestResources {

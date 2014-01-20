@@ -1,5 +1,22 @@
 package eu.dm2e.ws.tests.integration.services.mint;
 
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+
+import java.net.URI;
+import java.util.List;
+import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.junit.Before;
+import org.junit.ComparisonFailure;
+import org.junit.Ignore;
+import org.junit.Test;
+
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ConfigProp;
@@ -8,21 +25,6 @@ import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.tests.OmnomTestCase;
 import eu.dm2e.ws.tests.OmnomTestResources;
-import org.junit.Before;
-import org.junit.ComparisonFailure;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.net.URI;
-import java.util.List;
-import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
 
 @Ignore("MINT Tests always fail :-(")
 public class MintApiTranslatorITCase extends OmnomTestCase {
