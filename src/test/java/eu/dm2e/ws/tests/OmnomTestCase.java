@@ -1,5 +1,15 @@
 package eu.dm2e.ws.tests;
 
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Map;
+
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+
+import org.junit.Before;
+
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
 import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
@@ -7,21 +17,20 @@ import eu.dm2e.utils.TemplateEngine;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.api.*;
+import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.api.LogEntryPojo;
+import eu.dm2e.ws.api.ParameterAssignmentPojo;
+import eu.dm2e.ws.api.ParameterConnectorPojo;
+import eu.dm2e.ws.api.ParameterPojo;
+import eu.dm2e.ws.api.UserPojo;
+import eu.dm2e.ws.api.VersionedDatasetPojo;
+import eu.dm2e.ws.api.WebserviceConfigPojo;
+import eu.dm2e.ws.api.WebservicePojo;
+import eu.dm2e.ws.api.WorkflowPojo;
+import eu.dm2e.ws.api.WorkflowPositionPojo;
 import eu.dm2e.ws.services.Client;
 import eu.dm2e.ws.wsmanager.ManageService;
-import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-import java.io.File;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 public class OmnomTestCase extends OmnomUnitTest{
 	
