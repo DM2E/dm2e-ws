@@ -38,7 +38,6 @@ import eu.dm2e.grafeo.GValue;
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
 import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
-import eu.dm2e.grafeo.jena.SparqlUpdate;
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ConfigProp;
@@ -155,39 +154,14 @@ public class WorkflowService extends AbstractRDFService {
 			@QueryParam("order") String sortOrder
 			) {
     	GrafeoMongoImpl g = new GrafeoMongoImpl();
-    	ParameterizedSparqlString sb = new ParameterizedSparqlString();
-    	sb.setNsPrefix("rdf", NS.RDF.BASE);
-    	sb.setNsPrefix("dcterms", NS.DCTERMS.BASE);
-    	sb.setNsPrefix("omnom", NS.OMNOM.BASE);
-//    	sb.setParam("filterUser", g.resource(filterUser).getJenaRDFNode());
-    	sb.append("CONSTRUCT {  \n");
-    	sb.append("    ?s ?p ?o .  \n");
-    	sb.append("} WHERE {  \n");
-    	sb.append("  GRAPH ?wf {  \n");
-    	sb.append("    ?wf rdf:type omnom:Workflow .  \n");
-    	sb.append("	   ?wf omnom:status ?status .  \n");											// Filter unavailable workflows
-    	sb.append("    FILTER(STR(?status) != \"" + FileStatus.DELETED.toString() + "\") .  \n"); // i.e. those DELETED
-    	if (null != filterUser) {
-    	sb.append("    ?conf dcterms:creator <" + filterUser + ">  .  \n");
-    	}
-    	sb.append("    ?s ?p ?o .  \n");
-    	sb.append("  }    \n");
-    	sb.append("}  \n");
-    	Query query = sb.asQuery();
-    	QueryEngineHTTP qExec = QueryExecutionFactory.createServiceRequest(Config.get(ConfigProp.MONGO), query);
-    	{
-    		long startTime = System.currentTimeMillis();
-    		qExec.execConstruct(g.getModel());
-    		long endTime  = System.currentTimeMillis();
-    		long elapsed = endTime - startTime;
-    		log.debug(LogbackMarkers.TRACE_TIME, "CONSTRUCT of workflows took " + elapsed + "ms. ");
-    	}
+    	g.readTriplesFromEndpoint(Config.get(ConfigProp.MONGO), null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_WORKFLOW));
     	List<WorkflowPojo> wfList = new ArrayList<>();
     	{
     		long startTime = System.currentTimeMillis();
     		for (GStatement typeStmt : g.listStatements(null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_WORKFLOW))) {
     			WorkflowPojo pojo = g.getObjectMapper().getObject(WorkflowPojo.class, typeStmt.getSubject());
-    			wfList.add(pojo);
+    			if (!pojo.getWorkflowStatus().equals(FileStatus.DELETED.toString()))
+    				wfList.add(pojo);
     		}
     		long endTime  = System.currentTimeMillis();
     		long elapsed = endTime - startTime;
@@ -276,10 +250,10 @@ public class WorkflowService extends AbstractRDFService {
 		if (g.isEmpty()) {
 			return Response.status(Response.Status.NOT_FOUND).build();
 		}
-		WorkflowPojo wf = g.getObjectMapper().getObject(WorkflowPojo.class, wfUri);
-		wf.setWorkflowStatus(FileStatus.DELETED.toString());
-		wf.getGrafeo().putToEndpoint(Config.get(ConfigProp.MONGO), wfUri);
-		return Response.status(Response.Status.OK).entity(wf).build();
+		g.removeTriple(g.resource(wfUri), NS.OMNOM.PROP_JOB_STATUS, null);
+		g.addTriple(g.resource(wfUri), NS.OMNOM.PROP_JOB_STATUS, g.literal(FileStatus.DELETED.toString()));
+		g.putToEndpoint(Config.get(ConfigProp.MONGO), wfUri);
+		return Response.status(Response.Status.OK).build();
 	}
 	
 	/*
