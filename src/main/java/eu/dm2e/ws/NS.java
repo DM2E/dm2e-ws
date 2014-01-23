@@ -379,6 +379,7 @@ public final class NS {
 		public static final String CLASS_MANUSCRIPT = BASE + "Manuscript";
 		public static final String PROP_HAS_ANNOTABLE_VERSION_AT = BASE + "hasAnnotatableVersionAt";
 		public static final String PROP_PRINTED_AT = BASE + "printedAt";
+		public static final String PROP_SUBTITLE = BASE + "subtitle";
 	}
 	public static final class FABIO {
 		public static final String BASE         = "http://purl.org/spar/fabio/";
@@ -387,6 +388,7 @@ public final class NS {
 	public static final class BIBO {
 		public static final String BASE         = "http://purl.org/ontology/bibo/";
 		public static final String CLASS_ISSUE = BASE + "Issue";
+		public static final String PROP_EDITOR = BASE + "editor";
 	}
 	public static final class EDM {
 		public static final String BASE = "http://www.europeana.eu/schemas/edm/";
@@ -394,6 +396,7 @@ public final class NS {
 		public static final String PROP_IS_SHOWN_BY = BASE + "isShownBy";
 		public static final String PROP_IS_SHOWN_AT = BASE + "isShownAT";
 		public static final String PROP_RIGHTS = BASE + "rights";
+		public static final String PROP_OBJECT = BASE + "object";
 		public static final Object CLASS_PROVIDED_CHO = BASE + "ProvidedCHO";
 	}
 	public static final class PRO {
