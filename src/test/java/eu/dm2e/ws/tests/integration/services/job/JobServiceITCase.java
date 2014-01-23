@@ -1,7 +1,27 @@
 package eu.dm2e.ws.tests.integration.services.job;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
 import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
 import eu.dm2e.grafeo.junit.GrafeoAssert;
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.DM2E_MediaType;
@@ -15,24 +35,6 @@ import eu.dm2e.ws.services.demo.DemoService;
 import eu.dm2e.ws.services.xslt.XsltService;
 import eu.dm2e.ws.tests.OmnomTestCase;
 import eu.dm2e.ws.tests.OmnomTestResources;
-import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.client.ClientProperties;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
 
 public class JobServiceITCase extends OmnomTestCase {
 	private WebTarget webTarget;
@@ -72,14 +74,14 @@ public class JobServiceITCase extends OmnomTestCase {
 	@Test
 	public void testGetWebServicePojo() {
 		Response resp = webTarget.request().get();
-		Grafeo g = new GrafeoImpl(resp.readEntity(InputStream.class));
+		Grafeo g = new GrafeoMongoImpl(resp.readEntity(InputStream.class));
 		log.info(g.getNTriples());
 		GrafeoAssert.sizeEquals(g, 3);
 	}
 
 	/**
 	 *  TODO BUG what's the deal with this test breaking randomly???
-	 *  I guess the bug is in passing an InputStream to GrafeoImpl constructor [kb, Jul 12, 2013 12:11:34 AM]
+	 *  I guess the bug is in passing an InputStream to GrafeoMongoImpl constructor [kb, Jul 12, 2013 12:11:34 AM]
 	 *  
 	 * @throws InterruptedException 
 	 */
@@ -88,7 +90,7 @@ public class JobServiceITCase extends OmnomTestCase {
 	public void testGetJob() throws InterruptedException {
 		WebTarget wr = client.getJerseyClient().target(globalJob);
 		Response resp = wr.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES).get();
-		Grafeo g = new GrafeoImpl(resp.readEntity(String.class), true);
+		Grafeo g = new GrafeoMongoImpl(resp.readEntity(String.class), true);
 		// TODO wtf? this breaks randomly, returning no results when running the full test suite but not when running just this test case... WTF?
 		try {
 			GrafeoAssert.containsLiteral(g, globalJob, NS.OMNOM.PROP_JOB_STATUS, "NOT_STARTED");
@@ -147,7 +149,7 @@ public class JobServiceITCase extends OmnomTestCase {
 		assertEquals(201, resp.getStatus());
 		URI logLoc = resp.getLocation();
 		
-		GrafeoImpl g = new GrafeoImpl(globalJob);
+		GrafeoMongoImpl g = new GrafeoMongoImpl(globalJob);
 		GrafeoAssert.containsLiteral(g, logLoc, "omnom:hasLogMessage", "I'ma log message in RDF");
 		
 		Response respBad = client.getJerseyClient()
@@ -169,7 +171,7 @@ public class JobServiceITCase extends OmnomTestCase {
 		assertEquals(201, resp.getStatus());
 		URI logLoc = resp.getLocation();
 		
-		GrafeoImpl g = new GrafeoImpl(globalJob);
+		GrafeoMongoImpl g = new GrafeoMongoImpl(globalJob);
 		GrafeoAssert.containsLiteral(g, logLoc, "omnom:hasLogMessage", "FOO BAR");
 	}
 	@Test
@@ -187,7 +189,7 @@ public class JobServiceITCase extends OmnomTestCase {
 					.request().post(Entity.text( level + ": FOO"));
 			assertEquals(201, logResp.getStatus());
 			URI logLoc = logResp.getLocation();
-			GrafeoImpl g = new GrafeoImpl(jobLoc);
+			GrafeoMongoImpl g = new GrafeoMongoImpl(jobLoc);
 //			GrafeoAssert.containsResource(g, jobLoc, NS.OMNOM.PROP_LOG_ENTRY, logLoc);
 			log.info(g.getTurtle());
 			GrafeoAssert.containsLiteral(g, logLoc, NS.OMNOM.PROP_LOG_MESSAGE, "FOO");
@@ -215,7 +217,7 @@ public class JobServiceITCase extends OmnomTestCase {
 			}
 		}
 		{
-			GrafeoImpl g = new GrafeoImpl(jobLoc);
+			GrafeoMongoImpl g = new GrafeoMongoImpl(jobLoc);
 			log.info("There should be 10 messages total");
 			GrafeoAssert.numberOfResourceStatements(g, 10, jobLoc, NS.OMNOM.PROP_LOG_ENTRY, null);
 		}
@@ -226,8 +228,9 @@ public class JobServiceITCase extends OmnomTestCase {
 					.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
 					.get();
 			 String respStr = resp.readEntity(String.class);
-			 log.info("ERRRORRRR: " + resp  + respStr);
-			 GrafeoImpl g = new GrafeoImpl(respStr, true);
+			 if (resp.getStatus() >= 400)
+				 log.error("ERRRORRRR: " + resp  + respStr);
+			 GrafeoMongoImpl g = new GrafeoMongoImpl(respStr, true);
 //			 assertEquals("6 of them are larger than INFO.",
 			 GrafeoAssert.numberOfResourceStatements(g, 6, null, "rdf:type", "omnom:LogEntry");
 		}
@@ -239,7 +242,7 @@ public class JobServiceITCase extends OmnomTestCase {
 					.queryParam("maxLevel", "WARN")
 					.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
 					.get(InputStream.class);
-			GrafeoImpl g = new GrafeoImpl(logNT);
+			GrafeoMongoImpl g = new GrafeoMongoImpl(logNT);
 			log.info("4 of them are between INFO and WARN");
 			GrafeoAssert.numberOfResourceStatements(g, 4, null, "rdf:type", "omnom:LogEntry");
 		}
@@ -250,7 +253,7 @@ public class JobServiceITCase extends OmnomTestCase {
 					.queryParam("maxLevel", "DEBUG")
 					.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
 					.get(InputStream.class);
-			GrafeoImpl g = new GrafeoImpl(logNT);
+			GrafeoMongoImpl g = new GrafeoMongoImpl(logNT);
 			log.info("4 of them are smaller than INFO.");
 			GrafeoAssert.numberOfResourceStatements(g, 4, null, "rdf:type", "omnom:LogEntry");
 		}
@@ -310,7 +313,7 @@ public class JobServiceITCase extends OmnomTestCase {
 		{
 			job.setFailed();
 			String getJobNT = client.target(job.getId()).request(DM2E_MediaType.APPLICATION_RDF_TRIPLES).get(String.class);
-			GrafeoImpl getjobGrafeo = new GrafeoImpl(getJobNT, true);
+			GrafeoMongoImpl getjobGrafeo = new GrafeoMongoImpl(getJobNT, true);
 			log.info(getjobGrafeo.getTurtle());
 			
 			JobPojo getjob = getjobGrafeo.getObjectMapper().getObject(JobPojo.class, job.getId());

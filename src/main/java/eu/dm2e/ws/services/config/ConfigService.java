@@ -34,8 +34,7 @@ import eu.dm2e.grafeo.GResource;
 import eu.dm2e.grafeo.GStatement;
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.gom.SerializablePojo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
-import eu.dm2e.grafeo.jena.SparqlUpdate;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
 import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.Config;
@@ -94,9 +93,9 @@ public class ConfigService extends AbstractRDFService {
     public Response validateConfig() {
         URI configURI = popPath(getRequestUriWithoutQuery());
         log.info("Validate Configuration : " + configURI);
-        Grafeo g = new GrafeoImpl();
+        Grafeo g = new GrafeoMongoImpl();
         try {
-	        g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), configURI);
+	        g.readFromEndpoint(Config.get(ConfigProp.MONGO), configURI);
         } catch (RuntimeException e) {
         	return throwServiceError(getRequestUriWithoutQuery().toString(), ErrorMsg.NOT_FOUND, 404);
         }
@@ -130,10 +129,10 @@ public class ConfigService extends AbstractRDFService {
 	})
     public Response getConfig() {
         log.info("Configuration requested: " + getRequestUriWithoutQuery());
-        Grafeo g = new GrafeoImpl();
+        Grafeo g = new GrafeoMongoImpl();
         URI configURI = getRequestUriWithoutQuery();
         try {
-	        g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), configURI);
+	        g.readFromEndpoint(Config.get(ConfigProp.MONGO), configURI);
         } catch (RuntimeException e) {
         	return throwServiceError(getRequestUriWithoutQuery().toString(), ErrorMsg.NOT_FOUND, 404);
         }
@@ -168,9 +167,9 @@ public class ConfigService extends AbstractRDFService {
     	sb.append("  }    \n");
     	sb.append("}  \n");
 
-    	GrafeoImpl g = new GrafeoImpl();
+    	GrafeoMongoImpl g = new GrafeoMongoImpl();
     	Query query = sb.asQuery();
-    	QueryEngineHTTP qExec = QueryExecutionFactory.createServiceRequest(Config.get(ConfigProp.ENDPOINT_QUERY), query);
+    	QueryEngineHTTP qExec = QueryExecutionFactory.createServiceRequest(Config.get(ConfigProp.MONGO), query);
     	long startTime = System.currentTimeMillis();
     	log.debug("About to execute facet SELECT query.");
     	ResultSet resultSet = qExec.execSelect();
@@ -208,36 +207,8 @@ public class ConfigService extends AbstractRDFService {
 			@QueryParam("order") String sortOrder
     		) {
     	
-    	ParameterizedSparqlString sb = new ParameterizedSparqlString();
-    	sb.setNsPrefix("rdf", NS.RDF.BASE);
-    	sb.setNsPrefix("dcterms", NS.DCTERMS.BASE);
-    	sb.setNsPrefix("omnom", NS.OMNOM.BASE);
-    	sb.append("CONSTRUCT {	  \n");
-    	sb.append("  ?s ?p ?o .	   \n");
-    	sb.append("} WHERE {    \n");
-    	sb.append("  GRAPH ?conf {    \n");
-    	sb.append("    ?conf rdf:type omnom:WebserviceConfig .    \n");
-    	sb.append("    ?conf omnom:webservice ?ws .  \n");
-    	sb.append("    ?ws omnom:implementationID ?implId .  \n");
-    	sb.append("    FILTER (str(?implId) = \"eu.dm2e.ws.services.workflow.WorkflowExecutionService\") .  \n");
-    	if (null != filterUser) {
-    		sb.append("    ?conf dcterms:creator ?creator .  \n");
-    		sb.append("    FILTER (str(?creator) = \"" + filterUser + "\") .  \n");
-    	}
-    	sb.append("    ?s ?p ?o .    \n");
-    	sb.append("  }    \n");
-    	sb.append("}  \n");
-
-    	GrafeoImpl g = new GrafeoImpl();
-    	Query query = sb.asQuery();
-    	QueryEngineHTTP qExec = QueryExecutionFactory.createServiceRequest(Config.get(ConfigProp.ENDPOINT_QUERY), query);
-    	{
-    		long startTime = System.currentTimeMillis();
-    		qExec.execConstruct(g.getModel());
-    		long endTime  = System.currentTimeMillis();
-    		long elapsed = endTime - startTime;
-    		log.debug(LogbackMarkers.TRACE_TIME, "CONSTRUCT of workflowconfigs took " + elapsed + "ms. ");
-    	}
+    	GrafeoMongoImpl g = new GrafeoMongoImpl();
+    	g.readTriplesFromEndpoint(Config.get(ConfigProp.MONGO), null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_WEBSERVICE_CONFIG));
     	List<WebserviceConfigPojo> configList = new ArrayList<>();
     	{
     		long startTime = System.currentTimeMillis();
@@ -288,7 +259,7 @@ public class ConfigService extends AbstractRDFService {
         log.info("PUT config to " + uri);
         Grafeo g;
         try {
-        	g = new GrafeoImpl(input);
+        	g = new GrafeoMongoImpl(input);
         } catch (Throwable t) {
         	log.error(ErrorMsg.BAD_RDF.toString());
         	return throwServiceError(ErrorMsg.BAD_RDF, t);
@@ -314,7 +285,7 @@ public class ConfigService extends AbstractRDFService {
 //        WebserviceConfigPojo pojo = g.getObjectMapper().getObject(WebserviceConfigPojo.class, res);
 //        pojo.getGrafeo().putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), uri);
 
-        g.putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), uri);
+        g.putToEndpoint(Config.get(ConfigProp.MONGO), uri);
         
         return Response.created(uri).entity(g).build();
         
@@ -343,7 +314,7 @@ public class ConfigService extends AbstractRDFService {
     	log.debug("Posting the config to " + uri.toString());
         Grafeo g;
         try {
-        	g = new GrafeoImpl(input);
+        	g = new GrafeoMongoImpl(input);
         } catch (Throwable t) {
         	log.warn(ErrorMsg.BAD_RDF.toString());
         	return throwServiceError(ErrorMsg.BAD_RDF, t);
@@ -362,7 +333,7 @@ public class ConfigService extends AbstractRDFService {
         	pojo = g.getObjectMapper().getObject(WebserviceConfigPojo.class, res);
         	log.warn("Webservice: " + ((WebserviceConfigPojo) pojo).getWebservice());
 
-        g.putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), uri);
+        g.putToEndpoint(Config.get(ConfigProp.MONGO), uri);
         log.info("Written data to endpoint.");
         log.debug(LogbackMarkers.DATA_DUMP, g.getTerseTurtle());
 
@@ -406,7 +377,7 @@ public class ConfigService extends AbstractRDFService {
 				.getObject(WebserviceConfigPojo.class, uri);
     	
 		log.debug(LogbackMarkers.DATA_DUMP, pojoSkolemized.getTerseTurtle());
-    	pojoSkolemized.getGrafeo().putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), uri);
+    	pojoSkolemized.getGrafeo().putToEndpoint(Config.get(ConfigProp.MONGO), uri);
     	
     	return Response.created(uri).entity(pojoSkolemized).build();
 		
@@ -449,7 +420,7 @@ public class ConfigService extends AbstractRDFService {
 				.getObject(WebserviceConfigPojo.class, uri);
     	
 		log.debug(LogbackMarkers.DATA_DUMP, pojoSkolemized.getTerseTurtle());
-    	pojoSkolemized.getGrafeo().putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), uri);
+    	pojoSkolemized.getGrafeo().putToEndpoint(Config.get(ConfigProp.MONGO), uri);
     	
     	return Response.created(uri).entity(pojoSkolemized).build();
 		
@@ -470,7 +441,8 @@ public class ConfigService extends AbstractRDFService {
 		DM2E_MediaType.TEXT_RDF_N3,
 		DM2E_MediaType.TEXT_TURTLE })
 	@Path("{configId}/assignment/")
-	public Response postAssignment(@PathParam("configId") String configId, String rdfString) { Grafeo g = new GrafeoImpl(rdfString, null);
+	public Response postAssignment(@PathParam("configId") String configId, String rdfString) {
+		Grafeo g = new GrafeoMongoImpl(rdfString, null);
 		GResource blank = g.findTopBlank(NS.OMNOM.CLASS_PARAMETER_ASSIGNMENT);
 		if (null == blank) {
 			return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE);
@@ -478,7 +450,7 @@ public class ConfigService extends AbstractRDFService {
 		URI newUri = appendPath(createUniqueStr());
 		URI conifgUri = popPath();
 		blank.rename(newUri);
-		g.postToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), conifgUri);
+		g.postToEndpoint(Config.get(ConfigProp.MONGO), conifgUri);
 		return Response.created(newUri).build();
 	}
 	
@@ -501,13 +473,13 @@ public class ConfigService extends AbstractRDFService {
 	public Response putAssignment(@PathParam("configId") String configId, @PathParam("assId") String assId, String rdfString) {
 		URI assUri = getRequestUriWithoutQuery();
 		URI configUri = popPath(popPath());
-		Grafeo g = new GrafeoImpl(rdfString, null);
-		SparqlUpdate sparul = new SparqlUpdate.Builder()
-			.delete(assUri + "?s ?o")
-			.insert(g.toString())
-			.endpoint(Config.get(ConfigProp.ENDPOINT_UPDATE))
-			.graph(configUri).build();
-		sparul.execute();
+		Grafeo insertG = new GrafeoMongoImpl(rdfString, null);
+		GrafeoMongoImpl g = new GrafeoMongoImpl();
+		g.readFromEndpoint(Config.get(ConfigProp.MONGO), configUri);
+		g.removeTriple(g.resource(assUri), null, null);
+		g.removeTriple(null, null, g.resource(assUri));
+		g.merge(insertG);
+		g.putToEndpoint(Config.get(ConfigProp.MONGO), configUri);
 		return getResponse(g);
 	}
 	

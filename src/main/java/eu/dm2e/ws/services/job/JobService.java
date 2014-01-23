@@ -30,9 +30,8 @@ import eu.dm2e.grafeo.GResource;
 import eu.dm2e.grafeo.GValue;
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.gom.SerializablePojo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
 import eu.dm2e.grafeo.jena.SparqlSelect;
-import eu.dm2e.grafeo.jena.SparqlUpdate;
 import eu.dm2e.grafeo.util.NS.RDFS;
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.Config;
@@ -93,7 +92,7 @@ public class JobService extends AbstractRDFService {
 
 		log.debug("Putting job to endpoint.");
 
-		outputGrafeo.putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), jobRes.getUri());
+		outputGrafeo.putToEndpoint(Config.get(ConfigProp.MONGO), jobRes.getUri());
 
 		return Response.created(URI.create(jobRes.getUri())).entity(getResponseEntity(outputGrafeo)).build();
 	}
@@ -102,7 +101,7 @@ public class JobService extends AbstractRDFService {
 
 		log.debug("Putting job to endpoint.");
 
-		outputGrafeo.putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), jobRes.getUri());
+		outputGrafeo.putToEndpoint(Config.get(ConfigProp.MONGO), jobRes.getUri());
 
 		return Response.created(URI.create(jobRes.getUri())).entity(getResponseEntity(outputGrafeo)).build();
 	}
@@ -123,39 +122,26 @@ public class JobService extends AbstractRDFService {
 		MediaType.APPLICATION_JSON
 	})
 	public Response getJobList() {
-		GrafeoImpl g = new GrafeoImpl();
-		g.readTriplesFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_JOB));
+		GrafeoMongoImpl g = new GrafeoMongoImpl();
+		g.readTriplesFromEndpoint(Config.get(ConfigProp.MONGO), null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_JOB));
 		List<JobPojo> jobList = new ArrayList<>();
 		log.debug(LogbackMarkers.TRACE_TIME, "t0: Start loading jobs from T-Store.");
-		for (GResource gres : g.listSubjects()) {
-			if (gres.isAnon()) { 
-				log.error("There is a job without a URI in the triplestore. This should not happen.");
-				continue;
-			}
-			final String jobUri = gres.getUri();
-			ResultSet resultSet = new SparqlSelect.Builder()
-				.select("*")
-				.where(	"GRAPH ?g {" +
-						"  <" + jobUri + "> <" + NS.OMNOM.PROP_JOB_STATUS + "> ?status ." +
-						"  <" + jobUri + "> <" + NS.OMNOM.PROP_WEBSERVICE + "> ?ws ." +
-						"  ?ws <" + NS.OMNOM.PROP_WEBSERVICE_ID +"> ?implId ." +
-						"     FILTER STRSTARTS(?implId, \"eu.dm2e.ws.services.workflow.WorkflowExecutionService\") ." +
-						"  <" + jobUri + "> <" + RDFS.PROP_LABEL + "> ?label ." +
-						"  <" + jobUri + "> <" + NS.DCTERMS.PROP_MODIFIED + "> ?modified ." +
-						"  <" + jobUri + "> <" + NS.DCTERMS.PROP_CREATED + "> ?created ." +
-						"}" +
-						""
-						)
-				.endpoint(Config.get(ConfigProp.ENDPOINT_QUERY))
-                .build()
-                .execute();
-			if (! resultSet.hasNext()) {
-				log.debug("No match for SPARQL SELECT querying jobs.");
-				continue;
-			}
-			JobPojo jp = new JobPojo();
+		ResultSet resultSet = new SparqlSelect.Builder()
+                .select("*")
+                .where(	"  ?g <" + NS.OMNOM.PROP_JOB_STATUS + "> ?status ." +
+                        "  ?g <" + NS.OMNOM.PROP_WEBSERVICE + "> ?ws ." +
+                        "  ?ws <" + NS.OMNOM.PROP_WEBSERVICE_ID +"> ?implId ." +
+                        "     FILTER STRSTARTS(?implId, \"eu.dm2e.ws.services.workflow.WorkflowExecutionService\") ." +
+                        "  ?g <" + RDFS.PROP_LABEL + "> ?label ." +
+                        "  ?g <" + NS.DCTERMS.PROP_MODIFIED + "> ?modified ." +
+                        "  ?g <" + NS.DCTERMS.PROP_CREATED + "> ?created .")
+                .grafeo(g)
+				.build()
+				.execute();
+		JobPojo jp = new JobPojo();
+		while (resultSet.hasNext()) {
 			QuerySolution result = resultSet.next();
-			jp.setId(jobUri);
+			jp.setId(result.get("?g").asResource().toString());
 			jp.setLabel(result.get("?label").asLiteral().getLexicalForm());
 			jp.setStatus(JobStatus.valueOf(result.get("?status").asLiteral().getLexicalForm()));
 			jp.setModified(DateTime.parse(result.get("?modified").asLiteral().getLexicalForm()));
@@ -205,7 +191,7 @@ public class JobService extends AbstractRDFService {
 		String uriStr = uriInfo.getRequestUri().toString();
 		Grafeo inputGrafeo;
 		try {
-			inputGrafeo = new GrafeoImpl(bodyAsFile);
+			inputGrafeo = new GrafeoMongoImpl(bodyAsFile);
 		} catch (Exception e) {
 			return throwServiceError(ErrorMsg.BAD_RDF);
 		}
@@ -224,7 +210,7 @@ public class JobService extends AbstractRDFService {
 		inputGrafeo.skolemizeUUID(uriStr, NS.OMNOM.PROP_ASSIGNMENT, "assignment");
 
 		log.debug("Instantiating " + uriStr);
-		GrafeoImpl outputGrafeo = new GrafeoImpl();
+		GrafeoMongoImpl outputGrafeo = new GrafeoMongoImpl();
 		log.debug("Will instantiate as JobPojo : " + uriStr);
 		try {
 			JobPojo jobPojo = inputGrafeo.getObjectMapper().getObject(JobPojo.class, uriStr);
@@ -256,10 +242,10 @@ public class JobService extends AbstractRDFService {
 	@Path("/byURI")
 	public Response putJobWithUriParam(@QueryParam("uri") String jobUri, String rdfStr) {
 		final URI resolvableUri = createCleanQueryURI(uriInfo.getRequestUri());
-		GrafeoImpl g = new GrafeoImpl();
+		GrafeoMongoImpl g = new GrafeoMongoImpl();
 		g.readHeuristically(rdfStr);
 		g.resource(jobUri).rename(resolvableUri);
-		g.postToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), resolvableUri);
+		g.postToEndpoint(Config.get(ConfigProp.MONGO), resolvableUri);
 		return Response
 				.status(Response.Status.CREATED)
 				.location(resolvableUri)
@@ -275,8 +261,8 @@ public class JobService extends AbstractRDFService {
 	@Path("/byURI/{cleanURI}")
 	public Response getJobWithUriParam(@PathParam("cleanURI") String cleanURI) {
 		final URI resolvableUri = createCleanQueryURI(uriInfo.getRequestUri());
-		GrafeoImpl g = new GrafeoImpl();
-		g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), resolvableUri);
+		GrafeoMongoImpl g = new GrafeoMongoImpl();
+		g.readFromEndpoint(Config.get(ConfigProp.MONGO), resolvableUri);
 		JobPojo job = g.getObjectMapper().getObject(JobPojo.class, resolvableUri);
 		return Response
 				.status(Response.Status.OK)
@@ -307,7 +293,7 @@ public class JobService extends AbstractRDFService {
 		log.trace(LogbackMarkers.DATA_DUMP, "Job posted: {}", bodyAsString);
 		Grafeo inputGrafeo;
 		try {
-			inputGrafeo = new GrafeoImpl();
+			inputGrafeo = new GrafeoMongoImpl();
 			inputGrafeo.readHeuristically(bodyAsString);
 		} catch (Exception e) {
 			return throwServiceError(ErrorMsg.BAD_RDF);
@@ -327,7 +313,7 @@ public class JobService extends AbstractRDFService {
 		inputGrafeo.skolemizeUUID(uriStr, NS.OMNOM.PROP_LOG_ENTRY, "log");
 
 		log.debug("Instantiating " + uriStr);
-		GrafeoImpl outputGrafeo = new GrafeoImpl();
+		GrafeoMongoImpl outputGrafeo = new GrafeoMongoImpl();
 
 		log.debug("Will instantiate as JobPojo : " + uriStr);
 		JobPojo jobPojo = inputGrafeo.getObjectMapper().getObject(JobPojo.class, uriStr);
@@ -355,14 +341,14 @@ public class JobService extends AbstractRDFService {
 	})
 	public Response getJobRDFHandler() {
 		URI uri = getRequestUriWithoutQuery();
-		Grafeo g = new GrafeoImpl();
-		log.debug("Reading job from endpoint " + Config.get(ConfigProp.ENDPOINT_QUERY));
+		Grafeo g = new GrafeoMongoImpl();
+		log.debug("Reading job from endpoint " + Config.get(ConfigProp.MONGO));
 		try {
-			g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), uri);
+			g.readFromEndpoint(Config.get(ConfigProp.MONGO), uri);
 		} catch (Exception e1) {
 			// if we couldn't read the job, try again once in a second
 			try { Thread.sleep(1000); } catch (InterruptedException e) { }
-			try { g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), uri);
+			try { g.readFromEndpoint(Config.get(ConfigProp.MONGO), uri);
 			} catch (Exception e) {
 				return throwServiceError(e);
 			}
@@ -384,14 +370,14 @@ public class JobService extends AbstractRDFService {
 	})
 	public Response getJobJSONHandler() {
 		URI uri = getRequestUriWithoutQuery();
-		Grafeo g = new GrafeoImpl();
-		log.debug("Reading job from endpoint " + Config.get(ConfigProp.ENDPOINT_QUERY));
+		Grafeo g = new GrafeoMongoImpl();
+		log.debug("Reading job from endpoint " + Config.get(ConfigProp.MONGO));
 		try {
-			g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), uri);
+			g.readFromEndpoint(Config.get(ConfigProp.MONGO), uri);
 		} catch (Exception e1) {
 			// if we couldn't read the job, try again once in a second
 			try { Thread.sleep(1000); } catch (InterruptedException e) { }
-			try { g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), uri);
+			try { g.readFromEndpoint(Config.get(ConfigProp.MONGO), uri);
 			} catch (Exception e) {
 				return throwServiceError(e);
 			}
@@ -453,14 +439,11 @@ public class JobService extends AbstractRDFService {
 		}
 
 		String jobUri = getRequestUriWithoutQuery().toString().replaceAll("/status$", "");
-		SparqlUpdate sparul = new SparqlUpdate.Builder()
-		.delete("?s <" + NS.OMNOM.PROP_JOB_STATUS + "> ?p")
-		.insert("<" + jobUri + "> <" + NS.OMNOM.PROP_JOB_STATUS + "> \"" + newStatus.toString() + "\"")
-		.endpoint(Config.get(ConfigProp.ENDPOINT_UPDATE))
-		.graph(jobUri)
-		.build();
-		log.debug(LogbackMarkers.DATA_DUMP, "Updating status with query: {}", sparul);
-		sparul.execute();
+		GrafeoMongoImpl g = new GrafeoMongoImpl();
+		g.readFromEndpoint(Config.get(ConfigProp.MONGO), jobUri);
+		g.removeTriple(g.resource(jobUri), NS.OMNOM.PROP_JOB_STATUS, null);
+		g.addTriple(g.resource(jobUri), NS.OMNOM.PROP_JOB_STATUS, newStatus.toString());
+		g.putToEndpoint(Config.get(ConfigProp.MONGO), jobUri);
 
 		return Response.created(getRequestUriWithoutQuery()).build();
 	}
@@ -490,7 +473,7 @@ public class JobService extends AbstractRDFService {
 		} catch (URISyntaxException e) {
 			return throwServiceError(e);
 		}
-		Grafeo gEntry = new GrafeoImpl(IOUtils.toInputStream(logRdfStr));
+		Grafeo gEntry = new GrafeoMongoImpl(IOUtils.toInputStream(logRdfStr));
 		GResource blank = gEntry.findTopBlank(NS.OMNOM.CLASS_LOG_ENTRY);
 		if (null == blank) {
 			return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE);
@@ -498,7 +481,7 @@ public class JobService extends AbstractRDFService {
 		blank.rename(entryUri.toString());
 		gEntry.addTriple(jobUri, NS.OMNOM.PROP_LOG_ENTRY, entryUri.toString());
 		log.debug(LogbackMarkers.DATA_DUMP, gEntry.getNTriples());
-		gEntry.postToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), jobUri);
+		gEntry.postToEndpoint(Config.get(ConfigProp.MONGO), jobUri);
 		return Response.created(entryUri).build();
 	}
 
@@ -526,9 +509,12 @@ public class JobService extends AbstractRDFService {
 		entry.setMessage(logString);
 		entry.setLevel(logLevel);
 		entry.setTimestamp(DateTime.now());
-		Grafeo outG = entry.getGrafeo();
-		outG.addTriple(jobUri, NS.OMNOM.PROP_LOG_ENTRY, entry.getId());
-		outG.postToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), jobUri);
+		Grafeo entryG = entry.getGrafeo();
+		entryG.addTriple(jobUri, NS.OMNOM.PROP_LOG_ENTRY, entry.getId());
+		GrafeoMongoImpl jobG = new GrafeoMongoImpl();
+		jobG.readFromEndpoint(Config.get(ConfigProp.MONGO), jobUri);
+		jobG.merge(entryG);
+		jobG.postToEndpoint(Config.get(ConfigProp.MONGO), jobUri);
 		return Response.created(entry.getIdAsURI()).build();
 	}
 
@@ -556,7 +542,7 @@ public class JobService extends AbstractRDFService {
 			throwServiceError(e);
 		}
 		Set<LogEntryPojo> logEntries = jobPojo.getLogEntries(minLevelStr, maxLevelStr);
-		Grafeo logGrafeo = new GrafeoImpl();
+		Grafeo logGrafeo = new GrafeoMongoImpl();
 		for (LogEntryPojo logEntry : logEntries) {
 			logGrafeo.getObjectMapper().addObject(logEntry);
 		}
@@ -628,7 +614,7 @@ public class JobService extends AbstractRDFService {
 	public Response postAssignment(File bodyAsFile) {
 		Grafeo inputGrafeo;
 		try {
-			inputGrafeo = new GrafeoImpl(bodyAsFile);
+			inputGrafeo = new GrafeoMongoImpl(bodyAsFile);
 		} catch (Exception e) {
 			return throwServiceError(ErrorMsg.BAD_RDF);
 		}
@@ -642,16 +628,10 @@ public class JobService extends AbstractRDFService {
 		ParameterAssignmentPojo ass = inputGrafeo.getObjectMapper().getObject(ParameterAssignmentPojo.class, assUri);
 		ass.setId(assUri);
 
-		Grafeo outputGrafeo = new GrafeoImpl();
+		Grafeo outputGrafeo = new GrafeoMongoImpl();
 		outputGrafeo.getObjectMapper().addObject(ass);
 		outputGrafeo.addTriple(jobUri.toString(), NS.OMNOM.PROP_ASSIGNMENT, assUri.toString());
-		SparqlUpdate sparul = new SparqlUpdate.Builder()
-		.delete("?s ?p ?o.")
-		.insert(outputGrafeo.getNTriples())
-		.graph(jobUri)
-		.endpoint(Config.get(ConfigProp.ENDPOINT_UPDATE))
-		.build();
-		sparul.execute();
+		outputGrafeo.putToEndpoint(Config.get(ConfigProp.MONGO), jobUri);
 		return Response.created(assUri).entity(getResponseEntity(ass.getGrafeo())).build();
 	}
 
@@ -680,14 +660,14 @@ public class JobService extends AbstractRDFService {
 
 
 		URI uri = popPath(getRequestUriWithoutQuery());
-		Grafeo g = new GrafeoImpl();
-		log.debug("Reading job from endpoint " + Config.get(ConfigProp.ENDPOINT_QUERY));
+		Grafeo g = new GrafeoMongoImpl();
+		log.debug("Reading job from endpoint " + Config.get(ConfigProp.MONGO));
 		try {
-			g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), uri);
+			g.readFromEndpoint(Config.get(ConfigProp.MONGO), uri);
 		} catch (Exception e1) {
 			// if we couldn't read the job, try again once in a second
 			try { Thread.sleep(1000); } catch (InterruptedException e) { }
-			try { g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), uri);
+			try { g.readFromEndpoint(Config.get(ConfigProp.MONGO), uri);
 			} catch (Exception e) {
 				throw e;
 				//                return throwServiceError(e);

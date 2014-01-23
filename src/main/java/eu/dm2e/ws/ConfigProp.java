@@ -3,10 +3,13 @@ package eu.dm2e.ws;
 public enum ConfigProp {
 
 	  BASE_URI("dm2e.ws.base_uri")
+
+	// MONGO ENDPOINT
+	, MONGO("dm2e.ws.mongo.connection_string")
 	  
 	// ENDPOINTS
-	, ENDPOINT_QUERY("dm2e.ws.sparql_endpoint")
-	, ENDPOINT_UPDATE("dm2e.ws.sparql_endpoint_statements")
+//	, ENDPOINT_QUERY("dm2e.ws.sparql_endpoint")
+//	, ENDPOINT_UPDATE("dm2e.ws.sparql_endpoint_statements")
 	
 	// CONFIG
 	, CONFIG_BASEURI("dm2e.service.config.base_uri")

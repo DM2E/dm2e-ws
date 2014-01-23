@@ -1,7 +1,7 @@
 package eu.dm2e.ws.tests.integration.services.data;
 
 import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
 import eu.dm2e.grafeo.junit.GrafeoAssert;
 import eu.dm2e.ws.*;
 import eu.dm2e.ws.services.Client;
@@ -37,7 +37,7 @@ public class ConfigServiceITCase extends OmnomTestCase {
 	public void testGetConfig() {
 		URI configURI = null;
 		{
-			Grafeo gOut = new GrafeoImpl(configFile.get(OmnomTestResources.DEMO_SERVICE_WORKING));
+			Grafeo gOut = new GrafeoMongoImpl(configFile.get(OmnomTestResources.DEMO_SERVICE_WORKING));
 			Response resp = webTarget.request().post(
 					Entity.entity(gOut.getCanonicalNTriples(),
 							DM2E_MediaType.APPLICATION_RDF_TRIPLES));
@@ -80,7 +80,7 @@ public class ConfigServiceITCase extends OmnomTestCase {
 				OmnomTestResources.DEMO_SERVICE_WORKING,
 				OmnomTestResources.DEMO_SERVICE_ILLEGAL_PARAMETER
 			)) {
-				Grafeo gOut = new GrafeoImpl(configFile.get(x));
+				Grafeo gOut = new GrafeoMongoImpl(configFile.get(x));
 				Response resp = webTarget.request().post(
 						Entity.entity(gOut.getCanonicalNTriples(),
 								DM2E_MediaType.APPLICATION_RDF_TRIPLES));
@@ -139,14 +139,14 @@ public class ConfigServiceITCase extends OmnomTestCase {
 
 	@Test
 	public void testPostGoodSyntax() {
-		Grafeo gOut = new GrafeoImpl(configFile.get(OmnomTestResources.DEMO_SERVICE_WORKING));
+		Grafeo gOut = new GrafeoMongoImpl(configFile.get(OmnomTestResources.DEMO_SERVICE_WORKING));
 		{
 			Response resp = webTarget.request().post(Entity.entity(gOut.getNTriples(), DM2E_MediaType.APPLICATION_RDF_TRIPLES));
 			assertThat(resp.getMediaType(), is(DM2E_MediaType.APPLICATION_RDF_TRIPLES_TYPE));
 			assertEquals(201, resp.getStatus());
 			assertNotNull(resp.getLocation());
 			File respFile = resp.readEntity(File.class);
-			Grafeo gIn = new GrafeoImpl(respFile);
+			Grafeo gIn = new GrafeoMongoImpl(respFile);
 			assertEquals("Contains no blank nodes", 0, gIn.listAnonStatements(null, null, null).size());
 			log.info(gIn.getCanonicalNTriples());
 		}
@@ -163,7 +163,7 @@ public class ConfigServiceITCase extends OmnomTestCase {
 
 	@Test
 	public void testPut() {
-		Grafeo gOut = new GrafeoImpl(configFile.get(OmnomTestResources.DEMO_SERVICE_WORKING));
+		Grafeo gOut = new GrafeoMongoImpl(configFile.get(OmnomTestResources.DEMO_SERVICE_WORKING));
 		Response respPOST = webTarget.request().post(gOut.getNTriplesEntity());
 		assertEquals(201, respPOST.getStatus());
 		assertNotNull(respPOST.getLocation());
@@ -178,7 +178,7 @@ public class ConfigServiceITCase extends OmnomTestCase {
 				respGET1.getMediaType(),
 				is(DM2E_MediaType.APPLICATION_RDF_TRIPLES_TYPE));
 		assertEquals(200, respGET1.getStatus());
-		GrafeoImpl gGET1 = new GrafeoImpl(respGET1.readEntity(InputStream.class));
+		GrafeoMongoImpl gGET1 = new GrafeoMongoImpl(respGET1.readEntity(InputStream.class));
 		GrafeoAssert.graphContainsGraph(gGET1, gOut);
 
 		Response respPUT = client
@@ -194,7 +194,7 @@ public class ConfigServiceITCase extends OmnomTestCase {
 				.request()
 				.get();
 		assertEquals(200, respGET2.getStatus());
-		GrafeoImpl gGET2 = new GrafeoImpl(respGET2.readEntity(InputStream.class));
+		GrafeoMongoImpl gGET2 = new GrafeoMongoImpl(respGET2.readEntity(InputStream.class));
 		assertEquals(gGET1.getCanonicalNTriples(), gGET2.getCanonicalNTriples());
 		// assertTrue(gIn.isGraphEquivalent(gOut));
 
@@ -212,12 +212,12 @@ public class ConfigServiceITCase extends OmnomTestCase {
 							" <http://onto.dm2e.eu/omnom/webservice> <http://localhost:9998/service/xslt>."
 						, DM2E_MediaType.APPLICATION_RDF_TRIPLES));
 		assertEquals(201, response.getStatus());
-		Grafeo gPosted = new GrafeoImpl();
+		Grafeo gPosted = new GrafeoMongoImpl();
 		final String confRespStr = response.readEntity(String.class);
 		log.info(confRespStr);
 		gPosted.readHeuristically(confRespStr);
 		log.info(gPosted.getTerseTurtle());
-		Grafeo gBuilt = new GrafeoImpl();
+		Grafeo gBuilt = new GrafeoMongoImpl();
 		final String confUri = response.getLocation().toString();
 		gBuilt.addTriple(confUri,
 				NS.OMNOM.PROP_WEBSERVICE,
@@ -231,7 +231,7 @@ public class ConfigServiceITCase extends OmnomTestCase {
 				NS.OMNOM.CLASS_WEBSERVICE_CONFIG);
 		GrafeoAssert.graphContainsGraph(gPosted, gBuilt);
 
-		gBuilt = new GrafeoImpl();
+		gBuilt = new GrafeoMongoImpl();
 		gBuilt.addTriple(confUri,
 				"http://doesnotexist.org/bla",
 				gPosted.resource("http://localhost/kai"));
@@ -245,7 +245,7 @@ public class ConfigServiceITCase extends OmnomTestCase {
 	public void testValidate() {
 		log.info("Validating Valid ...");
 		{
-			Grafeo gOut = new GrafeoImpl(configFile.get(OmnomTestResources.DEMO_SERVICE_WORKING));
+			Grafeo gOut = new GrafeoMongoImpl(configFile.get(OmnomTestResources.DEMO_SERVICE_WORKING));
 			Response respPOST = client.getConfigWebTarget()
 					.request().post(gOut.getNTriplesEntity());
 			assertEquals(201, respPOST.getStatus());
@@ -257,7 +257,7 @@ public class ConfigServiceITCase extends OmnomTestCase {
 		}
 		log.info("Validating Invalid ...");
 		{
-			Grafeo gOut = new GrafeoImpl(
+			Grafeo gOut = new GrafeoMongoImpl(
 					configFile.get(OmnomTestResources.DEMO_SERVICE_NO_TOP_BLANK));
 			Response respPOST = client.getConfigWebTarget()
 					.request().post(gOut.getNTriplesEntity());
@@ -268,7 +268,7 @@ public class ConfigServiceITCase extends OmnomTestCase {
 		// log.info("Validating Invalid ...");
 		// {
 		// Grafeo gOut = new
-		// GrafeoImpl(configFile.get(OmnomTestResources.DEMO_SERVICE_NO_TOP_BLANK));
+		// GrafeoMongoImpl(configFile.get(OmnomTestResources.DEMO_SERVICE_NO_TOP_BLANK));
 		// Response respPOST = client.getConfigWebTarget()
 		// .request().post(Response.class, gOut.getCanonicalNTriples());
 		// assertEquals(400, respPOST.getStatus());

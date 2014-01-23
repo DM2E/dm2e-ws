@@ -6,9 +6,9 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
+import eu.dm2e.ws.DM2E_MediaType;
 
 /**
  * Abstract Base Class for services that are execute asynchronously
@@ -42,7 +42,7 @@ public abstract class AbstractAsynchronousRDFService extends AbstractRDFService 
 	public Response postRDF(String rdfString) {
 		Grafeo g = null;
 		try {
-			g = new GrafeoImpl();
+			g = new GrafeoMongoImpl();
 			g.readHeuristically(rdfString);
 			assert(g != null);
 		}

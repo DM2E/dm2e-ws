@@ -32,7 +32,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.NS;
@@ -190,7 +190,7 @@ public final class MintApiTranslator {
 	 * @return Grafeo containing all mappings and uploads as FilePojos.
 	 */
 	public Grafeo retrieveAllMappingsAndDataUploadsAsGrafeo() {
-		Grafeo g = new GrafeoImpl();
+		Grafeo g = new GrafeoMongoImpl();
 		log.info("Add mappings and DataUploads");
 		final List<FilePojo> list = retrieveAllMappingsAndDataUploads();
 		for (FilePojo fp : list)

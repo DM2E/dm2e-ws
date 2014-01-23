@@ -1,14 +1,15 @@
 package eu.dm2e.ws.api;
 
-import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.gom.SerializablePojo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
-import eu.dm2e.grafeo.util.PojoUtils;
-import eu.dm2e.ws.services.Client;
-
-import javax.ws.rs.client.WebTarget;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
+
+import javax.ws.rs.client.WebTarget;
+
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.grafeo.gom.SerializablePojo;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
+import eu.dm2e.grafeo.util.PojoUtils;
+import eu.dm2e.ws.services.Client;
 
 /**
  * Abstract Base Class for Grafeo-annotated Pojos that can be persisted in or loaded from a service.
@@ -31,7 +32,7 @@ public abstract class AbstractPersistentPojo<T extends AbstractPersistentPojo> e
 	}
 	
 	public void loadFromURI(String uri, int expansionSteps) {
-        Grafeo g = new GrafeoImpl();
+        Grafeo g = new GrafeoMongoImpl();
         try {
         	log.debug("Loading from " + uri);
 			long timeStart = System.currentTimeMillis();

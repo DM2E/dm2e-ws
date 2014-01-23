@@ -1,7 +1,7 @@
 package eu.dm2e.ws.tests.integration.services.publish;
 
 import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.JobPojo;
@@ -46,7 +46,7 @@ public class PublishServiceITCase extends OmnomTestCase {
     public void testDescription() {
 
         log.info(SERVICE_URI);
-        Grafeo g = new GrafeoImpl(client
+        Grafeo g = new GrafeoMongoImpl(client
                 .target(SERVICE_URI)
                 .request("text/turtle")
                 .get(InputStream.class));
@@ -173,7 +173,7 @@ public class PublishServiceITCase extends OmnomTestCase {
             String status = JobStatus.NOT_STARTED.name();
             JobPojo job = null;
             while (status.equals(JobStatus.NOT_STARTED.name()) || status.equals(JobStatus.STARTED.name())) {
-                Grafeo g = new GrafeoImpl(joburi.toString());
+                Grafeo g = new GrafeoMongoImpl(joburi.toString());
                 job = g.getObjectMapper().getObject(JobPojo.class, joburi.toString());
                 status = job.getJobStatus();
                 log.info("Check for status: " + status);

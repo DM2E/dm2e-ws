@@ -2,7 +2,7 @@ package eu.dm2e.ws.tests.unit.api;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import eu.dm2e.grafeo.gom.SerializablePojo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
 import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.FilePojo;
@@ -103,7 +103,7 @@ public class FilePojoTest extends OmnomUnitTest{
 
 	@Test
 	public void testReadFilePojo() {
-		GrafeoImpl g = new GrafeoImpl();
+		GrafeoMongoImpl g = new GrafeoMongoImpl();
 		String fileUri = "http://foo.bar/baz";
 		StringBuilder fileMetaStr = new StringBuilder();
 		String fileLocationShouldBe = "/foo/bar";
@@ -126,8 +126,8 @@ public class FilePojoTest extends OmnomUnitTest{
 	
 	@Test
 	public void testRoundTripPojo() {
-		GrafeoImpl g1 = new GrafeoImpl()
-				 , g2 = new GrafeoImpl();
+		GrafeoMongoImpl g1 = new GrafeoMongoImpl()
+				 , g2 = new GrafeoMongoImpl();
 		String fileUri = "http://foo.bar/baz"
 		      , fileLocationShouldBe = "/foo/bar"
 		      , fileRetrievalURIShouldBe = fileUri;

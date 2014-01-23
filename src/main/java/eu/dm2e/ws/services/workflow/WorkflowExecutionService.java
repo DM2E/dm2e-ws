@@ -30,7 +30,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 
 import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
 import eu.dm2e.grafeo.util.LogbackMarkers;
 import eu.dm2e.utils.Misc;
 import eu.dm2e.ws.Config;
@@ -462,8 +462,8 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
 	log.warn("About to create blankConfig()");
         URI workflowExecutionUri = popPath();
         URI workflowUri = popPathFromBeginning(workflowExecutionUri, "exec");
-        GrafeoImpl g = new GrafeoImpl();
-        g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), workflowUri);
+        GrafeoMongoImpl g = new GrafeoMongoImpl();
+        g.readFromEndpoint(Config.get(ConfigProp.MONGO), workflowUri);
 	log.warn("blankConfig(): Read Wf from endpoint: " + workflowUri);
 	log.warn("Done " + workflowUri);
         if (g.isEmpty()) {

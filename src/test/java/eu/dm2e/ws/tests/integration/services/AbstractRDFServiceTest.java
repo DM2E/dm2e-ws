@@ -14,6 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 import eu.dm2e.ws.services.AbstractRDFService;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.junit.Before;
@@ -25,6 +26,7 @@ import eu.dm2e.ws.tests.OmnomTestCase;
 import eu.dm2e.ws.api.IWebservice;
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
 
 public class AbstractRDFServiceTest extends OmnomTestCase{
 	
@@ -116,7 +118,7 @@ public class AbstractRDFServiceTest extends OmnomTestCase{
 		assertEquals(200, resp.getStatus());
 		Grafeo g1 = mockService.getWebServicePojo().getGrafeo();
 		assertNotNull(resp.getEntity());
-		Grafeo g2 = new GrafeoImpl(IOUtils.toInputStream((String)resp.getEntity()));
+		Grafeo g2 = new GrafeoMongoImpl(IOUtils.toInputStream((String)resp.getEntity()));
 		assertTrue("Equivalen grafeos", g1.isGraphEquivalent(g2));
 	}
 //

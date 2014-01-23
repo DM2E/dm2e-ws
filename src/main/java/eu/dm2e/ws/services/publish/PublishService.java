@@ -101,6 +101,8 @@ public class PublishService extends AbstractTransformationService {
             ds.findLatest(endpointSelect);
 
 
+            // NOTE This must actually be a GrafeoImpl, NOT a Mongo backed one, because
+            // this is parameterized by the user
             Grafeo g = new GrafeoImpl();
             g.loadWithoutContentNegotiation(input);
             g.getObjectMapper().addObject(ds);

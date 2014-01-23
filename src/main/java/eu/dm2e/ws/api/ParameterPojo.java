@@ -5,7 +5,7 @@ import eu.dm2e.grafeo.annotations.Namespaces;
 import eu.dm2e.grafeo.annotations.RDFClass;
 import eu.dm2e.grafeo.annotations.RDFProperty;
 import eu.dm2e.grafeo.gom.SerializablePojo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
 import eu.dm2e.utils.UriUtils;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.NS;
@@ -109,7 +109,7 @@ public class ParameterPojo extends SerializablePojo<ParameterPojo> {
 	private String parameterType;
 	public String getParameterType() { return parameterType; }
 	public void setParameterType(String parameterType) { 
-		Grafeo g = new GrafeoImpl();
+		Grafeo g = new GrafeoMongoImpl();
 		this.parameterType = g.expand(parameterType); 
 	}
 

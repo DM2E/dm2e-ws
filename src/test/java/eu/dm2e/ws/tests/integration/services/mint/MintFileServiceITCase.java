@@ -1,7 +1,7 @@
 package eu.dm2e.ws.tests.integration.services.mint;
 
 import com.hp.hpl.jena.query.ResultSet;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
 import eu.dm2e.grafeo.jena.SparqlSelect;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.NS;
@@ -39,7 +39,7 @@ public class MintFileServiceITCase extends OmnomTestCase {
 
 	private void chooseRandomFile()
 			throws IOException {
-		GrafeoImpl listG = new GrafeoImpl();
+		GrafeoMongoImpl listG = new GrafeoMongoImpl();
 		log.debug(SERVICE_URI);
 		Response resp = client.target(SERVICE_URI).request().get();
 		assertEquals(200, resp.getStatus());
@@ -63,7 +63,7 @@ public class MintFileServiceITCase extends OmnomTestCase {
 		Response resp = client.target(SERVICE_URI).request().get();
 		log.info("GET /mint-file response: " + resp);
 		assertEquals(200, resp.getStatus());
-		GrafeoImpl respG = new GrafeoImpl();
+		GrafeoMongoImpl respG = new GrafeoMongoImpl();
 		respG.readHeuristically(resp.readEntity(InputStream.class));
 		assertThat(respG.findByClass(NS.OMNOM.CLASS_FILE).size(), greaterThan(10));
 		assertTrue("Contains at least one XML file", respG.containsTriple("?s",
@@ -134,7 +134,7 @@ public class MintFileServiceITCase extends OmnomTestCase {
 			.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
 			.get();
 		assertEquals(200, respMetadataRdf.getStatus());
-		GrafeoImpl fileG = new GrafeoImpl();
+		GrafeoMongoImpl fileG = new GrafeoMongoImpl();
 		fileG.readHeuristically(respMetadataRdf.readEntity(InputStream.class));
 		FilePojo actualFP = fileG.getObjectMapper().getObject(FilePojo.class, randomFileUri);
 		log.info(fileG.getTerseTurtle());

@@ -48,8 +48,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import eu.dm2e.grafeo.GResource;
 import eu.dm2e.grafeo.GStatement;
 import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
-import eu.dm2e.grafeo.jena.SparqlUpdate;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
 import eu.dm2e.grafeo.util.PojoUtils;
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.Config;
@@ -156,7 +155,7 @@ public class FileService extends AbstractRDFService {
         sb.append("}");
         log.debug(sb.toString());
         Query sparsl = sb.asQuery();
-        QueryExecution qexec = QueryExecutionFactory.createServiceRequest(Config.get(ConfigProp.ENDPOINT_QUERY), sparsl);
+        QueryExecution qexec = QueryExecutionFactory.createServiceRequest(Config.get(ConfigProp.MONGO), sparsl);
 
 		long startTime = System.currentTimeMillis();
         log.debug("About to execute facet SELECT query.");
@@ -210,7 +209,7 @@ public class FileService extends AbstractRDFService {
 			@QueryParam("user") String filterUser,
 			@QueryParam("type") String filterType
 			) {
-        log.info(Config.get(ConfigProp.ENDPOINT_QUERY));
+        log.info(Config.get(ConfigProp.MONGO));
         ParameterizedSparqlString sb = new ParameterizedSparqlString();
         sb.setNsPrefix("omnom", NS.OMNOM.BASE);
         sb.setNsPrefix("rdf", NS.RDF.BASE);
@@ -232,9 +231,9 @@ public class FileService extends AbstractRDFService {
         sb.append("}");
         log.debug(sb.toString());
         Query sparco = sb.asQuery();
-        QueryExecution qexec = QueryExecutionFactory.createServiceRequest(Config.get(ConfigProp.ENDPOINT_QUERY), sparco);
+        QueryExecution qexec = QueryExecutionFactory.createServiceRequest(Config.get(ConfigProp.MONGO), sparco);
 
-        GrafeoImpl g = new GrafeoImpl();
+        GrafeoMongoImpl g = new GrafeoMongoImpl();
 		long startTime = System.currentTimeMillis();
         log.debug("Grafeo size: " + g.size());
         log.debug("About to execute construct query.");
@@ -301,8 +300,8 @@ public class FileService extends AbstractRDFService {
 			@FormDataParam("meta") FormDataBodyPart metaPart
 			) {
 		URI uri = appendPath(popPath(getRequestUriWithoutQuery()), createUniqueStr());
-		Grafeo g = new GrafeoImpl();
-		Grafeo newG = new GrafeoImpl();
+		Grafeo g = new GrafeoMongoImpl();
+		Grafeo newG = new GrafeoMongoImpl();
 		
 		FilePojo filePojo = new FilePojo();
 		try {
@@ -334,7 +333,7 @@ public class FileService extends AbstractRDFService {
 		// save it
 		// set the status of the file to waiting
 		filePojo.setFileStatus(FileStatus.WAITING.toString());
-		filePojo.getGrafeo().putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), uri.toString());
+		filePojo.getGrafeo().putToEndpoint(Config.get(ConfigProp.MONGO), uri.toString());
 		
 		return Response.created(uri).entity(getResponseEntity(filePojo.getGrafeo())).build();
 	}
@@ -369,7 +368,7 @@ public class FileService extends AbstractRDFService {
 			log.error("Could not reload file pojo." + e);
 			throwServiceError(e);
 		}
-		GrafeoImpl g = new GrafeoImpl();
+		GrafeoMongoImpl g = new GrafeoMongoImpl();
 		
 		// if file data: store file at location
 		if (! filePartIsEmpty) {
@@ -386,7 +385,7 @@ public class FileService extends AbstractRDFService {
 		if (! metaPartIsEmpty) {
 			
 			// build a model from the input
-			GrafeoImpl newG = new GrafeoImpl(metaPart.getValueAs(InputStream.class));
+			GrafeoMongoImpl newG = new GrafeoMongoImpl(metaPart.getValueAs(InputStream.class));
 			if (newG.isEmpty()) {
 				return throwServiceError(ErrorMsg.BAD_RDF);
 			}
@@ -402,18 +401,8 @@ public class FileService extends AbstractRDFService {
 			// instantiate new file pojo
 			FilePojo newFilePojo = newG.getObjectMapper().getObject(FilePojo.class, uriStr);
 			
-			// create SPARQL update query
-			SparqlUpdate sparul = new SparqlUpdate.Builder()
-				.graph(uriStr)
-				.delete("?s ?p ?o.")
-				.insert(newFilePojo.getNTriples())
-				.endpoint(Config.get(ConfigProp.ENDPOINT_UPDATE))
-				.build();
-			
-			log.info("About to replace: " + sparul.toString());
-			
-			// save the data
-			sparul.execute();
+			// store it
+			newFilePojo.getGrafeo().postToEndpoint(Config.get(ConfigProp.MONGO), uriStr);
 		}
 		
 		return Response.ok().location(uri).build();
@@ -451,7 +440,7 @@ public class FileService extends AbstractRDFService {
 			@FormDataParam("file") FormDataContentDisposition fileDisposition) {
         log.info("A new file is to be stored here.");
 		// The model for this resource
-		GrafeoImpl g = new GrafeoImpl();
+		GrafeoMongoImpl g = new GrafeoMongoImpl();
 		// Identifier for this resource (used in URI generation and for filename)
 		// name of the new resource
 		URI uri = appendPath(getRequestUriWithoutQuery(), createUniqueStr());
@@ -553,7 +542,7 @@ public class FileService extends AbstractRDFService {
         log.debug(LogbackMarkers.DATA_DUMP, "Final RDF to be stored for this file: {}", g.getTurtle());
         
 		// store RDF data
-		g.putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), uri);
+		g.putToEndpoint(Config.get(ConfigProp.MONGO), uri);
 		return Response.created(uri).entity(getResponseEntity(g)).build();
 	}
 	
@@ -571,9 +560,9 @@ public class FileService extends AbstractRDFService {
 	public Response getFileDataByUri(@QueryParam("uri") URI uri) {
 
 		// create model from graph at uri
-		GrafeoImpl g = new GrafeoImpl();
+		GrafeoMongoImpl g = new GrafeoMongoImpl();
 		try {
-			g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), uri);
+			g.readFromEndpoint(Config.get(ConfigProp.MONGO), uri);
 		} catch (RuntimeException t) {
 			return throwServiceError(ErrorMsg.BAD_RDF, t);
 		}
@@ -641,24 +630,10 @@ public class FileService extends AbstractRDFService {
 			return throwServiceError(e);
 		}
 
-		// replace all fileStatus statements
-//		@formatter:off
-		SparqlUpdate s = new SparqlUpdate.Builder()
-				.graph(uri.toString())
-				.delete(String.format(
-						"<%s> <%s> ?oldStatus",
-						uri,
-						NS.OMNOM.PROP_FILE_STATUS))
-				.insert(String.format(
-						"<%s> <%s> \"%s\"", 
-						uri, 
-						NS.OMNOM.PROP_FILE_STATUS,
-						FileStatus.DELETED.toString()))
-				.endpoint(Config.get(ConfigProp.ENDPOINT_UPDATE))
-				.build();
-//		@formatter:on
-		log.info(s.toString());
-		s.execute();
+		GrafeoMongoImpl g = new GrafeoMongoImpl(uri);
+		g.removeTriple(g.resource(uri), NS.OMNOM.PROP_FILE_STATUS, null);
+		g.addTriple(g.resource(uri), NS.OMNOM.PROP_FILE_STATUS, g.literal(FileStatus.DELETED.toString()));
+		g.putToEndpoint(Config.get(ConfigProp.MONGO), uri);
 
 		// return the metadata live from the store (g is not up-to-date anymore)
 		return getFileMetaDataByUri(uri);
@@ -716,7 +691,7 @@ public class FileService extends AbstractRDFService {
 		filePojo.loadFromURI(uri);
 		
 		// load posted RDF
-		GrafeoImpl g = new GrafeoImpl(bodyInputStream);
+		GrafeoMongoImpl g = new GrafeoMongoImpl(bodyInputStream);
 		// rename the top blank node to uri if it exists
 		if (g.findTopBlank(NS.OMNOM.CLASS_FILE) != null) {
 			g.findTopBlank().rename(uri.toString());
@@ -739,19 +714,8 @@ public class FileService extends AbstractRDFService {
 			return throwServiceError(e);
 		}
 		
-		// create SPARQL update query
-		SparqlUpdate sparul = new SparqlUpdate.Builder()
-		.graph(uri.toString())
-		.delete("?s ?p ?o.")
-		.insert(filePojo.getNTriples())
-		.endpoint(Config.get(ConfigProp.ENDPOINT_UPDATE))
-		.build();
+		filePojo.getGrafeo().putToEndpoint(Config.get(ConfigProp.MONGO), uri);
 			
-		log.info(LogbackMarkers.DATA_DUMP, "About to replace: {}" + sparul.toString());
-			
-		// save the data
-		sparul.execute();
-		
 		// return the updated version to the client
 		return getFileMetaDataByUri(uri);
 	}
@@ -807,11 +771,11 @@ public class FileService extends AbstractRDFService {
 	@GET
 	@Path("/jsonByUri")
 	public Response getFileMetaDataAsJsonByUri(@QueryParam("uri") URI uri) {
-		Grafeo g = new GrafeoImpl();
+		Grafeo g = new GrafeoMongoImpl();
 		try {
-			g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), uri);
+			g.readFromEndpoint(Config.get(ConfigProp.MONGO), uri);
 		} catch (Exception e) {
-			log.info("Failed to read from " + Config.get(ConfigProp.ENDPOINT_QUERY));
+			log.info("Failed to read from " + Config.get(ConfigProp.MONGO));
 			return throwServiceError(e);
 //			throw new WebApplicationException(e);
 		}
@@ -834,11 +798,11 @@ public class FileService extends AbstractRDFService {
 	@GET
 	@Path("/rdfByUri")
 	public Response getFileMetaDataAsRdfByUri(@QueryParam("uri") URI uri) {
-		Grafeo g = new GrafeoImpl();
+		Grafeo g = new GrafeoMongoImpl();
 		try {
-			g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), uri);
+			g.readFromEndpoint(Config.get(ConfigProp.MONGO), uri);
 		} catch (Exception e) {
-			log.info(Config.get(ConfigProp.ENDPOINT_QUERY));
+			log.info(Config.get(ConfigProp.MONGO));
 			return throwServiceError(e);
 		}
 		if (!g.containsResource(uri)) {
@@ -846,7 +810,7 @@ public class FileService extends AbstractRDFService {
 		}
 		log.debug(LogbackMarkers.DATA_DUMP, g.getTerseTurtle());
 		FilePojo filePojo = g.getObjectMapper().getObject(FilePojo.class, uri);
-		Grafeo outG = new GrafeoImpl();
+		Grafeo outG = new GrafeoMongoImpl();
 		outG.getObjectMapper().addObject(filePojo);
 		return getResponse(outG);
 	}

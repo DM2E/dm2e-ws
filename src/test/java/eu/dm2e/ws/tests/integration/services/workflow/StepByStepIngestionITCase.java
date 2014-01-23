@@ -23,6 +23,7 @@ import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.services.xslt.XsltService;
 import eu.dm2e.ws.tests.OmnomTestCase;
 import eu.dm2e.ws.tests.OmnomTestResources;
+import eu.dm2e.ws.wsmanager.ManageService;
 
 /**
  * This file was created within the DM2E project.
@@ -43,10 +44,12 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
         XSLT_SERVICE_URI = URI_BASE + "service/xslt";
         XSLTZIP_SERVICE_URI = URI_BASE + "service/xslt";
 //    	SERVICE_POJO = new XsltZipService().getWebServicePojo();
+        ManageService.startFuseki();
     }
 
     @After
     public void tearDown() {
+        ManageService.stopFusekiServer();
     }
 
 
@@ -181,8 +184,8 @@ public class StepByStepIngestionITCase extends OmnomTestCase {
             config.addParameterAssignment("provider-id", "dm2edev");
             config.addParameterAssignment("label", "Test-Dataset (from StepByStepIngestionITCase)");
             config.addParameterAssignment("comment", "This dataset can safely be deleted.");
-            // config.addParameterAssignment("endpoint-update", "http://lelystad.informatik.uni-mannheim.de:3030/dm2etest/update");
-            // config.addParameterAssignment("endpoint-select", "http://lelystad.informatik.uni-mannheim.de:3030/dm2etest/sparql");
+            config.addParameterAssignment("endpoint-update", "http://localhost:9997/test/update");
+            config.addParameterAssignment("endpoint-select", "http://localhost:9997/test/sparql");
             config.publishToService(client.getConfigWebTarget());
 
             log.info("Configuration created for Test: " + config.getTurtle());

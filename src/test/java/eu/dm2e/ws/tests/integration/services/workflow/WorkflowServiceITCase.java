@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
 import eu.dm2e.grafeo.junit.GrafeoAssert;
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.DM2E_MediaType;
@@ -82,7 +82,7 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 //	public void testGetWorkflow() {
 		// Response resp2 =
 		// client.resource(wf.getId()).get(ClientResponse.class);
-		// GrafeoImpl g = new GrafeoImpl(resp2.getEntityInputStream());
+		// GrafeoMongoImpl g = new GrafeoMongoImpl(resp2.getEntityInputStream());
 		// GrafeoAssert.graphsAreStructurallyEquivalent(g, wf.getGrafeo());
 		// log.info(wf.getTerseTurtle());
 
@@ -139,7 +139,7 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 		// FileUtils.writeStringToFile(new File("SHOULD.ttl"), wf.getTurtle());
 		log.info("testsimple: Publishing the workflow.");
 
-		GrafeoImpl gBefore = (GrafeoImpl) xsltWorkflow.getGrafeo();
+		GrafeoMongoImpl gBefore = (GrafeoMongoImpl) xsltWorkflow.getGrafeo();
 		assertNull(xsltWorkflow.getId());
 
 		Assert.assertEquals(1, xsltWorkflow .getGrafeo() .listStatements(null, NS.OMNOM.PROP_WORKFLOW_POSITION, null) .size());
@@ -161,7 +161,7 @@ public class WorkflowServiceITCase extends OmnomTestCase {
 		}
 
 		Grafeo gAfter = xsltWorkflow.getGrafeo();
-		Grafeo gParsed = new GrafeoImpl();
+		Grafeo gParsed = new GrafeoMongoImpl();
 		gParsed.load(respStr);
 
 		log.info(gAfter.getTerseTurtle());

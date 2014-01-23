@@ -34,8 +34,10 @@ import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 import eu.dm2e.grafeo.GResource;
 import eu.dm2e.grafeo.GStatement;
+import eu.dm2e.grafeo.GValue;
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
 import eu.dm2e.grafeo.jena.SparqlUpdate;
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.Config;
@@ -115,7 +117,7 @@ public class WorkflowService extends AbstractRDFService {
     	sb.append("}  \n");
 //    	GrafeoImpl g = new GrafeoImpl();
     	Query query = sb.asQuery();
-    	QueryEngineHTTP qExec = QueryExecutionFactory.createServiceRequest(Config.get(ConfigProp.ENDPOINT_QUERY), query);
+    	QueryEngineHTTP qExec = QueryExecutionFactory.createServiceRequest(Config.get(ConfigProp.MONGO), query);
     	long startTime = System.currentTimeMillis();
     	log.debug("About to execute facet SELECT query.");
     	ResultSet resultSet = qExec.execSelect();
@@ -152,7 +154,7 @@ public class WorkflowService extends AbstractRDFService {
 			@QueryParam("sort") String sortProp,
 			@QueryParam("order") String sortOrder
 			) {
-    	GrafeoImpl g = new GrafeoImpl();
+    	GrafeoMongoImpl g = new GrafeoMongoImpl();
     	ParameterizedSparqlString sb = new ParameterizedSparqlString();
     	sb.setNsPrefix("rdf", NS.RDF.BASE);
     	sb.setNsPrefix("dcterms", NS.DCTERMS.BASE);
@@ -172,7 +174,7 @@ public class WorkflowService extends AbstractRDFService {
     	sb.append("  }    \n");
     	sb.append("}  \n");
     	Query query = sb.asQuery();
-    	QueryEngineHTTP qExec = QueryExecutionFactory.createServiceRequest(Config.get(ConfigProp.ENDPOINT_QUERY), query);
+    	QueryEngineHTTP qExec = QueryExecutionFactory.createServiceRequest(Config.get(ConfigProp.MONGO), query);
     	{
     		long startTime = System.currentTimeMillis();
     		qExec.execConstruct(g.getModel());
@@ -216,8 +218,8 @@ public class WorkflowService extends AbstractRDFService {
 	@Path("{id}/validate")
 	public Response validateWorkflow() {
 		URI wfUri = popPath(getRequestUriWithoutQuery());
-		GrafeoImpl g = new GrafeoImpl();
-		g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), wfUri);
+		GrafeoMongoImpl g = new GrafeoMongoImpl();
+		g.readFromEndpoint(Config.get(ConfigProp.MONGO), wfUri);
 		if (g.isEmpty()) {
 			return Response.status(404).build();
 		}
@@ -248,8 +250,8 @@ public class WorkflowService extends AbstractRDFService {
 	@Path("{id}")
 	public Response getWorkflow() {
 		URI wfUri = getRequestUriWithoutQuery();
-		GrafeoImpl g = new GrafeoImpl();
-		g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), wfUri);
+		GrafeoMongoImpl g = new GrafeoMongoImpl();
+		g.readFromEndpoint(Config.get(ConfigProp.MONGO), wfUri);
 		if (g.isEmpty()) {
 			return Response.status(Response.Status.NOT_FOUND).build();
 		}
@@ -269,14 +271,14 @@ public class WorkflowService extends AbstractRDFService {
 	@Path("{id}")
 	public Response deleteWorkflow() {
 		URI wfUri = getRequestUriWithoutQuery();
-		GrafeoImpl g = new GrafeoImpl();
-		g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), wfUri);
+		GrafeoMongoImpl g = new GrafeoMongoImpl();
+		g.readFromEndpoint(Config.get(ConfigProp.MONGO), wfUri);
 		if (g.isEmpty()) {
 			return Response.status(Response.Status.NOT_FOUND).build();
 		}
 		WorkflowPojo wf = g.getObjectMapper().getObject(WorkflowPojo.class, wfUri);
 		wf.setWorkflowStatus(FileStatus.DELETED.toString());
-		wf.getGrafeo().putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), wfUri);
+		wf.getGrafeo().putToEndpoint(Config.get(ConfigProp.MONGO), wfUri);
 		return Response.status(Response.Status.OK).entity(wf).build();
 	}
 	
@@ -304,7 +306,7 @@ public class WorkflowService extends AbstractRDFService {
 		log.debug("Actual Autowiring!");
 		wf.autowire();
 		log.debug("Autowiring complete, now persist!");
-		wf.getGrafeo().putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), wfUri);
+		wf.getGrafeo().putToEndpoint(Config.get(ConfigProp.MONGO), wfUri);
 		log.debug("Workflow saved.");
 		return Response.status(Response.Status.OK).entity(wf).build();
 	}
@@ -321,8 +323,8 @@ public class WorkflowService extends AbstractRDFService {
 	@Path("{id}/png")
 	public Response getWorkflowPngByUrl() throws IOException {
 		URI wfUri = popPath(getRequestUriWithoutQuery());
-		GrafeoImpl g = new GrafeoImpl();
-		g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), wfUri.toString());
+		GrafeoMongoImpl g = new GrafeoMongoImpl();
+		g.readFromEndpoint(Config.get(ConfigProp.MONGO), wfUri.toString());
 		if (g.isEmpty()) {
 			return Response.status(404).build();
 		}
@@ -369,8 +371,8 @@ public class WorkflowService extends AbstractRDFService {
 	@Path("{id}")
 	public Response getWorkflowDOT() {
 		URI wfUri = getRequestUriWithoutQuery();
-		GrafeoImpl g = new GrafeoImpl();
-		g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), wfUri.toString());
+		GrafeoMongoImpl g = new GrafeoMongoImpl();
+		g.readFromEndpoint(Config.get(ConfigProp.MONGO), wfUri.toString());
 		if (g.isEmpty()) {
 			return Response.status(404).build();
 		}
@@ -413,7 +415,7 @@ public class WorkflowService extends AbstractRDFService {
 	public Response putRDF(String rdfString) {
 		Grafeo g = null;
 		try {
-			g = new GrafeoImpl();
+			g = new GrafeoMongoImpl();
 			g.readHeuristically(rdfString);
 			assert(g != null);
 		}
@@ -456,7 +458,7 @@ public class WorkflowService extends AbstractRDFService {
 
 		log.info("Writing updated workflow to endpoint.");
 		try {
-			g.putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), wfUriStr);
+			g.putToEndpoint(Config.get(ConfigProp.MONGO), wfUriStr);
 		} catch (Exception e) {
 			return throwServiceError(e);
 		}
@@ -514,7 +516,7 @@ public class WorkflowService extends AbstractRDFService {
     public Response postRDF(String rdfString) {
         Grafeo g = null;
         try {
-            g = new GrafeoImpl();
+            g = new GrafeoMongoImpl();
             g.readHeuristically(rdfString);
             assert(g != null);
         }
@@ -594,7 +596,7 @@ public class WorkflowService extends AbstractRDFService {
 
 		log.info("Writing workflow to triple store.");
 		try {
-			g.putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), wfUri);
+			g.putToEndpoint(Config.get(ConfigProp.MONGO), wfUri);
 		} catch (Exception e) {
 			return throwServiceError(e);
 		}
@@ -622,7 +624,7 @@ public class WorkflowService extends AbstractRDFService {
 			DM2E_MediaType.TEXT_RDF_N3, DM2E_MediaType.TEXT_TURTLE })
 	@Path("{workflowId}/position")
 	public Response postWorkflowPosition(@PathParam("workflowId") String workflowId, String rdfString) {
-		Grafeo g = new GrafeoImpl(rdfString, null);
+		Grafeo g = new GrafeoMongoImpl(rdfString, null);
 		GResource blank = g.findTopBlank(NS.OMNOM.CLASS_WORKFLOW_POSITION);
 		if (null == blank) {
 			return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE);
@@ -631,7 +633,7 @@ public class WorkflowService extends AbstractRDFService {
 		URI workflowUri = popPath("position");
 		blank.rename(newUri);
 		// TODO rename blank sub-resources
-		g.postToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), workflowUri);
+		g.postToEndpoint(Config.get(ConfigProp.MONGO), workflowUri);
 		return Response.created(newUri).build();
 	}
 	@PUT
@@ -639,14 +641,9 @@ public class WorkflowService extends AbstractRDFService {
 	public Response putWorkflowPosition(@PathParam("workflowId") String workflowId, @PathParam("posId") String posId, String rdfString) {
 		URI posUri = getRequestUriWithoutQuery();
 		URI workflowUri = popPath(popPath());
-		Grafeo g = new GrafeoImpl(rdfString, null);
-		SparqlUpdate sparul = new SparqlUpdate.Builder()
-			.delete(posUri + "?s ?o")
-			.insert(g)
-			.endpoint(Config.get(ConfigProp.ENDPOINT_UPDATE))
-			.graph(workflowUri)
-			.build();
-		sparul.execute();
+		GrafeoImpl g = new GrafeoMongoImpl(rdfString, null);
+		g.removeTriple(g.resource(workflowUri), null, null);
+		g.putToEndpoint(Config.get(ConfigProp.MONGO), workflowUri);
 		return getResponse(g);
 	}
 	@GET
@@ -672,7 +669,8 @@ public class WorkflowService extends AbstractRDFService {
 		DM2E_MediaType.TEXT_RDF_N3,
 		DM2E_MediaType.TEXT_TURTLE })
 	@Path("{workflowId}/connector")
-	public Response postWorkflowConnector(@PathParam("workflowId") String workflowId, String rdfString) { Grafeo g = new GrafeoImpl(rdfString, null);
+	public Response postWorkflowConnector(@PathParam("workflowId") String workflowId, String rdfString) {
+		Grafeo g = new GrafeoMongoImpl(rdfString, null);
 		GResource blank = g.findTopBlank(NS.OMNOM.CLASS_PARAMETER_CONNECTOR);
 		if (null == blank) {
 			return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE);
@@ -681,7 +679,7 @@ public class WorkflowService extends AbstractRDFService {
 		URI workflowUri = popPath("connector");
 		blank.rename(newUri);
 		// TODO rename blank sub-resources
-		g.postToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), workflowUri);
+		g.postToEndpoint(Config.get(ConfigProp.MONGO), workflowUri);
 		return Response.created(newUri).build();
 	}
 	@PUT
@@ -696,13 +694,10 @@ public class WorkflowService extends AbstractRDFService {
 	public Response putWorkflowConnector(@PathParam("workflowId") String workflowId, @PathParam("conId") String conId, String rdfString) {
 		URI conUri = getRequestUriWithoutQuery();
 		URI workflowUri = popPath(popPath());
-		Grafeo g = new GrafeoImpl(rdfString, null);
-		SparqlUpdate sparul = new SparqlUpdate.Builder()
-			.delete(conUri + "?s ?o")
-			.insert(g.toString())
-			.endpoint(Config.get(ConfigProp.ENDPOINT_UPDATE))
-			.graph(workflowUri).build();
-		sparul.execute();
+		Grafeo g = new GrafeoMongoImpl();
+		g.readFromEndpoint(Config.get(ConfigProp.MONGO), workflowUri);
+		g.removeTriple(g.resource(conUri), (String)null, (GValue)null);
+		g.putToEndpoint(Config.get(ConfigProp.MONGO), g.getNTriples());
 		return getResponse(g);
 	}
 	@GET
@@ -729,7 +724,8 @@ public class WorkflowService extends AbstractRDFService {
 		DM2E_MediaType.TEXT_TURTLE })
 	@Path("{workflowId}/param")
 	public Response postWorkflowParameter(@PathParam("workflowId") String workflowId, String rdfString) {
-		Grafeo g = new GrafeoImpl(rdfString, null);
+		Grafeo g = new GrafeoMongoImpl();
+		g.readFromEndpoint(Config.get(ConfigProp.MONGO), rdfString);
 		GResource blank = g.findTopBlank(NS.OMNOM.CLASS_PARAMETER);
 		if (null == blank) {
 			return throwServiceError(ErrorMsg.NO_TOP_BLANK_NODE);
@@ -738,7 +734,7 @@ public class WorkflowService extends AbstractRDFService {
 		URI workflowUri = popPath();
 		blank.rename(newUri);
 		// TODO rename blank sub-resources
-		g.postToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), workflowUri);
+		g.postToEndpoint(Config.get(ConfigProp.MONGO), workflowUri);
 		return Response.created(newUri).build();
 	}
 	@PUT
@@ -746,13 +742,9 @@ public class WorkflowService extends AbstractRDFService {
 	public Response putWorkflowParamaeter(@PathParam("workflowId") String workflowId, @PathParam("paramId") String paramId, String rdfString) {
 		URI conUri = getRequestUriWithoutQuery();
 		URI workflowUri = popPath(popPath());
-		Grafeo g = new GrafeoImpl(rdfString, null);
-		SparqlUpdate sparul = new SparqlUpdate.Builder()
-			.delete(conUri + "?s ?o")
-			.insert(g.toString())
-			.endpoint(Config.get(ConfigProp.ENDPOINT_UPDATE))
-			.graph(workflowUri).build();
-		sparul.execute();
+		Grafeo g = new GrafeoMongoImpl(rdfString, null);
+		g.removeTriple(g.resource(conUri), null, null);
+		g.putToEndpoint(Config.get(ConfigProp.MONGO), workflowUri);
 		return getResponse(g);
 	}
 	@GET

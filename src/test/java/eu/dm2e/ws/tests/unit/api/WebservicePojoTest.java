@@ -3,7 +3,7 @@ package eu.dm2e.ws.tests.unit.api;
 import java.io.File;
 
 import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
 import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
 import eu.dm2e.grafeo.junit.GrafeoAssert;
 import eu.dm2e.ws.api.ParameterPojo;
@@ -56,11 +56,11 @@ public class WebservicePojoTest extends OmnomUnitTest {
 		ws.getInputParams().add(xmlInParam);
 		ws.getInputParams().add(xsltInParam);
 		ws.getOutputParams().add(xmlOutParam);
-		GrafeoImpl g = new GrafeoImpl();
+		GrafeoMongoImpl g = new GrafeoMongoImpl();
         g.getObjectMapper().addObject(ws);
         log.info("WS: " + g.getTurtle());
         WebservicePojo ws2 = g.getObjectMapper().getObject(WebservicePojo.class, ws.getId());
-        Grafeo g2 = new GrafeoImpl();
+        Grafeo g2 = new GrafeoMongoImpl();
         g2.getObjectMapper().addObject(ws2);
         log.info("WS 2: " + g2.getTurtle());
         GrafeoAssert.graphsAreEquivalent(g, g2);
@@ -101,7 +101,7 @@ public class WebservicePojoTest extends OmnomUnitTest {
 	@Test
 	public void testWorkflowWebservice() throws Exception {
 		String wfwsTTL = configString.get(OmnomTestResources.WORKFLOW_WEBSERVICE_DESC);
-		GrafeoImpl g = new GrafeoImpl();
+		GrafeoMongoImpl g = new GrafeoMongoImpl();
 		g.readHeuristically(wfwsTTL);
 		WebservicePojo wfws = g.getObjectMapper().getObject(WebservicePojo.class, "http://localhost:9998/api/exec/workflow/ddfa3a03-cdf0-4298-937e-e69cb863a48b");
 //		log.debug("" + GrafeoJsonSerializer.getGson().getAdapter(WebservicePojo.class));

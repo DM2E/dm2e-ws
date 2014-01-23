@@ -1,24 +1,7 @@
 package eu.dm2e.ws.tests.integration.services;
 
-import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
-import eu.dm2e.grafeo.junit.GrafeoAssert;
-import eu.dm2e.ws.Config;
-import eu.dm2e.ws.ConfigProp;
-import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.api.FilePojo;
-import eu.dm2e.ws.api.UserPojo;
-import eu.dm2e.ws.services.Client;
-import eu.dm2e.ws.tests.OmnomTestCase;
-
-import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -28,12 +11,27 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 
+import org.apache.commons.io.IOUtils;
 import org.joda.time.DateTime;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
+import eu.dm2e.grafeo.junit.GrafeoAssert;
 import eu.dm2e.logback.LogbackMarkers;
+import eu.dm2e.ws.Config;
+import eu.dm2e.ws.ConfigProp;
+import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.api.UserPojo;
+import eu.dm2e.ws.services.Client;
+import eu.dm2e.ws.tests.OmnomTestCase;
 
 public class ClientITCase extends OmnomTestCase {
 	
@@ -117,7 +115,7 @@ public class ClientITCase extends OmnomTestCase {
 			assertNotNull(uri);
 			Response resp = wr.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES).get();
 			assertEquals(200, resp.getStatus());
-			Grafeo g = new GrafeoImpl(resp.readEntity(InputStream.class));
+			Grafeo g = new GrafeoMongoImpl(resp.readEntity(InputStream.class));
 			log.info(g.getTerseTurtle());
 			assertTrue(
 					g.containsTriple(uri,

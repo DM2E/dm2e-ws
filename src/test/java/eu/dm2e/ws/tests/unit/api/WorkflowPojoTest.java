@@ -2,7 +2,7 @@ package eu.dm2e.ws.tests.unit.api;
 
 
 import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
 import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
 import eu.dm2e.grafeo.junit.GrafeoAssert;
 import eu.dm2e.logback.LogbackMarkers;
@@ -236,7 +236,7 @@ public class WorkflowPojoTest extends OmnomUnitTest {
 		wfjob.getFinishedJobs().add(finishedJob1);
 
 		log.info(wfjob.getTerseTurtle());
-		Grafeo g = new GrafeoImpl();
+		Grafeo g = new GrafeoMongoImpl();
 		g.getObjectMapper().addObject(wfjob);
 		
 		Grafeo g2 = g.copy();

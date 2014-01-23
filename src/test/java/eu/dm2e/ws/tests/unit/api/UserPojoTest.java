@@ -1,7 +1,7 @@
 package eu.dm2e.ws.tests.unit.api;
 
 
-import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
 import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.NS;
@@ -34,7 +34,7 @@ public class UserPojoTest extends OmnomUnitTest {
 					+"<"+uri+"> a foaf:Person ;"
 					+"   foaf:name \"John Doe\" ;"
 					+"   omnom:preferredTheme \"dark\".";
-			GrafeoImpl g = new GrafeoImpl(ttlStr, true);
+			GrafeoMongoImpl g = new GrafeoMongoImpl(ttlStr, true);
 			log.debug(LogbackMarkers.DATA_DUMP, g.getTerseTurtle());
 			UserPojo newUserPojo = g.getObjectMapper().getObject(UserPojo.class, uri);
 			assertEquals(userPojo.getPreferredTheme(), newUserPojo.getPreferredTheme());
@@ -96,7 +96,7 @@ public class UserPojoTest extends OmnomUnitTest {
 					+"   omnom:webservice <" + ws1_uri + ">;"
 					+"   omnom:webservice <" + ws2_uri + ">;"
 					+" a foaf:Person .";
-			GrafeoImpl g = new GrafeoImpl(ttlStr, true);
+			GrafeoMongoImpl g = new GrafeoMongoImpl(ttlStr, true);
 			UserPojo newUserPojo = g.getObjectMapper().getObject(UserPojo.class, uri);
 			assertEquals(2, newUserPojo.getFileServices().size());
 			for (Iterator<WebservicePojo> iter = newUserPojo.getFileServices().iterator() ; iter.hasNext() ; ) {

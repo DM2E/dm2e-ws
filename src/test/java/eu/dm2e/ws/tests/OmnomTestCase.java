@@ -38,8 +38,8 @@ public class OmnomTestCase extends OmnomUnitTest{
 	static {
 		URI_BASE = "http://localhost:9998/api/";
 //		System.setProperty("dm2e-ws.test.properties_file", "dm2e-ws.test.properties");
-		Config.set(ConfigProp.ENDPOINT_QUERY, "http://localhost:9997/test/sparql");
-		Config.set(ConfigProp.ENDPOINT_UPDATE, "http://localhost:9997/test/update");
+//		Config.set(ConfigProp.ENDPOINT_QUERY, "http://localhost:9997/test/sparql");
+//		Config.set(ConfigProp.ENDPOINT_UPDATE, "http://localhost:9997/test/update");
 		Config.set(ConfigProp.BASE_URI, URI_BASE);
 	}
 	protected static Client client = new Client();
@@ -65,7 +65,8 @@ public class OmnomTestCase extends OmnomUnitTest{
 	@Before
 	public void setUpBase() throws Exception {
 //        System.setProperty("http.keepAlive", "false");
-        ManageService.startAll();
+         ManageService.startHttpServer();
+//         ManageService.startFuseki();
 	}
 	
 	/**

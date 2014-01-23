@@ -26,7 +26,7 @@ import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.tests.OmnomTestCase;
 import eu.dm2e.ws.tests.OmnomTestResources;
 
-//@Ignore("MINT Tests always fail :-(")
+@Ignore("TODO temporary, works but Takes so long")
 public class MintApiTranslatorITCase extends OmnomTestCase {
 	
 	public MintApiTranslatorITCase() {

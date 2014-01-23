@@ -18,7 +18,7 @@ import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.api.UserPojo;
 import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
 import eu.dm2e.ws.services.AbstractRDFService;
 
 /**
@@ -53,9 +53,9 @@ public class UserService extends AbstractRDFService {
 	@Path("{id}")
 	public Response deleteUser() {
 		URI uri = getRequestUriWithoutQuery();
-		Grafeo g = new GrafeoImpl();
+		Grafeo g = new GrafeoMongoImpl();
 		
-		g.emptyGraph(Config.get(ConfigProp.ENDPOINT_UPDATE), uri);
+		g.emptyGraph(Config.get(ConfigProp.MONGO), uri);
 		return Response.ok().build();
 	}
 	
@@ -79,8 +79,8 @@ public class UserService extends AbstractRDFService {
 	public Response getUser() {
 		
 		URI uri = getRequestUriWithoutQuery();
-		GrafeoImpl g = new GrafeoImpl();
-		g.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), uri);
+		GrafeoMongoImpl g = new GrafeoMongoImpl();
+		g.readFromEndpoint(Config.get(ConfigProp.MONGO), uri);
 		if (g.isEmpty())
 			return Response.status(404).entity("No such user.").build();
 		UserPojo userPojo = g.getObjectMapper().getObject(UserPojo.class, uri);
@@ -114,10 +114,10 @@ public class UserService extends AbstractRDFService {
 		URI uri = getRequestUriWithoutQuery();
 		user.setId(uri);
 //		log.debug(user.getTurtle());
-		user.getGrafeo().putToEndpoint(Config.get(ConfigProp.ENDPOINT_UPDATE), uri);
+		user.getGrafeo().putToEndpoint(Config.get(ConfigProp.MONGO), uri);
 //		log.debug("Stored");
-		GrafeoImpl g2 = new GrafeoImpl();
-		g2.readFromEndpoint(Config.get(ConfigProp.ENDPOINT_QUERY), uri);
+		GrafeoMongoImpl g2 = new GrafeoMongoImpl();
+		g2.readFromEndpoint(Config.get(ConfigProp.MONGO), uri);
 //		log.debug(g2.getTurtle());
 //		log.debug("Loaded");
 		UserPojo userPut = g2.getObjectMapper().getObject(UserPojo.class, uri);

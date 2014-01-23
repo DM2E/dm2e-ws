@@ -4,7 +4,7 @@ import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.annotations.Namespaces;
 import eu.dm2e.grafeo.annotations.RDFClass;
 import eu.dm2e.grafeo.annotations.RDFProperty;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
 import eu.dm2e.ws.NS;
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
@@ -89,7 +89,7 @@ public class WebservicePojo extends AbstractPersistentPojo<WebservicePojo> imple
     }
 
     public WebservicePojo(String uri) {
-        Grafeo g = new GrafeoImpl(uri);
+        Grafeo g = new GrafeoMongoImpl(uri);
         
         // FIXME
         // Why would we try to load a pojo from an empty model? Seems pointless

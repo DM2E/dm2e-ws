@@ -1,9 +1,23 @@
 package eu.dm2e.ws.tests.integration.services.demo;
 
+import static org.junit.Assert.*;
+import static org.junit.matchers.JUnitMatchers.*;
+
+import java.net.URI;
+
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
 import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
-import eu.dm2e.grafeo.jena.SparqlConstruct;
-import eu.dm2e.ws.*;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
+import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.ErrorMsg;
+import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
@@ -12,17 +26,6 @@ import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.tests.OmnomTestCase;
 import eu.dm2e.ws.tests.OmnomTestResources;
 import eu.dm2e.ws.wsmanager.ManageService;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.net.URI;
-
-import static org.junit.Assert.*;
-import static org.junit.matchers.JUnitMatchers.containsString;
 
 /**
  * This file was created within the DM2E project. http://dm2e.eu
@@ -77,7 +80,7 @@ public class DemoServiceITCase extends OmnomTestCase {
 		String respStr = resp.readEntity(String.class);
 		log.info(respStr);
 		assertEquals(200, resp.getStatus());
-		Grafeo g = new GrafeoImpl();
+		Grafeo g = new GrafeoMongoImpl();
 		g.readHeuristically(respStr);
 		log.info(g.getTurtle());
 		assertTrue(g.containsTriple(SERVICE_URI, "rdf:type", "omnom:Webservice"));
@@ -110,14 +113,14 @@ public class DemoServiceITCase extends OmnomTestCase {
 					.target(SERVICE_URI)
 					.request()
 					.put(Entity.text(confLoc.toString()));
-			SparqlConstruct sparco = new SparqlConstruct.Builder()
-					.endpoint(Config.get(ConfigProp.ENDPOINT_QUERY))
-					.graph("?g")
-					.construct("?s ?p ?o")
-					.build();
-			GrafeoImpl testG = new GrafeoImpl();
-			sparco.execute(testG);
-			log.error(testG.getTerseTurtle());
+//			SparqlConstruct sparco = new SparqlConstruct.Builder()
+//					.endpoint(Config.get(ConfigProp.MONGO))
+//					.graph("?g")
+//					.construct("?s ?p ?o")
+//					.build();
+//			GrafeoMongoImpl testG = new GrafeoMongoImpl();
+//			sparco.execute(testG);
+//			log.error(testG.getTerseTurtle());
 
 			assertEquals(202, serviceResp.getStatus());
 			log.info("PUT finished");
@@ -173,7 +176,7 @@ public class DemoServiceITCase extends OmnomTestCase {
 		} catch (InterruptedException e) {
 			throw new RuntimeException("An exception occurred: " + e, e);
 		}
-		Grafeo g = new GrafeoImpl(joburi.toString());
+		Grafeo g = new GrafeoMongoImpl(joburi.toString());
 		JobPojo job = g.getObjectMapper().getObject(JobPojo.class, joburi.toString());
 		String status = job.getJobStatus();
 		log.info("Status after 1 seconds: " + status);
@@ -183,7 +186,7 @@ public class DemoServiceITCase extends OmnomTestCase {
 		} catch (InterruptedException e) {
 			throw new RuntimeException("An exception occurred: " + e, e);
 		}
-		g = new GrafeoImpl(joburi.toString());
+		g = new GrafeoMongoImpl(joburi.toString());
 		job = g.getObjectMapper().getObject(JobPojo.class, joburi.toString());
 		status = job.getJobStatus();
 		log.info("Status after 4 seconds: " + status);

@@ -1,0 +1,52 @@
+{
+   "http://onto.dm2e.eu/omnom/inputParam" : [
+      {
+         "http://www.w3.org/2000/01/rdf-schema#comment" : "Maximum time to wait for a job to finish, in seconds. [Default: 120s]",
+         "http://www.w3.org/2000/01/rdf-schema#label" : "jobTimeout",
+         "http://onto.dm2e.eu/omnom/isRequired" : false,
+         "uuid" : "c82",
+         "http://onto.dm2e.eu/omnom/defaultValue" : "120"
+      },
+      {
+         "http://www.w3.org/2000/01/rdf-schema#comment" : "Time to wait between polls for job status, in milliseconds. [Default: 2000ms]",
+         "http://www.w3.org/2000/01/rdf-schema#label" : "pollInterval",
+         "http://onto.dm2e.eu/omnom/isRequired" : false,
+         "uuid" : "c84",
+         "http://onto.dm2e.eu/omnom/defaultValue" : "2000"
+      }
+   ],
+   "http://onto.dm2e.eu/omnom/outputParam" : [
+      {
+         "http://www.w3.org/2000/01/rdf-schema#comment" : "The complete log file of the workflow job and its webservice jobs.",
+         "http://www.w3.org/2000/01/rdf-schema#label" : "completeLog",
+         "http://onto.dm2e.eu/omnom/isRequired" : false,
+         "uuid" : "c80"
+      }
+   ],
+   "rdf:type" : "http://onto.dm2e.eu/omnom/Workflow",
+   "http://onto.dm2e.eu/omnom/parameterConnector" : [
+      {
+         "http://onto.dm2e.eu/omnom/toParam" : {
+            "id" : "http://localhost:9998/api/service/xslt/param/xmlInput"
+         },
+         "http://onto.dm2e.eu/omnom/fromParam" : {
+            "id" : "http://localhost:9998/api/workflow/5f3f2236-6447-441a-bdfd-e81641a06402/param/jobTimeout"
+         },
+         "http://onto.dm2e.eu/omnom/fromWorkflow" : {
+            "id" : "http://localhost:9998/api/workflow/5f3f2236-6447-441a-bdfd-e81641a06402/param/jobTimeout"
+         },
+         "uuid" : "c106",
+         "http://onto.dm2e.eu/omnom/toPosition" : {
+            "id" : "http://localhost:9998/api/service/xslt/param/xmlInput"
+         }
+      }
+   ],
+   "uuid" : "http://localhost:9998/api/workflow/5f3f2236-6447-441a-bdfd-e81641a06402",
+   "http://onto.dm2e.eu/omnom/workflowPosition" : [
+      {
+         "http://onto.dm2e.eu/omnom/webservice" : {
+            "id" : "http://localhost:9998/api/service/xslt"
+         }
+      }
+   ]
+}

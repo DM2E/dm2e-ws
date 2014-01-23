@@ -1,7 +1,7 @@
 package eu.dm2e.ws.services.mint;
 
 import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
 import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ConfigProp;
@@ -126,7 +126,7 @@ public class MintFileService extends AbstractRDFService {
 		
 		Response resp;
 		if (expectsRdfResponse()) {
-			Grafeo outG = new GrafeoImpl();
+			Grafeo outG = new GrafeoMongoImpl();
 			outG.getObjectMapper().addObject(filePojo);
 			resp = getResponse(outG);
 		} else if (expectsJsonResponse()) {
@@ -137,7 +137,7 @@ public class MintFileService extends AbstractRDFService {
 					.build();
 		} else {
 			log.warn("No metadata type could be detected, defaulting to RDF/N-TRIPLES.");
-			Grafeo outG = new GrafeoImpl();
+			Grafeo outG = new GrafeoMongoImpl();
 			outG.getObjectMapper().addObject(filePojo);
 			resp = getResponse(outG);
 		}

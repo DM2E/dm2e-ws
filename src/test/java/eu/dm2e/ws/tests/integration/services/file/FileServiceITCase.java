@@ -2,7 +2,7 @@ package eu.dm2e.ws.tests.integration.services.file;
 
 import eu.dm2e.grafeo.GResource;
 import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
 import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.*;
@@ -64,7 +64,7 @@ public class FileServiceITCase extends OmnomTestCase {
 		Response resp = client.target(randomFileUri)
 				.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
 				.get();
-		Grafeo g = new GrafeoImpl();
+		Grafeo g = new GrafeoMongoImpl();
 		g.readHeuristically(resp.readEntity(InputStream.class));
 		FilePojo actualFilePojo = g.getObjectMapper().getObject(FilePojo.class, randomFileUri);
 		assertEquals(randomFilePojo.getId(), actualFilePojo.getId());
@@ -87,7 +87,7 @@ public class FileServiceITCase extends OmnomTestCase {
 	public void testPostEmptyFile() throws Exception {
 		// Minimal valid file
 		{
-			Grafeo metaGrafeo = new GrafeoImpl(configFile.get(OmnomTestResources.MINIMAL_FILE));
+			Grafeo metaGrafeo = new GrafeoMongoImpl(configFile.get(OmnomTestResources.MINIMAL_FILE));
 			FormDataMultiPart fdmp = client.createFileFormDataMultiPart(metaGrafeo, null);
 			Response resp = client.getFileWebTarget()
 					.path("empty")
@@ -98,7 +98,7 @@ public class FileServiceITCase extends OmnomTestCase {
 			URI fileLoc = resp.getLocation();
 			assertNotNull(fileLoc);
 
-			GrafeoImpl g = new GrafeoImpl(configFile.get(OmnomTestResources.MINIMAL_FILE));
+			GrafeoMongoImpl g = new GrafeoMongoImpl(configFile.get(OmnomTestResources.MINIMAL_FILE));
 			final String resName = "foo";
 			g.findTopBlank().rename(resName);
 			FilePojo fpOrig = g.getObjectMapper().getObject(FilePojo.class, resName);
@@ -131,7 +131,7 @@ public class FileServiceITCase extends OmnomTestCase {
 
 	@Test
 	public void testPostEmptyFileMinimalInvalid() {
-		Grafeo metaGrafeo = new GrafeoImpl(configFile.get(OmnomTestResources.ILLEGAL_EMPTY_FILE));
+		Grafeo metaGrafeo = new GrafeoMongoImpl(configFile.get(OmnomTestResources.ILLEGAL_EMPTY_FILE));
 		FormDataMultiPart fdmp = client.createFileFormDataMultiPart(metaGrafeo, null);
 		Response resp = client.getFileWebTarget()
 				.path("empty")
@@ -216,7 +216,7 @@ public class FileServiceITCase extends OmnomTestCase {
 		}
 		// minimal valid file
 		{
-			Grafeo metaGrafeo = new GrafeoImpl(configFile.get(OmnomTestResources.MINIMAL_FILE));
+			Grafeo metaGrafeo = new GrafeoMongoImpl(configFile.get(OmnomTestResources.MINIMAL_FILE));
 			FormDataMultiPart fdmp = client.createFileFormDataMultiPart(metaGrafeo, null);
 			Response resp = client.getFileWebTarget()
 					.request()
@@ -229,7 +229,7 @@ public class FileServiceITCase extends OmnomTestCase {
 		}
 		// minimal valid file without top blank node
 		{
-			Grafeo metaGrafeo = new GrafeoImpl(
+			Grafeo metaGrafeo = new GrafeoMongoImpl(
 					configFile.get(OmnomTestResources.MINIMAL_FILE_WITH_URI));
 			FormDataMultiPart fdmp = client.createFileFormDataMultiPart(metaGrafeo, null);
 			Response resp = client.getFileWebTarget()
@@ -241,7 +241,7 @@ public class FileServiceITCase extends OmnomTestCase {
 		}
 		// minimal invalid file
 		{
-			Grafeo metaGrafeo = new GrafeoImpl(
+			Grafeo metaGrafeo = new GrafeoMongoImpl(
 					configFile.get(OmnomTestResources.ILLEGAL_EMPTY_FILE));
 			FormDataMultiPart fdmp = client.createFileFormDataMultiPart(metaGrafeo, null);
 			Response resp = client.getFileWebTarget()
@@ -289,7 +289,7 @@ public class FileServiceITCase extends OmnomTestCase {
 					assertEquals(200, resp.getStatus());
 					String metaStr = resp.readEntity(String.class);
 					log.info(metaStr);
-					Grafeo g = new GrafeoImpl(metaStr, true);
+					Grafeo g = new GrafeoMongoImpl(metaStr, true);
 					g.containsTriple(fileUriStr, NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_FILE);
 					g.containsTriple(fileUriStr, NS.OMNOM.PROP_FILE_LOCATION, "?x");
 					g.containsTriple(fileUriStr, NS.OMNOM.PROP_FILE_RETRIEVAL_URI, "?x");
@@ -325,7 +325,7 @@ public class FileServiceITCase extends OmnomTestCase {
 			Response resp = client.target(fileUri)
 					.request(DM2E_MediaType.APPLICATION_RDF_TRIPLES)
 					.get();
-			GrafeoImpl g = new GrafeoImpl(resp.readEntity(InputStream.class));
+			GrafeoMongoImpl g = new GrafeoMongoImpl(resp.readEntity(InputStream.class));
 			g.containsTriple(fileUri, "omnom:fileStatus", "DELETED");
 			FilePojo fp = new FilePojo();
 			extracted(fileUri, fp);
@@ -380,7 +380,7 @@ public class FileServiceITCase extends OmnomTestCase {
 				.post(Entity.entity(
 						mp,
 						MediaType.MULTIPART_FORM_DATA_TYPE
-					), String.class); GrafeoImpl g = new GrafeoImpl();
+					), String.class); GrafeoMongoImpl g = new GrafeoMongoImpl();
 		g.readHeuristically(s);
 		for (GResource r : g.findByClass("omnom:File")) {
 			log.info("RESPONSE: " + r.getUri());
@@ -391,7 +391,7 @@ public class FileServiceITCase extends OmnomTestCase {
 			String resp = wr.request().get(String.class);
 			assertEquals(turtleString, resp);
 			log.info("RESPONSE 2: " + resp);
-			Grafeo g2 = new GrafeoImpl(r.getUri());
+			Grafeo g2 = new GrafeoMongoImpl(r.getUri());
 			log.info("RESPONSE 3: " + g2.getTurtle());
 			assertNotNull(g2.get(r.getUri()));
 		}

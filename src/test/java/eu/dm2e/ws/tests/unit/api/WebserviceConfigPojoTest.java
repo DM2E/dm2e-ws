@@ -1,7 +1,7 @@
 package eu.dm2e.ws.tests.unit.api;
 
 import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
 import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
 import eu.dm2e.grafeo.junit.GrafeoAssert;
 import eu.dm2e.ws.NS;
@@ -50,7 +50,7 @@ public class WebserviceConfigPojoTest  extends OmnomUnitTest {
         config.addParameterAssignment("testparam1", "1");
         config.addParameterAssignment("testparam2", "2");
         config.setId("http://example.org/config1");
-        Grafeo g = new GrafeoImpl();
+        Grafeo g = new GrafeoMongoImpl();
         g.getObjectMapper().addObject(config);
         log.trace("Serialized config: " + g.getTurtle());
         WebserviceConfigPojo config2 = g.getObjectMapper().getObject(WebserviceConfigPojo.class, "http://example.org/config1");
@@ -68,7 +68,7 @@ public class WebserviceConfigPojoTest  extends OmnomUnitTest {
 		final String wsUri = "http://foo/service";
 		final DateTime ts = DateTime.now();
 		{
-			GrafeoImpl gIn = new GrafeoImpl();
+			GrafeoMongoImpl gIn = new GrafeoMongoImpl();
 			gIn.addTriple(confUri, NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_WEBSERVICE_CONFIG);
 			gIn.addTriple(wsUri, NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_WEBSERVICE);
 			gIn.addTriple(confUri, NS.OMNOM.PROP_WEBSERVICE, wsUri);
@@ -86,7 +86,7 @@ public class WebserviceConfigPojoTest  extends OmnomUnitTest {
 //			GrafeoAssert.graphsAreEquivalent(config.getGrafeo(), gIn);
 		}
 		{
-			GrafeoImpl gIn = new GrafeoImpl();
+			GrafeoMongoImpl gIn = new GrafeoMongoImpl();
 			gIn.addTriple(confUri, NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_WEBSERVICE_CONFIG);
 			gIn.addTriple(wsUri, NS.RDF.PROP_TYPE, NS.OMNOM.CLASS_WEBSERVICE);
 			gIn.addTriple(confUri, NS.OMNOM.PROP_WEBSERVICE, wsUri);
@@ -153,7 +153,7 @@ public class WebserviceConfigPojoTest  extends OmnomUnitTest {
 				+ "<http://foo/conf1>"
 		        + "a                       omnom:WebserviceConfig ;"
 		        + "omnom:executesPosition  <http://foo/pos1> .";
-			Grafeo g = new GrafeoImpl();
+			Grafeo g = new GrafeoMongoImpl();
 			g.readHeuristically(asTTL);
 			log.debug(g.getTerseTurtle());
 		}

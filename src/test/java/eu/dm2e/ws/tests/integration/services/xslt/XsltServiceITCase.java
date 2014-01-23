@@ -14,7 +14,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
 import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.JobPojo;
@@ -93,7 +93,7 @@ public class XsltServiceITCase extends OmnomTestCase {
     @Test
     public void testDescription() {
     	log.info(SERVICE_URI);
-    	Grafeo g = new GrafeoImpl(client.getJerseyClient()
+    	Grafeo g = new GrafeoMongoImpl(client.getJerseyClient()
     			.target(SERVICE_URI)
     			.request("text/turtle")
     			.get(InputStream.class));
@@ -163,6 +163,7 @@ public class XsltServiceITCase extends OmnomTestCase {
     	assertThat(xmlContent, containsString("NOT-ub-ffm"));
     	assertThat(xmlContent, containsString("NOT-sammlungen"));
     }
+
     @Test
     public void testTransformation_XSLT_Newline_String() throws Exception {
     	log.info("Newline separated parameters");

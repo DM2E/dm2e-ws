@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
 import eu.dm2e.ws.services.AbstractRDFService;
 
 /**
@@ -40,7 +40,7 @@ public class DataService extends AbstractRDFService {
     @Path("/mapTest")
     public Response getMapTest(@Context UriInfo uriInfo) {
         String source = uriInfo.getRequestUri().toString().replace("/mapTest","");
-        Grafeo g = new GrafeoImpl(source);
+        Grafeo g = new GrafeoMongoImpl(source);
         WebservicePojo test = g.getObjectMapper().getObject(WebservicePojo.class, "http://data.dm2e.eu/data/services/42");
 
         log.info("Result ID: " + test.getId());
@@ -53,7 +53,7 @@ public class DataService extends AbstractRDFService {
     @GET
     @Path("/{resourceID}")
     public Response getResource(@Context UriInfo uriInfo, @PathParam("resourceID") String resourceID) {
-        Grafeo g = new GrafeoImpl();
+        Grafeo g = new GrafeoMongoImpl();
         g.addTriple(uriInfo.getRequestUri().toString(), "http://purl.org/dc/terms/creator", "http://localhost/kai");
         g.addTriple(uriInfo.getRequestUri().toString(), "dct:identifier", g.literal(resourceID));
         return getResponse(g);
@@ -68,7 +68,7 @@ public class DataService extends AbstractRDFService {
             throw new RuntimeException("An exception occurred: " + e, e);
         }
         log.info("URI: " + uri);
-        Grafeo g = new GrafeoImpl();
+        Grafeo g = new GrafeoMongoImpl();
         g.load(uri);
         log.info("Label: " + g.get(uri).get("rdfs:label"));
         return getResponse(g);

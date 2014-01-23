@@ -39,6 +39,7 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
 import eu.dm2e.grafeo.util.LogbackMarkers;
 import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ConfigProp;
@@ -321,7 +322,7 @@ public abstract class AbstractRDFService {
 		con.setRequestProperty("Accept", "text/turtle");
 		con.connect();
 		in = con.getInputStream();
-		GrafeoImpl tempG = new GrafeoImpl();
+		GrafeoMongoImpl tempG = new GrafeoMongoImpl();
 		tempG.getModel().read(in, null, "TURTLE");
 		if (tempG.getModel().isEmpty()) {
 			return null;
