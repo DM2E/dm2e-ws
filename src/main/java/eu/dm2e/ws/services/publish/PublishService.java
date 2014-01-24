@@ -44,9 +44,9 @@ public class PublishService extends AbstractTransformationService {
         ws.addInputParameter(PARAM_PROVIDER_ID).setIsRequired(true);
         ws.addInputParameter(PARAM_COMMENT);
         ParameterPojo paramEndpointUpdate = ws.addInputParameter(PARAM_ENDPOINT_UPDATE);
-        paramEndpointUpdate.setDefaultValue("http://141.20.126.232/openrdf-sesame/repositories/omnom-ingestion/statements");
+        paramEndpointUpdate.setDefaultValue("http://data.dm2e.eu/openrdf-sesame/repositories/omnom-ingestion/statements");
         ParameterPojo paramEndpointSelect = ws.addInputParameter(PARAM_ENDPOINT_SELECT);
-        paramEndpointSelect.setDefaultValue("http://141.20.126.232/openrdf-sesame/repositories/omnom-ingestion");
+        paramEndpointSelect.setDefaultValue("http://data.dm2e.eu/openrdf-sesame/repositories/omnom-ingestion");
         ws.addOutputParameter(PARAM_RESULT_DATASET_ID);
     }
 
