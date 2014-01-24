@@ -1,16 +1,21 @@
 package eu.dm2e.ws.tests.integration.services.file;
 
-import eu.dm2e.grafeo.GResource;
-import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
-import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
-import eu.dm2e.logback.LogbackMarkers;
-import eu.dm2e.ws.*;
-import eu.dm2e.ws.api.FilePojo;
-import eu.dm2e.ws.services.file.FileService;
-import eu.dm2e.ws.services.file.FileStatus;
-import eu.dm2e.ws.tests.OmnomTestCase;
-import eu.dm2e.ws.tests.OmnomTestResources;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
@@ -19,20 +24,19 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashSet;
-import java.util.Set;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.junit.matchers.JUnitMatchers.containsString;
+import eu.dm2e.grafeo.GResource;
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.grafeo.jena.GrafeoMongoImpl;
+import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
+import eu.dm2e.logback.LogbackMarkers;
+import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.ErrorMsg;
+import eu.dm2e.ws.NS;
+import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.services.file.FileService;
+import eu.dm2e.ws.services.file.FileStatus;
+import eu.dm2e.ws.tests.OmnomTestCase;
+import eu.dm2e.ws.tests.OmnomTestResources;
 
 public class FileServiceITCase extends OmnomTestCase {
 
@@ -407,5 +411,42 @@ public class FileServiceITCase extends OmnomTestCase {
 		log.info("File stored as: " + uri);
 		String resp = client.target(uri).request().get(String.class);
 		assertEquals(configString.get(OmnomTestResources.TEI2EDM_20130129), resp);
+	}
+	@Test
+	public void testListAndDelete() {
+		FilePojo delf = new FilePojo();
+		delf.setFileRetrievalURI("http://foo");
+		// publish file
+		String id = client.publishFile("", delf);
+		delf.setId(id);
+		// pojo should have an id now
+		assertNotNull(id);
+		assertNotNull(delf.getId());
+		assertEquals(id, delf.getId());
+		// retrieve list of all files
+		Response respListBeforeDelete = client.getFileWebTarget().path("list").request(MediaType.APPLICATION_JSON).get();
+		// make sure it contains at least this files
+		assertEquals(Response.Status.OK.getStatusCode(), respListBeforeDelete.getStatus());
+		final String readEntity = respListBeforeDelete.readEntity(String.class);
+		log.debug(readEntity);
+		ArrayList respListArrayBefore = testGson.fromJson(readEntity, ArrayList.class);
+		int sizeBefore = respListArrayBefore.size(); 
+		assertThat(sizeBefore, greaterThan(0));
+//		// GET worklfow should return 200
+		Response respGetAvailable = client.getJerseyClient().target(delf.getId()).request(DM2E_MediaType.TEXT_TURTLE).get();
+		assertEquals(200, respGetAvailable.getStatus());
+		// DELETE workflow should return 200
+		Response respDelete = client.getJerseyClient().target(delf.getId()).request(MediaType.APPLICATION_JSON).delete();
+		assertEquals(200, respDelete.getStatus());
+		// GET worklfow should return 410
+		Response respGetDeleted = client.getJerseyClient().target(delf.getId()).request(DM2E_MediaType.TEXT_TURTLE).get();
+		assertEquals(200, respGetDeleted.getStatus());
+		// retrieve list of all files
+		Response respListAfterDelete = client.getFileWebTarget().path("list").request(MediaType.APPLICATION_JSON).get();
+		assertEquals(Response.Status.OK.getStatusCode(), respListAfterDelete.getStatus());
+//		// make sure list is now one smaller
+		ArrayList respListArrayAfter = testGson.fromJson(respListAfterDelete.readEntity(String.class), ArrayList.class);
+		int sizeAfter = respListArrayAfter.size(); 
+		assertEquals(sizeBefore - 1, sizeAfter);
 	}
 }

@@ -1,6 +1,8 @@
 
 package eu.dm2e.ws.services.file;
 
+import static org.hamcrest.Matchers.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,7 +14,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -209,46 +210,14 @@ public class FileService extends AbstractRDFService {
 			@QueryParam("user") String filterUser,
 			@QueryParam("type") String filterType
 			) {
-        log.info(Config.get(ConfigProp.MONGO));
-        ParameterizedSparqlString sb = new ParameterizedSparqlString();
-        sb.setNsPrefix("omnom", NS.OMNOM.BASE);
-        sb.setNsPrefix("rdf", NS.RDF.BASE);
-        sb.append("CONSTRUCT {	\n");
-        sb.append("  ?file ?p1 ?o1 .	 \n");
-        sb.append("} WHERE {  \n");
-        sb.append("  GRAPH ?file {  \n");
-        sb.append("    ?file rdf:type omnom:File .  \n");
-        sb.append("    ?file omnom:fileStatus ?status .  \n");
-        sb.append("      FILTER (str(?status) = \"AVAILABLE\") .  \n");
-        if (null != filterUser) {
-        sb.append("    ?file omnom:fileOwner <" + filterUser + "> .   \n");
-        }
-        if (null != filterType) {
-        sb.append("    ?file omnom:fileType <" + filterType + "> .  \n");
-        }
-        sb.append("    ?file ?p1 ?o1 .  \n");
-        sb.append("  }  \n");
-        sb.append("}");
-        log.debug(sb.toString());
-        Query sparco = sb.asQuery();
-        QueryExecution qexec = QueryExecutionFactory.createServiceRequest(Config.get(ConfigProp.MONGO), sparco);
-
-        GrafeoMongoImpl g = new GrafeoMongoImpl();
-		long startTime = System.currentTimeMillis();
-        log.debug("Grafeo size: " + g.size());
-        log.debug("About to execute construct query.");
-        qexec.execConstruct(g.getModel());
-        long estimatedTime = System.currentTimeMillis() - startTime;
-        log.debug(LogbackMarkers.TRACE_TIME, "CONSTRUCT took " + estimatedTime + "ms: ");
-        log.debug("Grafeo size: " + g.size());
-        
+    	GrafeoMongoImpl g = new GrafeoMongoImpl();
+    	g.readTriplesFromEndpoint(Config.get(ConfigProp.MONGO), null, NS.RDF.PROP_TYPE, g.resource(NS.OMNOM.CLASS_FILE));
         if (DM2E_MediaType.expectsRdfResponse(headers)) {
         	return Response.status(Response.Status.OK).entity(g).build();
         }
-
         List<JsonObject> jsonFilesList = new ArrayList<>();
-        log.debug("Paging from " + resultStart + " to " + (resultLimit > 0 ? resultStart + resultLimit : "end") + ". ");
         for (GResource fileRes : g.findByClass(NS.OMNOM.CLASS_FILE)) {
+        	log.debug(""  + fileRes);
         	JsonObject jsonFile = new JsonObject();
         	jsonFile.addProperty("id", fileRes.getUri());
         	for (GStatement stmt : g.listStatements(fileRes, null, null)) {
@@ -257,30 +226,39 @@ public class FileService extends AbstractRDFService {
         		else if (! stmt.getObject().resource().isAnon())
         			jsonFile.addProperty(stmt.getPredicate().getUri(), stmt.getObject().resource().getUri());
         	}
+        	// Don't send deleted files
+        	final String fileStatus = jsonFile.get(NS.OMNOM.PROP_FILE_STATUS).getAsString();
+        	final JsonElement fileOwnerEl = jsonFile.get(NS.OMNOM.PROP_FILE_OWNER);
+        	final JsonElement fileTypeEl = jsonFile.get(NS.OMNOM.PROP_FILE_TYPE);
+			final boolean isDeleted = fileStatus.equals(FileStatus.DELETED.toString());
+			if (isDeleted) continue;
+			if (null != filterType && null != fileOwnerEl && ! fileTypeEl.getAsString().equals(filterType)) continue;
+			if (null != filterUser && null != fileOwnerEl && ! fileOwnerEl.getAsString().equals(filterUser)) continue;
         	jsonFilesList.add(jsonFile);
         }
+        log.debug("Paging from " + resultStart + " to " + (resultLimit > 0 ? resultStart + resultLimit : "end") + ". ");
         
-        if (sortProp == null) {
-        	sortProp = NS.DCTERMS.PROP_CREATED; 
-        } else {
-        	sortProp = g.expand(sortProp);
-        }
-        if (null == sortOrder) {
-        	sortOrder = "desc";
-        }
-        log.debug("Sorting by " + sortProp);
-        Collections.sort(jsonFilesList, new FileJsonComparator(sortProp, sortOrder));
-        List<JsonObject> jsonFilesSlice = new ArrayList<>();
-        if (resultStart > jsonFilesList.size()) {
-        } else if (resultLimit < 1 ) {
-        	jsonFilesSlice = jsonFilesList;
-        } else {
-        	for (int i = resultStart; i < resultStart + resultLimit ; i++) {
-        		if (i < jsonFilesList.size())
-        			jsonFilesSlice.add(jsonFilesList.get(i));
-        	}
-        }
-        String jsonFiles = new Gson().toJson(jsonFilesSlice);
+//        if (sortProp == null) {
+//        	sortProp = NS.DCTERMS.PROP_CREATED; 
+//        } else {
+//        	sortProp = g.expand(sortProp);
+//        }
+//        if (null == sortOrder) {
+//        	sortOrder = "desc";
+//        }
+//        log.debug("Sorting by " + sortProp);
+//        Collections.sort(jsonFilesList, new FileJsonComparator(sortProp, sortOrder));
+//        List<JsonObject> jsonFilesSlice = new ArrayList<>();
+//        if (resultStart > jsonFilesList.size()) {
+//        } else if (resultLimit < 1 ) {
+//        	jsonFilesSlice = jsonFilesList;
+//        } else {
+//        	for (int i = resultStart; i < resultStart + resultLimit ; i++) {
+//        		if (i < jsonFilesList.size())
+//        			jsonFilesSlice.add(jsonFilesList.get(i));
+//        	}
+//        }
+        String jsonFiles = new Gson().toJson(jsonFilesList);
         return Response.status(Response.Status.OK).entity(jsonFiles).build();
 	}
 	
