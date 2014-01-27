@@ -1,8 +1,6 @@
 
 package eu.dm2e.ws.services.file;
 
-import static org.hamcrest.Matchers.*;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -39,12 +37,6 @@ import org.joda.time.DateTime;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
 
 import eu.dm2e.grafeo.GResource;
 import eu.dm2e.grafeo.GStatement;
@@ -144,45 +136,48 @@ public class FileService extends AbstractRDFService {
 	})
 	@Path("list/facets")
 	public Response getFileListFacets() {
-		ParameterizedSparqlString sb = new ParameterizedSparqlString();
-        sb.setNsPrefix("omnom", NS.OMNOM.BASE);
-        sb.setNsPrefix("rdf", NS.RDF.BASE);
-        sb.append("SELECT ?owner ?type ?status {	\n");
-        sb.append("  GRAPH ?file {  \n");
-        sb.append("    ?file rdf:type omnom:File .  \n");
-        sb.append("    OPTIONAL { ?file omnom:fileOwner ?owner . }   \n");
-        sb.append("    OPTIONAL { ?file omnom:fileType ?type . }  \n");
-        sb.append("  }  \n");
-        sb.append("}");
-        log.debug(sb.toString());
-        Query sparsl = sb.asQuery();
-        QueryExecution qexec = QueryExecutionFactory.createServiceRequest(Config.get(ConfigProp.MONGO), sparsl);
-
-		long startTime = System.currentTimeMillis();
-        log.debug("About to execute facet SELECT query.");
-        ResultSet resultSet = qexec.execSelect();
-        long estimatedTime = System.currentTimeMillis() - startTime;
-        log.debug("SELECT query took " + estimatedTime + "ms.");
-        
-        PojoListFacet ownerFacet = new PojoListFacet();
-        ownerFacet.setLabel("Owner");
-        ownerFacet.setQueryParam("user");
-        ownerFacet.setRdfProp(NS.OMNOM.PROP_FILE_OWNER);
-        PojoListFacet typeFacet = new PojoListFacet();
-        typeFacet.setLabel("Type");
-        typeFacet.setQueryParam("type");
-        typeFacet.setRdfProp(NS.OMNOM.PROP_FILE_TYPE);
-
-        while (resultSet.hasNext()) {
-        	QuerySolution sol = resultSet.next();
-        	if (null != sol.get("owner"))
-        		ownerFacet.getValues().add(sol.get("owner").asNode().toString());
-        	if (null != sol.get("type"))
-        		typeFacet.getValues().add(sol.get("type").asNode().toString());
-        }
+		// TODO FIXME
+//		Response fileList = getFileList(0, 200, null, null, null, null);
+//		Response list = fileList;
+//		ParameterizedSparqlString sb = new ParameterizedSparqlString();
+//        sb.setNsPrefix("omnom", NS.OMNOM.BASE);
+//        sb.setNsPrefix("rdf", NS.RDF.BASE);
+//        sb.append("SELECT ?owner ?type ?status {	\n");
+//        sb.append("  GRAPH ?file {  \n");
+//        sb.append("    ?file rdf:type omnom:File .  \n");
+//        sb.append("    OPTIONAL { ?file omnom:fileOwner ?owner . }   \n");
+//        sb.append("    OPTIONAL { ?file omnom:fileType ?type . }  \n");
+//        sb.append("  }  \n");
+//        sb.append("}");
+//        log.debug(sb.toString());
+//        Query sparsl = sb.asQuery();
+//        QueryExecution qexec = QueryExecutionFactory.createServiceRequest(Config.get(ConfigProp.ENDPOINT_QUERY), sparsl);
+//
+//		long startTime = System.currentTimeMillis();
+//        log.debug("About to execute facet SELECT query.");
+//        ResultSet resultSet = qexec.execSelect();
+//        long estimatedTime = System.currentTimeMillis() - startTime;
+//        log.debug("SELECT query took " + estimatedTime + "ms.");
+//        
+//        PojoListFacet ownerFacet = new PojoListFacet();
+//        ownerFacet.setLabel("Owner");
+//        ownerFacet.setQueryParam("user");
+//        ownerFacet.setRdfProp(NS.OMNOM.PROP_FILE_OWNER);
+//        PojoListFacet typeFacet = new PojoListFacet();
+//        typeFacet.setLabel("Type");
+//        typeFacet.setQueryParam("type");
+//        typeFacet.setRdfProp(NS.OMNOM.PROP_FILE_TYPE);
+//
+//        while (resultSet.hasNext()) {
+//        	QuerySolution sol = resultSet.next();
+//        	if (null != sol.get("owner"))
+//        		ownerFacet.getValues().add(sol.get("owner").asNode().toString());
+//        	if (null != sol.get("type"))
+//        		typeFacet.getValues().add(sol.get("type").asNode().toString());
+//        }
         List<PojoListFacet> retList = new ArrayList<>();
-        retList.add(ownerFacet);
-        retList.add(typeFacet);
+//        retList.add(ownerFacet);
+//        retList.add(typeFacet);
         return Response.ok(new Gson().toJson(retList).toString()).build();
 	}
 
