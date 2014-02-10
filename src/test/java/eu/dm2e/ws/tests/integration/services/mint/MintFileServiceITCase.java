@@ -1,26 +1,29 @@
 package eu.dm2e.ws.tests.integration.services.mint;
 
-import com.hp.hpl.jena.query.ResultSet;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
-import eu.dm2e.grafeo.jena.SparqlSelect;
-import eu.dm2e.ws.DM2E_MediaType;
-import eu.dm2e.ws.NS;
-import eu.dm2e.ws.api.FilePojo;
-import eu.dm2e.ws.tests.OmnomTestCase;
-import org.glassfish.jersey.client.ClientProperties;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.glassfish.jersey.client.ClientProperties;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import com.hp.hpl.jena.query.ResultSet;
+
+import eu.dm2e.NS;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.jena.SparqlSelect;
+import eu.dm2e.ws.DM2E_MediaType;
+import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.tests.OmnomTestCase;
 
 @Ignore("MINT Tests always fail :-(")
 public class MintFileServiceITCase extends OmnomTestCase {

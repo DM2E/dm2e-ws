@@ -1,21 +1,22 @@
 package eu.dm2e.ws.tests.unit.api;
 
-import eu.dm2e.grafeo.Grafeo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
-import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
-import eu.dm2e.grafeo.junit.GrafeoAssert;
-import eu.dm2e.ws.NS;
-import eu.dm2e.ws.api.ParameterPojo;
-import eu.dm2e.ws.api.WebserviceConfigPojo;
-import eu.dm2e.ws.api.WebservicePojo;
-import eu.dm2e.ws.api.WorkflowPositionPojo;
-import eu.dm2e.ws.tests.OmnomUnitTest;
+import java.util.UUID;
+
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.UUID;
+import eu.dm2e.NS;
+import eu.dm2e.grafeo.Grafeo;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
+import eu.dm2e.grafeo.junit.GrafeoAssert;
+import eu.dm2e.ws.api.ParameterPojo;
+import eu.dm2e.ws.api.WebserviceConfigPojo;
+import eu.dm2e.ws.api.WebservicePojo;
+import eu.dm2e.ws.api.WorkflowPositionPojo;
+import eu.dm2e.ws.tests.OmnomUnitTest;
 
 public class WebserviceConfigPojoTest  extends OmnomUnitTest {
 	

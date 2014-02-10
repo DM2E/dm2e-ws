@@ -4,8 +4,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+import eu.dm2e.NS;
 import eu.dm2e.utils.NSExporter;
-import eu.dm2e.ws.NS;
 import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.services.file.FileStatus;
 

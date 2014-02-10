@@ -2,19 +2,21 @@ package eu.dm2e.ws.tests.unit.api;
 
 
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import eu.dm2e.grafeo.gom.SerializablePojo;
-import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
-import eu.dm2e.ws.NS;
-import eu.dm2e.ws.api.JobPojo;
-import eu.dm2e.ws.model.JobStatus;
-import eu.dm2e.ws.tests.OmnomUnitTest;
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.Assert.assertEquals;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+import eu.dm2e.NS;
+import eu.dm2e.grafeo.gom.SerializablePojo;
+import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
+import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.model.JobStatus;
+import eu.dm2e.ws.tests.OmnomUnitTest;
 
 public class JobPojoTest extends OmnomUnitTest {
     private Logger log = LoggerFactory.getLogger(getClass().getName());

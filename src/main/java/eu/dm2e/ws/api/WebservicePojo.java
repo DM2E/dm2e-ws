@@ -1,19 +1,20 @@
 package eu.dm2e.ws.api;
 
+import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import eu.dm2e.NS;
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.annotations.Namespaces;
 import eu.dm2e.grafeo.annotations.RDFClass;
 import eu.dm2e.grafeo.annotations.RDFProperty;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
-import eu.dm2e.ws.NS;
-import org.apache.commons.beanutils.BeanUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Pojo for a webservice.

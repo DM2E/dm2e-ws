@@ -45,6 +45,7 @@ import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
+import eu.dm2e.NS;
 import eu.dm2e.grafeo.GResource;
 import eu.dm2e.grafeo.GStatement;
 import eu.dm2e.grafeo.Grafeo;
@@ -56,7 +57,6 @@ import eu.dm2e.ws.Config;
 import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
-import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.UserPojo;
 import eu.dm2e.ws.api.WebservicePojo;

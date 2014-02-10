@@ -1,20 +1,20 @@
 package eu.dm2e.ws.tests.unit.api;
 
 
-import eu.dm2e.grafeo.jena.GrafeoImpl;
-import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
-import eu.dm2e.logback.LogbackMarkers;
-import eu.dm2e.ws.NS;
-import eu.dm2e.ws.api.UserPojo;
-import eu.dm2e.ws.api.WebservicePojo;
-import eu.dm2e.ws.tests.OmnomUnitTest;
-import org.junit.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
+import static org.junit.Assert.*;
 
 import java.util.Iterator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
+
+import eu.dm2e.NS;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
+import eu.dm2e.logback.LogbackMarkers;
+import eu.dm2e.ws.api.UserPojo;
+import eu.dm2e.ws.api.WebservicePojo;
+import eu.dm2e.ws.tests.OmnomUnitTest;
 
 public class UserPojoTest extends OmnomUnitTest {
 

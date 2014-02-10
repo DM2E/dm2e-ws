@@ -1,21 +1,22 @@
 package eu.dm2e.ws.tests.unit.api;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import eu.dm2e.grafeo.gom.SerializablePojo;
-import eu.dm2e.grafeo.jena.GrafeoImpl;
-import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
-import eu.dm2e.ws.NS;
-import eu.dm2e.ws.api.FilePojo;
-import eu.dm2e.ws.api.JobPojo;
-import eu.dm2e.ws.api.UserPojo;
-import eu.dm2e.ws.tests.OmnomUnitTest;
+import static org.junit.Assert.*;
+
+import java.net.URI;
+
 import org.json.JSONException;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import java.net.URI;
+import com.google.gson.JsonObject;
 
-import static org.junit.Assert.assertEquals;
+import eu.dm2e.NS;
+import eu.dm2e.grafeo.gom.SerializablePojo;
+import eu.dm2e.grafeo.jena.GrafeoImpl;
+import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
+import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.api.UserPojo;
+import eu.dm2e.ws.tests.OmnomUnitTest;
 
 public class FilePojoTest extends OmnomUnitTest{
 	

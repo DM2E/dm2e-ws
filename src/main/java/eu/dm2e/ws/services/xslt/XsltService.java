@@ -4,16 +4,15 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.ws.rs.ProcessingException;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.ProcessingException;
 
 import org.joda.time.DateTime;
 
+import eu.dm2e.NS;
 import eu.dm2e.utils.FileUtils;
 import eu.dm2e.utils.XsltUtils;
-import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.ParameterPojo;

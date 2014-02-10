@@ -1,28 +1,32 @@
 package eu.dm2e.ws.services.iteration;
 
-import eu.dm2e.utils.FileUtils;
-import eu.dm2e.utils.UriUtils;
-import eu.dm2e.ws.Config;
-import eu.dm2e.ws.ConfigProp;
-import eu.dm2e.ws.NS;
-import eu.dm2e.ws.api.*;
-import eu.dm2e.ws.model.JobStatus;
-import eu.dm2e.ws.services.AbstractTransformationService;
-
-import org.apache.commons.codec.digest.DigestUtils;
-import org.joda.time.DateTime;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Response;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
+
+import org.apache.commons.codec.digest.DigestUtils;
+import org.joda.time.DateTime;
+
+import eu.dm2e.NS;
+import eu.dm2e.utils.FileUtils;
+import eu.dm2e.utils.UriUtils;
+import eu.dm2e.ws.Config;
+import eu.dm2e.ws.ConfigProp;
+import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.api.JobPojo;
+import eu.dm2e.ws.api.ParameterPojo;
+import eu.dm2e.ws.api.WebserviceConfigPojo;
+import eu.dm2e.ws.api.WebservicePojo;
+import eu.dm2e.ws.model.JobStatus;
+import eu.dm2e.ws.services.AbstractTransformationService;
 
 /**
  * This file was created within the DM2E project.

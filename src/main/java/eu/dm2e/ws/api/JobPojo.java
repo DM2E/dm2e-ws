@@ -1,21 +1,26 @@
 package eu.dm2e.ws.api;
 
-import eu.dm2e.grafeo.annotations.RDFClass;
-import eu.dm2e.grafeo.annotations.RDFInstancePrefix;
-import eu.dm2e.grafeo.annotations.RDFProperty;
-import eu.dm2e.utils.UriUtils;
-import eu.dm2e.ws.NS;
-import eu.dm2e.ws.model.JobStatus;
-import eu.dm2e.ws.model.LogLevel;
-
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.joda.time.DateTime;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
-import java.net.URI;
-import java.util.*;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.joda.time.DateTime;
+
+import eu.dm2e.NS;
+import eu.dm2e.grafeo.annotations.RDFClass;
+import eu.dm2e.grafeo.annotations.RDFInstancePrefix;
+import eu.dm2e.grafeo.annotations.RDFProperty;
+import eu.dm2e.utils.UriUtils;
+import eu.dm2e.ws.model.JobStatus;
+import eu.dm2e.ws.model.LogLevel;
 
 /**
  * The Pojo for the representation of a webservice job.

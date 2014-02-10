@@ -1,19 +1,20 @@
 package eu.dm2e.ws.tests.unit.api;
 
-import com.google.gson.JsonObject;
-import eu.dm2e.grafeo.annotations.RDFClass;
-import eu.dm2e.grafeo.gom.SerializablePojo;
-import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
-import eu.dm2e.grafeo.junit.GrafeoAssert;
-import eu.dm2e.ws.NS;
-import eu.dm2e.ws.api.LogEntryPojo;
-import eu.dm2e.ws.tests.OmnomUnitTest;
+import static org.junit.Assert.*;
+
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import com.google.gson.JsonObject;
+
+import eu.dm2e.NS;
+import eu.dm2e.grafeo.annotations.RDFClass;
+import eu.dm2e.grafeo.gom.SerializablePojo;
+import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
+import eu.dm2e.grafeo.junit.GrafeoAssert;
+import eu.dm2e.ws.api.LogEntryPojo;
+import eu.dm2e.ws.tests.OmnomUnitTest;
 
 public class LogEntryPojoTest extends OmnomUnitTest{
 	private String logId = "http://log.foo/bar/1234";

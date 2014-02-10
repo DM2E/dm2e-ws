@@ -1,9 +1,21 @@
 package eu.dm2e.ws.tests.integration.services.publish;
 
+import static org.junit.Assert.*;
+
+import java.io.InputStream;
+import java.net.URI;
+
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.Response;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import eu.dm2e.NS;
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
 import eu.dm2e.logback.LogbackMarkers;
-import eu.dm2e.ws.NS;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
@@ -11,16 +23,6 @@ import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.services.publish.PublishService;
 import eu.dm2e.ws.tests.OmnomTestCase;
 import eu.dm2e.ws.tests.OmnomTestResources;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
-import java.io.InputStream;
-import java.net.URI;
-
-import static org.junit.Assert.*;
 
 /**
  * This file was created within the DM2E project.

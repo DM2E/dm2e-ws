@@ -7,7 +7,7 @@ import org.joda.time.DateTime;
 
 import com.hp.hpl.jena.query.ResultSet;
 
-import eu.dm2e.ws.NS;
+import eu.dm2e.NS;
 import eu.dm2e.grafeo.annotations.Namespaces;
 import eu.dm2e.grafeo.annotations.RDFClass;
 import eu.dm2e.grafeo.annotations.RDFProperty;

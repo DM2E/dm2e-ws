@@ -1,20 +1,20 @@
 
 package eu.dm2e.ws.api;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.joda.time.DateTime;
+
+import eu.dm2e.NS;
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.annotations.Namespaces;
 import eu.dm2e.grafeo.annotations.RDFClass;
 import eu.dm2e.grafeo.annotations.RDFProperty;
 import eu.dm2e.utils.DotUtils;
-import eu.dm2e.ws.NS;
 import eu.dm2e.ws.services.file.FileStatus;
-
-import org.joda.time.DateTime;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Pojo representing a workflow

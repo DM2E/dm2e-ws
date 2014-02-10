@@ -1,14 +1,14 @@
 package eu.dm2e.ws.services.demo;
 
-import eu.dm2e.ws.NS;
+import javax.ws.rs.Path;
+
+import eu.dm2e.NS;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.ParameterPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.model.JobStatus;
 import eu.dm2e.ws.services.AbstractTransformationService;
-
-import javax.ws.rs.Path;
 
 /**
  * DemoService shows the necessary steps / best practices to create a webservice.

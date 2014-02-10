@@ -1,14 +1,15 @@
 package eu.dm2e.ws.api;
 
+import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+
+import javax.ws.rs.client.WebTarget;
+
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.gom.SerializablePojo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
 import eu.dm2e.grafeo.util.PojoUtils;
 import eu.dm2e.ws.services.Client;
-
-import javax.ws.rs.client.WebTarget;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
 
 /**
  * Abstract Base Class for Grafeo-annotated Pojos that can be persisted in or loaded from a service.

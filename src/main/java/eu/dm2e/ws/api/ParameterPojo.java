@@ -1,5 +1,6 @@
 package eu.dm2e.ws.api;
 
+import eu.dm2e.NS;
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.annotations.Namespaces;
 import eu.dm2e.grafeo.annotations.RDFClass;
@@ -8,7 +9,6 @@ import eu.dm2e.grafeo.gom.SerializablePojo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
 import eu.dm2e.utils.UriUtils;
 import eu.dm2e.ws.ErrorMsg;
-import eu.dm2e.ws.NS;
 
 /**
  * Pojo for a Parameter

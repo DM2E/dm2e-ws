@@ -3,7 +3,7 @@ package eu.dm2e.ws.api;
 import java.util.HashSet;
 import java.util.Set;
 
-import eu.dm2e.ws.NS;
+import eu.dm2e.NS;
 import eu.dm2e.grafeo.annotations.RDFClass;
 import eu.dm2e.grafeo.annotations.RDFProperty;
 
