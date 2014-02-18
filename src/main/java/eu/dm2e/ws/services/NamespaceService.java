@@ -6,8 +6,8 @@ import javax.ws.rs.Produces;
 
 import eu.dm2e.NS;
 import eu.dm2e.utils.NSExporter;
+import eu.dm2e.ws.constants.FileStatus;
 import eu.dm2e.ws.constants.JobStatus;
-import eu.dm2e.ws.services.file.FileStatus;
 
 /**
  * Service that returns constants and enums used in the backend to clients.

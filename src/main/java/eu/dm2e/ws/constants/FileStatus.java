@@ -1,4 +1,4 @@
-package eu.dm2e.ws.services.file;
+package eu.dm2e.ws.constants;
 
 /**
  * This Enum defines the states a file can be in, in place of the 

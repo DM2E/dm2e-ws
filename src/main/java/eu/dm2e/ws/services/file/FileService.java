@@ -60,6 +60,7 @@ import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.UserPojo;
 import eu.dm2e.ws.api.WebservicePojo;
+import eu.dm2e.ws.constants.FileStatus;
 import eu.dm2e.ws.services.AbstractRDFService;
 
 /**

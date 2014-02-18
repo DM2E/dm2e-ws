@@ -14,7 +14,7 @@ import eu.dm2e.grafeo.annotations.Namespaces;
 import eu.dm2e.grafeo.annotations.RDFClass;
 import eu.dm2e.grafeo.annotations.RDFProperty;
 import eu.dm2e.utils.DotUtils;
-import eu.dm2e.ws.services.file.FileStatus;
+import eu.dm2e.ws.constants.FileStatus;
 
 /**
  * Pojo representing a workflow

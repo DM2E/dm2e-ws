@@ -13,7 +13,7 @@ import eu.dm2e.ws.constants.JobStatus;
 import eu.dm2e.ws.services.AbstractTransformationService;
 
 /**
- * DemoService shows the necessary steps / best practices to create a webservice.
+ * DemoService shows the necessary steps / best practices to create a webservice with an iterator.
  */
 @Path("/service/iterator")
 public class DemoIteratorService extends AbstractTransformationService {

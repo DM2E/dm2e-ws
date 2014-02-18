@@ -33,8 +33,8 @@ import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.DM2E_MediaType;
 import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.api.FilePojo;
+import eu.dm2e.ws.constants.FileStatus;
 import eu.dm2e.ws.services.file.FileService;
-import eu.dm2e.ws.services.file.FileStatus;
 import eu.dm2e.ws.tests.OmnomTestCase;
 import eu.dm2e.ws.tests.OmnomTestResources;
 

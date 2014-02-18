@@ -7,7 +7,7 @@ import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
 import eu.dm2e.grafeo.junit.GrafeoAssert;
 import eu.dm2e.logback.LogbackMarkers;
 import eu.dm2e.ws.api.*;
-import eu.dm2e.ws.services.file.FileStatus;
+import eu.dm2e.ws.constants.FileStatus;
 import eu.dm2e.ws.services.publish.PublishService;
 import eu.dm2e.ws.services.xslt.XsltService;
 import eu.dm2e.ws.tests.OmnomUnitTest;

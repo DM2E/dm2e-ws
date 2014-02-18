@@ -48,8 +48,8 @@ import eu.dm2e.ws.api.ValidationReport;
 import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.api.WorkflowPojo;
 import eu.dm2e.ws.api.WorkflowPositionPojo;
+import eu.dm2e.ws.constants.FileStatus;
 import eu.dm2e.ws.services.AbstractRDFService;
-import eu.dm2e.ws.services.file.FileStatus;
 
 /**
  * Service for the creation and execution of workflows
