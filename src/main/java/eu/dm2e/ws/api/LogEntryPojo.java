@@ -7,7 +7,7 @@ import eu.dm2e.grafeo.annotations.Namespaces;
 import eu.dm2e.grafeo.annotations.RDFClass;
 import eu.dm2e.grafeo.annotations.RDFInstancePrefix;
 import eu.dm2e.grafeo.annotations.RDFProperty;
-import eu.dm2e.ws.model.LogLevel;
+import eu.dm2e.ws.constants.LogLevel;
 
 /**
  *  Pojo for a single Log entry 

@@ -19,8 +19,8 @@ import eu.dm2e.grafeo.annotations.RDFClass;
 import eu.dm2e.grafeo.annotations.RDFInstancePrefix;
 import eu.dm2e.grafeo.annotations.RDFProperty;
 import eu.dm2e.utils.UriUtils;
-import eu.dm2e.ws.model.JobStatus;
-import eu.dm2e.ws.model.LogLevel;
+import eu.dm2e.ws.constants.JobStatus;
+import eu.dm2e.ws.constants.LogLevel;
 
 /**
  * The Pojo for the representation of a webservice job.

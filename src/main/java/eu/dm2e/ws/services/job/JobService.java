@@ -44,8 +44,8 @@ import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.LogEntryPojo;
 import eu.dm2e.ws.api.ParameterAssignmentPojo;
 import eu.dm2e.ws.api.WebservicePojo;
-import eu.dm2e.ws.model.JobStatus;
-import eu.dm2e.ws.model.LogLevel;
+import eu.dm2e.ws.constants.JobStatus;
+import eu.dm2e.ws.constants.LogLevel;
 import eu.dm2e.ws.services.AbstractRDFService;
 
 // TODO @GET /{id}/result with JSON

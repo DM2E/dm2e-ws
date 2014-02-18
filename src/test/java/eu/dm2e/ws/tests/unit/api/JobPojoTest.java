@@ -15,7 +15,7 @@ import eu.dm2e.NS;
 import eu.dm2e.grafeo.gom.SerializablePojo;
 import eu.dm2e.grafeo.json.GrafeoJsonSerializer;
 import eu.dm2e.ws.api.JobPojo;
-import eu.dm2e.ws.model.JobStatus;
+import eu.dm2e.ws.constants.JobStatus;
 import eu.dm2e.ws.tests.OmnomUnitTest;
 
 public class JobPojoTest extends OmnomUnitTest {

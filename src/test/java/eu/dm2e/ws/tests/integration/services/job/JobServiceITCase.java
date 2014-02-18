@@ -30,7 +30,7 @@ import eu.dm2e.ws.ErrorMsg;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.ParameterAssignmentPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
-import eu.dm2e.ws.model.JobStatus;
+import eu.dm2e.ws.constants.JobStatus;
 import eu.dm2e.ws.services.demo.DemoService;
 import eu.dm2e.ws.services.xslt.XsltService;
 import eu.dm2e.ws.tests.OmnomTestCase;

@@ -6,7 +6,7 @@ import javax.ws.rs.Produces;
 
 import eu.dm2e.NS;
 import eu.dm2e.utils.NSExporter;
-import eu.dm2e.ws.model.JobStatus;
+import eu.dm2e.ws.constants.JobStatus;
 import eu.dm2e.ws.services.file.FileStatus;
 
 /**

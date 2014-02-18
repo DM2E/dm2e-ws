@@ -1,4 +1,4 @@
-package eu.dm2e.ws.model;
+package eu.dm2e.ws.constants;
 
 /**
  * Log levels for logging in Jobs

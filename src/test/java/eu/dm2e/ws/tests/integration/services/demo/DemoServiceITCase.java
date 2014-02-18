@@ -25,7 +25,7 @@ import eu.dm2e.ws.api.FilePojo;
 import eu.dm2e.ws.api.JobPojo;
 import eu.dm2e.ws.api.WebserviceConfigPojo;
 import eu.dm2e.ws.api.WebservicePojo;
-import eu.dm2e.ws.model.JobStatus;
+import eu.dm2e.ws.constants.JobStatus;
 import eu.dm2e.ws.tests.OmnomTestCase;
 import eu.dm2e.ws.tests.OmnomTestResources;
 import eu.dm2e.ws.wsmanager.ManageService;
