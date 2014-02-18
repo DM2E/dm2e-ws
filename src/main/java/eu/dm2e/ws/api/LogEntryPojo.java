@@ -9,7 +9,9 @@ import eu.dm2e.grafeo.annotations.RDFInstancePrefix;
 import eu.dm2e.grafeo.annotations.RDFProperty;
 import eu.dm2e.ws.model.LogLevel;
 
-/** Pojo for a single Log entry */
+/**
+ *  Pojo for a single Log entry 
+ */
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/",
 			 "dc", "http://purl.org/dc/elements/1.1/"})
 @RDFClass(NS.OMNOM.CLASS_LOG_ENTRY)

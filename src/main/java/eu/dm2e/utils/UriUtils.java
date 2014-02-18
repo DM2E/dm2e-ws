@@ -5,8 +5,17 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.StringTokenizer;
 
+/**
+ * Utility methods for handling URIs.
+ * @author Konstantin Baierer
+ */
 public class UriUtils {
 	
+	/**
+	 * Return the last path segment of a URI.
+	 * @param uri the URI
+	 * @return the last path segment
+	 */
 	public static String lastUriSegment(String uri) {
 		String[] uriRev = uri.split("/");
 		return uriRev[uriRev.length - 1];
@@ -31,6 +40,12 @@ public class UriUtils {
 		return uri;
 	}
 	
+	/**
+	 * URL-encode a String.
+	 * @param uri the String to URL encode
+	 * @return the URL-encoded String
+	 * @throws {@link RuntimeException} if the system doesn't support UTF-8.
+	 */
 	public static String uriEncode(String uri) {
         try {
             return URLEncoder.encode(uri, "UTF-8");
@@ -39,6 +54,12 @@ public class UriUtils {
         }
     }
 
+	/**
+	 * URL-decode a String.
+	 * @param uri the String to URL decode
+	 * @return the URL-decoded String
+	 * @throws {@link RuntimeException} if the system doesn't support UTF-8.
+	 */
     public static String uriDecode(String uri) {
         try {
             return URLDecoder.decode(uri, "UTF-8");
@@ -47,6 +68,11 @@ public class UriUtils {
         }
     }
 
+    /**
+     * URL encodes the path segments of a path, excluding the slashes.
+     * @param path the path to URL-encode
+     * @return the URL-encoded path
+     */
     public static String uriEncodePathElements(String path) {
         StringTokenizer st = new StringTokenizer(path, "/",true);
         StringBuilder res = new StringBuilder();

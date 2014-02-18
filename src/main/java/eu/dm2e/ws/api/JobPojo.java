@@ -25,16 +25,22 @@ import eu.dm2e.ws.model.LogLevel;
 /**
  * The Pojo for the representation of a webservice job.
  *
+ * <p>
  * A job has one of the following status: NOT_STARTED, RUNNING, ITERATING, FINISHED, FAILED.
+ * </p>
  *
+ * <p>
  * Results can be obtained from the assignments of the output parameters.
  * Parameters can support iterations (hasIterations) or not.
  * If they don't support iterations, an assignment of an output parameter must only be
  * consumed when the status of the job is FINISHED.
+ * </p>
  *
+ * <p>
  * For all parameters that support iterations, assignments can be consumed when the status of
  * the job is ITERATING or FINISHED, but only for assignments with serials less or equal to
  * the latestSerial of the job.
+ * </p>
  *
  */
 

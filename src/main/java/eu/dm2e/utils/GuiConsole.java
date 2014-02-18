@@ -15,6 +15,11 @@ import org.slf4j.LoggerFactory;
 
 import eu.dm2e.ws.wsmanager.ManageService;
 
+/**
+ * Test server.
+ * 
+ * @author Konstantin Baierer
+ */
 public class GuiConsole {
 	
 	static Logger log;

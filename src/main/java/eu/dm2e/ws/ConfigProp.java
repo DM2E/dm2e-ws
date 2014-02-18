@@ -1,5 +1,10 @@
 package eu.dm2e.ws;
 
+/**
+ * Configuration Properties.
+ * 
+ * @author Konstantin Baierer
+ */
 public enum ConfigProp {
 
 	  BASE_URI("dm2e.ws.base_uri")

@@ -40,6 +40,10 @@ public class WebservicePojo extends AbstractPersistentPojo<WebservicePojo> imple
     	return param;
     }
     
+    /**
+     * Creates a configuration for this web service.
+     * @return the newly created (empty) {@link WebserviceConfigPojo}
+     */
     public WebserviceConfigPojo createConfig() {
     	WebserviceConfigPojo wsconf = new WebserviceConfigPojo();
     	wsconf.setWebservice(this);

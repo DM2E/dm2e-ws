@@ -5,7 +5,12 @@ import eu.dm2e.grafeo.annotations.Namespaces;
 import eu.dm2e.grafeo.annotations.RDFClass;
 import eu.dm2e.grafeo.annotations.RDFProperty;
 
-/** Pojo for a parameter assignment */
+/**
+ * Pojo for a parameter assignment
+ * 
+ * @author Konstantin Baierer
+ *
+ */
 @Namespaces({"omnom", "http://onto.dm2e.eu/omnom/"})
 @RDFClass(NS.OMNOM.CLASS_PARAMETER_ASSIGNMENT)
 public class ParameterAssignmentPojo  extends AbstractPersistentPojo<ParameterAssignmentPojo> {

@@ -21,12 +21,27 @@ import eu.dm2e.grafeo.jena.SparqlSelect;
         "dc", "http://purl.org/dc/elements/1.1/",
         "rdfs", "http://www.w3.org/2000/01/rdf-schema#",
         "prov", "http://www.w3.org/ns/prov#",
-        "void", "http://rdfs.org/ns/void#",
-        "dm2e", "http://onto.dm2e.eu/schemas/dm2e/1.0/"})
+        "void", "http://rdfs.org/ns/void#"})
 @RDFClass("void:Dataset")
 public class VersionedDatasetPojo extends AbstractPersistentPojo<VersionedDatasetPojo> {
 
 
+    /**
+     * Find the latest dataset version.
+     * 
+     * <pre>
+     * # ?this == URI of this dataset
+     * SELECT ?s {
+     *   ?s prov:specializationOf ?this.
+     *   ?s dc:date ?date .
+     * }
+     * ORDER BY DESC(?date)
+     * LIMIT 1
+     * </pre>
+     * @param endpoint the SPARQL endpoint to query
+     * @return the URI of the latest dataset
+     * @throws {@link RuntimeException} if the previous dataset id is an invalid URI
+     */
     public URI findLatest(String endpoint) {
         log.info("I try to find a prior version for this dataset...");
         SparqlSelect sparql = new SparqlSelect.Builder().endpoint(endpoint)

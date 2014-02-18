@@ -1,16 +1,15 @@
 package eu.dm2e.ws.api;
 
-import eu.dm2e.grafeo.gom.SerializablePojo;
-
 import java.util.ArrayList;
 
+import eu.dm2e.grafeo.gom.SerializablePojo;
+
 /**
- * This file was created within the DM2E project.
- * http://dm2e.eu
- * http://github.com/dm2e
- * <p/>
- * Author: Kai Eckert, Konstantin Baierer
+ * A collection of messages on the validity of a Pojo.o
+ * 
+ * @author Kai Eckert
  */
+@SuppressWarnings("serial")
 public class ValidationReport extends ArrayList<ValidationMessage> {
     SerializablePojo validated;
 

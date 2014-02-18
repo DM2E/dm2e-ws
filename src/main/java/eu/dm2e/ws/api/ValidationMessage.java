@@ -3,11 +3,9 @@ package eu.dm2e.ws.api;
 import eu.dm2e.grafeo.gom.SerializablePojo;
 
 /**
- * This file was created within the DM2E project.
- * http://dm2e.eu
- * http://github.com/dm2e
- * <p/>
- * Author: Kai Eckert, Konstantin Baierer
+ * A single validation message in a validation report.
+ * 
+ * @author Kai Eckert
  */
 public class ValidationMessage {
 

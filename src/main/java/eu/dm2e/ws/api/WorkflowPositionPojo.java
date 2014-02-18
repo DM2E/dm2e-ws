@@ -14,7 +14,7 @@ import eu.dm2e.utils.UriUtils;
 /**
  * Pojo representing an instance of a webservice within a workflow
  */
-@Namespaces({"omnom", "http://onto.dm2e.eu/omnom/"})
+@Namespaces({"omnom", NS.OMNOM.BASE})
 @RDFClass(NS.OMNOM.CLASS_WORKFLOW_POSITION)
 public class WorkflowPositionPojo extends SerializablePojo<WorkflowPositionPojo> implements IValidatable{
 	

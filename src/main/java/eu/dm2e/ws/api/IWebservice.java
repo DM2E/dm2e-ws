@@ -5,6 +5,11 @@ package eu.dm2e.ws.api;
  */
 import java.util.Set;
 
+/**
+ * @deprecated This was necessary when we had WorkflowServices and WebServices.
+ * @author Konstantin Baierer
+ *
+ */
 public interface IWebservice {
 
 	public abstract ParameterPojo addInputParameter(String paramName);

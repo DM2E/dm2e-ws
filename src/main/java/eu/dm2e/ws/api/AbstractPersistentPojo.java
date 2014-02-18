@@ -19,18 +19,36 @@ public abstract class AbstractPersistentPojo<T extends AbstractPersistentPojo> e
 	protected static transient Client client = new Client();
     private transient boolean loaded = false;
 	
+	/**
+	 * Load POJO from URI.
+	 * @param uri the URI to load from
+	 */
 	public void loadFromURI(String uri) {
 		this.loadFromURI(uri, 0);
 	}
 	
+	/**
+	 * Load POJO from URI.
+	 * @param uri the URI to load from
+	 */
 	public void loadFromURI(URI uri) {
 		this.loadFromURI(uri.toString(), 0);
 	}
 	
+	/**
+	 * Load POJO data from URI.
+	 * @param uri the URI to load from
+	 * @param expansionSteps the number of expansions to do on the graph
+	 */
 	public void loadFromURI(URI uri, int expansionSteps) {
 		this.loadFromURI(uri.toString(), expansionSteps);
 	}
 	
+	/**
+	 * Load POJO data from URI.
+	 * @param uri the URI to load from
+	 * @param expansionSteps the number of expansions to do on the graph
+	 */
 	public void loadFromURI(String uri, int expansionSteps) {
         Grafeo g = new GrafeoImpl();
         try {
@@ -61,6 +79,12 @@ public abstract class AbstractPersistentPojo<T extends AbstractPersistentPojo> e
         loaded=true;
     }
 
+    /**
+     * Refreshes a Pojo from by dereferencing and loading its id field.
+	 * @param expansionSteps the number of expansions to do on the graph
+     * @param force whether to force a refresh even if the Pojo is already loaded
+     * @return this
+     */
     public T refresh(int expansionSteps, boolean force) {
         if (getId()==null) throw new RuntimeException("Can't refresh a Pojo without ID.");
         if (!force && loaded) return (T) this;
@@ -68,16 +92,31 @@ public abstract class AbstractPersistentPojo<T extends AbstractPersistentPojo> e
         return (T) this;
     }
 
-	
+	/**
+	 * Publish Pojo to the Web.
+	 * @param wr the {@link WebTarget} to publish to
+	 * @return the URI of the published pojo (= the id of this Pojo)
+	 */
 	public String publishToService(WebTarget wr) {
 		log.debug("Publishing myself (pojo) to " + wr.getUri());
 		String loc = client.publishPojo(this, wr, true);
 		log.debug("Done Publishing myself (pojo) to " + wr.getUri());
 		return loc;
 	}
+
+	/**
+	 * Publish Pojo to the Web.
+	 * @param wr the URI of the webservice to publish to
+	 * @return the URI of the published pojo (= the id of this Pojo)
+	 */
 	public String publishToService(String serviceUri) {
 		return this.publishToService(client.target(serviceUri));
 	}
+
+	/**
+	 * Publish Pojo to the Web.
+	 * @return the URI of the published pojo (= the id of this Pojo)
+	 */
 	public String publishToService() {
 		if (this.getId() == null) {
 			throw new RuntimeException("Must provide service URI to POST to.");

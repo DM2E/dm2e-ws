@@ -101,14 +101,15 @@ public class XsltUtils {
 	}
 
 	/**
-	 * Transform an XML URL using an XSLT URL.
+	 * Transforms an XML URL with an XSLT URL.
 	 * 
-	 * @param xmlUrl
-	 * @param xsltUrl
-	 * @param paramMap
-	 * @return StreamResultWriter of the result
-	 * @throws TransformerFactoryConfigurationError
-	 * @throws Throwable
+	 * @param xmlUrl the filename of the input XML
+	 * @param xsltPath the filename of the XSLT.
+	 * @param paramMap the map of XSLT parameters
+	 * @return a StringWriter containing the data
+	 * @throws MalformedURLException if invalid filenames are provided
+	 * @throws IOException if files cannot be opened
+	 * @throws TransformerException if the XSLT is invalid
 	 */
 	public StringWriter transformXsltUrl(String xmlUrl, String xsltUrl, Map<String,String> paramMap)
 			throws TransformerFactoryConfigurationError, Throwable {
@@ -118,6 +119,17 @@ public class XsltUtils {
 		return doTransformXslt(xslSource, xmlSource, paramMap);
 	}
 	
+	/**
+	 * Transforms an XML file with an XSLT file.
+	 * 
+	 * @param xmlUrl the filename of the input XML
+	 * @param xsltPath the filename of the XSLT.
+	 * @param paramMap the map of XSLT parameters
+	 * @return a StringWriter containing the data
+	 * @throws MalformedURLException if invalid filenames are provided
+	 * @throws IOException if files cannot be opened
+	 * @throws TransformerException if the XSLT is invalid
+	 */
 	public StringWriter transformXsltFile(String xmlUrl, String xsltPath, Map<String,String> paramMap) throws MalformedURLException, IOException, TransformerException {
 		StreamSource xslSource = new StreamSource(new File(xsltPath));
 		xslSource.setSystemId(new File(xsltPath));
@@ -127,15 +139,6 @@ public class XsltUtils {
 		
 	}
 
-	/**
-	 * @param xslSource
-	 * @param xmlSource
-	 * @param paramMap
-	 * @return
-	 * @throws TransformerFactoryConfigurationError
-	 * @throws TransformerConfigurationException
-	 * @throws TransformerException
-	 */
 	private StringWriter doTransformXslt(StreamSource xslSource,
 			StreamSource xmlSource,
 			Map<String, String> paramMap)
@@ -156,12 +159,14 @@ public class XsltUtils {
 		return xslResultStrWriter;
 	}
 	
-	
-
-
 	/**
-	 * @param zipdir
-	 * @return
+	 * Find the root stylesheet in a directory of XSLT stylesheets.
+	 * 
+	 * <p>
+	 * A root stylesheet contains &lt;template match="/"&gt;.
+	 * </p>
+	 * @param zipdir the directory to search in
+	 * @return the filename of the root stylesheet
 	 */
 	public String grepRootStylesheet(String zipdir) {
 		Profile xsltDirProfile = ProfileBuilder
@@ -195,6 +200,10 @@ public class XsltUtils {
 		return rootStyleSheet;
 	}
 	
+	/**
+	 * Adds an error listener to a {@link TransformerFactory}.
+	 * @param tFactory the {@link TransformerFactory} to add a listener to
+	 */
 	public void addErrorListenerToTFactory(TransformerFactory tFactory) {
 		OmnomErrorListener errL;
 		try {

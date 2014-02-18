@@ -14,11 +14,10 @@ import java.io.InputStream;
 import java.nio.file.Files;
 
 /**
- * This file was created within the DM2E project.
- * http://dm2e.eu
- * http://github.com/dm2e
- * <p/>
- * Author: Kai Eckert, Konstantin Baierer
+ * File-related utility methods.
+ * 
+ * @author Konstantin Baierer
+ * @author Kai Eckert
  */
 public class FileUtils {
 

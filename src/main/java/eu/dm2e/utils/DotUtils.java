@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This file was created within the DM2E project.
- * http://dm2e.eu
- * http://github.com/dm2e
- * <p/>
- * Author: Kai Eckert, Konstantin Baierer
+ * Utilitie methods for GraphViz visualizations.
+ * 
+ * @author Kai Eckert
+ * @author Konstantin Baierer
  */
 public class DotUtils {
     public static String getColumn(List<String> labels, List<String> ports){

@@ -4,11 +4,9 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * This file was created within the DM2E project.
- * http://dm2e.eu
- * http://github.com/dm2e
- * <p/>
- * Author: Kai Eckert, Konstantin Baierer
+ * Miscellaneous methods for stringifying {@link java.util.Map} and {@link java.util.Collection}.
+ * 
+ * @author Kai Eckert
  */
 public class Misc {
     public static String output(Map input){
