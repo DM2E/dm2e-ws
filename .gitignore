@@ -11,7 +11,6 @@ catalog-v001.xml
 src/main/resources/logging.properties
 *.BAK
 testconfig
-src/main/java/eu/dm2e/ws/grafeo/annotations/NestedURIComponent.java
 log
 log-test
 /*.svg

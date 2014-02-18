@@ -16,13 +16,13 @@ import eu.dm2e.ws.services.AbstractTransformationService;
  * DemoService shows the necessary steps / best practices to create a webservice.
  */
 @Path("/service/iterator")
-public class IteratorService extends AbstractTransformationService {
+public class DemoIteratorService extends AbstractTransformationService {
 
 	public static final String PARAM_SLEEPTIME = "sleeptime";
 	public static final String PARAM_COUNTDOWN_LIST = "countdownList";
 	public static final String PARAM_PHRASE = "countdownPhrase";
 
-    public IteratorService() {
+    public DemoIteratorService() {
         final WebservicePojo ws = getWebServicePojo();
         ws.setLabel("Iterator");
 

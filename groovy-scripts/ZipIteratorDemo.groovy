@@ -27,7 +27,7 @@ import javax.ws.rs.core.Response
 import javax.ws.rs.client.Entity
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import eu.dm2e.ws.services.demo.IteratorService
+import eu.dm2e.ws.services.demo.DemoIteratorService
 import eu.dm2e.ws.api.WorkflowPositionPojo
 import eu.dm2e.ws.services.demo.DemoService
 import javax.jws.WebService
@@ -44,10 +44,10 @@ def static doit() {
     // WebservicePojo demo = new WebservicePojo(demoUrl);
     WebservicePojo iterator = new WebservicePojo(iteratorUrl);
     WorkflowPojo wf = new WorkflowPojo();
-    wf.setLabel("Iterator Workflow");
+    wf.setLabel("Demo Iterator Workflow");
     WorkflowPositionPojo iterPos = wf.addPosition(iterator);
     // WorkflowPositionPojo demoPos = wf.addPosition(demo);
-    // wf.addConnectorFromPositionToPosition(iterPos,IteratorService.PARAM_PHRASE,demoPos,DemoService.PARAM_COUNTDOWN_PHRASE);
+    // wf.addConnectorFromPositionToPosition(iterPos,DemoIteratorService.PARAM_PHRASE,demoPos,DemoService.PARAM_COUNTDOWN_PHRASE);
     wf.autowire();
 
     wf.publishToService(workflowServiceUri)

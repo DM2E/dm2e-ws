@@ -5,7 +5,7 @@ import eu.dm2e.ws.ConfigProp;
 import eu.dm2e.ws.api.*;
 import eu.dm2e.ws.services.Client;
 import eu.dm2e.ws.services.demo.DemoService;
-import eu.dm2e.ws.services.demo.IteratorService;
+import eu.dm2e.ws.services.demo.DemoIteratorService;
 import eu.dm2e.ws.tests.OmnomTestCase;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -34,7 +34,7 @@ public class IterationTest extends OmnomTestCase {
 		String workflowServiceUri = base + "workflow";
 
 		WebservicePojo demo = new DemoService().getWebServicePojo();
-		WebservicePojo iterator = new IteratorService().getWebServicePojo();;
+		WebservicePojo iterator = new DemoIteratorService().getWebServicePojo();;
 
 		WorkflowPojo wf = new WorkflowPojo();
 		wf.setLabel("Iterator Workflow");
@@ -42,12 +42,12 @@ public class IterationTest extends OmnomTestCase {
 		WorkflowPositionPojo demoPos = wf.addPosition(demo);
 		log.debug(iterPos.getWebservice().getTerseTurtle());
 		log.debug("FROM " + iterPos);
-		log.debug("    " + IteratorService.PARAM_PHRASE);
+		log.debug("    " + DemoIteratorService.PARAM_PHRASE);
 		log.debug("TO  " + demoPos);
 		log.debug("    " + DemoService.PARAM_COUNTDOWN_PHRASE); 
 		wf.addConnectorFromPositionToPosition(
 				iterPos,
-				IteratorService.PARAM_PHRASE,
+				DemoIteratorService.PARAM_PHRASE,
 				demoPos,
 				DemoService.PARAM_COUNTDOWN_PHRASE);
 		wf.autowire();
