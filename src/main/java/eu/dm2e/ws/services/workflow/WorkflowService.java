@@ -52,7 +52,7 @@ import eu.dm2e.ws.constants.FileStatus;
 import eu.dm2e.ws.services.AbstractRDFService;
 
 /**
- * Service for the creation and execution of workflows
+ * Service for the creation of workflows
  */
 @Path("/workflow")
 public class WorkflowService extends AbstractRDFService {

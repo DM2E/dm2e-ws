@@ -15,9 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A wrapper for Jersey Client that
- * a) can store cookies
- * b) does *not* follow redirects
+ * A wrapper for Jersey Client that can store cookies does <b>not</b> follow redirects
  * 
  * @author Konstantin Baierer
  *

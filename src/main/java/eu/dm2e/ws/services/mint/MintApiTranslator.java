@@ -44,6 +44,7 @@ import eu.dm2e.ws.api.FilePojo;
  * TODO Use asUser in the UrlApi to ensure correct rights
  * 
  * @author Konstantin Baierer
+ * @author Arne Stabenau
  * 
  */
 public final class MintApiTranslator {

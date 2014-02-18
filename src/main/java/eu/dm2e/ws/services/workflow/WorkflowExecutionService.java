@@ -49,7 +49,7 @@ import eu.dm2e.ws.services.AbstractAsynchronousRDFService;
 import eu.dm2e.ws.services.WorkerExecutorSingleton;
 
 /**
- * Service for the creation and execution of workflows
+ * Service for the execution of workflows
  */
 @Path("/exec/workflow")
 public class WorkflowExecutionService extends AbstractAsynchronousRDFService {

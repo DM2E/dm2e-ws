@@ -1,6 +1,7 @@
 package eu.dm2e.ws.services.job;
 
 import java.io.File;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -47,16 +48,18 @@ import eu.dm2e.ws.api.WebservicePojo;
 import eu.dm2e.ws.constants.JobStatus;
 import eu.dm2e.ws.constants.LogLevel;
 import eu.dm2e.ws.services.AbstractRDFService;
-
 // TODO @GET /{id}/result with JSON
+
 /**
  * Service that handles posting, putting and retrieving jobs.
- *
- * NOTE: Don't use any Jersey annotations in the overridden methods. JSR-311 specifies
- * that a single annotation hides all inerited annotations.
- *
+ * <p>
+ * <b>NOTE to implementers:</b> Don't use any Jersey annotations in the
+ * overridden methods. JSR-311 specifies that a single annotation hides all
+ * inerited annotations.
+ * </p>
+ * 
  * @author kb
- *
+ * 
  */
 @Path("job")
 public class JobService extends AbstractRDFService {
