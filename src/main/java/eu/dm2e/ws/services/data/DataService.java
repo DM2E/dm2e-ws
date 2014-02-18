@@ -24,6 +24,7 @@ import eu.dm2e.ws.services.AbstractRDFService;
 
 /**
  * Examples and tests of several webservices...
+ * @author Kai Eckert
  */
 @Path("/data")
 public class DataService extends AbstractRDFService {

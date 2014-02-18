@@ -1,4 +1,4 @@
 /**
- * Test service (FIXME TODO - rename/remove it)
+ * Test service
  */
 package eu.dm2e.ws.services.data;

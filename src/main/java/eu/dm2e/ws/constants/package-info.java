@@ -1,4 +1,4 @@
 /**
- * Ummm - the package name is kinda wrong FIXME TODO
+ * Enumerated values for various aspects of Omnom.
  */
 package eu.dm2e.ws.constants;
