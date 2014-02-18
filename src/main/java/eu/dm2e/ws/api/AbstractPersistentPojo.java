@@ -106,7 +106,7 @@ public abstract class AbstractPersistentPojo<T extends AbstractPersistentPojo> e
 
 	/**
 	 * Publish Pojo to the Web.
-	 * @param wr the URI of the webservice to publish to
+	 * @param serviceUri the URI of the webservice to publish to
 	 * @return the URI of the published pojo (= the id of this Pojo)
 	 */
 	public String publishToService(String serviceUri) {

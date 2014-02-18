@@ -95,7 +95,6 @@ public class WorkflowService extends AbstractRDFService {
 
 	/**
 	 * GET /list/facets
-	 * @return
 	 */
 	@GET
 	@Path("list/facets")
@@ -140,7 +139,6 @@ public class WorkflowService extends AbstractRDFService {
 
 	/**
 	 * GET /list
-	 * @return
 	 */
 	@GET
 	@Path("list")
@@ -207,7 +205,6 @@ public class WorkflowService extends AbstractRDFService {
 
 	/**
 	 * GET /{id}/validate
-	 * @return
 	 */
 	@GET
 	@Produces({
@@ -232,7 +229,6 @@ public class WorkflowService extends AbstractRDFService {
 
 	/**
 	 * GET /{id}
-	 * @return
 	 */
 	@GET
 	@Produces({
@@ -263,7 +259,6 @@ public class WorkflowService extends AbstractRDFService {
 
 	/*
 	 * DELETE /{id}
-	 * @return
 	 */
 	@DELETE
 	@Path("{id}")
@@ -282,7 +277,6 @@ public class WorkflowService extends AbstractRDFService {
 	
 	/*
 	 * POST /{id}/autowire
-	 * @return
 	 */
 	@POST
 	@Path("{id}/autowire")
@@ -313,7 +307,6 @@ public class WorkflowService extends AbstractRDFService {
 	 * 
 	 * Get DOT visualization of workflow
 	 * 
-	 * @return
 	 * @throws IOException 
 	 */
 	@GET
@@ -347,7 +340,6 @@ public class WorkflowService extends AbstractRDFService {
 	 * 
 	 * Get DOT visualization of workflow
 	 * 
-	 * @return
 	 * @throws IOException 
 	 */
 	@GET
@@ -362,7 +354,6 @@ public class WorkflowService extends AbstractRDFService {
 	 * 
 	 * Get DOT visualization of workflow
 	 * 
-	 * @return
 	 */
 	@GET
 	@Produces({"text/vnd.graphviz"})
@@ -384,7 +375,6 @@ public class WorkflowService extends AbstractRDFService {
 	/**
 	 * PUT {workflowID} 	Accept: json
 	 * @param wf
-	 * @return
 	 */
 	@PUT
 	@Path("{workflowID}")
@@ -399,7 +389,6 @@ public class WorkflowService extends AbstractRDFService {
 	 * PUT {workflowID}		Accept: rdf
 	 * TODO refactor
 	 * @param rdfString
-	 * @return
 	 */
 	@PUT
 	@Path("{workflowID}")
@@ -475,7 +464,6 @@ public class WorkflowService extends AbstractRDFService {
 	/**
 	 * POST /				Accept: json
 	 * @param wf
-	 * @return
 	 */
 	@POST
 	@Consumes({
@@ -498,7 +486,6 @@ public class WorkflowService extends AbstractRDFService {
      * TODO test whether we can replace this with the MessageBodyWriter<Grafeo>
      *
      * @param rdfString
-     * @return
      */
     @POST
     @Consumes({

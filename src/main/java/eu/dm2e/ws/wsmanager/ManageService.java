@@ -47,7 +47,7 @@ import eu.dm2e.ws.api.WorkflowPositionPojo;
 /**
  * JAX-RS service to start the DM2E services -- for testing only.
  * <p>
- * Relevant changes here must be ported to {@see eu.dm2e.ws.OmnomApplication}.
+ * Relevant changes here must be ported to {@link eu.dm2e.ws.OmnomApplication}.
  * </p>
  */
 @Path("/manage")

@@ -44,7 +44,6 @@ public class MintFileService extends AbstractRDFService {
 	
 	/**
 	 * GET /
-	 * @return
 	 */
 	@Produces({
 //		DM2E_MediaType.APPLICATION_RDF_TRIPLES,
@@ -86,7 +85,6 @@ public class MintFileService extends AbstractRDFService {
 	 * Retrieve metadata/file data for a file stored in MINT
 	 * 
 	 * @param mintFileId
-	 * @return
 	 */
 	@GET
 	@Path("{id}")
@@ -106,8 +104,7 @@ public class MintFileService extends AbstractRDFService {
 	
 	/**
 	 * GET /{id}/data
-	 * @param mintFileId
-	 * @return
+	 * @param mintFileId the ID of the MINT file
 	 */
 	@GET
 	@Path("{id}/data")
@@ -119,7 +116,6 @@ public class MintFileService extends AbstractRDFService {
 	 * GET /metadataByURI?uri...
 	 * TODO FIXME
 	 * @param uri
-	 * @return
 	 */
 	@GET
 	@Path("/metadataByURI")
@@ -152,7 +148,6 @@ public class MintFileService extends AbstractRDFService {
 	/**
 	 * GET /dataByURI?uri=...
 	 * @param uri
-	 * @return
 	 */
 	@GET
 	@Path("/dataByURI")

@@ -21,7 +21,7 @@ import java.net.URISyntaxException;
 //import java.util.Date;
 
 /**
- * Service to publish files as versioned datasets to a RDF endpoint.
+ * Service to publish files as versioned datasets to an RDF endpoint.
  */
 @Path("/publish")
 public class PublishService extends AbstractTransformationService {

@@ -29,11 +29,12 @@ import eu.dm2e.ws.constants.JobStatus;
 import eu.dm2e.ws.services.AbstractTransformationService;
 
 /**
- * This file was created within the DM2E project.
- * http://dm2e.eu
- * http://github.com/dm2e
- * <p/>
- * Author: Kai Eckert, Konstantin Baierer
+ * A service that iterates through the contents of a ZIP and yields a result to
+ * the workflow for every file found.
+ * 
+ * @author Konstantin Baierer
+ * @author Kai Eckert
+ * @author Dominique Ritze
  */
 @Path("/service/zip-iterator")
 public class ZipIteratorService extends AbstractTransformationService {
@@ -88,7 +89,6 @@ public class ZipIteratorService extends AbstractTransformationService {
      * GET /file/{uripart}
      * Retrieve contents of an extracted file
      *
-     * @return
      */
     @GET
     @Path("/file/{uripart:.*}")

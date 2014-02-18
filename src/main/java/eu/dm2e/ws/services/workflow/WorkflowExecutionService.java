@@ -29,6 +29,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 
+import sun.nio.cs.ext.EUC_CN;
 import eu.dm2e.grafeo.Grafeo;
 import eu.dm2e.grafeo.jena.GrafeoImpl;
 import eu.dm2e.grafeo.util.LogbackMarkers;
@@ -170,7 +171,6 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
 
     /**
      * GET /{id}/job/{jobId}		Accept: *		Content-Type: RDF
-     * @return
      */
     @GET
     @Path("/{id}/job/{resourceId}")
@@ -194,8 +194,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
 
     /**
      * GET /{id}/job/{jobId}	CT: JSON
-     * @param resourceId
-     * @return
+     * @param resourceId the job Id
      */
     @GET
     @Path("/{id}/job/{resourceId}")
@@ -215,8 +214,7 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
     /**
      * GET /{id}/job/{jobId}/status			Accept: *		Content-Type: TEXT
      * Get the job status as a string.
-     * @param resourceId
-     * @return
+     * @param resourceId the job ID
      */
     @GET
     @Path("/{id}/job/{resourceId}/status")
@@ -232,9 +230,8 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
 
 	/**
 	 * GET /{id}/job/{resourceId}/log			Accept: *		Content-Type: TEXT_LOG
-	 * @param minLevelStr
-	 * @param maxLevelStr
-	 * @return
+	 * @param minLevelStr the minimum log level
+	 * @param maxLevelStr the maximum log level
 	 */
 	@GET
 	@Path("{id}/job/{resourceId}/log")
@@ -362,6 +359,11 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
 
     Map<String, WebservicePojo> serviceDescriptions = new HashMap<>();
 
+    /**
+     * Get a web service Pojo for a workflow pojo
+     * @param wf the {@link WorkflowPojo} 
+     * @return the {@link WebservicePojo}
+     */
     public WebservicePojo getWebServicePojo(WorkflowPojo wf) {
         WebservicePojo ws = new WebservicePojo();
         String base = uriInfo.getBaseUri().toString();
@@ -400,7 +402,6 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
     /**
      * GET /{id}
      *
-     * @return
      */
     @GET
     @Path("{id}")
@@ -412,7 +413,6 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
     /**
      * GET /{id}/describe
      *
-     * @return
      */
     @GET
     @Path("{id}/describe")
@@ -454,7 +454,6 @@ public class WorkflowExecutionService extends AbstractAsynchronousRDFService {
     /**
      * GET {id}/blankConfig
      *
-     * @return
      */
     @GET
     @Path("{id}/blankConfig")

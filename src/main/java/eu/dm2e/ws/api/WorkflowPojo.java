@@ -38,7 +38,6 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
 	
     /*********************
      * HELPER FUNCTIONS
-     * @return 
      *********************/
     private ParameterPojo addParameterByName(String paramName, boolean isOutput) {
     	ParameterPojo param = new ParameterPojo();
@@ -185,7 +184,6 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
      * @param fromParamName 
      * @param toPos
      * @param toParamName
-     * @return
      */
     public ParameterConnectorPojo addConnectorFromWorkflowToPosition(String fromParamName, WorkflowPositionPojo toPos, String toParamName) {
     	ParameterConnectorPojo conn = new ParameterConnectorPojo();
@@ -205,7 +203,6 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
      * @param fromPos
      * @param fromParamName
      * @param toParamName
-     * @return
      */
     public ParameterConnectorPojo addConnectorFromPositionToWorkflow(WorkflowPositionPojo fromPos, String fromParamName, String toParamName) {
     	ParameterConnectorPojo conn = new ParameterConnectorPojo();
@@ -224,7 +221,6 @@ public class WorkflowPojo extends AbstractPersistentPojo<WorkflowPojo> implement
      * @param fromParamName
      * @param toPos
      * @param toParamName
-     * @return
      */
     public ParameterConnectorPojo addConnectorFromPositionToPosition(WorkflowPositionPojo fromPos, String fromParamName, WorkflowPositionPojo toPos, String toParamName) {
     	ParameterConnectorPojo conn = new ParameterConnectorPojo();

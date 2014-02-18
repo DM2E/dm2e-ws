@@ -84,7 +84,6 @@ public class ConfigService extends AbstractRDFService {
 
     /**
      * GET /{id}/validate		Accept: RDF, JSON
-     * @return
      */
     @GET
     @Path("{id}/validate")
@@ -115,7 +114,6 @@ public class ConfigService extends AbstractRDFService {
     
     /**
      * GET /{id}		Accept: RDF, JSON
-     * @return
      */
     @GET
     @Path("{id}")
@@ -196,8 +194,6 @@ public class ConfigService extends AbstractRDFService {
     
     /**
      * GET /list		Accept: RDF, JSON
-     * @param uriInfo
-     * @return
      */
     @GET
     @Path("list")
@@ -272,7 +268,6 @@ public class ConfigService extends AbstractRDFService {
     /**
      * PUT /{id}		Accept: RDF
      * @param input
-     * @return
      */
     @PUT
     @Consumes({
@@ -325,7 +320,6 @@ public class ConfigService extends AbstractRDFService {
 	/**
 	 * POST /			Accept: RDF
 	 * @param input
-	 * @return
 	 */
 	@POST
     @Consumes({
@@ -372,7 +366,6 @@ public class ConfigService extends AbstractRDFService {
 	/**
 	 * POST /		Accept: JSON
 	 * @param input
-	 * @return
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -415,7 +408,6 @@ public class ConfigService extends AbstractRDFService {
 	/**
 	 * PUT /{id}		Accept: JSON
 	 * @param input
-	 * @return
 	 */
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -459,7 +451,6 @@ public class ConfigService extends AbstractRDFService {
 	 * POST {id}/assignment
 	 * @param configId
 	 * @param rdfString
-	 * @return
 	 */
 	@POST
 	@Consumes({
@@ -487,7 +478,6 @@ public class ConfigService extends AbstractRDFService {
 	 * @param configId
 	 * @param assId
 	 * @param rdfString
-	 * @return
 	 */
 	@PUT
 	@Consumes({

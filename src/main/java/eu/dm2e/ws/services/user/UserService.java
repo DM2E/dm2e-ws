@@ -30,9 +30,9 @@ public class UserService extends AbstractRDFService {
 	/**
 	 * GET _username		Accept: * 		Content-Type: text/plain
 	 *
+	 * <p>
 	 * Returns the name of the currently logged in user
-	 * @param security
-	 * @return
+	 * </p>
 	 */
 	@GET
 	@Path("_username")
@@ -63,8 +63,6 @@ public class UserService extends AbstractRDFService {
 	
 	/**
 	 * GET {id}		Accept: JSON, RDF
-	 * @param user
-	 * @return
 	 */
 	@GET
 	@Path("{id}")
@@ -89,8 +87,7 @@ public class UserService extends AbstractRDFService {
 
 	/**
 	 * PUT {id}		Accept: JSON, RDF
-	 * @param user
-	 * @return
+	 * @param user the id of the user
 	 */
 	@PUT
 	@Path("{id}")

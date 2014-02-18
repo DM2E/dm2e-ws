@@ -261,7 +261,6 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
      * Returns the value of an output parameter.
      *
      * @param needle
-     * @return
      */
     public String getOutputParameterValueByName(String needle) {
         ParameterAssignmentPojo ass = getOutputParameterAssignmentForParam(needle);
@@ -285,7 +284,6 @@ public class JobPojo extends AbstractPersistentPojo<JobPojo> {
      * Returns the value of an input parameter, or its default value if no assignment is found.
      *
      * @param needle
-     * @return
      */
     public String getInputParameterValueByName(String needle) {
         ParameterAssignmentPojo ass = getInputParameterAssignmentForParam(needle);

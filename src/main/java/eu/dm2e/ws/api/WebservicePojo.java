@@ -28,7 +28,6 @@ public class WebservicePojo extends AbstractPersistentPojo<WebservicePojo> imple
 	
     /*********************
      * HELPER FUNCTIONS
-     * @return 
      *********************/
     private ParameterPojo addParameterByName(String paramName, boolean isOutput) {
     	ParameterPojo param = new ParameterPojo();

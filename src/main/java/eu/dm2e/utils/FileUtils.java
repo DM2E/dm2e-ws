@@ -30,10 +30,13 @@ public class FileUtils {
     }
 
     /**
+     * Downloads and extracts an archive.
+     * 
      * @param archiveUrl
-     * @param format
-     * @return
-     * @throws ZipException 
+     * @param format the format of the archive. Currently only "zip" is supported
+     * @return Directory where data was extracted to
+     * @throws ZipException if the extraction failed
+     * @throws RuntimeException if an unsupported archive is requested to be extracted
      */
     public String downloadAndExtractArchive(String archiveUrl, String format) throws ZipException {
         if (!"zip".equals(format)) throw new RuntimeException("Unsupported format: " + format);

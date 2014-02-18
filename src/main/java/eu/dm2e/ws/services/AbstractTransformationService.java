@@ -41,7 +41,6 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
 
     /**
      * GET /{resourceID}		Accept: *		Content-Type: RDF
-     * @return
      */
     @GET
     @Path("/job/{resourceId}")
@@ -82,7 +81,6 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
      * GET /{id}/status			Accept: *		Content-Type: TEXT
      * Get the job status as a string.
      * @param resourceId
-     * @return
      */
     @GET
     @Path("/job/{resourceId}/status")
@@ -101,7 +99,6 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
 	 * GET /{id}/log			Accept: *		Content-Type: TEXT_LOG
 	 * @param minLevelStr
 	 * @param maxLevelStr
-	 * @return
 	 */
 	@GET
 	@Path("/job/{resourceId}/log")

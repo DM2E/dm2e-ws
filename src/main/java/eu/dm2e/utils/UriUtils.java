@@ -24,16 +24,22 @@ public class UriUtils {
 	/**
 	 * Cleans up input for use in web services.
 	 * 
+	 * <p>
 	 * TODO / BUG: Since we don't discern URI parameters from String parameters cleanly
 	 * ATM, we cannot just URL-encode the String (because that would break URLs).
 	 * Instead we cover the most important cases here.
+	 * </p>
 	 * 
+	 * <p>
 	 * TODO: Investigate whether and how risky this is.
+	 * </p>
 	 * 
+	 * <p>
 	 * TODO (Wed Jan  8 01:05:00 CET 2014) this breaks parameter parsing since newline is translated to '_' if we replace all '\\s'
+	 * </p>
 	 * 
 	 * @param uri
-	 * @return
+	 * @return the sanitized input
 	 */
 	public static String sanitizeInput(String uri) {
 //		uri = uri.replaceAll("\\s", "_");

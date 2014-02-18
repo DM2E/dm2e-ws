@@ -13,7 +13,7 @@ import eu.dm2e.ws.constants.JobStatus;
  * Service that returns constants and enums used in the backend to clients.
  *
  * @see eu.dm2e.utils.NSExporter
- * @see eu.dm2e.ws.NS
+ * @see eu.dm2e.NS
  *
  * @author Konstantin Baierer
  */

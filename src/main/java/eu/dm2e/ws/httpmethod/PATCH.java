@@ -10,7 +10,7 @@ import javax.ws.rs.HttpMethod;
 /**
  * This allows annotating methods responding to PATCH requests for partially
  * updating resources. 
- * @see http://tools.ietf.org/html/rfc5789
+ * @see <a href="http://tools.ietf.org/html/rfc5789">IETF</a>
  * @author Konstantin Baierer
  *
  * @deprecated This is cool but not standardized enough to make use of.

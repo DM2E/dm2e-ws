@@ -114,7 +114,6 @@ public class FileService extends AbstractRDFService {
 	 * GET /{id}
 	 *  Retrieve metadata/file data for a locally stored file
 	 * 
-	 * @return
 	 */
 	@GET
 	@Path("{id}")
@@ -125,7 +124,6 @@ public class FileService extends AbstractRDFService {
 
 	/**
 	 * GET /	{*}
-	 * @return
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -137,7 +135,6 @@ public class FileService extends AbstractRDFService {
 	 * GET /list/facets
 	 *  Retrieve metadata of all relevant facets
 	 * 
-	 * @return
 	 */
 	@GET
 	@Produces({
@@ -191,7 +188,6 @@ public class FileService extends AbstractRDFService {
 	 * GET /list
 	 *  Retrieve metadata of all files that are omnom:fileStatus AVAILABLE
 	 * 
-	 * @return
 	 */
 	@GET
 	@Produces({
@@ -293,7 +289,6 @@ public class FileService extends AbstractRDFService {
 	 * 
 	 * TODO This is meant to be used for placeholders, so that a service can
 	 * register a file and put it at the location later.
-	 * @return
 	 */
 	@POST
 	@Path("empty")
@@ -346,7 +341,6 @@ public class FileService extends AbstractRDFService {
 	 * @param metaPart
 	 * @param filePart
 	 * @param uriStr
-	 * @return
 	 */
 	@PUT
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -426,9 +420,11 @@ public class FileService extends AbstractRDFService {
 	 * the storage system. If no file is given, the metadata have to include the
 	 * location of the file where it can be found.
 	 * 
-	 * @todo If a client sends a multipart/form-data without multipart
+	 * <p>
+	 * TODO If a client sends a multipart/form-data without multipart
 	 *       boundaries, this method is never reached and a silent 400 is sent
 	 *       to the client
+	 * </p>
 	 * 
 	 * @param metaPart
 	 *            the part with the metadata in RDF (either an upload or a
@@ -439,7 +435,6 @@ public class FileService extends AbstractRDFService {
 	 *            the part with the file data (should be an upload)
 	 * @param fileDisposition
 	 *            the content disposition of meta if meta is an upload
-	 * @return
 	 * @return The complete RDF data about the file, which are stored by this
 	 *         service are returned.
 	 */
@@ -630,7 +625,6 @@ public class FileService extends AbstractRDFService {
 	 * 
 	 * @param uriStr
 	 *            The URI to delete
-	 * @return
 	 */
 	@DELETE
 	public Response deleteFileByUri(@QueryParam("uri") String uriStr) {
@@ -671,7 +665,6 @@ public class FileService extends AbstractRDFService {
 	 * without doing on-disk deletion.
 	 * 
 	 * @param id
-	 * @return
 	 */
 	@DELETE
 	@Path("{id}")
@@ -695,7 +688,6 @@ public class FileService extends AbstractRDFService {
 	 * POST /{id}/patch
 	 * Replace statements about a file with new statements.
 	 * @param bodyInputStream
-	 * @return
 	 */
 	@POST
 	@Path("{id}/patch")
@@ -763,7 +755,6 @@ public class FileService extends AbstractRDFService {
 	 * Decides whether to fire the get method for file data or metadata.
 	 * 
 	 * @param uri
-	 * @return
 	 */
 	@GET
     @Path("byURI")
@@ -862,7 +853,7 @@ public class FileService extends AbstractRDFService {
 	 *            The graph this file should be stored in
 	 * @param uri
 	 *            The URI that represents this file
-	 * @return 
+	 * @return the {@link FilePojo}
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 * @throws NoSuchAlgorithmException

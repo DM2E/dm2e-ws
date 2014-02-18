@@ -51,10 +51,18 @@ public final class MintApiTranslator {
 
 	Logger log = LoggerFactory.getLogger(getClass().getName());
 
+	/**
+	 * Part of the API to address
+	 * @author Konstantin Baierer
+	 */
 	public static enum API_TYPE {
-		// Mappings, retrievable as XSLT
+		/**
+		 * Mappings, retrievable as XSLT
+		 */
 		MAPPING,
-		// Uploads, e.g. XML or XMLZIP
+		/**
+		 * Uploads, e.g. XML or XMLZIP
+		 */
 		DATA_UPLOAD,
 	}
 
@@ -215,12 +223,14 @@ public final class MintApiTranslator {
 	 * Try to dereference the fileRetrievalURI of a FilePojo, extract it and
 	 * return the content.
 	 * 
+	 * <p>
 	 * MINT sends even single XML files compressed in tar.gz. This is a
 	 * workaround to make those XML files easy to consume for transformation
 	 * services.
+	 * </p>
 	 * 
-	 * @param fp
-	 * @return
+	 * @param fp the FilePojo to retrieve from
+	 * @return the byte array of the contents
 	 */
 	public byte[] convertTGZtoXML(FilePojo fp) {
 
@@ -270,7 +280,7 @@ public final class MintApiTranslator {
 	 * Retrieves the list of all Mappings from MINT and creates a list of
 	 * FilePojos from it.
 	 * 
-	 * @return
+	 * @return the list of FilePojos for data uploads
 	 */
 	public List<FilePojo> retrieveListOfDataUploads() {
 		ensureLoggedIn();
@@ -290,7 +300,7 @@ public final class MintApiTranslator {
 	 * Retrieves the list of all Mappings from MINT and creates a list of
 	 * FilePojos from it.
 	 * 
-	 * @return
+	 * @return the list of {@link FilePojo} for mappings
 	 */
 	public List<FilePojo> retrieveListOfMappings() {
 		ensureLoggedIn();
@@ -309,8 +319,8 @@ public final class MintApiTranslator {
 	/**
 	 * Retrieve a single Mapping from MINT and create a FilePojo from it.
 	 * 
-	 * @param id
-	 * @return
+	 * @param id the id of the MINT file
+	 * @return the {@link FilePojo} for this id
 	 */
 	public FilePojo retrieveMapping(String id) {
 		return retrieveAnyMintFileById(id, API_TYPE.MAPPING);
@@ -319,8 +329,8 @@ public final class MintApiTranslator {
 	/**
 	 * Retrieve a single DataUpload from MINT and create a FilePojo from it.
 	 * 
-	 * @param id
-	 * @return
+	 * @param id the id of the MINT file
+	 * @return the {@link FilePojo} for this id
 	 */
 	public FilePojo retrieveDataUpload(String id) {
 		return retrieveAnyMintFileById(id, API_TYPE.DATA_UPLOAD);
@@ -329,9 +339,9 @@ public final class MintApiTranslator {
 	/**
 	 * Retrieve any mint file (mapping or upload) by it's respective ID
 	 * 
-	 * @param id
-	 * @param apiType
-	 * @return
+	 * @param id the id of the file
+	 * @param apiType the {@link API_TYPE} of mint file
+	 * @return the {@link FilePojo} for this mint file
 	 */
 	private FilePojo retrieveAnyMintFileById(String id,
 			API_TYPE apiType) {
@@ -361,8 +371,8 @@ public final class MintApiTranslator {
 	/**
 	 * Retrieve a FilePojo for a MINT file with a certain URI.
 	 * 
-	 * @param uri
-	 * @return
+	 * @param uri the URI to retrieve a FilePojo for
+	 * @return the {@link FilePojo} for this URI
 	 */
 	public FilePojo retrieveFilePojoForUri(URI uri) {
 		String uriPath = uri.getPath();
@@ -387,9 +397,9 @@ public final class MintApiTranslator {
 	/**
 	 * Translate one raw MINT api response to a list of FilePojos.
 	 * 
-	 * @param apiResponse
-	 * @param api_type
-	 * @return
+	 * @param apiResponse the JSON response from MINT
+	 * @param api_type the {@link API_TYPE} to translate to
+	 * @return the response translated to a List of {@link FilePojo}
 	 */
 	protected List<FilePojo> parseFileListFromApiResponse(String apiResponse,
 			API_TYPE api_type) {
@@ -438,32 +448,31 @@ public final class MintApiTranslator {
 	/**
 	 * Translate one raw MINT API Mapping response to a list of FilePojos.
 	 * 
-	 * @param apiResonse
-	 * @return
+	 * @param apiResponse the JSON response from MINT
+	 * @return the list of {@link FilePojo}
 	 */
-	public List<FilePojo> parseFileListFromMappingList(String apiResonse) {
-		return parseFileListFromApiResponse(apiResonse, API_TYPE.MAPPING);
+	public List<FilePojo> parseFileListFromMappingList(String apiResponse) {
+		return parseFileListFromApiResponse(apiResponse, API_TYPE.MAPPING);
 	}
 
 	/**
 	 * Translate one raw MINT API DataUpload response to a list of FilePojos.
 	 * 
-	 * @param apiResonse
-	 * @return
+	 * @param apiResponse the JSON response from MINT
+	 * @return the list of {@link FilePojo}
 	 */
-	public List<FilePojo> parseFileListFromDataUploadList(String apiResonse) {
-		return parseFileListFromApiResponse(apiResonse, API_TYPE.DATA_UPLOAD);
+	public List<FilePojo> parseFileListFromDataUploadList(String apiResponse) {
+		return parseFileListFromApiResponse(apiResponse, API_TYPE.DATA_UPLOAD);
 	}
 
 	/**
 	 * Translate one raw MINT API response to a single FilePojo.
 	 * 
-	 * @param apiResponse
-	 * @param api_type
-	 * @return
+	 * @param apiResponse the JSON response from MINT
+	 * @param api_type the {@link API_TYPE} of the response
+	 * @return the {@link FilePojo}
 	 */
-	protected FilePojo parseFilePojoFromApiResponse(String apiResponse,
-			API_TYPE api_type) {
+	protected FilePojo parseFilePojoFromApiResponse(String apiResponse, API_TYPE api_type) {
 
 		log.trace(LogbackMarkers.HTTP_RESPONSE_DUMP, "Parsing API response: {}", apiResponse);
 
@@ -495,8 +504,8 @@ public final class MintApiTranslator {
 	 * Translate one JSON representation of a MINT DataUpload to a Omnom
 	 * FilePojo.
 	 * 
-	 * @param jsonStr
-	 * @return
+	 * @param jsonStr the JSON returned by MINT
+	 * @return the {@link FilePojo}
 	 */
 	public FilePojo parseFilePojoFromDataUploadJson(String jsonStr) {
 		JsonObject jsonObj = new JsonParser().parse(jsonStr).getAsJsonObject();
@@ -507,10 +516,12 @@ public final class MintApiTranslator {
 	 * Translate one JSON representation of a MINT DataUpload to a Omnom
 	 * FilePojo.
 	 * 
+	 * <p>
 	 * TODO user TODO organization
+	 * </p>
 	 * 
-	 * @param json
-	 * @return
+	 * @param jsonStr the JSON returned by MINT
+	 * @return the {@link FilePojo}
 	 */
 	private FilePojo parseFilePojoFromDataUploadJson(JsonObject json) {
 
@@ -574,8 +585,8 @@ public final class MintApiTranslator {
 	/**
 	 * Translate one JSON representation of a MINT Mapping to a Omnom FilePojo.
 	 * 
-	 * @param jsonStr
-	 * @return
+	 * @param jsonStr the JSON returned by MINT
+	 * @return the {@link FilePojo}
 	 */
 	public FilePojo parseFilePojoFromMappingJson(String jsonStr) {
 		JsonObject jsonObj = new JsonParser().parse(jsonStr).getAsJsonObject();
@@ -586,8 +597,8 @@ public final class MintApiTranslator {
 	 * Translate one JSON representation of a MINT Mapping to a Omnom FilePojo.
 	 * TODO user TODO organization
 	 * 
-	 * @param json
-	 * @return
+	 * @param json the JSON returned by MINT
+	 * @return the {@link FilePojo}
 	 */
 	private FilePojo parseFilePojoFromMappingJson(JsonObject json) {
 

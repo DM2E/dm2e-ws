@@ -104,7 +104,7 @@ public class XsltUtils {
 	 * Transforms an XML URL with an XSLT URL.
 	 * 
 	 * @param xmlUrl the filename of the input XML
-	 * @param xsltPath the filename of the XSLT.
+	 * @param xsltUrl the filename of the XSLT.
 	 * @param paramMap the map of XSLT parameters
 	 * @return a StringWriter containing the data
 	 * @throws MalformedURLException if invalid filenames are provided

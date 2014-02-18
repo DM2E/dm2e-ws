@@ -175,7 +175,6 @@ public class JobService extends AbstractRDFService {
 	 * PUT /{resourceID} 		Accept: RDF		Content-Type: RDF
 	 * @param resourceID
 	 * @param bodyAsFile
-	 * @return
 	 */
 	@PUT
 	@Path("{resourceID}")
@@ -253,7 +252,6 @@ public class JobService extends AbstractRDFService {
 	/**
 	 * PUT /byURI?uri=... 		Accept: RDF		Content-Type: RDF
 	 * @param jobUri
-	 * @return
 	 */
 	@PUT
 	@Path("/byURI")
@@ -272,7 +270,6 @@ public class JobService extends AbstractRDFService {
 	/**
 	 * GET /byURI#... 		Accept: *		Content-Type: RDF
 	 * @param cleanURI
-	 * @return
 	 */
 	@GET
 	@Path("/byURI/{cleanURI}")
@@ -292,7 +289,6 @@ public class JobService extends AbstractRDFService {
 	/**
 	 * POST /					Accept: RDF		Content-Type: RDF
 	 * @param bodyAsString
-	 * @return
 	 */
 	@POST
 	@Consumes({
@@ -344,7 +340,6 @@ public class JobService extends AbstractRDFService {
 
 	/**
 	 * GET /{resourceID}		Accept: *		Content-Type: RDF
-	 * @return
 	 */
 	@GET
 	@Path("/{resourceId}")
@@ -416,7 +411,6 @@ public class JobService extends AbstractRDFService {
 	 * GET /{id}/status			Accept: *		Content-Type: TEXT
 	 * Get the job status as a string.
 	 * @param id
-	 * @return
 	 */
 	@GET
 	@Path("/{id}/status")
@@ -438,7 +432,6 @@ public class JobService extends AbstractRDFService {
 	 * Set the job status by string.
 	 * @param id
 	 * @param newStatusStr
-	 * @return
 	 */
 	@PUT
 	@Path("/{id}/status")
@@ -471,7 +464,6 @@ public class JobService extends AbstractRDFService {
 	/**
 	 * POST /{id}/log			Accept: RDF		Content-Type: *
 	 * @param logRdfStr
-	 * @return
 	 */
 	@POST
 	@Path("/{id}/log")
@@ -508,7 +500,6 @@ public class JobService extends AbstractRDFService {
 	/**
 	 * POST /{id}/log			Accept: TEXT	Content-Type: *
 	 * @param logString
-	 * @return
 	 */
 	@POST
 	@Path("/{id}/log")
@@ -539,7 +530,6 @@ public class JobService extends AbstractRDFService {
 	 * GET /{id}/log			Accept: *		Content-Type: RDF
 	 * @param minLevelStr
 	 * @param maxLevelStr
-	 * @return
 	 */
 	@GET
 	@Path("/{id}/log")
@@ -570,7 +560,6 @@ public class JobService extends AbstractRDFService {
 	 * GET /{id}/log			Accept: *		Content-Type: TEXT_LOG
 	 * @param minLevelStr
 	 * @param maxLevelStr
-	 * @return
 	 */
 	@GET
 	@Path("/{id}/log")
@@ -611,7 +600,6 @@ public class JobService extends AbstractRDFService {
 	 * GET /{id}				Accept: TEXT_LOG		Content-Type: TEXT
 	 * @param minLevelStr
 	 * @param maxLevelStr
-	 * @return
 	 */
 	@GET
 	@Path("/{id}")
@@ -623,7 +611,6 @@ public class JobService extends AbstractRDFService {
 	/**
 	 * POST /{id}/assignment	Accept: RDF				Content-Type: RDF
 	 * @param bodyAsFile
-	 * @return
 	 */
 	@POST
 	@Consumes(MediaType.WILDCARD)
@@ -662,7 +649,6 @@ public class JobService extends AbstractRDFService {
 	 * GET /{id}/assignment/{assId}		Accept: *		Content-Type: RDF
 	 * @param id
 	 * @param assId
-	 * @return
 	 */
 	@GET
 	@Path("{id}/assignment/{assId}")

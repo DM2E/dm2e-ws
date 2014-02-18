@@ -11,13 +11,19 @@ import eu.dm2e.grafeo.annotations.RDFProperty;
 @RDFClass(NS.FOAF.CLASS_PERSON)
 public class UserPojo extends AbstractPersistentPojo<UserPojo> {
 	
-//	@Override
-//	public int getMaximumJsonDepth() { return 10; };
-	
+	/**
+	 * Themes for the User interface
+	 * @author Konstantin Baierer
+	 */
 	public enum THEMES {
-		  LIGHT("light")
-		, DARK("dark")
-		;
+		/**
+		 * Light interface (white-on-black)
+		 */
+		LIGHT("light"),
+		/**
+		 * Dark interface (black-on-white)
+		 */
+		DARK("dark");
 		
 		private String name;
 		public String getName() { return name; }

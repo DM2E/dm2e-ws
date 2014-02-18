@@ -26,7 +26,6 @@ public abstract class AbstractAsynchronousRDFService extends AbstractRDFService 
 	 * TODO test whether we can replace this with the MessageBodyWriter<Grafeo>
 	 *
 	 * @param rdfString
-	 * @return
 	 */
 	@POST
 	@Consumes({

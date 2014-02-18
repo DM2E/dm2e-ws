@@ -212,7 +212,6 @@ public abstract class AbstractRDFService {
      * Implementation of the default behaviour, which is a 303 redirect
      * from the base URI to /describe, where the webservice description is returned.
      *
-     * @return
      */
     @GET
 	@Produces({
@@ -247,7 +246,6 @@ public abstract class AbstractRDFService {
      * The serialization of the webservice description is returned.
      *
      *
-     * @return
      */
     @GET
 	@Path("/describe")
@@ -445,7 +443,6 @@ public abstract class AbstractRDFService {
      * Removes last path element or the given path from a URI. Query remains unaffected.
      * @param uri
      * @param path
-     * @return
      */
     public URI popPath(URI uri, String path) {
         String query = uri.getQuery();
@@ -482,7 +479,6 @@ public abstract class AbstractRDFService {
      * Removes first occurrence of the given path element from a URI. Query remains unaffected.
      * @param uri
      * @param path
-     * @return
      */
     public URI popPathFromBeginning(URI uri, String path) {
         String u = uri.toString();
@@ -500,7 +496,6 @@ public abstract class AbstractRDFService {
      * Adds the given path element to the beginning of a URI. Query remains unaffected.
      * @param uri
      * @param path
-     * @return
      */
     public URI pushPathFromBeginning(UriInfo uri, String path) {
         String u = uri.getRequestUri().toString();
