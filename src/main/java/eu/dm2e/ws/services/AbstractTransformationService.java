@@ -74,7 +74,7 @@ public abstract class AbstractTransformationService extends AbstractAsynchronous
             log.debug("Job not found: " + resourceId);
             return Response.status(404).build();
         }
-        return Response.ok().entity(job).build();
+        return Response.ok().header("Access-Control-Allow-Origin", "*").entity(job).build();
     }
 
     /**
